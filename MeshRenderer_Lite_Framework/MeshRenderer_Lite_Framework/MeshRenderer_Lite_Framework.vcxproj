@@ -63,6 +63,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Src\Systems\Window\WindowSystem.cpp" />
     <ClCompile Include="Src\Utilities\dxerr.cpp" />
     <ClCompile Include="Src\Utilities\precompiled.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -83,6 +84,7 @@
     <ClInclude Include="Src\Engine\Engine.h" />
     <ClInclude Include="Src\Engine\GameClock.h" />
     <ClInclude Include="Src\Systems\Core\ISystem.h" />
+    <ClInclude Include="Src\Systems\Window\WindowSystem.h" />
     <ClInclude Include="Src\Utilities\dxerr.h" />
     <ClInclude Include="Src\Utilities\precompiled.h" />
   </ItemGroup>

@@ -17,8 +17,6 @@ class InputSystem;
 class WindowSystem;
 class GraphicsSystem;
 
-class Model3DComponent;
-
 using std::string;
 using std::vector;
 using std::unordered_map;
