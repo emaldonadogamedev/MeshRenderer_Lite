@@ -4,6 +4,12 @@
 #include <Imgui/imgui.h>
 #include <Imgui/imgui_impl_dx11.h>
 
+#define WIN32_LEAN_AND_MEAN
+#include <windowsx.h>
+
+#include <Systems/Input/InputSystem.h>
+#include <Systems/Input/Keyboard.h>
+#include <Systems/Input/Mouse.h>
 #include <Systems/Window/WindowSystem.h>
 
 Engine::Engine(void):
@@ -36,8 +42,8 @@ bool Engine::Initialize(HINSTANCE hInstance)
 	//	return false;
 	////////////////////////////////////////////////////////////////////////////
 	////Prepare the Input system
-	//if (!AddSystemHelper(m_inputSystem = new InputSystem(this)))
-	//	return false;
+	if (!AddSystemHelper(m_inputSystem = new InputSystem(this)))
+		return false;
 	
 	//Initialize all of the systems
 	for (auto it : m_systems)
@@ -185,26 +191,26 @@ LRESULT WINAPI Engine::MessageHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		break;
 
 	case WM_LBUTTONDOWN:
-		//m_inputSystem->m_mouse->SetLeftMouseButton(true);
+		m_inputSystem->m_mouse->SetLeftMouseButton(true);
 		break;
 	case WM_MBUTTONDOWN:
-		//m_inputSystem->m_mouse->SetMiddleMouseButton(true);
+		m_inputSystem->m_mouse->SetMiddleMouseButton(true);
 		break;
 	case WM_RBUTTONDOWN:
-		//m_inputSystem->m_mouse->SetRightMouseButton(true);
+		m_inputSystem->m_mouse->SetRightMouseButton(true);
 		break;
 	case WM_LBUTTONUP:
-		//m_inputSystem->m_mouse->SetLeftMouseButton(false);
+		m_inputSystem->m_mouse->SetLeftMouseButton(false);
 		//Physics::TestMouseIntersection(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), SkyeGraphics::GetInstance()->GetVolumeList());
 		break;
 	case WM_MBUTTONUP:
-		//m_inputSystem->m_mouse->SetMiddleMouseButton(false);
+		m_inputSystem->m_mouse->SetMiddleMouseButton(false);
 		break;
 	case WM_RBUTTONUP:
-		//m_inputSystem->m_mouse->SetRightMouseButton(false);
+		m_inputSystem->m_mouse->SetRightMouseButton(false);
 		break;
 	case WM_MOUSEMOVE:
-		//m_inputSystem->m_mouse->SetMousePosition(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		m_inputSystem->m_mouse->SetMousePosition(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		break;
 
 	case WM_KEYDOWN:
@@ -213,11 +219,11 @@ LRESULT WINAPI Engine::MessageHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			PostQuitMessage(0);
 			return 0;
 		}
-		//m_inputSystem->m_keyboard->SetKey(wParam, true);
+		m_inputSystem->m_keyboard->SetKey(wParam, true);
 		break;
 
 	case WM_KEYUP:
-		//m_inputSystem->m_keyboard->SetKey(wParam, false);
+		m_inputSystem->m_keyboard->SetKey(wParam, false);
 		break;
 
 	case VK_LMENU:

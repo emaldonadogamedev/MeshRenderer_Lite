@@ -63,6 +63,9 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Src\Systems\Input\InputSystem.cpp" />
+    <ClCompile Include="Src\Systems\Input\Keyboard.cpp" />
+    <ClCompile Include="Src\Systems\Input\Mouse.cpp" />
     <ClCompile Include="Src\Systems\Window\WindowSystem.cpp" />
     <ClCompile Include="Src\Utilities\dxerr.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -89,6 +92,10 @@
     <ClInclude Include="Src\Engine\Engine.h" />
     <ClInclude Include="Src\Engine\GameClock.h" />
     <ClInclude Include="Src\Systems\Core\ISystem.h" />
+    <ClInclude Include="Src\Systems\Graphics\GraphicsSystem.h" />
+    <ClInclude Include="Src\Systems\Input\InputSystem.h" />
+    <ClInclude Include="Src\Systems\Input\Keyboard.h" />
+    <ClInclude Include="Src\Systems\Input\Mouse.h" />
     <ClInclude Include="Src\Systems\Window\WindowSystem.h" />
     <ClInclude Include="Src\Utilities\dxerr.h" />
     <ClInclude Include="Src\Utilities\precompiled.h" />

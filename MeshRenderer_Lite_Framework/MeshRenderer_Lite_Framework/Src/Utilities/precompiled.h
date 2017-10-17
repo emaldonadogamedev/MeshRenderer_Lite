@@ -51,6 +51,7 @@ __pragma(warning(pop))
 
 //Math
 #include <math.h>
+#include <DirectXMath.h>
 
 #ifndef SafeRelease
 #define SafeRelease(x) if(x) {x->Release(); x = 0;}
