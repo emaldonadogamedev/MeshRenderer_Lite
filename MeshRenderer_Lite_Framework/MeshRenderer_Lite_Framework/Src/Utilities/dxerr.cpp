@@ -13,7 +13,7 @@
 
 // This version only supports UNICODE.
 
-#include<Systems/Graphics/GraphicsUtilities/DX11Utilities/dxerr.h>
+#include"dxerr.h"
 
 #include <stdio.h>
 #include <algorithm>

@@ -46,7 +46,7 @@ public:
 
 	static Engine* s_engineApp;
 
-private:
+protected:
 	bool AddSystemHelper(ISystem* sys = nullptr);
 
 	void CalculateFrameTime(void);

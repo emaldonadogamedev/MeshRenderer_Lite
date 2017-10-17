@@ -1,6 +1,11 @@
 #include <Utilities/precompiled.h>
 #include <Engine/Engine.h>
 
+#include <Imgui/imgui.h>
+#include <Imgui/imgui_impl_dx11.h>
+
+#include <Systems/Window/WindowSystem.h>
+
 Engine::Engine(void):
 m_isPaused(false),
 m_isMinimized(false),
@@ -25,14 +30,14 @@ bool Engine::Initialize(HINSTANCE hInstance)
 	//Prepare the Window system
 	if (!AddSystemHelper(m_windowSystem = new WindowSystem(this, hInstance)))
 		return false;
-	//////////////////////////////////////////////////////////////////////////
-	//Prepare the Graphics system
-	if (!AddSystemHelper(m_graphicsSystem = new GraphicsSystem(this)))
-		return false;
-	//////////////////////////////////////////////////////////////////////////
-	//Prepare the Input system
-	if (!AddSystemHelper(m_inputSystem = new InputSystem(this)))
-		return false;
+	////////////////////////////////////////////////////////////////////////////
+	////Prepare the Graphics system
+	//if (!AddSystemHelper(m_graphicsSystem = new GraphicsSystem(this)))
+	//	return false;
+	////////////////////////////////////////////////////////////////////////////
+	////Prepare the Input system
+	//if (!AddSystemHelper(m_inputSystem = new InputSystem(this)))
+	//	return false;
 	
 	//Initialize all of the systems
 	for (auto it : m_systems)
@@ -119,12 +124,11 @@ bool Engine::IsRunning() const
 	return m_isRunning;
 }
 
+extern LRESULT ImGui_ImplDX11_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT WINAPI Engine::MessageHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	//if (ImGui_ImplDX11_WndProcHandler(hwnd, msg, wParam, lParam))
-	//return true;
 	ImGui_ImplDX11_WndProcHandler(hwnd, msg, wParam, lParam);
-
+		
 	//handle input for the application
 	switch (msg)
 	{
@@ -143,6 +147,7 @@ LRESULT WINAPI Engine::MessageHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
 	case WM_SIZE:
 	{
+
 		ImGui_ImplDX11_InvalidateDeviceObjects();
 
 		// Save the new client area dimensions.
@@ -151,7 +156,7 @@ LRESULT WINAPI Engine::MessageHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		m_windowSystem->SetWindowWidth(w);
 		m_windowSystem->SetWindowHeight(h);
 
-		m_graphicsSystem->Resize(w, h);
+		//m_graphicsSystem->Resize(w, h);
 
 		ImGui_ImplDX11_CreateDeviceObjects();
 		return 0;
@@ -180,26 +185,26 @@ LRESULT WINAPI Engine::MessageHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		break;
 
 	case WM_LBUTTONDOWN:
-		m_inputSystem->m_mouse->SetLeftMouseButton(true);
+		//m_inputSystem->m_mouse->SetLeftMouseButton(true);
 		break;
 	case WM_MBUTTONDOWN:
-		m_inputSystem->m_mouse->SetMiddleMouseButton(true);
+		//m_inputSystem->m_mouse->SetMiddleMouseButton(true);
 		break;
 	case WM_RBUTTONDOWN:
-		m_inputSystem->m_mouse->SetRightMouseButton(true);
+		//m_inputSystem->m_mouse->SetRightMouseButton(true);
 		break;
 	case WM_LBUTTONUP:
-		m_inputSystem->m_mouse->SetLeftMouseButton(false);
+		//m_inputSystem->m_mouse->SetLeftMouseButton(false);
 		//Physics::TestMouseIntersection(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), SkyeGraphics::GetInstance()->GetVolumeList());
 		break;
 	case WM_MBUTTONUP:
-		m_inputSystem->m_mouse->SetMiddleMouseButton(false);
+		//m_inputSystem->m_mouse->SetMiddleMouseButton(false);
 		break;
 	case WM_RBUTTONUP:
-		m_inputSystem->m_mouse->SetRightMouseButton(false);
+		//m_inputSystem->m_mouse->SetRightMouseButton(false);
 		break;
 	case WM_MOUSEMOVE:
-		m_inputSystem->m_mouse->SetMousePosition(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		//m_inputSystem->m_mouse->SetMousePosition(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		break;
 
 	case WM_KEYDOWN:
@@ -208,11 +213,11 @@ LRESULT WINAPI Engine::MessageHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			PostQuitMessage(0);
 			return 0;
 		}
-		m_inputSystem->m_keyboard->SetKey(wParam, true);
+		//m_inputSystem->m_keyboard->SetKey(wParam, true);
 		break;
 
 	case WM_KEYUP:
-		m_inputSystem->m_keyboard->SetKey(wParam, false);
+		//m_inputSystem->m_keyboard->SetKey(wParam, false);
 		break;
 
 	case VK_LMENU:
