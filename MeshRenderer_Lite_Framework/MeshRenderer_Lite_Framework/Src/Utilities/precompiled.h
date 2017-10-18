@@ -3,20 +3,23 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
-#include <iostream>
+//stl includes
+#include <algorithm>
+#include <assert.h>
+#include <chrono>
 #include <fstream>
-
-//STL includes
-#include <vector>
+#include <iostream>
 #include <map>
 #include <memory>
-#include <unordered_map>
-#include <assert.h>
-#include <algorithm>
 #include <random>
+#include <set>
+#include <stack>
 #include <string>
-#include <time.h>
 #include <thread>
+#include <time.h>
+#include <tuple>
+#include <unordered_map>
+#include <vector>
 
 //DirectX 11
 __pragma(warning(push))
@@ -37,19 +40,20 @@ __pragma(warning(pop))
 #ifndef HR
 #ifdef _DEBUG
 #define  HR(x) \
-            		{ \
-			HRESULT hr = x; \
-			if(FAILED(hr)) \
-            			{\
-				DXTraceW(__FILEW__, __LINE__, hr, L#x, TRUE); \
-            			}\
-            		}
+{ \
+	HRESULT hr = x; \
+	if(FAILED(hr)) \
+	{ \
+		DXTraceW(__FILEW__, __LINE__, hr, L#x, TRUE); \
+	} \
+}
 #else  // !_DEBUG
 #define  HR(x) x;
 #endif  // _DEBUG
 #endif // !HR
 
 //Math
+#include <float.h>
 #include <math.h>
 #include <DirectXMath.h>
 

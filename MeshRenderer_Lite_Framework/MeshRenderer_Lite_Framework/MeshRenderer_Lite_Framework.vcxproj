@@ -63,6 +63,8 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Src\Systems\Graphics\DX11Renderer\DX11Renderer.cpp" />
+    <ClCompile Include="Src\Systems\Graphics\GraphicsSystem.cpp" />
     <ClCompile Include="Src\Systems\Input\InputSystem.cpp" />
     <ClCompile Include="Src\Systems\Input\Keyboard.cpp" />
     <ClCompile Include="Src\Systems\Input\Mouse.cpp" />
@@ -92,6 +94,9 @@
     <ClInclude Include="Src\Engine\Engine.h" />
     <ClInclude Include="Src\Engine\GameClock.h" />
     <ClInclude Include="Src\Systems\Core\ISystem.h" />
+    <ClInclude Include="Src\Systems\Graphics\DX11Renderer\DX11Renderer.h" />
+    <ClInclude Include="Src\Systems\Graphics\DX11Renderer\DX11RendererData.h" />
+    <ClInclude Include="Src\Systems\Graphics\DX11RenderStage\IRenderStage.h" />
     <ClInclude Include="Src\Systems\Graphics\GraphicsSystem.h" />
     <ClInclude Include="Src\Systems\Input\InputSystem.h" />
     <ClInclude Include="Src\Systems\Input\Keyboard.h" />

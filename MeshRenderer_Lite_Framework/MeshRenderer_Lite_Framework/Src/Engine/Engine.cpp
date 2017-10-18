@@ -108,7 +108,7 @@ void Engine::Shutdown(void)
 
 ISystem* Engine::GetSystem(const string& systemName) const
 {
-	unordered_map<string, ISystem*>::const_iterator it = m_systemsMap.find(systemName);
+	const auto it = m_systemsMap.find(systemName);
 	if (it != m_systemsMap.end())
 	{
 		return it->second;
@@ -117,11 +117,17 @@ ISystem* Engine::GetSystem(const string& systemName) const
 	return nullptr;
 }
 
-void Engine::SendMessageToSystems(const IMessage* msg)
+void Engine::SendMessageToSystems(const IMessage * const msg)
 {
-	for (auto it : m_systems)
+	if (msg)
 	{
-		it->ReceiveMessage(*msg);
+		for (auto it : m_systems)
+		{
+			it->ReceiveMessage(*msg);
+		}
+
+		//delete the message pointer
+		delete msg;
 	}
 }
 
@@ -153,7 +159,6 @@ LRESULT WINAPI Engine::MessageHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 
 	case WM_SIZE:
 	{
-
 		ImGui_ImplDX11_InvalidateDeviceObjects();
 
 		// Save the new client area dimensions.

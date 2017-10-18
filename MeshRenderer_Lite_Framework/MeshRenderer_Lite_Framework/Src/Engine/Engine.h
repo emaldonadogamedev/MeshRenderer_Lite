@@ -32,7 +32,7 @@ public:
 	void Shutdown(void);
 
 	ISystem* GetSystem(const string& systemName) const;
-	virtual void SendMessageToSystems(const IMessage* msg);
+	virtual void SendMessageToSystems(const IMessage* const msg);
 
 	bool IsRunning() const;
 	LRESULT WINAPI MessageHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
