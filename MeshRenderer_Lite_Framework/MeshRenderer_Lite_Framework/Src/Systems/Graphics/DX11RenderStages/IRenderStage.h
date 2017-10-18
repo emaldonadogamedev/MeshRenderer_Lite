@@ -1,6 +1,9 @@
 #pragma once
 
+#include <vector>
+
 class DX11RendererData;
+class IRenderComponent;
 
 class IRenderStage
 {
@@ -9,7 +12,7 @@ public:
 	virtual ~IRenderStage() {};
 
 	virtual void PreRender() = 0;
-	virtual void Render() = 0;
+	virtual void Render(const std::vector<IRenderComponent*>&) = 0;
 	virtual void PostRender() = 0;
 
 protected:

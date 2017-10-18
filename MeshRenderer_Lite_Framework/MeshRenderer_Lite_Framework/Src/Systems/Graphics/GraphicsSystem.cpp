@@ -34,7 +34,9 @@ void GraphicsSystem::Update(const float dt)
 	for (const auto renderStage : m_renderStages)
 	{
 		renderStage->PreRender();
-		renderStage->Render();
+		//////////////////////////////////////////////////////////////////////////
+		//TODO: Render stuff!
+		//renderStage->Render();
 		renderStage->PostRender();
 	}
 }

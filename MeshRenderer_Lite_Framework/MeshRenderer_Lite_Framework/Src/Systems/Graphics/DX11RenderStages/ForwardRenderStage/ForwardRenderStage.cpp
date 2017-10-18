@@ -16,7 +16,7 @@ void ForwardRenderStage::PreRender()
 {
 }
 
-void ForwardRenderStage::Render()
+void ForwardRenderStage::Render(const std::vector<IRenderComponent*>& modelComponents)
 {
 }
 

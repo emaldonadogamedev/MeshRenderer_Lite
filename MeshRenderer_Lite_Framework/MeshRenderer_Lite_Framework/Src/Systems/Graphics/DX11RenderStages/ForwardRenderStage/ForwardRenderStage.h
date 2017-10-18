@@ -11,7 +11,7 @@ public:
 	virtual ~ForwardRenderStage() override;
 
 	virtual void PreRender() override;
-	virtual void Render() override;
+	virtual void Render(const std::vector<IRenderComponent*>& modelComponents) override;
 	virtual void PostRender() override;
 
 protected:
