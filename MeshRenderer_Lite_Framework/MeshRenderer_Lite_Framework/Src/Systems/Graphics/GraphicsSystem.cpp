@@ -47,9 +47,9 @@ void GraphicsSystem::Update(const float dt)
 
 void GraphicsSystem::Shutdown()
 {
-	for (const auto renderStage : m_renderStages)
+	for (auto renderStage : m_renderStages)
 	{
-		delete renderStage;
+		SafeDelete(renderStage);
 	}
 	m_renderStages.clear();
 

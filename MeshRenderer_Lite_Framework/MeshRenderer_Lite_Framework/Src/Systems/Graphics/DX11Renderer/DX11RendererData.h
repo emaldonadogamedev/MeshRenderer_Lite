@@ -1,7 +1,5 @@
 #pragma once
 
-#include<d3d11.h>
-
 struct DX11RendererData
 {
 	ID3D11Device* m_pDevice;
@@ -26,6 +24,21 @@ struct DX11RendererData
 	ID3D11RasterizerState* m_d3dRasterStateSolCullFront;
 	ID3D11RasterizerState* m_d3dRasterStateWireframe;
 	ID3D11RasterizerState* m_d3dRasterStateImgui;
+	
+	//Resource containers
+	std::vector<ID3D11Texture1D*> textures1D;
+	std::vector<ID3D11Texture2D*> textures2D;
+	std::vector<ID3D11Texture3D*> textures3D;
+	std::vector<ID3D11RenderTargetView*> renderTargets;
+	std::vector<std::pair<ID3D11VertexShader*, ID3D11InputLayout*>> vertexShaders;
+	std::vector<ID3D11PixelShader*> pixelShaders;
+	std::vector<ID3D11GeometryShader*> geometryShaders;
+	std::vector<ID3D11GeometryShader*> computeShaders;
+	std::vector<ID3D11HullShader*> hullShaders;
+	std::vector<ID3D11Buffer*> vertexBuffers;
+	std::vector<ID3D11Buffer*> indexBuffers;
+	std::vector<ID3D11Buffer*> constantBuffers;
+	std::vector<std::pair<ID3D11Texture2D*, ID3D11DepthStencilView*>> depthBuffers_AndViews;
 
 	//Sampler states for textures
 	ID3D11SamplerState* m_pDiffSampleState, *m_pSpecSampleState, *m_pNormalSampleState;

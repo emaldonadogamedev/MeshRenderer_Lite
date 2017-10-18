@@ -95,6 +95,7 @@
     <ClInclude Include="Src\Engine\Engine.h" />
     <ClInclude Include="Src\Engine\GameClock.h" />
     <ClInclude Include="Src\Systems\Core\ISystem.h" />
+    <ClInclude Include="Src\Systems\Graphics\BufferClasses\ConstantBuffers.h" />
     <ClInclude Include="Src\Systems\Graphics\Components\IRenderComponent.h" />
     <ClInclude Include="Src\Systems\Graphics\DX11Renderer\DX11Renderer.h" />
     <ClInclude Include="Src\Systems\Graphics\DX11Renderer\DX11RendererData.h" />

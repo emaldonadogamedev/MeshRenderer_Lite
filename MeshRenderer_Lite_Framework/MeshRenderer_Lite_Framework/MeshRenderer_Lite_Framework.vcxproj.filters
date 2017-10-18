@@ -131,5 +131,8 @@
     <ClInclude Include="Src\Systems\Graphics\GraphicsUtilities\VertexTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Systems\Graphics\BufferClasses\ConstantBuffers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
