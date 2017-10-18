@@ -22,7 +22,31 @@ bool DX11Renderer::InitializeRenderer(const int width, const int height, HWND hw
 
 void DX11Renderer::ReleaseData()
 {
+	SafeRelease(m_renderData->m_d3dRasterStateDefault);
+	SafeRelease(m_renderData->m_d3dRasterStateSolCullBack);
+	SafeRelease(m_renderData->m_d3dRasterStateSolCullFront);
+	SafeRelease(m_renderData->m_d3dRasterStateWireframe);
+	SafeRelease(m_renderData->m_d3dRasterStateImgui);
 
+	//CLEANUP DIRECT3D
+	if (m_renderData->m_pImmediateContext)
+		m_renderData->m_pImmediateContext->ClearState();
+
+	SafeRelease(m_renderData->m_pMainRenderTargetView);
+	SafeRelease(m_renderData->m_pSwapChain);
+	SafeRelease(m_renderData->m_pImmediateContext);
+	SafeRelease(m_renderData->m_pDevice);
+}
+
+void DX11Renderer::ClearBuffer(void)
+{
+	m_renderData->m_pImmediateContext->ClearRenderTargetView(m_renderData->m_pMainRenderTargetView, m_renderData->m_clearColor);
+	m_renderData->m_pImmediateContext->ClearDepthStencilView(m_renderData->m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+}
+
+void DX11Renderer::SwapBuffers(void)
+{
+	HR(m_renderData->m_pSwapChain->Present(0, 0));
 }
 
 bool DX11Renderer::InitializeD3D(const int width, const int height, HWND hwnd)
@@ -99,7 +123,7 @@ continue_Init:
 	ID3D11Texture2D* pBackBufferTex = 0;
 	HR(m_renderData->m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBackBufferTex)));
 
-	HR(m_renderData->m_pDevice->CreateRenderTargetView(pBackBufferTex, NULL, &m_renderData->m_pRenderTargetView));
+	HR(m_renderData->m_pDevice->CreateRenderTargetView(pBackBufferTex, NULL, &m_renderData->m_pMainRenderTargetView));
 	SafeRelease(pBackBufferTex);
 
 	//CREATE DEPTH STENCIL BUFFER
@@ -127,7 +151,7 @@ continue_Init:
 	HR(result = m_renderData->m_pDevice->CreateDepthStencilView(m_renderData->m_DepthStencilBuffer, &dsvd, &m_renderData->m_DepthStencilView));
 
 	//BIND RENDER TARGET VIEW
-	m_renderData->m_pImmediateContext->OMSetRenderTargets(1, &m_renderData->m_pRenderTargetView, m_renderData->m_DepthStencilView);
+	m_renderData->m_pImmediateContext->OMSetRenderTargets(1, &m_renderData->m_pMainRenderTargetView, m_renderData->m_DepthStencilView);
 
 	// Setup rasterizer states
 	D3D11_RASTERIZER_DESC rasterizerDesc;

@@ -36,6 +36,9 @@ __pragma(warning(pop))
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
+//DirectX Texture loading
+#include <DirectXTex/DirectXTex.h>
+
 //HRESULT CHECK
 #ifndef HR
 #ifdef _DEBUG

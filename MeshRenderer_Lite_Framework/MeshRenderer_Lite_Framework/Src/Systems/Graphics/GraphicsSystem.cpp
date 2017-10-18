@@ -31,6 +31,8 @@ bool GraphicsSystem::Initialize()
 
 void GraphicsSystem::Update(const float dt)
 {
+	m_dx11Renderer->ClearBuffer();
+
 	for (const auto renderStage : m_renderStages)
 	{
 		renderStage->PreRender();
@@ -39,6 +41,8 @@ void GraphicsSystem::Update(const float dt)
 		//renderStage->Render();
 		renderStage->PostRender();
 	}
+
+	m_dx11Renderer->SwapBuffers();
 }
 
 void GraphicsSystem::Shutdown()
