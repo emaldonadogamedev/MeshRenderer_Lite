@@ -7,6 +7,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windowsx.h>
 
+#include <Systems/Graphics/GraphicsSystem.h>
 #include <Systems/Input/InputSystem.h>
 #include <Systems/Input/Keyboard.h>
 #include <Systems/Input/Mouse.h>
@@ -36,12 +37,12 @@ bool Engine::Initialize(HINSTANCE hInstance)
 	//Prepare the Window system
 	if (!AddSystemHelper(m_windowSystem = new WindowSystem(this, hInstance)))
 		return false;
-	////////////////////////////////////////////////////////////////////////////
-	////Prepare the Graphics system
-	//if (!AddSystemHelper(m_graphicsSystem = new GraphicsSystem(this)))
-	//	return false;
-	////////////////////////////////////////////////////////////////////////////
-	////Prepare the Input system
+	//////////////////////////////////////////////////////////////////////////
+	//Prepare the Graphics system
+	if (!AddSystemHelper(m_graphicsSystem = new GraphicsSystem(this)))
+		return false;
+	//////////////////////////////////////////////////////////////////////////
+	//Prepare the Input system
 	if (!AddSystemHelper(m_inputSystem = new InputSystem(this)))
 		return false;
 	

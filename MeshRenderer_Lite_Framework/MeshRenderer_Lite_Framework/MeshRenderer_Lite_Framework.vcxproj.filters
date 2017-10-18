@@ -60,6 +60,9 @@
     <ClCompile Include="Src\Systems\Graphics\DX11Renderer\DX11Renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\ForwardRenderStage\ForwardRenderStage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Utilities\precompiled.h">
@@ -110,7 +113,10 @@
     <ClInclude Include="Src\Systems\Graphics\DX11Renderer\DX11RendererData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Systems\Graphics\DX11RenderStage\IRenderStage.h">
+    <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\IRenderStage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\ForwardRenderStage\ForwardRenderStage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

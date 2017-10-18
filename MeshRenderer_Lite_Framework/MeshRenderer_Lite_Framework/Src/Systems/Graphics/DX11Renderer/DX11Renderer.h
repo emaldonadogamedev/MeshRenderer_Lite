@@ -11,14 +11,16 @@ public:
 	DX11Renderer();
 	~DX11Renderer();
 
-	bool InitializeRenderer();
-	bool ReleaseData();
+	bool InitializeRenderer(const int width, const int height, HWND hwnd);
+	void ReleaseData();
 
 protected:
-	bool InitializeDevice();
-	bool InitializeSwapChain();
+	bool InitializeD3D(const int width, const int height, HWND hwnd);
+	bool InitializeTextureSamplers();
 
-	std::unique_ptr<DX11RendererData*> m_renderData;
+	std::unique_ptr<DX11RendererData> m_renderData;
+
+	bool m_isInitialized = false;
 
 	friend GraphicsSystem;
 };

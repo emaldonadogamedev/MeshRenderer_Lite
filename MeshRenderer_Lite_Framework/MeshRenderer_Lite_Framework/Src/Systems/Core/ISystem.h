@@ -14,6 +14,7 @@ enum MessageType : unsigned int
 	UnloadScene,
 	WindowResized,
 	ApplyColorMask,
+
 	MessageType_count
 };
 
@@ -23,7 +24,7 @@ public:
 	IMessage(const MessageType mt) :m_messageType(mt) {}
 	virtual ~IMessage() {}
 
-	const MessageType GetMessageType()const
+	const MessageType GetMessageType() const
 	{
 		return m_messageType;
 	}
@@ -37,17 +38,17 @@ class Engine;
 class ISystem
 {
 public:
-	ISystem(Engine* eng) :m_isInitialized(false), m_engineOwner(eng) {}
+	ISystem(Engine* const eng) :m_isInitialized(false), m_engineOwner(eng) {}
 	virtual ~ISystem() {}
 	virtual bool Initialize() = 0;
 	virtual void Update(const float dt) = 0;
 	virtual void Shutdown() = 0;
-	virtual const string& GetName()const { return m_systemName; }
-	virtual bool IsInitialized()const { return m_isInitialized; }
+	const string& GetName()const { return m_systemName; }
+	bool IsInitialized()const { return m_isInitialized; }
 	virtual void ReceiveMessage(const IMessage& msg) = 0;
 
 protected:
 	string m_systemName;
 	bool m_isInitialized;
-	Engine* m_engineOwner;
+	Engine* const m_engineOwner;
 };
