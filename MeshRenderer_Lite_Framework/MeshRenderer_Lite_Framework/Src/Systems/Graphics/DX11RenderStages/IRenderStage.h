@@ -2,13 +2,13 @@
 
 #include <vector>
 
-class DX11RendererData;
+class DX11Renderer;
 class IRenderComponent;
 
 class IRenderStage
 {
 public:
-	IRenderStage(DX11RendererData* const rendererData):m_rendererData(rendererData) {}
+	IRenderStage(DX11Renderer* const rendererData):m_rendererData(rendererData) {}
 	virtual ~IRenderStage() {};
 
 	virtual void PreRender() = 0;
@@ -16,5 +16,5 @@ public:
 	virtual void PostRender() = 0;
 
 protected:
-	DX11RendererData* const m_rendererData;
+	DX11Renderer* const m_rendererData;
 };

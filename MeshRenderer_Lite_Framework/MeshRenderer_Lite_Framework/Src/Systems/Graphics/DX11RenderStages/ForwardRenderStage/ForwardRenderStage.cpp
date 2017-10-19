@@ -1,7 +1,10 @@
 #include <Utilities/precompiled.h>
 #include <Systems/Graphics/DX11RenderStages/ForwardRenderStage/ForwardRenderStage.h>
 
-ForwardRenderStage::ForwardRenderStage(DX11RendererData* const renderData):
+#include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
+#include <Systems/Graphics/DX11Renderer/DX11RendererData.h>
+
+ForwardRenderStage::ForwardRenderStage(DX11Renderer* const renderData):
 	IRenderStage(renderData)
 {
 

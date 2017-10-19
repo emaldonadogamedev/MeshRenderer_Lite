@@ -25,6 +25,10 @@ struct DX11RendererData
 	ID3D11RasterizerState* m_d3dRasterStateWireframe;
 	ID3D11RasterizerState* m_d3dRasterStateImgui;
 	
+	ID3D11InputLayout* m_pVSInputLayoutVertexWire;
+	ID3D11InputLayout* m_pVSInputLayoutVertexNormal;
+	ID3D11InputLayout* m_pVSInputLayoutVertexTexture;
+
 	//Resource containers
 	std::vector<ID3D11Texture1D*> textures1D;
 	std::vector<ID3D11Texture2D*> textures2D;
@@ -42,4 +46,13 @@ struct DX11RendererData
 
 	//Sampler states for textures
 	ID3D11SamplerState* m_pDiffSampleState, *m_pSpecSampleState, *m_pNormalSampleState;
+
+	//////////////////////////////////////////////////////////////////////////
+	// TEST RESOURCES!
+	ID3D11VertexShader* testVertexShader;
+
+	ID3D11PixelShader* testPixelShader;
+
+	ID3D11Buffer* testConstBuffer;
+
 };

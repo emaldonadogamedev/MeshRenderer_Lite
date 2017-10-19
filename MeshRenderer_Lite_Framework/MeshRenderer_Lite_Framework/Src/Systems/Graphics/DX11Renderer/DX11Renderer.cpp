@@ -49,6 +49,28 @@ void DX11Renderer::SwapBuffers(void)
 	HR(m_renderData->m_pSwapChain->Present(0, 0));
 }
 
+void DX11Renderer::Draw(unsigned vertexCount, unsigned startVertexLocation /*= 0*/)
+{
+	m_renderData->m_pImmediateContext->Draw(vertexCount, startVertexLocation);
+}
+
+void DX11Renderer::DrawIndexed(unsigned indexCount, unsigned startIndexLocation /*= 0*/, unsigned baseVertexLocation /*= 0*/)
+{
+	m_renderData->m_pImmediateContext->DrawIndexed(indexCount, startIndexLocation, baseVertexLocation);
+}
+
+void DX11Renderer::DrawInstanced(unsigned vertexCount, unsigned instanceCount, unsigned startVertexLocation /*= 0*/, unsigned startInstanceLocation /*= 0*/)
+{
+	m_renderData->m_pImmediateContext->DrawInstanced(vertexCount, instanceCount, startVertexLocation, startInstanceLocation);
+}
+
+void DX11Renderer::DrawIndexedInstanced(unsigned indexCountPerInstance, unsigned instanceCount, unsigned startIndexLocation /*= 0*/, unsigned baseVertexLocation /*= 0*/, unsigned startInstanceLocation /*= 0*/)
+{
+	m_renderData->m_pImmediateContext->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
+}
+
+
+
 bool DX11Renderer::InitializeD3D(const int width, const int height, HWND hwnd)
 {
 	UINT createDeviceFlags = 0;

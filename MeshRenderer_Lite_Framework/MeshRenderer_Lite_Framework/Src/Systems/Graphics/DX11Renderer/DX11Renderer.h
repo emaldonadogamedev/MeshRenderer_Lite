@@ -1,6 +1,7 @@
 #pragma once
 
 #include<memory>
+#include<Systems/Graphics/GraphicsUtilities/ObjectHandle.h>
 
 class GraphicsSystem;
 class DX11RendererData;
@@ -25,6 +26,32 @@ public:
 		unsigned startInstanceLocation = 0);
 	void DrawIndexedInstanced(unsigned indexCountPerInstance, unsigned instanceCount, unsigned startIndexLocation = 0,
 		unsigned baseVertexLocation = 0, unsigned startInstanceLocation = 0);
+
+	//////////////////////////////////////////////////////////////////////////
+	//Buffer functions
+	//Create
+	void CreateVertexBuffer(ObjectHandle& vertexBuffer, const BufferUsage bufferUsage, unsigned size, const void* initialData = nullptr);
+	void CreateIndexBuffer(ObjectHandle& indexBuffer, const BufferUsage bufferUsage, unsigned size, const void* initialData = nullptr);
+	void CreateConstantBuffer(ObjectHandle& constantBuffer, unsigned size);
+	//Bind
+	void BindNullVertexBuffer();
+	void BindVertexBuffer(const ObjectHandle& vertexBuffer, unsigned stride);
+	void BindIndexBuffer(const ObjectHandle& indexBuffer);
+	void BindConstantBuffer(unsigned slot, const ObjectHandle& constantBuffer, const ObjectType shaderType);
+	void BindDepthBuffer(const ObjectHandle& depthBuffer);
+
+	//////////////////////////////////////////////////////////////////////////
+	//Shader functions
+	//Create
+	void CreateVertexShader(ObjectHandle& vertexShader, const std::string& fileName, const InputLayout& inputLayout,
+		bool precompiled, const std::string& entryPoint = "main");
+	void CreatePixelShader(ObjectHandle& pixelShader, const std::string& fileName, bool precompiled, const std::string& entryPoint = "main");
+	void CreateGeometryShader(ObjectHandle& geometryShader, const std::string& fileName, bool precompiled, const std::string& entryPoint = "main");
+	//Bind
+	void BindVertexShader(const ObjectHandle& vertexShader);
+	void BindPixelShader(const ObjectHandle& pixelShader);
+	void BindGeometryShader(const ObjectHandle& geometryShader);
+	void BindComputeShader(const ObjectHandle& computeShader);
 
 protected:
 	bool InitializeD3D(const int width, const int height, HWND hwnd);

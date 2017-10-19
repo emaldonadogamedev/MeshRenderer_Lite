@@ -7,7 +7,7 @@ class GraphicsSystem;
 class ForwardRenderStage : IRenderStage
 {
 public:
-	ForwardRenderStage(DX11RendererData* const renderData );
+	ForwardRenderStage(DX11Renderer* const renderData );
 	virtual ~ForwardRenderStage() override;
 
 	virtual void PreRender() override;
