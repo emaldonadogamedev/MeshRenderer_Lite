@@ -24,7 +24,9 @@ bool GraphicsSystem::Initialize()
 
 	bool result = m_dx11Renderer->InitializeRenderer(window->GetWindowWidth(), window->GetWindowHeight(), window->GetWindowsHandler());
 
-	AddRenderStageHelper(new ForwardRenderStage(m_dx11Renderer->m_renderData.get()));
+	AddRenderStageHelper(new ForwardRenderStage(m_dx11Renderer.get()));
+
+
 
 	return result;
 }
@@ -32,6 +34,9 @@ bool GraphicsSystem::Initialize()
 void GraphicsSystem::Update(const float dt)
 {
 	m_dx11Renderer->ClearBuffer();
+
+	//TEST!!!
+	m_dx11Renderer->Draw(3, 0);
 
 	for (const auto renderStage : m_renderStages)
 	{

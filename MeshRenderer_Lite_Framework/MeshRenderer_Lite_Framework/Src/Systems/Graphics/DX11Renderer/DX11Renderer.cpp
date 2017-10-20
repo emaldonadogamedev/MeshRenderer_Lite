@@ -3,6 +3,8 @@
 
 #include <Systems/Graphics/DX11Renderer/DX11RendererData.h>
 
+#include <Systems/Graphics/GraphicsUtilities/VertexTypes.h>
+
 DX11Renderer::DX11Renderer() : m_renderData(std::make_unique<DX11RendererData>())
 {
 }
@@ -15,6 +17,9 @@ DX11Renderer::~DX11Renderer()
 bool DX11Renderer::InitializeRenderer(const int width, const int height, HWND hwnd)
 {
 	if (!InitializeD3D(width, height, hwnd))
+		return false;
+
+	if (!InitializeTestData(width, height))
 		return false;
 
 	return m_isInitialized = true;
@@ -70,7 +75,6 @@ void DX11Renderer::DrawIndexedInstanced(unsigned indexCountPerInstance, unsigned
 }
 
 
-
 bool DX11Renderer::InitializeD3D(const int width, const int height, HWND hwnd)
 {
 	UINT createDeviceFlags = 0;
@@ -79,24 +83,25 @@ bool DX11Renderer::InitializeD3D(const int width, const int height, HWND hwnd)
 	//createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif //_DEBUG
 
-	D3D_DRIVER_TYPE driverTypes[] =
+	const D3D_DRIVER_TYPE driverTypes[] =
 	{
 		D3D_DRIVER_TYPE_HARDWARE, //<- video card,best choice
 		D3D_DRIVER_TYPE_WARP, //<- emulated
 		D3D_DRIVER_TYPE_REFERENCE
 	};
 
-	UINT numDriverTypes = ARRAYSIZE(driverTypes);
+	const UINT numDriverTypes = ARRAYSIZE(driverTypes);
 
-	D3D_FEATURE_LEVEL featureLevels[] =
+	const D3D_FEATURE_LEVEL featureLevels[] =
 	{
+		D3D_FEATURE_LEVEL_11_1,
 		D3D_FEATURE_LEVEL_11_0,
 		D3D_FEATURE_LEVEL_10_1,
 		D3D_FEATURE_LEVEL_10_0,
 		D3D_FEATURE_LEVEL_9_3
 	};
 
-	UINT numFeatureLevels = ARRAYSIZE(featureLevels);
+	const UINT numFeatureLevels = ARRAYSIZE(featureLevels);
 
 	//Prepare double buffer description
 	DXGI_SWAP_CHAIN_DESC swapDesc;
@@ -237,7 +242,159 @@ continue_Init:
 	return true;
 }
 
+bool DX11Renderer::InitializeTestData(const int width, const int height)
+{
+	using namespace DirectX;
+
+	int hResult;
+	ID3D10Blob* blobVS, *blobPS;
+	CompileShaderHelper(hResult, &blobVS, "../MeshRenderer_Lite_Framework/Assets/Shaders/VertexShaders/testVS.hlsl", "vs_5_0", "main");
+	HR(m_renderData->m_pDevice->CreateVertexShader(blobVS->GetBufferPointer(), blobVS->GetBufferSize(), NULL, &m_renderData->testVertexShader));
+
+	// Define the input layout
+	D3D11_INPUT_ELEMENT_DESC layout[] 
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+	};
+	UINT numElements = ARRAYSIZE(layout);
+
+	// Create the input layout
+	HR(m_renderData->m_pDevice->CreateInputLayout(layout, numElements, blobVS->GetBufferPointer(),
+		blobVS->GetBufferSize(), &m_renderData->m_pVSInputLayoutVertexWire));
+	blobVS->Release();
+
+	// Set the input layout
+	m_renderData->m_pImmediateContext->IASetInputLayout(m_renderData->m_pVSInputLayoutVertexWire);
+
+	CompileShaderHelper(hResult, &blobPS, "../MeshRenderer_Lite_Framework/Assets/Shaders/PixelShaders/testPS.hlsl", "ps_5_0", "main");
+	HR(m_renderData->m_pDevice->CreatePixelShader(blobPS->GetBufferPointer(), blobPS->GetBufferSize(), NULL, &m_renderData->testPixelShader));
+	blobPS->Release();
+
+	// Create vertex buffer
+	const VertexWire vertices[] =
+	{
+		{XMFLOAT3(0.0f, 0.25f, 0)  , XMFLOAT4(0,1,0,1)},
+		{XMFLOAT3(0.25f, 0, 0) , XMFLOAT4(0,1,0,1)},
+		{XMFLOAT3(-0.25f, 0, 0), XMFLOAT4(0,1,0,1)}
+	};
+
+	D3D11_BUFFER_DESC bd;
+	ZeroMemory(&bd, sizeof(bd));
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(VertexWire) * 3;
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bd.CPUAccessFlags = 0;
+	D3D11_SUBRESOURCE_DATA InitData;
+	ZeroMemory(&InitData, sizeof(InitData));
+
+	// Set vertex buffer
+	UINT stride = sizeof(VertexWire);
+	UINT offset = 0;
+	m_renderData->m_pImmediateContext->IASetVertexBuffers(0, 1, &m_renderData->testVertBuffer, &stride, &offset);
+
+	// Set primitive topology
+	m_renderData->m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	// Create the constant buffers
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(CBNeverChanges);
+	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bd.CPUAccessFlags = 0;
+	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testViewProjConstBuffer));
+
+
+	bd.ByteWidth = sizeof(CBChangesEveryFrame);
+	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testPerObjectConstBuffer));
+
+	// Initialize the world matrices
+	testPerObjectBuffer.worldMtx = DirectX::XMMatrixScaling(0.20, 0.20, 0.23) * DirectX::XMMatrixRotationZ(XM_PIDIV4) * DirectX::XMMatrixTranslation(-2.0, -1, 0);
+	testPerObjectBuffer.worldMtx = XMMatrixTranspose(testPerObjectBuffer.worldMtx);
+	m_renderData->m_pImmediateContext->UpdateSubresource(m_renderData->testPerObjectConstBuffer, 0, NULL, &testPerObjectBuffer, 0, 0);
+
+	// Initialize the view matrix
+	DirectX::XMVECTOR Eye = DirectX::XMVectorSet(0.0f, 0.0f, -20.0f, 0.0f);
+	DirectX::XMVECTOR At  = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	DirectX::XMVECTOR Up  = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	testViewProjBuffer.viewMtx = DirectX::XMMatrixTranspose(DirectX::XMMatrixLookAtLH(Eye, At, Up));
+
+	// Initialize the projection matrix
+	testViewProjBuffer.projectionMtx = XMMatrixTranspose(DirectX::XMMatrixPerspectiveFovLH(XM_PIDIV4, width / (FLOAT)height, 0.01f, 1000.0f));
+	m_renderData->m_pImmediateContext->UpdateSubresource(m_renderData->testViewProjConstBuffer, 0, NULL, &testViewProjBuffer, 0, 0);
+
+	// prepare the triangle
+	m_renderData->m_pImmediateContext->VSSetShader(m_renderData->testVertexShader, NULL, 0);
+	m_renderData->m_pImmediateContext->VSSetConstantBuffers(0, 1, &m_renderData->testPerObjectConstBuffer);
+	m_renderData->m_pImmediateContext->VSSetConstantBuffers(1, 1, &m_renderData->testViewProjConstBuffer);
+	m_renderData->m_pImmediateContext->PSSetShader(m_renderData->testPixelShader, NULL, 0);
+
+	return true;
+}
+
 bool DX11Renderer::InitializeTextureSamplers()
 {
 	return true;
+}
+
+void DX11Renderer::CompileShaderHelper(int& HResult, ID3D10Blob** blobPtrOut, const std::string& fileName,
+	const std::string& target, const std::string& szEntryPoint)
+{
+	DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+#ifdef _DEBUG
+	// Set the D3DCOMPILE_DEBUG flag to embed debug information in the shaders.
+	// Setting this flag improves the shader debugging experience, but still allows 
+	// the shaders to be optimized and to run exactly the way they will run in 
+	// the release configuration of this program.
+	dwShaderFlags |= D3DCOMPILE_DEBUG;
+
+	// Disable optimizations to further improve shader debugging
+	dwShaderFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+#endif
+
+	ID3D10Blob* pErrorBlob = nullptr;
+	const std::wstring _file(fileName.begin(), fileName.end());
+
+	const HRESULT hr = D3DCompileFromFile(_file.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE/*nullptr*/,
+		szEntryPoint.c_str(), target.c_str(), dwShaderFlags, 0, blobPtrOut, &pErrorBlob);
+
+	if (FAILED(hr))
+	{
+		if (pErrorBlob)
+		{
+			char* compileErrors;
+			unsigned long bufferSize, i;
+			std::ofstream fout;
+
+			// Get a pointer to the error message text buffer.
+			compileErrors = (char*)(pErrorBlob->GetBufferPointer());
+
+			// Get the length of the message.
+			bufferSize = pErrorBlob->GetBufferSize();
+
+			// Open a file to write the error message to.
+			fout.open("shader-error.txt");
+
+			// Write out the error message.
+			for (i = 0; i < bufferSize; i++)
+			{
+				fout << compileErrors[i];
+			}
+
+			// Close the file.
+			fout.close();
+
+			OutputDebugStringA(reinterpret_cast<const char*>(pErrorBlob->GetBufferPointer()));
+			std::cout << reinterpret_cast<const char*>(pErrorBlob->GetBufferPointer());
+			pErrorBlob->Release();
+		}
+
+		HResult = hr;
+
+		return;
+	}
+
+	if (pErrorBlob)
+		pErrorBlob->Release();
+
+	HResult = hr;
 }

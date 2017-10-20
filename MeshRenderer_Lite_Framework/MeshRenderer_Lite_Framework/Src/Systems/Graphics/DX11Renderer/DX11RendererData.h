@@ -49,10 +49,10 @@ struct DX11RendererData
 
 	//////////////////////////////////////////////////////////////////////////
 	// TEST RESOURCES!
+	ID3D11Buffer* testVertBuffer;
 	ID3D11VertexShader* testVertexShader;
-
 	ID3D11PixelShader* testPixelShader;
-
-	ID3D11Buffer* testConstBuffer;
+	ID3D11Buffer* testPerObjectConstBuffer;
+	ID3D11Buffer* testViewProjConstBuffer;
 
 };

@@ -3,8 +3,14 @@
 #include<memory>
 #include<Systems/Graphics/GraphicsUtilities/ObjectHandle.h>
 
+//TODO: REMOVE AFTER TESTING
+#include <DirectXMath.h>
+using DirectX::XMMATRIX;
+
 class GraphicsSystem;
+class InputLayout;
 class DX11RendererData;
+enum class ObjectType : char;
 
 class DX11Renderer
 {
@@ -37,8 +43,7 @@ public:
 	void BindNullVertexBuffer();
 	void BindVertexBuffer(const ObjectHandle& vertexBuffer, unsigned stride);
 	void BindIndexBuffer(const ObjectHandle& indexBuffer);
-	void BindConstantBuffer(unsigned slot, const ObjectHandle& constantBuffer, const ObjectType shaderType);
-	void BindDepthBuffer(const ObjectHandle& depthBuffer);
+	void BindConstantBuffer(unsigned slot, const ObjectHandle& constantBuffer, const ObjectType& shaderType);
 
 	//////////////////////////////////////////////////////////////////////////
 	//Shader functions
@@ -55,12 +60,31 @@ public:
 
 protected:
 	bool InitializeD3D(const int width, const int height, HWND hwnd);
-	bool InitializeTextureSamplers();
 
+	//////////////////////////////////////////////////////////////////////////
+	//FOR TESTING
+	bool InitializeTestData(const int width, const int height);
+	struct CBChangesEveryFrame
+	{
+		XMMATRIX worldMtx;
+	};
+	CBChangesEveryFrame testPerObjectBuffer;
+
+	struct CBNeverChanges
+	{
+		XMMATRIX viewMtx, projectionMtx;
+	};
+	CBNeverChanges testViewProjBuffer;
+
+	bool InitializeTextureSamplers();
 
 	std::unique_ptr<DX11RendererData> m_renderData;
 
 	bool m_isInitialized = false;
 
 	friend GraphicsSystem;
+
+private:
+	void CompileShaderHelper(int& HResult, ID3D10Blob** blobPtrOut, const std::string& fileName,
+		const std::string& target, const std::string& szEntryPoint);
 };
