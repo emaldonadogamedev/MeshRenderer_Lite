@@ -94,7 +94,6 @@ bool DX11Renderer::InitializeD3D(const int width, const int height, HWND hwnd)
 
 	const D3D_FEATURE_LEVEL featureLevels[] =
 	{
-		D3D_FEATURE_LEVEL_11_1,
 		D3D_FEATURE_LEVEL_11_0,
 		D3D_FEATURE_LEVEL_10_1,
 		D3D_FEATURE_LEVEL_10_0,
@@ -272,17 +271,17 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 	blobPS->Release();
 
 	// Create vertex buffer
-	const VertexWire vertices[] =
+	VertexWire vertices[3] =
 	{
-		{XMFLOAT3(0.0f, 0.25f, 0)  , XMFLOAT4(0,1,0,1)},
-		{XMFLOAT3(0.25f, 0, 0) , XMFLOAT4(0,1,0,1)},
-		{XMFLOAT3(-0.25f, 0, 0), XMFLOAT4(0,1,0,1)}
+		{XMFLOAT3(0.0f, 0.5f, 0.0f), XMFLOAT4(1.0f,0,0,1.0f)},
+		{XMFLOAT3(0.45f, -0.5, 0.0f), XMFLOAT4(0.0f,1.0f,0,1.0f)},
+		{XMFLOAT3(-0.45f, -0.5f, 0.0f), XMFLOAT4(0.0f,0,1.0f,1.0f)}
 	};
 
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(VertexWire) * 3;
+	bd.ByteWidth = sizeof(vertices);
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bd.CPUAccessFlags = 0;
 	D3D11_SUBRESOURCE_DATA InitData;
@@ -308,12 +307,12 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testPerObjectConstBuffer));
 
 	// Initialize the world matrices
-	testPerObjectBuffer.worldMtx = DirectX::XMMatrixScaling(0.20, 0.20, 0.23) * DirectX::XMMatrixRotationZ(XM_PIDIV4) * DirectX::XMMatrixTranslation(-2.0, -1, 0);
+	testPerObjectBuffer.worldMtx = DirectX::XMMatrixScaling(1,1,1) /* DirectX::XMMatrixRotationY(XM_PIDIV4)*/ * DirectX::XMMatrixTranslation(-4.0, -1, 0);
 	testPerObjectBuffer.worldMtx = XMMatrixTranspose(testPerObjectBuffer.worldMtx);
 	m_renderData->m_pImmediateContext->UpdateSubresource(m_renderData->testPerObjectConstBuffer, 0, NULL, &testPerObjectBuffer, 0, 0);
 
 	// Initialize the view matrix
-	DirectX::XMVECTOR Eye = DirectX::XMVectorSet(0.0f, 0.0f, -20.0f, 0.0f);
+	DirectX::XMVECTOR Eye = DirectX::XMVectorSet(0.0f, 0.0f, -17.f, 0.0f);
 	DirectX::XMVECTOR At  = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	DirectX::XMVECTOR Up  = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	testViewProjBuffer.viewMtx = DirectX::XMMatrixTranspose(DirectX::XMMatrixLookAtLH(Eye, At, Up));
