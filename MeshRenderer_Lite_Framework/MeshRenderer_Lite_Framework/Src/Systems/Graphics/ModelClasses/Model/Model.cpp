@@ -1,18 +1,7 @@
-/******************************************************************************
-Copyright (C) 2015 DigiPen Institute of Technology.
-Reproduction or disclosure of this file or its contents without the prior
-written consent of DigiPen Institute of Technology is prohibited.
-/******************************************************************************/
+#include <Utilities/precompiled.h>
+#include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
 
-#include <Systems/Graphics/GraphicsUtilities/IRenderer.h>
-
-////TODO: Better way of detecting windows or not
-//#if defined(_WIN32)
-//#include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
-//#else
-////TODO: #include future 'OpenGL Renderer'
-//#endif
-#include <Systems/Graphics/ModelClasses/Model.h>
+#include <Systems/Graphics/ModelClasses/Model/Model.h>
 
 Model::Model() :m_vertexCount(0), m_indexCount(0), m_modelType(ModelType::MODEL_STATIC)
 {
@@ -29,14 +18,14 @@ Model::~Model()
 	m_ModelData.m_indices.clear();
 }
 
-void Model::GenerateBuffers(IRenderer* renderContext)
+void Model::GenerateBuffers(DX11Renderer* renderContext)
 {
 	m_vertexCount = m_ModelData.m_vertices.size();
 	m_indexCount = m_ModelData.m_indices.size();
 
 	for (unsigned i = 0; i < m_DataList.size(); ++i)
 	{
-		renderContext->CreateVertexBuffer(m_DataList[i].m_vertexBufferHandle, BufferUsage::USAGE_DEFAULT, sizeof(Vertex) * m_DataList[i].m_vertices.size(), m_DataList[i].m_vertices.data());
+		renderContext->CreateVertexBuffer(m_DataList[i].m_vertexBufferHandle, BufferUsage::USAGE_DEFAULT, sizeof(VertexTexture) * m_DataList[i].m_vertices.size(), m_DataList[i].m_vertices.data());
 		renderContext->CreateIndexBuffer(m_DataList[i].m_indexBufferHandle, BufferUsage::USAGE_DEFAULT, sizeof(unsigned int) * m_DataList[i].m_indices.size(), m_DataList[i].m_indices.data());
 	}
 }

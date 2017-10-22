@@ -22,6 +22,11 @@ public:
 	void CreateBox(float width, float height, float depth, ModelData& ModelData);
 
 	///<summary>
+	/// Creates a box centered at the origin with the given dimensions.
+	///</summary>
+	void CreateQuad(float width, float height, float zLevel, ModelData& ModelData);
+
+	///<summary>
 	/// Creates a sphere centered at the origin with the given radius.  The
 	/// slices and stacks parameters control the degree of tessellation.
 	///</summary>
@@ -61,10 +66,10 @@ public:
 private:
 	//std::vector<float2> FindConvexHull(const std::vector<float3>& vertexPositions);
 
-	void Subdivide(ModelData& ModelData);
-	void BuildCylinderTopCap(float bottomRadius, float topRadius, float height, unsigned sliceCount, unsigned stackCount, ModelData& ModelData, const Vector4& color);
-	void BuildCylinderBottomCap(float bottomRadius, float topRadius, float height, unsigned sliceCount, unsigned stackCount, ModelData& ModelData, const Vector4& color);
-	static void __fastcall TessellatePatch(ModelData& ModelData, TeapotPatch const& patch, size_t tessellation, DirectX::FXMVECTOR scale, bool isMirrored, Vector4 color);
+	//void Subdivide(ModelData& ModelData);
+	//void BuildCylinderTopCap(float bottomRadius, float topRadius, float height, unsigned sliceCount, unsigned stackCount, ModelData& ModelData, const Vector4& color);
+	//void BuildCylinderBottomCap(float bottomRadius, float topRadius, float height, unsigned sliceCount, unsigned stackCount, ModelData& ModelData, const Vector4& color);
+	//static void __fastcall TessellatePatch(ModelData& ModelData, TeapotPatch const& patch, size_t tessellation, DirectX::FXMVECTOR scale, bool isMirrored, Vector4 color);
 };
 
 // Static data array defines the bezier patches that make up the teapot.

@@ -7,6 +7,12 @@
 class GraphicsSystem;
 class Model;
 class ModelData;
+namespace DirectX {
+	struct XMFLOAT3;
+}
+
+using DirectX::XMFLOAT3;
+
 struct aiMesh;
 
 typedef std::unordered_map<std::string, std::unique_ptr<Model>> ModelUmap;
@@ -28,9 +34,12 @@ private:
 	void PopulateIndexModelData(ModelData& modelData, const aiMesh* assimpMesh);
 	void PopulateAnimationData(ModelData& modelData, const aiMesh* assimpMesh);
 
+	//Math helper functions
+	static void NormalizeFLOAT3(XMFLOAT3& v);
+
 	ModelUmap m_loadedModels;
 
-	static const string s_modelDir;
+	static const std::string s_modelDir;
 
 	friend GraphicsSystem;
 };

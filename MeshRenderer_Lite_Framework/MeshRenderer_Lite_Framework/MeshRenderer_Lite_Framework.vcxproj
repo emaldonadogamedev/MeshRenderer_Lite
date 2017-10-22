@@ -70,6 +70,9 @@
     <ClCompile Include="Src\Systems\Graphics\GraphicsSystem.cpp" />
     <ClCompile Include="Src\Systems\Graphics\GraphicsUtilities\InputData.cpp" />
     <ClCompile Include="Src\Systems\Graphics\GraphicsUtilities\ObjectHandle.cpp" />
+    <ClCompile Include="Src\Systems\Graphics\ModelClasses\ModelManager\ModelManager.cpp" />
+    <ClCompile Include="Src\Systems\Graphics\ModelClasses\Model\Model.cpp" />
+    <ClCompile Include="Src\Systems\Graphics\ModelClasses\PrimitiveGenerator\PrimitiveGenerator.cpp" />
     <ClCompile Include="Src\Systems\Input\InputSystem.cpp" />
     <ClCompile Include="Src\Systems\Input\Keyboard.cpp" />
     <ClCompile Include="Src\Systems\Input\Mouse.cpp" />
@@ -115,6 +118,9 @@
     <ClInclude Include="Src\Systems\Graphics\GraphicsUtilities\LightData.h" />
     <ClInclude Include="Src\Systems\Graphics\GraphicsUtilities\ObjectHandle.h" />
     <ClInclude Include="Src\Systems\Graphics\GraphicsUtilities\VertexTypes.h" />
+    <ClInclude Include="Src\Systems\Graphics\ModelClasses\ModelManager\ModelManager.h" />
+    <ClInclude Include="Src\Systems\Graphics\ModelClasses\Model\Model.h" />
+    <ClInclude Include="Src\Systems\Graphics\ModelClasses\PrimitiveGenerator\PrimitiveGenerator.h" />
     <ClInclude Include="Src\Systems\Input\InputSystem.h" />
     <ClInclude Include="Src\Systems\Input\Keyboard.h" />
     <ClInclude Include="Src\Systems\Input\Mouse.h" />

@@ -2,8 +2,9 @@
 #include <string>
 #include <vector>
 #include <Systems/Graphics/GraphicsUtilities/VertexTypes.h>
+#include <Systems/Graphics/GraphicsUtilities/ObjectHandle.h>
 
-class IRenderer;
+class DX11Renderer;
 struct aiScene;
 
 enum ModelType
@@ -31,7 +32,7 @@ public:
 	Model(const ModelData& data);
 	~Model(void);
 
-	void GenerateBuffers(IRenderer* renderContext);
+	void GenerateBuffers(DX11Renderer* renderContext);
 
 	const ObjectHandle& GetVertexBuffer(bool pointsOnly = false) const;
 	unsigned int GetVertexCount(void) const;

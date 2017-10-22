@@ -1,11 +1,11 @@
 #include <Utilities/precompiled.h>
-#include <Systems/Graphics/ModelClasses/ModelManager.h>
+#include <Systems/Graphics/ModelClasses/ModelManager/ModelManager.h>
 
 //#include <assimp/cimport.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
-#include <Systems/Graphics/ModelClasses/Model.h>
+#include <Systems/Graphics/ModelClasses/Model/Model.h>
 
 ModelManager::ModelManager()
 {
@@ -114,36 +114,49 @@ void ModelManager::PopulateVertexModelData(ModelData& modelData, const aiMesh* a
 
 	for (unsigned int vertexIndex = 0; vertexIndex < numberOfVertices; ++vertexIndex)
 	{
-		Vertex newVertex;
+		VertexTexture newVertex;
 		if (hasPositions)
 		{
-			newVertex.position.Set(positionsPtr->x, positionsPtr->y, positionsPtr->z);
+			newVertex.position.x = positionsPtr->x;
+			newVertex.position.y = positionsPtr->y;
+			newVertex.position.z = positionsPtr->z;
 			++positionsPtr;
 		}
 
 		if (hasNormals)
 		{
-			newVertex.normal.Set(normalsPtr->x, normalsPtr->y, normalsPtr->z);
+			newVertex.normal.x = normalsPtr->x;
+			newVertex.normal.y = normalsPtr->y;
+			newVertex.normal.z = normalsPtr->z;
 			++normalsPtr;
 		}
 
 		if (hasTangentsAndBitangents)
 		{
-			newVertex.tangent.Set(tangentsPtr->x, tangentsPtr->y, tangentsPtr->z);
-			newVertex.biTangent.Set(biTangentsPtr->x, biTangentsPtr->y, biTangentsPtr->z);
+			newVertex.tangent.x = tangentsPtr->x;
+			newVertex.tangent.y = tangentsPtr->y;
+			newVertex.tangent.z = tangentsPtr->z;
+
+			newVertex.biTangent.x = biTangentsPtr->x;
+			newVertex.biTangent.y = biTangentsPtr->y;
+			newVertex.biTangent.z = biTangentsPtr->z;
 			++tangentsPtr;
 			++biTangentsPtr;
 		}
 		
 		if (hasUVs)
 		{
-			newVertex.uv.Set(textureCoordsPtr->x, textureCoordsPtr->y);
+			newVertex.uv.x = textureCoordsPtr->x;
+			newVertex.uv.y = textureCoordsPtr->y;
 			++textureCoordsPtr;
 		}
 
 		if (hasColors)
 		{
-			newVertex.color.Set(colorsPtr->r, colorsPtr->g, colorsPtr->b, colorsPtr->a);
+			newVertex.color.x = colorsPtr->r;
+			newVertex.color.y = colorsPtr->g;
+			newVertex.color.z = colorsPtr->b;
+			newVertex.color.z = colorsPtr->a;
 		}
 
 		modelData.m_vertices.emplace_back(std::move(newVertex));
@@ -177,4 +190,20 @@ void ModelManager::PopulateAnimationData(ModelData& modelData, const aiMesh* ass
 	}
 }
 
-const string ModelManager::s_modelDir = "CS562_framework/Assets/Models/";
+void ModelManager::NormalizeFLOAT3(XMFLOAT3& v)
+{
+	const float l = std::sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
+
+	if (l != 0)
+	{
+		v.x /= l;
+		v.y /= l;
+		v.z /= l;
+
+		return;
+	}
+
+	v.x = v.y = v.z = 0.f;
+}
+
+const std::string ModelManager::s_modelDir = "CS562_framework/Assets/Models/";

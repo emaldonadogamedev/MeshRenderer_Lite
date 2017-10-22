@@ -78,7 +78,7 @@ void Camera::Update()
 
 void Camera::ResetAxis()
 {
-  m_LookAt = XMVectorSet(0.0f, 0.0f, 1.0f, 0);
-  m_Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0);
-  m_Right = XMVectorSet(1.0f, 0.0f, 0.0f, 0);
+	m_Right = XMVectorSet(1.0f, 0.0f, 0.0f, 0);
+	m_Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0);
+	m_LookAt = XMVectorSet(0.0f, 0.0f, 0.0f, 0);
 }

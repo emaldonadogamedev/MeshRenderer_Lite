@@ -1,5 +1,5 @@
 #include <Utilities/precompiled.h>
-#include <Systems/Graphics/ModelClasses/PrimitiveGenerator.h>
+#include <Systems/Graphics/ModelClasses/PrimitiveGenerator/PrimitiveGenerator.h>
 
 
 #define PI 3.1415926535897932384626433832795f
@@ -41,86 +41,44 @@ void PrimitiveGenerator::CreateBox(float width, float height, float depth, Model
 	// Create the vertices.
 	//
 
-	//Vertex v[24];
-
-	std::vector<Vertex> v;
+	std::vector<VertexTexture> v;
 	v.reserve(24);
 
 	const float w2 = 0.5f*width;
 	const float h2 = 0.5f*height;
 	const float d2 = 0.5f*depth;
 
-	//// Fill in the front face Vertex data.
-	//v[0] = Vertex(-w2, -h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f); //White
-	//v[1] = Vertex(-w2, +h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f); //Black
-	//v[2] = Vertex(+w2, +h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f); //Red
-	//v[3] = Vertex(+w2, -h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f); //Green
-
-	//// Fill in the back face Vertex data.
-	//v[4] = Vertex(-w2, -h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f); //Blue
-	//v[5] = Vertex(+w2, -h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f); //Magenta
-	//v[6] = Vertex(+w2, +h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f); //Cyan
-	//v[7] = Vertex(-w2, +h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f); //Yellow
-
-	//// Fill in the top face Vertex data.
-	//v[8] = Vertex(-w2, +h2, -d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f); //Black
-	//v[9] = Vertex(-w2, +h2, +d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f); //Yellow
-	//v[10] = Vertex(+w2, +h2, +d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f); //Cyan
-	//v[11] = Vertex(+w2, +h2, -d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f); //Red
-
-	//// Fill in the bottom face Vertex data.
-	//v[12] = Vertex(-w2, -h2, -d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f); //White
-	//v[13] = Vertex(+w2, -h2, -d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f); //Green
-	//v[14] = Vertex(+w2, -h2, +d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f); //Magenta
-	//v[15] = Vertex(-w2, -h2, +d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f); //Blue
-
-	//// Fill in the left face Vertex data.
-	//v[16] = Vertex(-w2, -h2, +d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f); //Blue
-	//v[17] = Vertex(-w2, +h2, +d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f); //Yellow
-	//v[18] = Vertex(-w2, +h2, -d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f); //Black
-	//v[19] = Vertex(-w2, -h2, -d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f); //White
-
-	//// Fill in the right face Vertex data.
-	//v[20] = Vertex(+w2, -h2, -d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f); //Green
-	//v[21] = Vertex(+w2, +h2, -d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f); //Red
-	//v[22] = Vertex(+w2, +h2, +d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f); //Cyan
-	//v[23] = Vertex(+w2, -h2, +d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f); //Magenta
-
 	// Fill in the front face Vertex data.
-	v.emplace_back(Vertex(-w2, -h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f)); //White
-	v.emplace_back(Vertex(-w2, +h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f)); //Black
-	v.emplace_back(Vertex(+w2, +h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f)); //Red
-	v.emplace_back(Vertex(+w2, -h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f)); //Green
+	v.emplace_back(VertexTexture(-w2, -h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f)); //White
+	v.emplace_back(VertexTexture(-w2, +h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f)); //Black
+	v.emplace_back(VertexTexture(+w2, +h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f)); //Red
+	v.emplace_back(VertexTexture(+w2, -h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f)); //Green
 
 																												 // Fill in the back face Vertex data.
-	//v.emplace_back(Vertex(-w2, -h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f)); //Blue
-	//v.emplace_back(Vertex(+w2, -h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f)); //Magenta
-	//v.emplace_back(Vertex(+w2, +h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f)); //Cyan
-	//v.emplace_back(Vertex(-w2, +h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f)); //Yellow
-
-	//																											 // Fill in the top face Vertex data.
-	//v.emplace_back(Vertex(-w2, +h2, -d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f)); //Black
-	//v.emplace_back(Vertex(-w2, +h2, +d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f)); //Yellow
-	//v.emplace_back(Vertex(+w2, +h2, +d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f)); //Cyan
-	//v.emplace_back(Vertex(+w2, +h2, -d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f)); //Red
-
-	//																											// Fill in the bottom face Vertex data.
-	//v.emplace_back(Vertex(-w2, -h2, -d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f)); //White
-	//v.emplace_back(Vertex(+w2, -h2, -d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f)); //Green
-	//v.emplace_back(Vertex(+w2, -h2, +d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f)); //Magenta
-	//v.emplace_back(Vertex(-w2, -h2, +d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f)); //Blue
-
-	//																											  // Fill in the left face Vertex data.
-	//v.emplace_back(Vertex(-w2, -h2, +d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f)); //Blue
-	//v.emplace_back(Vertex(-w2, +h2, +d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f)); //Yellow
-	//v.emplace_back(Vertex(-w2, +h2, -d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f)); //Black
-	//v.emplace_back(Vertex(-w2, -h2, -d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f)); //White
-
-	//																											  // Fill in the right face Vertex data.
-	//v.emplace_back(Vertex(+w2, -h2, -d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f)); //Green
-	//v.emplace_back(Vertex(+w2, +h2, -d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f)); //Red
-	//v.emplace_back(Vertex(+w2, +h2, +d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f)); //Cyan
-	//v.emplace_back(Vertex(+w2, -h2, +d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f)); //Magenta
+	v.emplace_back(VertexTexture(-w2, -h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f)); //Blue
+	v.emplace_back(VertexTexture(+w2, -h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f)); //Magenta
+	v.emplace_back(VertexTexture(+w2, +h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f)); //Cyan
+	v.emplace_back(VertexTexture(-w2, +h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f)); //Yellow
+																										 // Fill in the top face Vertex data.
+	v.emplace_back(VertexTexture(-w2, +h2, -d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f)); //Black
+	v.emplace_back(VertexTexture(-w2, +h2, +d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f)); //Yellow
+	v.emplace_back(VertexTexture(+w2, +h2, +d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f)); //Cyan
+	v.emplace_back(VertexTexture(+w2, +h2, -d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f)); //Red
+																											// Fill in the bottom face Vertex data.
+	v.emplace_back(VertexTexture(-w2, -h2, -d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f)); //White
+	v.emplace_back(VertexTexture(+w2, -h2, -d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f)); //Green
+	v.emplace_back(VertexTexture(+w2, -h2, +d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f)); //Magenta
+	v.emplace_back(VertexTexture(-w2, -h2, +d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f)); //Blue
+																												  // Fill in the left face Vertex data.
+	v.emplace_back(VertexTexture(-w2, -h2, +d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f)); //Blue
+	v.emplace_back(VertexTexture(-w2, +h2, +d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f)); //Yellow
+	v.emplace_back(VertexTexture(-w2, +h2, -d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f)); //Black
+	v.emplace_back(VertexTexture(-w2, -h2, -d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f)); //White
+																												  // Fill in the right face Vertex data.
+	v.emplace_back(VertexTexture(+w2, -h2, -d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f)); //Green
+	v.emplace_back(VertexTexture(+w2, +h2, -d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f)); //Red
+	v.emplace_back(VertexTexture(+w2, +h2, +d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f)); //Cyan
+	v.emplace_back(VertexTexture(+w2, -h2, +d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f)); //Magenta
 
 
 	ModelData.m_vertices.assign(v.begin(), v.end());
@@ -129,35 +87,63 @@ void PrimitiveGenerator::CreateBox(float width, float height, float depth, Model
 	// Create the indices.
 	//
 
+	unsigned i[36];
+
+	// Fill in the front face index data
+	i[0] = 0; i[1] = 1; i[2] = 2;
+	i[3] = 0; i[4] = 2; i[5] = 3;
+
+	// Fill in the back face index data
+	i[6] = 4; i[7] = 5; i[8] = 6;
+	i[9] = 4; i[10] = 6; i[11] = 7;
+
+	// Fill in the top face index data
+	i[12] = 8; i[13] = 9; i[14] = 10;
+	i[15] = 8; i[16] = 10; i[17] = 11;
+
+	// Fill in the bottom face index data
+	i[18] = 12; i[19] = 13; i[20] = 14;
+	i[21] = 12; i[22] = 14; i[23] = 15;
+
+	// Fill in the left face index data
+	i[24] = 16; i[25] = 17; i[26] = 18;
+	i[27] = 16; i[28] = 18; i[29] = 19;
+
+	// Fill in the right face index data
+	i[30] = 20; i[31] = 21; i[32] = 22;
+	i[33] = 20; i[34] = 22; i[35] = 23;
+
+	ModelData.m_indices.assign(&i[0], &i[sizeof(i)/sizeof(i[0])]);
+}
+
+void PrimitiveGenerator::CreateQuad(float width, float height, float zLevel, ModelData& ModelData)
+{
+	// Create the vertices.
+	std::vector<VertexTexture> v;
+	v.reserve(4);
+
+	const float w2 = 0.5f*width;
+	const float h2 = 0.5f*height;
+
+	// Fill in the front face Vertex data.
+	v.emplace_back(VertexTexture(-w2, -h2, zLevel, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f)); //White
+	v.emplace_back(VertexTexture(-w2, +h2, zLevel, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f)); //Black
+	v.emplace_back(VertexTexture(+w2, +h2, zLevel, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f)); //Red
+	v.emplace_back(VertexTexture(+w2, -h2, zLevel, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f)); //Green
+
+	ModelData.m_vertices.assign(v.begin(), v.end());
+
+	// Create the indices.
 	unsigned i[6];
 
 	// Fill in the front face index data
 	i[0] = 0; i[1] = 1; i[2] = 2;
 	i[3] = 0; i[4] = 2; i[5] = 3;
 
-	//// Fill in the back face index data
-	//i[6] = 4; i[7] = 5; i[8] = 6;
-	//i[9] = 4; i[10] = 6; i[11] = 7;
-
-	//// Fill in the top face index data
-	//i[12] = 8; i[13] = 9; i[14] = 10;
-	//i[15] = 8; i[16] = 10; i[17] = 11;
-
-	//// Fill in the bottom face index data
-	//i[18] = 12; i[19] = 13; i[20] = 14;
-	//i[21] = 12; i[22] = 14; i[23] = 15;
-
-	//// Fill in the left face index data
-	//i[24] = 16; i[25] = 17; i[26] = 18;
-	//i[27] = 16; i[28] = 18; i[29] = 19;
-
-	//// Fill in the right face index data
-	//i[30] = 20; i[31] = 21; i[32] = 22;
-	//i[33] = 20; i[34] = 22; i[35] = 23;
-
-	ModelData.m_indices.assign(&i[0], &i[sizeof(i)/sizeof(i[0])]);
+	ModelData.m_indices.assign(&i[0], &i[sizeof(i) / sizeof(i[0])]);
 }
 
+/*
 void PrimitiveGenerator::CreateSphere(float radius, unsigned sliceCount, unsigned stackCount, ModelData& ModelData)
 {
 	ModelData.m_vertices.clear();
@@ -170,17 +156,17 @@ void PrimitiveGenerator::CreateSphere(float radius, unsigned sliceCount, unsigne
 	// Poles: note that there will be texture coordinate distortion as there is
 	// not a unique point on the texture map to assign to the pole when mapping
 	// a rectangular texture onto a sphere.
-	Vertex topVertex(0.0f, +radius, 0.0f, 0.0f, +1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f);   //WHITE
-	Vertex bottomVertex(0.0f, -radius, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);//BLACK
+	VertexTexture topVertex(0.0f, +radius, 0.0f, 0.0f, +1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);   //WHITE
+	VertexTexture bottomVertex(0.0f, -radius, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);//BLACK
 
 	ModelData.m_vertices.push_back(topVertex);
 
 	float phiStep = DirectX::XM_PI / static_cast<float>(stackCount);
 	float thetaStep = 2.0f * DirectX::XM_PI / static_cast<float>(sliceCount);
 
-	Vector4 colorIncrement = (bottomVertex.color - topVertex.color) / static_cast<float>(sliceCount);
+	XMFLOAT4 colorIncrement = (bottomVertex.color - topVertex.color) / static_cast<float>(sliceCount);
 
-	Vector4 ringcolor = topVertex.color + colorIncrement;
+	XMFLOAT4 ringcolor = topVertex.color + colorIncrement;
 
 	// Compute vertices for each stack ring (do not count the poles as rings).
 	for (unsigned i = 1; i <= stackCount - 1; ++i)
@@ -194,7 +180,7 @@ void PrimitiveGenerator::CreateSphere(float radius, unsigned sliceCount, unsigne
 		{
 			float theta = j*thetaStep;
 
-			Vertex v;
+			VertexTexture v;
 
 			v.color = ringcolor;
 
@@ -208,7 +194,7 @@ void PrimitiveGenerator::CreateSphere(float radius, unsigned sliceCount, unsigne
 			v.tangent.y = 0.0f;
 			v.tangent.z = +radius*sinf(phi)*cosf(theta);
 
-			v.tangent.Normalize();
+			v.tangent.Normalize(); DirectX::XMVector3Normalize();
 
 			//DirectX::XMVECTOR T = XMLoadVector3(&v.tangent);
 			//DirectX::XMStoreVector3(&v.tangent, Vector3normalize(T));
@@ -281,6 +267,7 @@ void PrimitiveGenerator::CreateSphere(float radius, unsigned sliceCount, unsigne
 		ModelData.m_indices.emplace_back(baseIndex + i + 1);
 	}
 }
+
 
 void PrimitiveGenerator::Subdivide(ModelData& modelData)
 {
@@ -961,3 +948,5 @@ void PrimitiveGenerator::CreateTeapot(float size, size_t tessellation, ModelData
 	int i = ModelData.m_vertices.size();
 	int j = ModelData.m_indices.size();
 }
+
+*/
