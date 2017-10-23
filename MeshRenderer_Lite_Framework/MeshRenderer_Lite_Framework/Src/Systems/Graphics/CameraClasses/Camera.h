@@ -57,7 +57,10 @@ public:
   float m_Far;
   float m_FOV;
   float m_Speed;
+  float m_camYaw = 0.0f;
+  float m_camPitch = 0.0f;
 
+  XMMATRIX m_camRotationMatrix;
   XMMATRIX m_View;
   XMMATRIX m_Projection;
 };

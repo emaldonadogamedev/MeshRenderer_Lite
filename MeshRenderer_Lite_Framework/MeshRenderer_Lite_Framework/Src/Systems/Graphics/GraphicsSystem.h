@@ -25,8 +25,7 @@ protected:
 	void TestUpdateCamera(const float dt);
 
 	//Cameras
-	Camera* testCamera;
-	CameraManager* m_cameraManager;
+	std::unique_ptr<Camera> testCamera;
 
 	std::unique_ptr<DX11Renderer> m_dx11Renderer;
 	std::vector<IRenderStage*> m_renderStages;

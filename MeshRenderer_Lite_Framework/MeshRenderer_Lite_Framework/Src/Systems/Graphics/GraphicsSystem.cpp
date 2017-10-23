@@ -16,12 +16,11 @@ GraphicsSystem::GraphicsSystem(Engine* const eng) :
 	ISystem(eng),
 	m_dx11Renderer(std::make_unique<DX11Renderer>())
 {
-	testCamera = new Camera();
+	testCamera = std::make_unique<Camera>();
 }
 
 GraphicsSystem::~GraphicsSystem()
 {
-	SafeDelete(testCamera);
 }
 
 bool GraphicsSystem::Initialize()
