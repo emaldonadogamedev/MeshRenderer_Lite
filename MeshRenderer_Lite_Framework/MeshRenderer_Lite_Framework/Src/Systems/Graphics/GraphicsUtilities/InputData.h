@@ -13,6 +13,9 @@ public:
 	std::string semanticName;
 	DataFormat format;
 	bool instanceData;
+
+private:
+	InputData(void);
 };
 
 typedef std::vector<InputData> InputLayout;

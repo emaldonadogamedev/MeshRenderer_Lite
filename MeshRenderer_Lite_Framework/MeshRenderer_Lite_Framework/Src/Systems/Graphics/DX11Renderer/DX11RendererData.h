@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Systems/Graphics/GraphicsUtilities/D3DObject.h>
+
 struct DX11RendererData
 {
 	ID3D11Device* m_pDevice;
@@ -30,19 +32,16 @@ struct DX11RendererData
 	ID3D11InputLayout* m_pVSInputLayoutVertexTexture;
 
 	//Resource containers
-	std::vector<ID3D11Texture1D*> textures1D;
-	std::vector<ID3D11Texture2D*> textures2D;
-	std::vector<ID3D11Texture3D*> textures3D;
-	std::vector<ID3D11RenderTargetView*> renderTargets;
-	std::vector<std::pair<ID3D11VertexShader*, ID3D11InputLayout*>> vertexShaders;
-	std::vector<ID3D11PixelShader*> pixelShaders;
-	std::vector<ID3D11GeometryShader*> geometryShaders;
-	std::vector<ID3D11GeometryShader*> computeShaders;
-	std::vector<ID3D11HullShader*> hullShaders;
-	std::vector<ID3D11Buffer*> vertexBuffers;
-	std::vector<ID3D11Buffer*> indexBuffers;
-	std::vector<ID3D11Buffer*> constantBuffers;
-	std::vector<std::pair<ID3D11Texture2D*, ID3D11DepthStencilView*>> depthBuffers_AndViews;
+	std::vector<Texture1D> textures1D;
+	std::vector<Texture2D> textures2D;
+	std::vector<Texture3D> textures3D;
+	std::vector<VertexShader> vertexShaders;
+	std::vector<PixelShader> pixelShaders;
+	std::vector<GeometryShader> geometryShaders;
+	std::vector<ComputeShader> computeShaders;
+	std::vector<Buffer> vertexBuffers;
+	std::vector<Buffer> indexBuffers;
+	std::vector<Buffer> constantBuffers;
 
 	//Sampler states for textures
 	ID3D11SamplerState* m_pDiffSampleState, *m_pSpecSampleState, *m_pNormalSampleState;
@@ -55,4 +54,42 @@ struct DX11RendererData
 	ID3D11Buffer* testPerObjectConstBuffer;
 	ID3D11Buffer* testViewProjConstBuffer;
 
+private:
+	template<typename Container>
+	int NextAvailableIndex(const Container& container)
+	{
+		//Iterate through container
+		for (unsigned i = 0; i < container.size(); ++i)
+		{
+			//If the element is a free and already deleted handle,
+			//return it's index
+			if (container[i].deleted)
+				return i;
+		}
+
+		//No free spaces
+		return -1;
+	}
+
+	DXGI_FORMAT dxgiFormatArrHelper[(int)DataFormat::COUNT] =
+	{
+		DXGI_FORMAT_R8_UNORM,
+		DXGI_FORMAT_R8G8_UNORM,
+		DXGI_FORMAT_R8G8B8A8_UNORM,
+		DXGI_FORMAT_B8G8R8A8_UNORM,
+		DXGI_FORMAT_R32G32B32A32_FLOAT,
+		DXGI_FORMAT_R32G32B32_FLOAT,
+		DXGI_FORMAT_R32G32_FLOAT,
+		DXGI_FORMAT_R32_FLOAT,
+		DXGI_FORMAT_R32_UINT,
+		DXGI_FORMAT_R32G32_UINT,
+		DXGI_FORMAT_R32G32B32_UINT,
+		DXGI_FORMAT_R32G32B32A32_UINT,
+		DXGI_FORMAT_R32_SINT,
+		DXGI_FORMAT_R32G32_SINT,
+		DXGI_FORMAT_R32G32B32_SINT,
+		DXGI_FORMAT_R32G32B32A32_SINT
+	};
+
+	friend DX11Renderer;
 };

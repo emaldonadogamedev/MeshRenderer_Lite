@@ -2,7 +2,7 @@
 #include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
 
 #include <Systems/Graphics/DX11Renderer/DX11RendererData.h>
-
+#include <Systems/Graphics/GraphicsUtilities/ObjectHandle.h>
 #include <Systems/Graphics/GraphicsUtilities/VertexTypes.h>
 
 DX11Renderer::DX11Renderer() : m_renderData(std::make_unique<DX11RendererData>())
@@ -54,26 +54,427 @@ void DX11Renderer::SwapBuffers(void)
 	HR(m_renderData->m_pSwapChain->Present(0, 0));
 }
 
-void DX11Renderer::Draw(unsigned vertexCount, unsigned startVertexLocation /*= 0*/)
+void DX11Renderer::Draw(unsigned vertexCount, unsigned startVertexLocation)
 {
 	m_renderData->m_pImmediateContext->Draw(vertexCount, startVertexLocation);
 }
 
-void DX11Renderer::DrawIndexed(unsigned indexCount, unsigned startIndexLocation /*= 0*/, unsigned baseVertexLocation /*= 0*/)
+void DX11Renderer::DrawIndexed(unsigned indexCount, unsigned startIndexLocation, unsigned baseVertexLocation)
 {
 	m_renderData->m_pImmediateContext->DrawIndexed(indexCount, startIndexLocation, baseVertexLocation);
 }
 
-void DX11Renderer::DrawInstanced(unsigned vertexCount, unsigned instanceCount, unsigned startVertexLocation /*= 0*/, unsigned startInstanceLocation /*= 0*/)
+void DX11Renderer::DrawInstanced(unsigned vertexCount, unsigned instanceCount, unsigned startVertexLocation, unsigned startInstanceLocation)
 {
 	m_renderData->m_pImmediateContext->DrawInstanced(vertexCount, instanceCount, startVertexLocation, startInstanceLocation);
 }
 
-void DX11Renderer::DrawIndexedInstanced(unsigned indexCountPerInstance, unsigned instanceCount, unsigned startIndexLocation /*= 0*/, unsigned baseVertexLocation /*= 0*/, unsigned startInstanceLocation /*= 0*/)
+void DX11Renderer::DrawIndexedInstanced(unsigned indexCountPerInstance, unsigned instanceCount, unsigned startIndexLocation, unsigned baseVertexLocation, unsigned startInstanceLocation)
 {
 	m_renderData->m_pImmediateContext->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
 }
 
+void DX11Renderer::CreateVertexBuffer(ObjectHandle& vertexBuffer, const BufferUsage bufferUsage, unsigned size, const void* initialData /*= nullptr*/)
+{
+	//Create zeroed out buffer description
+	D3D11_BUFFER_DESC desc;
+	ZeroMemory(&desc, sizeof(D3D11_BUFFER_DESC));
+
+	//Establish description usage
+	switch (bufferUsage)
+	{
+	case BufferUsage::USAGE_DEFAULT:
+		desc.Usage = D3D11_USAGE_DEFAULT;
+		break;
+	case BufferUsage::USAGE_IMMUTABLE:
+		desc.Usage = D3D11_USAGE_IMMUTABLE;
+		break;
+	case BufferUsage::USAGE_DYNAMIC:
+		desc.Usage = D3D11_USAGE_DYNAMIC;
+		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		break;
+	case BufferUsage::USAGE_STAGING:
+		desc.Usage = D3D11_USAGE_STAGING;
+		desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+		break;
+	default:
+		break;
+	}
+
+	//Specify buffer description info
+	desc.ByteWidth = size;
+	desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+	//Create zeroed out subresource data
+	D3D11_SUBRESOURCE_DATA srd;
+	ZeroMemory(&srd, sizeof(D3D11_SUBRESOURCE_DATA));
+
+	srd.pSysMem = initialData;
+
+	ID3D11Buffer* vBuffer;
+	//Create buffer, if no initial data, it creates an empty buffer.
+	HR(m_renderData->m_pDevice->CreateBuffer(&desc, (initialData) ? &srd : nullptr, &vBuffer));
+
+	//If handle already exists, release preexisting buffer and update data.
+	if (vertexBuffer)
+	{
+		Buffer& vBufferObj = m_renderData->vertexBuffers[*vertexBuffer];
+
+		if (vBufferObj.buffer)
+			vBufferObj.buffer->Release();
+
+		vBufferObj.size = size;
+		vBufferObj.buffer = vBuffer;
+		vBufferObj.usage = bufferUsage;
+	}
+
+	//Handle needs to be created
+	else
+	{
+		Buffer vBufferObj;
+		vBufferObj.size = size;
+		vBufferObj.buffer = vBuffer;
+		vBufferObj.usage = bufferUsage;
+
+		int index = m_renderData->NextAvailableIndex(m_renderData->vertexBuffers);
+
+		//If no available space in container, push it back
+		if (index == -1)
+		{
+			m_renderData->vertexBuffers.push_back(vBufferObj);
+			vertexBuffer = CreateHandle(ObjectType::VERTEX_BUFFER, m_renderData->vertexBuffers.size() - 1);
+		}
+
+		else
+		{
+			//Use the available free space in the container
+			m_renderData->vertexBuffers[index] = vBufferObj;
+			vertexBuffer = CreateHandle(ObjectType::VERTEX_BUFFER, index);
+		}
+	}
+}
+
+void DX11Renderer::CreateIndexBuffer(ObjectHandle& indexBuffer, const BufferUsage bufferUsage, unsigned size, const void* initialData /*= nullptr*/)
+{
+	//Create zeroed out buffer description
+	D3D11_BUFFER_DESC desc;
+	ZeroMemory(&desc, sizeof(D3D11_BUFFER_DESC));
+
+	//Specify correct buffer usage
+	switch (bufferUsage)
+	{
+	case BufferUsage::USAGE_DEFAULT:
+		desc.Usage = D3D11_USAGE_DEFAULT;
+		break;
+
+	case BufferUsage::USAGE_IMMUTABLE:
+		desc.Usage = D3D11_USAGE_IMMUTABLE;
+		break;
+
+	case BufferUsage::USAGE_DYNAMIC:
+		desc.Usage = D3D11_USAGE_DYNAMIC;
+		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		break;
+
+	case BufferUsage::USAGE_STAGING:
+		desc.Usage = D3D11_USAGE_STAGING;
+		desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+		break;
+
+	default: break;
+	}
+
+	//Specify buffer description data
+	desc.ByteWidth = size;
+	desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+
+	//Zeroed out subresource data
+	D3D11_SUBRESOURCE_DATA srd;
+	ZeroMemory(&srd, sizeof(D3D11_SUBRESOURCE_DATA));
+	srd.pSysMem = initialData;
+
+	ID3D11Buffer* iBuffer;
+
+	HR(m_renderData->m_pDevice->CreateBuffer(&desc, (initialData) ? &srd : nullptr, &iBuffer));
+
+	if (indexBuffer)
+	{
+		Buffer& indexBufferObj = m_renderData->indexBuffers[*indexBuffer];
+
+		//Release memory if it is being used
+		if (indexBufferObj.buffer)
+			indexBufferObj.buffer->Release();
+
+		//Update data
+		indexBufferObj.buffer = iBuffer;
+		indexBufferObj.usage = bufferUsage;
+		indexBufferObj.size = size;
+	}
+
+	else
+	{
+		Buffer indexBufferObj;
+
+		//Assign data
+		indexBufferObj.buffer = iBuffer;
+		indexBufferObj.usage = bufferUsage;
+		indexBufferObj.size = size;
+
+		int index = m_renderData->NextAvailableIndex(m_renderData->indexBuffers);
+
+		//No free space in container, append object and create handle
+		if (index == -1)
+		{
+			m_renderData->indexBuffers.push_back(indexBufferObj);
+			indexBuffer = CreateHandle(ObjectType::INDEX_BUFFER, m_renderData->indexBuffers.size() - 1);
+		}
+
+		else
+		{
+			//Use free space in the container and create handle
+			m_renderData->indexBuffers[index] = indexBufferObj;
+			indexBuffer = CreateHandle(ObjectType::INDEX_BUFFER, index);
+		}
+	}
+}
+
+void DX11Renderer::CreateConstantBuffer(ObjectHandle& constantBuffer, unsigned size)
+{
+	//Create zeroed out buffer description
+	D3D11_BUFFER_DESC desc;
+	ZeroMemory(&desc, sizeof(D3D11_BUFFER_DESC));
+
+	//Setup description
+	desc.Usage = D3D11_USAGE_DYNAMIC;
+	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+
+	//Need to ensure that memory is aligned to 16 bytes.
+	desc.ByteWidth = size;
+
+	//Create Buffer
+	ID3D11Buffer* buffer;
+
+	HR(m_renderData->m_pDevice->CreateBuffer(&desc, nullptr, &buffer));
+
+	if (constantBuffer)
+	{
+		Buffer& constBufferObj = m_renderData->constantBuffers[*constantBuffer];
+
+		//Free buffer if it has data
+		if (constBufferObj.buffer)
+			constBufferObj.buffer->Release();
+
+		//Update data
+		constBufferObj.buffer = buffer;
+		constBufferObj.usage = BufferUsage::USAGE_DYNAMIC;
+		constBufferObj.size = size;
+	}
+
+	else
+	{
+		Buffer constBufferObj;
+
+		//Update data
+		constBufferObj.buffer = buffer;
+		constBufferObj.usage = BufferUsage::USAGE_DYNAMIC;
+		constBufferObj.size = size;
+
+		int index = m_renderData->NextAvailableIndex(m_renderData->constantBuffers);
+
+		if (index == -1)
+		{
+			//No free space exists in container, push back
+			m_renderData->constantBuffers.push_back(constBufferObj);
+			constantBuffer = CreateHandle(ObjectType::CONSTANT_BUFFER, m_renderData->constantBuffers.size() - 1);
+		}
+
+		else
+		{
+			//Use available space in container
+			m_renderData->constantBuffers[index] = constBufferObj;
+			constantBuffer = CreateHandle(ObjectType::CONSTANT_BUFFER, index);
+		}
+	}
+}
+
+void DX11Renderer::BindNullVertexBuffer()
+{
+	//Bind NULL buffer - this is used for the particles
+	m_renderData->m_pImmediateContext->IASetVertexBuffers(0, 0, nullptr, nullptr, nullptr);
+}
+
+void DX11Renderer::BindVertexBuffer(const ObjectHandle& vertexBuffer, unsigned stride)
+{
+	//Make sure we are binding the right type of buffer
+	if (!vertexBuffer || vertexBuffer.GetType() != ObjectType::VERTEX_BUFFER)
+	{
+		return;
+	}
+
+	const unsigned offset = 0;
+
+	//Get buffer from container
+	ID3D11Buffer* buffer = m_renderData->vertexBuffers[*vertexBuffer].buffer;
+
+	//Bind buffer
+	m_renderData->m_pImmediateContext->IASetVertexBuffers(0, 1, &buffer, &stride, &offset);
+}
+
+void DX11Renderer::BindIndexBuffer(const ObjectHandle& indexBuffer)
+{
+	//Make sure we are binding the right type of buffer
+	if (!indexBuffer || indexBuffer.GetType() != ObjectType::INDEX_BUFFER)
+	{
+		return;
+	}
+
+	//Get buffer from container
+	ID3D11Buffer* buffer = m_renderData->indexBuffers[*indexBuffer].buffer;
+
+	//Bind buffer
+	m_renderData->m_pImmediateContext->IASetIndexBuffer(buffer, DXGI_FORMAT_R32_UINT, 0);
+}
+
+void DX11Renderer::BindConstantBuffer(unsigned slot, const ObjectHandle& constantBuffer, const ObjectType& shaderType)
+{
+	if (!constantBuffer || constantBuffer.GetType() != ObjectType::CONSTANT_BUFFER)
+	{
+		return;
+	}
+
+	ID3D11Buffer* buffer = m_renderData->constantBuffers[*constantBuffer].buffer;
+
+	//Verify which type of shader we are binding the buffer to
+	//Then bind buffer to that shader type
+	if (shaderType == ObjectType::VERTEX_SHADER)
+	{
+		m_renderData->m_pImmediateContext->VSSetConstantBuffers(slot, 1, &buffer);
+	}
+
+	else if (shaderType == ObjectType::PIXEL_SHADER)
+	{
+		m_renderData->m_pImmediateContext->PSSetConstantBuffers(slot, 1, &buffer);
+	}
+
+	else if (shaderType == ObjectType::GEOMETRY_SHADER)
+	{
+		m_renderData->m_pImmediateContext->GSSetConstantBuffers(slot, 1, &buffer);
+	}
+
+	else if (shaderType == ObjectType::COMPUTE_SHADER)
+	{
+		m_renderData->m_pImmediateContext->CSSetConstantBuffers(slot, 1, &buffer);
+	}
+	else //if shaderType is Hull Shader
+	{
+		m_renderData->m_pImmediateContext->HSSetConstantBuffers(slot, 1, &buffer);
+	}
+}
+
+void DX11Renderer::CreateVertexShader(ObjectHandle& vertexShader, const std::string& fileName, const InputLayout& inputLayout,
+	bool precompiled, const std::string& entryPoint)
+{
+	const std::string target = "vs_5_0";
+	ID3DBlob* blob;
+	int HResult = 0;
+	CompileShaderHelper(HResult, &blob, fileName, target, entryPoint);
+
+	if (SUCCEEDED(HResult))
+	{
+		ID3D11VertexShader* vertexShaderPtr = nullptr;
+
+		HR(m_renderData->m_pDevice->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &vertexShaderPtr));
+
+		//Handle input layout info
+		std::vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutDesc;
+		//int lastInputSlot = 0;
+		int lastSemanticIndex = 0;
+		std::string lastSemanticName = "";
+
+		for (unsigned i = 0; i < inputLayout.size(); ++i)
+		{
+			const InputData& element = inputLayout[i];
+
+			D3D11_INPUT_ELEMENT_DESC elementDesc;
+			ZeroMemory(&elementDesc, sizeof(D3D11_INPUT_ELEMENT_DESC));
+
+			//Element name
+			elementDesc.SemanticName = element.semanticName.c_str();
+
+			//Calculate byte offset per element in order to remain aligned
+			elementDesc.AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+
+			elementDesc.Format = m_renderData->dxgiFormatArrHelper[(int)element.format];
+
+			//Handle if the element is instanced
+			if (element.instanceData)
+			{
+				elementDesc.InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA;
+				elementDesc.InstanceDataStepRate = 1;
+				elementDesc.InputSlot = 1;
+
+				if (element.semanticName == lastSemanticName)
+				{
+					elementDesc.SemanticIndex = ++lastSemanticIndex;
+				}
+				else
+					elementDesc.SemanticIndex = lastSemanticIndex = 0;
+			}
+			//If not instanced, default values of 0 will be correct 
+
+			lastSemanticName = element.semanticName;
+			inputLayoutDesc.push_back(elementDesc);
+		} //end for...
+
+		  //Create input layout with the input element descriptions
+		ID3D11InputLayout* dxInputLayout;
+
+		HR(m_renderData->m_pDevice->CreateInputLayout(&inputLayoutDesc[0], inputLayoutDesc.size(),
+			blob->GetBufferPointer(), blob->GetBufferSize(), &dxInputLayout));
+
+		if (vertexShader)
+		{
+			//Handle already exists, update data
+			VertexShader& vertexShaderObj = m_renderData->vertexShaders[*vertexShader];
+
+			//Safely release current data
+			if (vertexShaderObj.layout)
+				vertexShaderObj.layout->Release();
+			if (vertexShaderObj.vertexShader)
+				vertexShaderObj.vertexShader->Release();
+
+			//Assign new data
+			vertexShaderObj.layout = dxInputLayout;
+			vertexShaderObj.shaderBlob = blob;
+			vertexShaderObj.vertexShader = vertexShaderPtr;
+		}
+		else
+		{
+			VertexShader vertexShaderObj;
+
+			vertexShaderObj.layout = dxInputLayout;
+			vertexShaderObj.shaderBlob = blob;
+			vertexShaderObj.vertexShader = vertexShaderPtr;
+
+			//find where in the container the handle can go
+			int index = m_renderData->NextAvailableIndex(m_renderData->vertexShaders);
+
+			if (index == -1)
+			{
+				//No free space in container, push back
+				m_renderData->vertexShaders.push_back(vertexShaderObj);
+				vertexShader = CreateHandle(ObjectType::VERTEX_SHADER, m_renderData->vertexShaders.size() - 1);
+			}
+			else
+			{
+				//Use the free space for the new handle
+				m_renderData->vertexShaders[index] = vertexShaderObj;
+				vertexShader = CreateHandle(ObjectType::VERTEX_SHADER, index);
+			}
+		}
+	} //end if(succeeded.....
+}
 
 bool DX11Renderer::InitializeD3D(const int width, const int height, HWND hwnd)
 {
@@ -333,6 +734,15 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 bool DX11Renderer::InitializeTextureSamplers()
 {
 	return true;
+}
+
+ObjectHandle DX11Renderer::CreateHandle(const ObjectType type, const int handle)
+{
+	ObjectHandle newHandle;
+	newHandle.SetType(type);
+	newHandle.SetHandleID(handle);
+
+	return newHandle;
 }
 
 void DX11Renderer::CompileShaderHelper(int& HResult, ID3D10Blob** blobPtrOut, const std::string& fileName,

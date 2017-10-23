@@ -26,7 +26,6 @@ enum class DataFormat : char
 {
 	R_UNORM = 0,
 	RG_UNORM,
-	//RGB_UNORM,
 	RGBA_UNORM,
 	BGRA_UNORM,
 	FLOAT4,

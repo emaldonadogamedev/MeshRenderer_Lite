@@ -6,3 +6,7 @@ InputData::InputData(const std::string& semanticName_, const DataFormat& format_
 	: semanticName(semanticName_), format(format_), instanceData(instanceData_)
 {
 }
+
+InputData::InputData(void)
+{
+}

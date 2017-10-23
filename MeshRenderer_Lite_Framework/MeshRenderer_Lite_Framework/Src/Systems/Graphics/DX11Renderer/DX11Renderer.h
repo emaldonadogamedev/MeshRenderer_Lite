@@ -1,14 +1,14 @@
 #pragma once
 
-#include<memory>
-#include<Systems/Graphics/GraphicsUtilities/ObjectHandle.h>
-
 //TODO: REMOVE AFTER TESTING
 #include <DirectXMath.h>
+#include<memory>
+#include<Systems/Graphics/GraphicsUtilities/ObjectHandle.h>
+#include <Systems/Graphics/GraphicsUtilities/InputData.h>
+
 using DirectX::XMMATRIX;
 
 class GraphicsSystem;
-class InputLayout;
 class DX11RendererData;
 enum class ObjectType : char;
 
@@ -81,6 +81,8 @@ protected:
 	std::unique_ptr<DX11RendererData> m_renderData;
 
 	bool m_isInitialized = false;
+
+	ObjectHandle CreateHandle(const ObjectType type, const int handle);
 
 	friend GraphicsSystem;
 
