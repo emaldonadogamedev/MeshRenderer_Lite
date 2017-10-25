@@ -16,7 +16,7 @@ enum ModelType
 
 struct ModelData
 {
-	std::vector<VertexTexture> m_vertices;
+	std::vector<VertexAnimation> m_vertices;
 	ObjectHandle m_vertexBufferHandle;
 
 	std::vector<unsigned int> m_indices;

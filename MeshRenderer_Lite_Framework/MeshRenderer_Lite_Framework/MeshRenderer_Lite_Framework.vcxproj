@@ -63,6 +63,8 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Src\Systems\Core\GameObject\GameObject.cpp" />
+    <ClCompile Include="Src\Systems\Core\Components\Transform\Transform.cpp" />
     <ClCompile Include="Src\Systems\Graphics\CameraClasses\CamaeraManager.cpp" />
     <ClCompile Include="Src\Systems\Graphics\CameraClasses\Camera.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11Renderer\DX11Renderer.cpp" />
@@ -101,6 +103,9 @@
     <ClInclude Include="Includes\ImGui\imgui_internal.h" />
     <ClInclude Include="Src\Engine\Engine.h" />
     <ClInclude Include="Src\Engine\GameClock.h" />
+    <ClInclude Include="Src\Systems\Core\GameObject\GameObject.h" />
+    <ClInclude Include="Src\Systems\Core\Components\IComponent.h" />
+    <ClInclude Include="Src\Systems\Core\Components\Transform\Transform.h" />
     <ClInclude Include="Src\Systems\Core\ISystem.h" />
     <ClInclude Include="Src\Systems\Graphics\BufferClasses\ConstantBuffers.h" />
     <ClInclude Include="Src\Systems\Graphics\CameraClasses\Camera.h" />

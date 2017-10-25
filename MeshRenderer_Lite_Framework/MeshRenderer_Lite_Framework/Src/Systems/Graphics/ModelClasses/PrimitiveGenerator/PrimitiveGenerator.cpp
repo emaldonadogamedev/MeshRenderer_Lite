@@ -41,7 +41,7 @@ void PrimitiveGenerator::CreateBox(float width, float height, float depth, Model
 	// Create the vertices.
 	//
 
-	std::vector<VertexTexture> v;
+	std::vector<VertexAnimation> v;
 	v.reserve(24);
 
 	const float w2 = 0.5f*width;
@@ -49,36 +49,36 @@ void PrimitiveGenerator::CreateBox(float width, float height, float depth, Model
 	const float d2 = 0.5f*depth;
 
 	// Fill in the front face Vertex data.
-	v.emplace_back(VertexTexture(-w2, -h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f)); //White
-	v.emplace_back(VertexTexture(-w2, +h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f)); //Black
-	v.emplace_back(VertexTexture(+w2, +h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f)); //Red
-	v.emplace_back(VertexTexture(+w2, -h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f)); //Green
+	v.emplace_back(VertexAnimation(-w2, -h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f)); //White
+	v.emplace_back(VertexAnimation(-w2, +h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f)); //Black
+	v.emplace_back(VertexAnimation(+w2, +h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f)); //Red
+	v.emplace_back(VertexAnimation(+w2, -h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f)); //Green
 
 																												 // Fill in the back face Vertex data.
-	v.emplace_back(VertexTexture(-w2, -h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f)); //Blue
-	v.emplace_back(VertexTexture(+w2, -h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f)); //Magenta
-	v.emplace_back(VertexTexture(+w2, +h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f)); //Cyan
-	v.emplace_back(VertexTexture(-w2, +h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f)); //Yellow
+	v.emplace_back(VertexAnimation(-w2, -h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f)); //Blue
+	v.emplace_back(VertexAnimation(+w2, -h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f)); //Magenta
+	v.emplace_back(VertexAnimation(+w2, +h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f)); //Cyan
+	v.emplace_back(VertexAnimation(-w2, +h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f)); //Yellow
 																										 // Fill in the top face Vertex data.
-	v.emplace_back(VertexTexture(-w2, +h2, -d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f)); //Black
-	v.emplace_back(VertexTexture(-w2, +h2, +d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f)); //Yellow
-	v.emplace_back(VertexTexture(+w2, +h2, +d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f)); //Cyan
-	v.emplace_back(VertexTexture(+w2, +h2, -d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f)); //Red
+	v.emplace_back(VertexAnimation(-w2, +h2, -d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f)); //Black
+	v.emplace_back(VertexAnimation(-w2, +h2, +d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f)); //Yellow
+	v.emplace_back(VertexAnimation(+w2, +h2, +d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f)); //Cyan
+	v.emplace_back(VertexAnimation(+w2, +h2, -d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f)); //Red
 																											// Fill in the bottom face Vertex data.
-	v.emplace_back(VertexTexture(-w2, -h2, -d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f)); //White
-	v.emplace_back(VertexTexture(+w2, -h2, -d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f)); //Green
-	v.emplace_back(VertexTexture(+w2, -h2, +d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f)); //Magenta
-	v.emplace_back(VertexTexture(-w2, -h2, +d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f)); //Blue
+	v.emplace_back(VertexAnimation(-w2, -h2, -d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f)); //White
+	v.emplace_back(VertexAnimation(+w2, -h2, -d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f)); //Green
+	v.emplace_back(VertexAnimation(+w2, -h2, +d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f)); //Magenta
+	v.emplace_back(VertexAnimation(-w2, -h2, +d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f)); //Blue
 																												  // Fill in the left face Vertex data.
-	v.emplace_back(VertexTexture(-w2, -h2, +d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f)); //Blue
-	v.emplace_back(VertexTexture(-w2, +h2, +d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f)); //Yellow
-	v.emplace_back(VertexTexture(-w2, +h2, -d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f)); //Black
-	v.emplace_back(VertexTexture(-w2, -h2, -d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f)); //White
+	v.emplace_back(VertexAnimation(-w2, -h2, +d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f)); //Blue
+	v.emplace_back(VertexAnimation(-w2, +h2, +d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f)); //Yellow
+	v.emplace_back(VertexAnimation(-w2, +h2, -d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f)); //Black
+	v.emplace_back(VertexAnimation(-w2, -h2, -d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f)); //White
 																												  // Fill in the right face Vertex data.
-	v.emplace_back(VertexTexture(+w2, -h2, -d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f)); //Green
-	v.emplace_back(VertexTexture(+w2, +h2, -d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f)); //Red
-	v.emplace_back(VertexTexture(+w2, +h2, +d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f)); //Cyan
-	v.emplace_back(VertexTexture(+w2, -h2, +d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f)); //Magenta
+	v.emplace_back(VertexAnimation(+w2, -h2, -d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f)); //Green
+	v.emplace_back(VertexAnimation(+w2, +h2, -d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f)); //Red
+	v.emplace_back(VertexAnimation(+w2, +h2, +d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f)); //Cyan
+	v.emplace_back(VertexAnimation(+w2, -h2, +d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f)); //Magenta
 
 
 	ModelData.m_vertices.assign(v.begin(), v.end());
@@ -119,17 +119,17 @@ void PrimitiveGenerator::CreateBox(float width, float height, float depth, Model
 void PrimitiveGenerator::CreateQuad(float width, float height, float zLevel, ModelData& ModelData)
 {
 	// Create the vertices.
-	std::vector<VertexTexture> v;
+	std::vector<VertexAnimation> v;
 	v.reserve(4);
 
 	const float w2 = 0.5f*width;
 	const float h2 = 0.5f*height;
 
 	// Fill in the front face Vertex data.
-	v.emplace_back(VertexTexture(-w2, -h2, zLevel, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f)); //White
-	v.emplace_back(VertexTexture(-w2, +h2, zLevel, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f)); //Black
-	v.emplace_back(VertexTexture(+w2, +h2, zLevel, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f)); //Red
-	v.emplace_back(VertexTexture(+w2, -h2, zLevel, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f)); //Green
+	v.emplace_back(VertexAnimation(-w2, -h2, zLevel, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f)); //White
+	v.emplace_back(VertexAnimation(-w2, +h2, zLevel, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f)); //Black
+	v.emplace_back(VertexAnimation(+w2, +h2, zLevel, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f)); //Red
+	v.emplace_back(VertexAnimation(+w2, -h2, zLevel, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f)); //Green
 
 	ModelData.m_vertices.assign(v.begin(), v.end());
 

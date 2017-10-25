@@ -2,17 +2,18 @@
 
 #include <Systems/Graphics/GraphicsUtilities/D3DObject.h>
 
-struct DX11RendererData
+class DX11RendererData
 {
-	ID3D11Device* m_pDevice;
-	ID3D11DeviceContext* m_pImmediateContext;
-	IDXGISwapChain* m_pSwapChain;
+public:
+	ID3D11Device* m_pDevice = nullptr;
+	ID3D11DeviceContext* m_pImmediateContext = nullptr;
+	IDXGISwapChain* m_pSwapChain = nullptr;
 
-	ID3D11Texture2D* m_DepthStencilBuffer;
-	ID3D11DepthStencilView* m_DepthStencilView;
+	ID3D11Texture2D* m_DepthStencilBuffer = nullptr;
+	ID3D11DepthStencilView* m_DepthStencilView = nullptr;
 
 	//Pointer to the main render target stored on the GPU
-	ID3D11RenderTargetView* m_pMainRenderTargetView;
+	ID3D11RenderTargetView* m_pMainRenderTargetView = nullptr;
 	float m_clearColor[4] = { 0,0,0,0 };
 
 	D3D_DRIVER_TYPE m_DriverType;
@@ -21,15 +22,16 @@ struct DX11RendererData
 	D3D11_VIEWPORT m_mainViewport;
 
 	//rasterizer states
-	ID3D11RasterizerState* m_d3dRasterStateDefault;
-	ID3D11RasterizerState* m_d3dRasterStateSolCullBack;
-	ID3D11RasterizerState* m_d3dRasterStateSolCullFront;
-	ID3D11RasterizerState* m_d3dRasterStateWireframe;
-	ID3D11RasterizerState* m_d3dRasterStateImgui;
+	ID3D11RasterizerState* m_d3dRasterStateDefault = nullptr;
+	ID3D11RasterizerState* m_d3dRasterStateSolCullBack = nullptr;
+	ID3D11RasterizerState* m_d3dRasterStateSolCullFront = nullptr;
+	ID3D11RasterizerState* m_d3dRasterStateWireframe = nullptr;
+	ID3D11RasterizerState* m_d3dRasterStateImgui = nullptr;
 	
-	ID3D11InputLayout* m_pVSInputLayoutVertexWire;
-	ID3D11InputLayout* m_pVSInputLayoutVertexNormal;
-	ID3D11InputLayout* m_pVSInputLayoutVertexTexture;
+	ID3D11InputLayout* m_pVSInputLayoutVertexWire = nullptr;
+	ID3D11InputLayout* m_pVSInputLayoutVertexNormal = nullptr;
+	ID3D11InputLayout* m_pVSInputLayoutVertexTexture = nullptr;
+	ID3D11InputLayout* m_pVSInputLayoutVertexAnimation = nullptr;
 
 	//Resource containers
 	std::vector<Texture1D> textures1D;
@@ -44,15 +46,17 @@ struct DX11RendererData
 	std::vector<Buffer> constantBuffers;
 
 	//Sampler states for textures
-	ID3D11SamplerState* m_pDiffSampleState, *m_pSpecSampleState, *m_pNormalSampleState;
+	ID3D11SamplerState* m_pDiffSampleState = nullptr;
+	ID3D11SamplerState* m_pSpecSampleState = nullptr;
+	ID3D11SamplerState* m_pNormalSampleState = nullptr;
 
 	//////////////////////////////////////////////////////////////////////////
 	// TEST RESOURCES!
-	ID3D11Buffer* testVertBuffer;
-	ID3D11VertexShader* testVertexShader;
-	ID3D11PixelShader* testPixelShader;
-	ID3D11Buffer* testPerObjectConstBuffer;
-	ID3D11Buffer* testViewProjConstBuffer;
+	ID3D11Buffer* testVertBuffer = nullptr;
+	ID3D11VertexShader* testVertexShader = nullptr;
+	ID3D11PixelShader* testPixelShader = nullptr;
+	ID3D11Buffer* testPerObjectConstBuffer = nullptr;
+	ID3D11Buffer* testViewProjConstBuffer = nullptr;
 
 private:
 	template<typename Container>

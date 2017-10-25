@@ -105,6 +105,7 @@ void Engine::Shutdown(void)
 		it->Shutdown();
 		SafeDelete(it);
 	}
+	m_systems.clear();
 }
 
 ISystem* Engine::GetSystem(const string& systemName) const
@@ -168,7 +169,7 @@ LRESULT WINAPI Engine::MessageHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		m_windowSystem->SetWindowWidth(w);
 		m_windowSystem->SetWindowHeight(h);
 
-		//m_graphicsSystem->Resize(w, h);
+		m_graphicsSystem->Resize(w, h);
 
 		ImGui_ImplDX11_CreateDeviceObjects();
 		return 0;

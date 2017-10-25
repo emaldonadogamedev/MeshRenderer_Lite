@@ -72,6 +72,7 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 	{
 		auto newUniqModel = std::make_unique<Model>();
 		Model* const newModel = newUniqModel.get();
+		newModel->SetModelType(loadedScene->HasAnimations() ? ModelType::MODEL_STATIC : MODEL_STATIC);
 
 		const unsigned int numberOfMeshes = loadedScene->mNumMeshes;
 		auto& newModelData = newModel->m_ModelData;
@@ -114,7 +115,7 @@ void ModelManager::PopulateVertexModelData(ModelData& modelData, const aiMesh* a
 
 	for (unsigned int vertexIndex = 0; vertexIndex < numberOfVertices; ++vertexIndex)
 	{
-		VertexTexture newVertex;
+		VertexAnimation newVertex;
 		if (hasPositions)
 		{
 			newVertex.position.x = positionsPtr->x;

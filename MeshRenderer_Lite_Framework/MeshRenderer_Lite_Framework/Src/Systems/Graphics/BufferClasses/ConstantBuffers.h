@@ -25,3 +25,9 @@ struct PerObectBuffer
 	int isSkydome;
 	int padding;
 };
+
+static const char s_maxBoneCount = 100;
+struct AnimationBuffer
+{
+	XMMATRIX boneMatrices[s_maxBoneCount];
+};

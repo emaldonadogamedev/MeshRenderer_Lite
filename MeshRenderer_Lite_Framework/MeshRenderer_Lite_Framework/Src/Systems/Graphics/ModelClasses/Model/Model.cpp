@@ -25,7 +25,7 @@ void Model::GenerateBuffers(DX11Renderer* renderContext)
 
 	for (unsigned i = 0; i < m_DataList.size(); ++i)
 	{
-		renderContext->CreateVertexBuffer(m_DataList[i].m_vertexBufferHandle, BufferUsage::USAGE_DEFAULT, sizeof(VertexTexture) * m_DataList[i].m_vertices.size(), m_DataList[i].m_vertices.data());
+		renderContext->CreateVertexBuffer(m_DataList[i].m_vertexBufferHandle, BufferUsage::USAGE_DEFAULT, sizeof(VertexAnimation) * m_DataList[i].m_vertices.size(), m_DataList[i].m_vertices.data());
 		renderContext->CreateIndexBuffer(m_DataList[i].m_indexBufferHandle, BufferUsage::USAGE_DEFAULT, sizeof(unsigned int) * m_DataList[i].m_indices.size(), m_DataList[i].m_indices.data());
 	}
 }

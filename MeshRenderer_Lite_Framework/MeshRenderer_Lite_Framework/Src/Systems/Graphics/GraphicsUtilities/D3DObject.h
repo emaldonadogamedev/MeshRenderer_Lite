@@ -54,14 +54,14 @@ struct Texture3D : D3DObject
 };
 typedef Texture3D CubeMap;
 
-//struct RenderTarget : D3DObject
-//{
-//	ID3D11RenderTargetView* rtv;
-//	ID3D11ShaderResourceView* srv;
-//	DataFormat format;
-//	float downSamplePercentage;
-//	Viewport viewport;
-//};
+struct RenderTarget : D3DObject
+{
+	ID3D11RenderTargetView* rtv;
+	ID3D11ShaderResourceView* srv;
+	DataFormat format;
+	//float downSamplePercentage;
+	//Viewport viewport;
+};
 
 struct ShaderBase : D3DObject
 {

@@ -12,11 +12,11 @@
 #include <Systems/Input/Mouse.h>
 #include <Systems/Window/WindowSystem.h>
 
-GraphicsSystem::GraphicsSystem(Engine* const eng) :
-	ISystem(eng),
-	m_dx11Renderer(std::make_unique<DX11Renderer>())
+GraphicsSystem::GraphicsSystem(Engine* const eng) 
+	:ISystem(eng)
+	,m_dx11Renderer(std::make_unique<DX11Renderer>())
+	,testCamera(std::make_unique<Camera>())
 {
-	testCamera = std::make_unique<Camera>();
 }
 
 GraphicsSystem::~GraphicsSystem()
@@ -29,7 +29,7 @@ bool GraphicsSystem::Initialize()
 
 	bool result = m_dx11Renderer->InitializeRenderer(window->GetWindowWidth(), window->GetWindowHeight(), window->GetWindowsHandler());
 
-	AddRenderStageHelper(new ForwardRenderStage(m_dx11Renderer.get()));
+	AddRenderStageHelper(new ForwardRenderStage(m_dx11Renderer.get(), &m_renderComponents));
 
 	return result;
 }
@@ -56,9 +56,7 @@ void GraphicsSystem::Update(const float dt)
 	for (const auto renderStage : m_renderStages)
 	{
 		renderStage->PreRender();
-		//////////////////////////////////////////////////////////////////////////
-		//TODO: Render stuff!
-		//renderStage->Render();
+		renderStage->Render();
 		renderStage->PostRender();
 	}
 
@@ -78,6 +76,12 @@ void GraphicsSystem::Shutdown()
 
 void GraphicsSystem::ReceiveMessage(const IMessage& msg)
 {
+}
+
+void GraphicsSystem::Resize(const int w, const int h)
+{
+	const float fov = (float)w / (float)h;
+	testCamera->Resize(DirectX::XM_PIDIV4, fov, 0.01f, 1000.0f);
 }
 
 void GraphicsSystem::AddRenderStageHelper(IRenderStage* renderStage)

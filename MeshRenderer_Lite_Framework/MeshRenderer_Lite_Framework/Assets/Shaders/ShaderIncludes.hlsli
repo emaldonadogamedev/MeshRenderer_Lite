@@ -13,6 +13,10 @@ struct VertexInputType
 	float3 bitangent    : BITANGENT;
 	float2 uv           : UV;
 	float4 color		: COLOR;
+
+	//Animation bone information
+	int4 boneIDs;
+	float4 boneWeights;
 };
 
 struct PixelInputType
