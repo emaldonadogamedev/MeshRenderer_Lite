@@ -36,9 +36,6 @@ private:
 	void PopulateIndexModelData(ModelData& modelData, const aiMesh* const assimpMesh);
 	void PopulateBoneData(ModelData& modelData, const aiMesh* const assimpMesh);
 
-	//Math helper functions
-	static void NormalizeFLOAT3(XMFLOAT3& v);
-
 	ModelUmap m_loadedModels;
 
 	static const std::string s_modelDir;

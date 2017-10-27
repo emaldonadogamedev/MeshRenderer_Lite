@@ -1,7 +1,6 @@
 #include <Utilities/precompiled.h>
 #include <Systems/Graphics/ModelClasses/ModelManager/ModelManager.h>
 
-//#include <assimp/cimport.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
@@ -9,7 +8,6 @@
 
 ModelManager::ModelManager()
 {
-
 }
 
 ModelManager::~ModelManager()
@@ -152,7 +150,7 @@ void ModelManager::PopulateAnimationData(Model& model, const aiScene* const assi
 					newPosKey.time = positionsPtr[posIndex].mTime;
 					const auto& channelPos = positionsPtr[posIndex].mValue;
 					newPosKey.value = std::move(DirectX::XMVectorSet(channelPos.x, channelPos.y, channelPos.z, 1.0f));
-					newBoneNodeAnim.positions.emplace_back(newPosKey);
+					newBoneNodeAnim.positions.emplace_back(std::move(newPosKey);
 				}
 
 				//Read rotation keys
@@ -164,7 +162,7 @@ void ModelManager::PopulateAnimationData(Model& model, const aiScene* const assi
 					newRotKey.time = rotationsPtr[rotIndex].mTime;
 					const auto& channelRot = rotationsPtr[rotIndex].mValue;
 					newRotKey.value = std::move(DirectX::XMVectorSet(channelRot.x, channelRot.y, channelRot.z, 1.0f));
-					newBoneNodeAnim.rotations.emplace_back(newRotKey);
+					newBoneNodeAnim.rotations.emplace_back(std::move(newRotKey));
 				}
 
 				//Read scaling keys
@@ -176,7 +174,7 @@ void ModelManager::PopulateAnimationData(Model& model, const aiScene* const assi
 					newScaleKey.time = rotationsPtr[scaleIndex].mTime;
 					const auto& channelScale = scalingssPtr[scaleIndex].mValue;
 					newScaleKey.value = std::move(DirectX::XMVectorSet(channelScale.x, channelScale.y, channelScale.z, 0));
-					newBoneNodeAnim.scalings.emplace_back(newScaleKey);
+					newBoneNodeAnim.scalings.emplace_back(std::move(newScaleKey));
 				}
 
 				newAnimation.channels.emplace_back(std::move(newBoneNodeAnim));
@@ -301,20 +299,4 @@ void ModelManager::PopulateBoneData(ModelData& modelData, const aiMesh* const as
 	}
 }
 
-void ModelManager::NormalizeFLOAT3(XMFLOAT3& v)
-{
-	const float l = std::sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
-
-	if (l != 0)
-	{
-		v.x /= l;
-		v.y /= l;
-		v.z /= l;
-
-		return;
-	}
-
-	v.x = v.y = v.z = 0.f;
-}
-
-const std::string ModelManager::s_modelDir = "CS562_framework/Assets/Models/";
+const std::string ModelManager::s_modelDir = "../MeshRenderer_Lite_Framework/Assets/Models/";
