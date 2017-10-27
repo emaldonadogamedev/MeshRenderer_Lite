@@ -89,13 +89,16 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 		}
 
 		m_loadedModels[fileName] = std::move(newUniqModel);
+
+		importer.FreeScene();
+
 		return newModel;
 	}
 
 	return nullptr;
 }
 
-void PopulateBoneNodeData(BoneNodePtr root, const aiNode* const assimpRoot, const std::string& assimpRootName)
+void PopulateBoneNodeData(BoneNodePtr& root, const aiNode* const assimpRoot, const std::string& assimpRootName)
 {
 	if (!assimpRoot)
 		return;
@@ -118,6 +121,7 @@ void ModelManager::PopulateAnimationData(Model& model, const aiScene* const assi
 {
 	if (assimpScene->HasAnimations())
 	{
+		model.m_rootNode = std::make_shared<BoneNode>();
 		//LOAD ROOT NODE
 		PopulateBoneNodeData(model.m_rootNode, assimpScene->mRootNode, std::string(assimpScene->mRootNode->mName.C_Str()));
 
@@ -131,8 +135,8 @@ void ModelManager::PopulateAnimationData(Model& model, const aiScene* const assi
 			newAnimation.duration = assimpScene->mAnimations[animIndex]->mDuration;
 			newAnimation.ticksPerSecond = assimpScene->mAnimations[animIndex]->mTicksPerSecond;
 			
+			//Read animation channels
 			const auto channelsPtr = assimpScene->mAnimations[animIndex]->mChannels;
-
 			const unsigned int numberOfChannels = assimpScene->mAnimations[animIndex]->mNumChannels;
 			for (unsigned int channelIndex = 0 ; channelIndex < numberOfChannels; ++channelIndex)
 			{

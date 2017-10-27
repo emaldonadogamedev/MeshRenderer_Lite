@@ -107,7 +107,7 @@ public:
 	ModelData m_modelData;
 	ModelDataList m_modelDataList;
 
-	BoneNodePtr m_rootNode = nullptr;
+	BoneNodePtr m_rootNode;
 	std::vector<Animation> m_animations;
 
 protected:

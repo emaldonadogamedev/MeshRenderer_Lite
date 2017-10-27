@@ -7,7 +7,7 @@ Model::Model()
 	:m_vertexCount(0)
 	,m_indexCount(0)
 	,m_modelType(ModelType::MODEL_STATIC)
-	,m_rootNode(std::make_shared<BoneNode>())
+	,m_rootNode(nullptr)
 {
 }
 
