@@ -150,7 +150,7 @@ void ModelManager::PopulateAnimationData(Model& model, const aiScene* const assi
 					newPosKey.time = positionsPtr[posIndex].mTime;
 					const auto& channelPos = positionsPtr[posIndex].mValue;
 					newPosKey.value = std::move(DirectX::XMVectorSet(channelPos.x, channelPos.y, channelPos.z, 1.0f));
-					newBoneNodeAnim.positions.emplace_back(std::move(newPosKey);
+					newBoneNodeAnim.positions.emplace_back(std::move(newPosKey));
 				}
 
 				//Read rotation keys

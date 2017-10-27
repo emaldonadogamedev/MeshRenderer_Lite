@@ -8,6 +8,7 @@ class CameraManager;
 class DX11Renderer;
 class IRenderComponent;
 class IRenderStage;
+class ModelManager;
 
 
 class GraphicsSystem : public ISystem
@@ -34,4 +35,6 @@ protected:
 	std::unique_ptr<DX11Renderer> m_dx11Renderer;
 	std::vector<IRenderComponent*> m_renderComponents;
 	std::vector<IRenderStage*> m_renderStages;
+
+	std::unique_ptr<ModelManager> m_modelManager;
 };

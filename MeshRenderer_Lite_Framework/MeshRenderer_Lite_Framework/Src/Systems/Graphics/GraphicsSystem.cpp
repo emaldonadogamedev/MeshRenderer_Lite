@@ -7,6 +7,7 @@
 #include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
 #include <Systems/Graphics/DX11Renderer/DX11RendererData.h>
 #include <Systems/Graphics/DX11RenderStages/ForwardRenderStage/ForwardRenderStage.h>
+#include <Systems/Graphics/ModelClasses/ModelManager/ModelManager.h>
 #include <Systems/Input/InputSystem.h>
 #include <Systems/Input/Keyboard.h>
 #include <Systems/Input/Mouse.h>
@@ -16,6 +17,7 @@ GraphicsSystem::GraphicsSystem(Engine* const eng)
 	:ISystem(eng)
 	,m_dx11Renderer(std::make_unique<DX11Renderer>())
 	,testCamera(std::make_unique<Camera>())
+	,m_modelManager(std::make_unique<ModelManager>())
 {
 }
 
