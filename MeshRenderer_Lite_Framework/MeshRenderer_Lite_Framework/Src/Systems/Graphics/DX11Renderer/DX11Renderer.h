@@ -60,6 +60,7 @@ public:
 
 protected:
 	bool InitializeD3D(const int width, const int height, HWND hwnd);
+	bool InitializeTextureSamplers();
 
 	//////////////////////////////////////////////////////////////////////////
 	//FOR TESTING
@@ -75,14 +76,12 @@ protected:
 		XMMATRIX viewMtx, projectionMtx;
 	};
 	CBNeverChanges testViewProjBuffer;
-
-	bool InitializeTextureSamplers();
+	//END FOR TESTING
 
 	std::unique_ptr<DX11RendererData> m_renderData;
+	ObjectHandle CreateHandle(const ObjectType type, const int handle);
 
 	bool m_isInitialized = false;
-
-	ObjectHandle CreateHandle(const ObjectType type, const int handle);
 
 	friend GraphicsSystem;
 

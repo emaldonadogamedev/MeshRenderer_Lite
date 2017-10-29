@@ -32,6 +32,7 @@ bool GraphicsSystem::Initialize()
 	bool result = m_dx11Renderer->InitializeRenderer(window->GetWindowWidth(), window->GetWindowHeight(), window->GetWindowsHandler());
 
 	AddRenderStageHelper(new ForwardRenderStage(m_dx11Renderer.get(), &m_renderComponents));
+	LoadBasicModels();
 
 	return result;
 }
@@ -52,6 +53,8 @@ void GraphicsSystem::Update(const float dt)
 	m_dx11Renderer->m_renderData->m_pImmediateContext->VSSetConstantBuffers(0, 1, &m_dx11Renderer->m_renderData->testPerObjectConstBuffer);
 	m_dx11Renderer->m_renderData->m_pImmediateContext->VSSetConstantBuffers(1, 1, &m_dx11Renderer->m_renderData->testViewProjConstBuffer);
 	m_dx11Renderer->m_renderData->m_pImmediateContext->PSSetShader(m_dx11Renderer->m_renderData->testPixelShader, NULL, 0);
+
+	m_dx11Renderer->m_renderData->m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 	m_dx11Renderer->Draw(3, 0);
 
@@ -94,9 +97,18 @@ void GraphicsSystem::AddRenderStageHelper(IRenderStage* renderStage)
 	}
 }
 
+void GraphicsSystem::LoadBasicModels()
+{
+	m_modelManager->LoadModel("box.obj");
+	m_modelManager->LoadModel("sphere.obj");
+	m_modelManager->LoadModel("spider.obj");
+	m_modelManager->LoadModel("simpleMan2.6.fbx");
+	m_modelManager->LoadModel("gh_sample_animation.fbx");
+}
+
 void GraphicsSystem::TestUpdateCamera(const float dt)
 {
-	const InputSystem* input = reinterpret_cast<InputSystem*>(m_engineOwner->GetSystem("Input"));
+	const InputSystem* const input = reinterpret_cast<InputSystem*>(m_engineOwner->GetSystem("Input"));
 
 	if (input->m_keyboard->IsKeyHeld(KeyboardEvent::VirtualKey::KEY_W))
 	{

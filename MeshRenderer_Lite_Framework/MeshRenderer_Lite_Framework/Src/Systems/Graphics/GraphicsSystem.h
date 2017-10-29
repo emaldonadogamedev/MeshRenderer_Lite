@@ -26,6 +26,7 @@ public:
 
 protected:
 	void AddRenderStageHelper(IRenderStage* renderStage);
+	void LoadBasicModels();
 
 	void TestUpdateCamera(const float dt);
 

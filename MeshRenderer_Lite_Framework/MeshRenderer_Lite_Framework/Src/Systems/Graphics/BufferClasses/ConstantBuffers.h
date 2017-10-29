@@ -2,7 +2,7 @@
 
 #include <DirectXMath.h>
 
-using DirectX::XMFLOAT4;
+using DirectX::XMVECTOR;
 using DirectX::XMMATRIX;
 
 struct ViewProjBuffer
@@ -12,13 +12,13 @@ struct ViewProjBuffer
 	XMMATRIX projectionMtx;
 	XMMATRIX invProjectionMtx;
 	XMMATRIX viewProjection;
-	XMFLOAT4 cameraPosition;
+	XMVECTOR cameraPosition;
 };
 
 struct PerObectBuffer
 {
 	XMMATRIX worldMtx;
-	XMFLOAT4 color;
+	XMVECTOR color;
 
 	int useTexture;
 	int useNormalMap;
@@ -26,7 +26,7 @@ struct PerObectBuffer
 	int padding;
 };
 
-static const char s_maxBoneCount = 100;
+static const unsigned char s_maxBoneCount = 200;
 struct AnimationBuffer
 {
 	XMMATRIX boneMatrices[s_maxBoneCount];
