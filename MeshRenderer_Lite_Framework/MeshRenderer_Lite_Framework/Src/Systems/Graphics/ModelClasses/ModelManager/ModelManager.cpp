@@ -73,7 +73,7 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 		PopulateAnimationData(*newModel, loadedScene);
 
 		const unsigned int numberOfMeshes = loadedScene->mNumMeshes;
-		auto& newModelData = newModel->m_modelData;
+		ModelData newModelData;
 
 		for (unsigned int meshIndex = 0; meshIndex < numberOfMeshes; ++meshIndex)
 		{
@@ -106,7 +106,7 @@ void PopulateBoneNodeData(BoneNodePtr& root, const aiNode* const assimpRoot, con
 	const unsigned int numberOfChildren = assimpRoot->mNumChildren;
 	for (unsigned int i = 0; i < numberOfChildren; ++i)
 	{
-		BoneNodePtr newChildNode = std::make_shared<BoneNode>();
+		BoneNodePtr newChildNode = std::make_unique<BoneNode>();
 		newChildNode->parent = root.get();
 		const std::string assimpChildName = std::string(assimpRoot->mChildren[i]->mName.C_Str());
 		PopulateBoneNodeData(newChildNode, assimpRoot->mChildren[i], assimpChildName);
@@ -119,7 +119,8 @@ void ModelManager::PopulateAnimationData(Model& model, const aiScene* const assi
 {
 	if (assimpScene->HasAnimations())
 	{
-		model.m_rootNode = std::make_shared<BoneNode>();
+		model.m_rootNode = std::make_unique<BoneNode>();
+
 		//LOAD ROOT NODE
 		PopulateBoneNodeData(model.m_rootNode, assimpScene->mRootNode, std::string(assimpScene->mRootNode->mName.C_Str()));
 
@@ -278,6 +279,8 @@ void ModelManager::PopulateBoneData(ModelData& modelData, const aiMesh* const as
 {
 	if (assimpMesh->HasBones())
 	{
+		std::vector<char> vertexWeightCountTracker(modelData.m_vertices.size(), 0);
+
 		const unsigned int numberOfBones = assimpMesh->mNumBones;
 		auto bonesPtr = assimpMesh->mBones;
 
@@ -291,7 +294,23 @@ void ModelManager::PopulateBoneData(ModelData& modelData, const aiMesh* const as
 			auto weightPtr = bonesPtr[boneIndex]->mWeights;
 			for (unsigned int weightIndex = 0; weightIndex < numberOfWeights; ++weightIndex)
 			{
-				newBone.weights.emplace_back(std::move(VertexWeight(weightPtr->mVertexId, weightPtr->mWeight)));
+				//See if the vertex has space left to store weights (MAX is 4)
+				const char ptrOffset = vertexWeightCountTracker[weightPtr->mVertexId];
+				if (ptrOffset < 4)
+				{
+					auto& vertex = modelData.m_vertices[weightPtr->mVertexId];
+					int* newBoneID = &vertex.boneIDs.x + vertexWeightCountTracker[weightPtr->mVertexId];
+					float* newWeight = &vertex.boneWeights.x + vertexWeightCountTracker[weightPtr->mVertexId];
+
+					//Give the vertex the bone ID as stored in the Bones container of the model data
+					*newBoneID = static_cast<int>(modelData.m_bones.size());
+					*newWeight = weightPtr->mWeight;
+
+					//Report that a weight has been added
+					++vertexWeightCountTracker[weightPtr->mVertexId];
+				}
+
+				newBone.weights.emplace_back(VertexWeight(weightPtr->mVertexId, weightPtr->mWeight));
 				++weightPtr;
 			}
 			modelData.m_bones.emplace_back(std::move(newBone));

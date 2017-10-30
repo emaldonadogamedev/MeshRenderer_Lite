@@ -42,19 +42,17 @@ void GraphicsSystem::Update(const float dt)
 	m_dx11Renderer->ClearBuffer();
 
 	//TEST!!!
+	//UPDATE CAMERA
 	TestUpdateCamera(dt);
 	testCamera->Update();
 	m_dx11Renderer->testViewProjBuffer.viewMtx = testCamera->GetView();
 	//m_dx11Renderer->testViewProjBuffer.projectionMtx = testCamera->GetProjection();
-
 	m_dx11Renderer->m_renderData->m_pImmediateContext->UpdateSubresource(m_dx11Renderer->m_renderData->testViewProjConstBuffer, 
 		0, NULL, &m_dx11Renderer->testViewProjBuffer, 0, 0);
+	m_dx11Renderer->m_renderData->m_pImmediateContext->VSSetConstantBuffers(1, 1, &m_dx11Renderer->m_renderData->testViewProjConstBuffer);
 
 	m_dx11Renderer->m_renderData->m_pImmediateContext->VSSetConstantBuffers(0, 1, &m_dx11Renderer->m_renderData->testPerObjectConstBuffer);
-	m_dx11Renderer->m_renderData->m_pImmediateContext->VSSetConstantBuffers(1, 1, &m_dx11Renderer->m_renderData->testViewProjConstBuffer);
 	m_dx11Renderer->m_renderData->m_pImmediateContext->PSSetShader(m_dx11Renderer->m_renderData->testPixelShader, NULL, 0);
-
-	m_dx11Renderer->m_renderData->m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 	m_dx11Renderer->Draw(3, 0);
 

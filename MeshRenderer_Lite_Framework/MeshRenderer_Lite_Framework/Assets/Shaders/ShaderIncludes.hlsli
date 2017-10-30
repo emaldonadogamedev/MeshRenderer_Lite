@@ -33,9 +33,9 @@ struct PixelInputType
 //--------------------------------------------------------------------------------------
 // Per Object - Constant Buffer Variables
 //--------------------------------------------------------------------------------------
-cbuffer ConstantBuffer : register(b1)
+cbuffer ConstantBuffer : register(b0)
 {
-	float4x4 worldMtx;
+	matrix worldMtx;
 	float4 color;
 
 	int useTexture;
@@ -47,13 +47,19 @@ cbuffer ConstantBuffer : register(b1)
 //--------------------------------------------------------------------------------------
 // Per Camera - Constant Buffer Variables
 //--------------------------------------------------------------------------------------
-cbuffer ViewProjBuffer : register(b2)
+cbuffer ViewProjBuffer : register(b1)
 {
-	float4x4 viewMtx;
-	float4x4 invViewMtx;
-	float4x4 projectionMtx;
-	float4x4 invProjectionMtx;
-	float4x4 viewProjection;
+	matrix viewMtx;
+	matrix invViewMtx;
+	matrix projectionMtx;
+	matrix invProjectionMtx;
+	matrix viewProjection;
 
 	float4 cameraPosition;
+};
+
+static const unsigned char s_maxBoneCount = 200;
+struct AnimationBuffer
+{
+	matrix boneMatrices[s_maxBoneCount];
 };

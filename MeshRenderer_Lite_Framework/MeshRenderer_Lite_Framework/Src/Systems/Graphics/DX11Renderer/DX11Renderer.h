@@ -60,6 +60,7 @@ public:
 
 protected:
 	bool InitializeD3D(const int width, const int height, HWND hwnd);
+	bool InitializeConstBuffers();
 	bool InitializeTextureSamplers();
 
 	//////////////////////////////////////////////////////////////////////////

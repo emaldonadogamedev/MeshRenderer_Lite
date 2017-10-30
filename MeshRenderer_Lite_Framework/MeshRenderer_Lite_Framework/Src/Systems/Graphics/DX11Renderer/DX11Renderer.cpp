@@ -476,6 +476,81 @@ void DX11Renderer::CreateVertexShader(ObjectHandle& vertexShader, const std::str
 	} //end if(succeeded.....
 }
 
+void DX11Renderer::CreatePixelShader(ObjectHandle& pixelShader, const std::string& fileName,
+	bool precompiled, const std::string& entryPoint /*= "main"*/)
+{
+	ID3D11PixelShader* pixelShaderPtr;
+	int result;
+
+	ID3DBlob* blob;
+	const std::string target = "ps_5_0";
+
+	unsigned compileFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+
+#ifdef _DEBUG
+	compileFlags |= D3DCOMPILE_DEBUG;
+#endif
+
+	CompileShaderHelper(result, &blob, fileName, target, entryPoint);
+
+	HR(m_renderData->m_pDevice->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &pixelShaderPtr));
+
+	//If handle already exists, update data
+	if (pixelShader)
+	{
+		PixelShader& pixelShaderObj = m_renderData->pixelShaders[*pixelShader];
+		if (pixelShaderObj.pixelShader)
+			pixelShaderObj.pixelShader->Release();
+
+		pixelShaderObj.pixelShader = pixelShaderPtr;
+		pixelShaderObj.shaderBlob = blob;
+	}
+	//Else create handle
+	else
+	{
+		PixelShader pixelShaderObj;
+		pixelShaderObj.pixelShader = pixelShaderPtr;
+		pixelShaderObj.shaderBlob = blob;
+
+		int index = m_renderData->NextAvailableIndex(m_renderData->pixelShaders);
+
+		if (index == -1)
+		{
+			//No free space exists in container, push back
+			m_renderData->pixelShaders.push_back(pixelShaderObj);
+			pixelShader = CreateHandle(ObjectType::PIXEL_SHADER, m_renderData->pixelShaders.size() - 1);
+		}
+
+		else
+		{
+			//Use available space in container
+			m_renderData->pixelShaders[index] = pixelShaderObj;
+			pixelShader = CreateHandle(ObjectType::PIXEL_SHADER, index);
+		}
+	}
+}
+
+void DX11Renderer::BindVertexShader(const ObjectHandle& vertexShader)
+{
+	//TODO: Make this check work
+	//if (!vertexShader || m_renderData->lastVertexShader == vertexShader || vertexShader.GetType() != ObjectType::VERTEX_SHADER)
+	//{
+	//	return;
+	//}
+
+	const VertexShader& shader = m_renderData->vertexShaders[*vertexShader];
+
+	//TODO: For now we're only using one input layout, make this work with multiple
+	m_renderData->m_pImmediateContext->VSSetShader(shader.vertexShader, nullptr, 0);
+	//m_renderData->m_pImmediateContext->IASetInputLayout(shader.layout);
+}
+
+void DX11Renderer::BindPixelShader(const ObjectHandle& pixelShader)
+{
+	const PixelShader& shader = m_renderData->pixelShaders[*pixelShader];
+	m_renderData->m_pImmediateContext->PSSetShader(shader.pixelShader, nullptr, 0);
+}
+
 bool DX11Renderer::InitializeD3D(const int width, const int height, HWND hwnd)
 {
 	UINT createDeviceFlags = 0;
@@ -639,6 +714,11 @@ continue_Init:
 	//Bind viewport
 	m_renderData->m_pImmediateContext->RSSetViewports(1, &m_renderData->m_mainViewport);
 
+	return true;
+}
+
+bool DX11Renderer::InitializeConstBuffers()
+{
 	return true;
 }
 
