@@ -3,14 +3,11 @@
 #include <vector>
 #include <Systems/Graphics/GraphicsUtilities/VertexTypes.h>
 #include <Systems/Graphics/GraphicsUtilities/ObjectHandle.h>
+#include <assimp/Importer.hpp>
 
 class DX11Renderer;
 struct aiScene;
-
-namespace Assimp
-{
-	class Importer;
-}
+struct aiAnimation;
 
 using DirectX::XMMATRIX;
 using DirectX::XMVECTOR;
@@ -34,6 +31,10 @@ struct Bone
 {
 	std::string name;
 	std::vector<VertexWeight> weights;
+
+	//Fun fact:
+	//the job of the offset matrix it to move the vertex position from the local space of
+	//the mesh into the bone space of that particular bone
 	DirectX::XMMATRIX offsetMatrix;
 };
 
@@ -50,30 +51,6 @@ struct BoneNode
 	BoneNode* parent = nullptr;
 	//BoneNodePtrUmap children;
 	BoneNodePtrVec children;
-};
-
-//////////////////////////////////////////////////////////////////////////
-//Can be used for positions, rotations, and scalings
-struct VectorKeys
-{
-	double time;
-	XMVECTOR value;
-};
-
-struct BoneNodeAnimation
-{
-	std::string name;
-	std::vector<VectorKeys> positions;
-	std::vector<VectorKeys> rotations;
-	std::vector<VectorKeys> scalings;
-};
-
-struct Animation
-{
-	std::string name;
-	double duration;
-	double ticksPerSecond;
-	std::vector<BoneNodeAnimation> channels;
 };
 
 struct ModelData
@@ -106,14 +83,17 @@ public:
 	ModelDataList m_modelDataList;
 
 	BoneNodePtr m_rootNode;
-	std::vector<Animation> m_animations;
+	std::unordered_map<std::string, aiAnimation*> m_animations;
 
 protected:
 	ModelType m_modelType;
 	std::string m_modelFileName;
 
 	const aiScene* m_assimpScene;
-	std::unique_ptr<Assimp::Importer> m_modelImporter;
+	Assimp::Importer m_modelImporter;
+
+	static const char s_MaxJointCount = 120;
+	static XMMATRIX boneMatrices[s_MaxJointCount];
 
 	friend class ModelManager;
 };

@@ -44,7 +44,7 @@ void ModelManager::EraseModel(const std::string& fileName)
 
 void ModelManager::EraseAllModels()
 {
-	for (auto&& it : m_loadedModels)
+	for (auto& it : m_loadedModels)
 	{
 		it.second.reset();
 	}
@@ -53,7 +53,7 @@ void ModelManager::EraseAllModels()
 
 Model* ModelManager::LoadModel(const std::string& fileName)
 {
-	std::unique_ptr<Assimp::Importer> importer = std::make_unique<Assimp::Importer>();
+	auto newUniqModel = std::make_unique<Model>();
 
 	const unsigned int loadFlags = aiProcess_Triangulate
 		| aiProcess_GenNormals
@@ -61,15 +61,13 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 		| aiProcess_MakeLeftHanded //Make left-hand side loading, we're using DirectX
 		| aiProcessPreset_TargetRealtime_MaxQuality;
 
-	auto loadedScene = importer->ReadFile((s_modelDir + fileName).c_str(), loadFlags);
+	auto loadedScene = newUniqModel->m_modelImporter.ReadFile((s_modelDir + fileName).c_str(), loadFlags);
 	//const aiScene* scene = aiImportFile((s_modelDir + fileName).c_str(), loadFlags);
 	
 	if (loadedScene)
 	{
-		auto newUniqModel = std::make_unique<Model>();
 		Model* const newModel = newUniqModel.get();
 		newModel->m_assimpScene = loadedScene;
-		newModel->m_modelImporter = std::move(importer);
 
 		newModel->SetModelType(loadedScene->HasAnimations() ? ModelType::MODEL_STATIC : MODEL_STATIC);
 
@@ -78,7 +76,7 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 		const unsigned int numberOfMeshes = loadedScene->mNumMeshes;
 		ModelData newModelData;
 
-		for (unsigned int meshIndex = 0; meshIndex < numberOfMeshes; ++meshIndex)
+		for (unsigned int meshIndex = 0; meshIndex < numberOfMeshes; ++meshIndex) 
 		{
 			const aiMesh* const currentMesh = loadedScene->mMeshes[meshIndex];
 
@@ -130,59 +128,8 @@ void ModelManager::PopulateAnimationData(Model& model, const aiScene* const assi
 
 		for (unsigned int animIndex = 0; animIndex < numberOfAnimations; ++animIndex)
 		{
-			Animation newAnimation;
-			newAnimation.name = assimpScene->mAnimations[animIndex]->mName.C_Str();
-			newAnimation.duration = assimpScene->mAnimations[animIndex]->mDuration;
-			newAnimation.ticksPerSecond = assimpScene->mAnimations[animIndex]->mTicksPerSecond;
-			
-			//Read animation channels
-			const auto channelsPtr = assimpScene->mAnimations[animIndex]->mChannels;
-			const unsigned int numberOfChannels = assimpScene->mAnimations[animIndex]->mNumChannels;
-			for (unsigned int channelIndex = 0 ; channelIndex < numberOfChannels; ++channelIndex)
-			{
-				BoneNodeAnimation newBoneNodeAnim;
-				newBoneNodeAnim.name = channelsPtr[channelIndex]->mNodeName.C_Str();
-
-				//Read position keys
-				const unsigned int numberOfPositions = channelsPtr[channelIndex]->mNumPositionKeys;
-				const auto* const positionsPtr = channelsPtr[channelIndex]->mPositionKeys;
-				for (unsigned int posIndex = 0; posIndex < numberOfPositions; ++posIndex)
-				{
-					VectorKeys newPosKey;
-					newPosKey.time = positionsPtr[posIndex].mTime;
-					const auto& channelPos = positionsPtr[posIndex].mValue;
-					newPosKey.value = std::move(DirectX::XMVectorSet(channelPos.x, channelPos.y, channelPos.z, 1.0f));
-					newBoneNodeAnim.positions.emplace_back(std::move(newPosKey));
-				}
-
-				//Read rotation keys
-				const unsigned int numberOfRotations = channelsPtr[channelIndex]->mNumRotationKeys;
-				const auto* const rotationsPtr = channelsPtr[channelIndex]->mRotationKeys;
-				for (unsigned int rotIndex = 0; rotIndex < numberOfRotations; ++rotIndex)
-				{
-					VectorKeys newRotKey;
-					newRotKey.time = rotationsPtr[rotIndex].mTime;
-					const auto& channelRot = rotationsPtr[rotIndex].mValue;
-					newRotKey.value = std::move(DirectX::XMVectorSet(channelRot.x, channelRot.y, channelRot.z, 1.0f));
-					newBoneNodeAnim.rotations.emplace_back(std::move(newRotKey));
-				}
-
-				//Read scaling keys
-				const unsigned int numberOfScalings = channelsPtr[channelIndex]->mNumScalingKeys;
-				const auto* const scalingssPtr = channelsPtr[channelIndex]->mScalingKeys;
-				for (unsigned int scaleIndex = 0; scaleIndex < numberOfScalings; ++scaleIndex)
-				{
-					VectorKeys newScaleKey;
-					newScaleKey.time = rotationsPtr[scaleIndex].mTime;
-					const auto& channelScale = scalingssPtr[scaleIndex].mValue;
-					newScaleKey.value = std::move(DirectX::XMVectorSet(channelScale.x, channelScale.y, channelScale.z, 0));
-					newBoneNodeAnim.scalings.emplace_back(std::move(newScaleKey));
-				}
-
-				newAnimation.channels.emplace_back(std::move(newBoneNodeAnim));
-			}// end channels for loop
-
-			model.m_animations.emplace_back(std::move(newAnimation));
+			const std::string animName = assimpScene->mAnimations[animIndex]->mName.C_Str();
+			model.m_animations[animName] = assimpScene->mAnimations[animIndex];
 		}
 	}
 }

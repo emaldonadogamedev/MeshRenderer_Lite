@@ -11,7 +11,7 @@ Model::Model()
 
 Model::~Model()
 {
-
+	m_modelImporter.FreeScene();
 }
 
 void Model::GenerateBuffers(DX11Renderer* renderContext)
