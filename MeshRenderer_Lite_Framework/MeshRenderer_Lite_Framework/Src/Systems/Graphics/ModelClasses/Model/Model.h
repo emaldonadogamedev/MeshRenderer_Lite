@@ -107,5 +107,7 @@ protected:
 	ModelType m_modelType;
 	std::string m_modelFileName;
 
-	friend class ModelLoader;
+	const aiScene* m_assimpScene;
+
+	friend class ModelManager;
 };
