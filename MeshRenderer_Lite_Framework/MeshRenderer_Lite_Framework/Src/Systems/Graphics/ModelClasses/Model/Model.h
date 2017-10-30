@@ -7,6 +7,11 @@
 class DX11Renderer;
 struct aiScene;
 
+namespace Assimp
+{
+	class Importer;
+}
+
 using DirectX::XMMATRIX;
 using DirectX::XMVECTOR;
 
@@ -108,6 +113,7 @@ protected:
 	std::string m_modelFileName;
 
 	const aiScene* m_assimpScene;
+	std::unique_ptr<Assimp::Importer> m_modelImporter;
 
 	friend class ModelManager;
 };

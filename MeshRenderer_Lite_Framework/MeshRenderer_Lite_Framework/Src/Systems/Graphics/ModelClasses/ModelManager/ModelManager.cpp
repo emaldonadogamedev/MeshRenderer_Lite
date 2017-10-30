@@ -53,7 +53,7 @@ void ModelManager::EraseAllModels()
 
 Model* ModelManager::LoadModel(const std::string& fileName)
 {
-	static Assimp::Importer importer;
+	std::unique_ptr<Assimp::Importer> importer = std::make_unique<Assimp::Importer>();
 
 	const unsigned int loadFlags = aiProcess_Triangulate
 		| aiProcess_GenNormals
@@ -61,7 +61,7 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 		| aiProcess_MakeLeftHanded //Make left-hand side loading, we're using DirectX
 		| aiProcessPreset_TargetRealtime_MaxQuality;
 
-	auto loadedScene = importer.ReadFile((s_modelDir + fileName).c_str(), loadFlags);
+	auto loadedScene = importer->ReadFile((s_modelDir + fileName).c_str(), loadFlags);
 	//const aiScene* scene = aiImportFile((s_modelDir + fileName).c_str(), loadFlags);
 	
 	if (loadedScene)
@@ -69,6 +69,7 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 		auto newUniqModel = std::make_unique<Model>();
 		Model* const newModel = newUniqModel.get();
 		newModel->m_assimpScene = loadedScene;
+		newModel->m_modelImporter = std::move(importer);
 
 		newModel->SetModelType(loadedScene->HasAnimations() ? ModelType::MODEL_STATIC : MODEL_STATIC);
 
