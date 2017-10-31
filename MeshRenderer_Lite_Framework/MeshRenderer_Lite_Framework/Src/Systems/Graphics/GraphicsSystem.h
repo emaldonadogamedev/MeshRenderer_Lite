@@ -1,7 +1,10 @@
 #pragma once
 
 #include <Systems/Core/ISystem.h>
+#include <Systems/Graphics/GraphicsUtilities/ObjectHandle.h>
 #include <memory>
+#include <array>
+#include <unordered_map>
 
 class Camera;
 class CameraManager;
@@ -10,6 +13,9 @@ class IRenderComponent;
 class IRenderStage;
 class ModelManager;
 
+//typedefs
+typedef std::unordered_map<string, ObjectHandle> HandleDictionary;
+typedef std::array<HandleDictionary, (size_t)ObjectType::COUNT>  HandleDictionaryVec;
 
 class GraphicsSystem : public ISystem
 {
@@ -25,8 +31,10 @@ public:
 	void Resize(const int w, const int h);
 
 protected:
+	void AddRenderStages();
 	void AddRenderStageHelper(IRenderStage* renderStage);
 	void LoadBasicModels();
+	void LoadShadersShaders();
 
 	void TestUpdateCamera(const float dt);
 
@@ -38,4 +46,16 @@ protected:
 	std::vector<IRenderStage*> m_renderStages;
 
 	std::unique_ptr<ModelManager> m_modelManager;
+
+	//Resource Collection
+	HandleDictionaryVec m_resources;
+
+	//static variables
+	//directories
+	static const string s_shaderDir;
+	static const string s_vertexShaderDir;
+	static const string s_pixelShaderDir;
+	static const string s_textureDir;
+
+	friend Engine;
 };

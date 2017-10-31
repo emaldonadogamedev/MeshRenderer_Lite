@@ -19,7 +19,9 @@ enum class ObjectType : char
 	INSTANCE_BUFFER,
 	CONSTANT_BUFFER,
 	FONT_FACTORY,
-	FONT_WRAPPER
+	FONT_WRAPPER,
+
+	COUNT
 };
 
 enum class DataFormat : char

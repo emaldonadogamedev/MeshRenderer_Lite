@@ -31,8 +31,12 @@ bool GraphicsSystem::Initialize()
 
 	bool result = m_dx11Renderer->InitializeRenderer(window->GetWindowWidth(), window->GetWindowHeight(), window->GetWindowsHandler());
 
-	AddRenderStageHelper(new ForwardRenderStage(m_dx11Renderer.get(), &m_renderComponents));
+	//Load resources
+	LoadShadersShaders();
 	LoadBasicModels();
+
+	//Render stages
+	AddRenderStages();
 
 	return result;
 }
@@ -51,15 +55,10 @@ void GraphicsSystem::Update(const float dt)
 		0, NULL, &m_dx11Renderer->testViewProjBuffer, 0, 0);
 	m_dx11Renderer->m_renderData->m_pImmediateContext->VSSetConstantBuffers(1, 1, &m_dx11Renderer->m_renderData->testViewProjConstBuffer);
 
-	m_dx11Renderer->m_renderData->m_pImmediateContext->VSSetConstantBuffers(0, 1, &m_dx11Renderer->m_renderData->testPerObjectConstBuffer);
-	m_dx11Renderer->m_renderData->m_pImmediateContext->PSSetShader(m_dx11Renderer->m_renderData->testPixelShader, NULL, 0);
-
-	m_dx11Renderer->Draw(3, 0);
-
 	for (const auto renderStage : m_renderStages)
 	{
 		renderStage->PreRender();
-		renderStage->Render();
+		renderStage->Render(m_resources);
 		renderStage->PostRender();
 	}
 
@@ -68,7 +67,7 @@ void GraphicsSystem::Update(const float dt)
 
 void GraphicsSystem::Shutdown()
 {
-	for (auto renderStage : m_renderStages)
+	for (const auto* renderStage : m_renderStages)
 	{
 		SafeDelete(renderStage);
 	}
@@ -87,11 +86,21 @@ void GraphicsSystem::Resize(const int w, const int h)
 	testCamera->Resize(DirectX::XM_PIDIV4, fov, 0.01f, 1000.0f);
 }
 
+void GraphicsSystem::AddRenderStages()
+{
+	//TODO: FINISH THESE
+	//Add shadow map stage
+	//Add reflection map stage
+	AddRenderStageHelper(new ForwardRenderStage(m_dx11Renderer.get(), &m_renderComponents));
+	//Add UI stage
+
+}
+
 void GraphicsSystem::AddRenderStageHelper(IRenderStage* renderStage)
 {
 	if (renderStage)
 	{
-		m_renderStages.emplace_back(renderStage);
+		m_renderStages.emplace_back(std::move(renderStage));
 	}
 }
 
@@ -102,6 +111,32 @@ void GraphicsSystem::LoadBasicModels()
 	m_modelManager->LoadModel("spider.obj");
 	m_modelManager->LoadModel("simpleMan2.6.fbx");
 	m_modelManager->LoadModel("gh_sample_animation.fbx");
+}
+
+void GraphicsSystem::LoadShadersShaders()
+{
+	//////////////////////////////////////////////////////////////////////////
+	// Default Vertex Shader
+	ObjectHandle defaultVS;
+	static const InputLayout defaultVS_inputLayout = {
+		InputData("POSITION", DataFormat::FLOAT3, false),
+		InputData("NORMAL", DataFormat::FLOAT3, false),
+		InputData("TANGENT", DataFormat::FLOAT3, false),
+		InputData("BITANGENT", DataFormat::FLOAT3, false),
+		InputData("UV", DataFormat::FLOAT2, false),
+		InputData("COLOR", DataFormat::FLOAT4, false),
+		InputData("BONES", DataFormat::INT4, false),
+		InputData("WEIGHTS", DataFormat::FLOAT4, false)
+	};
+
+	m_dx11Renderer->CreateVertexShader(defaultVS, s_vertexShaderDir + "defaultVS.hlsl", defaultVS_inputLayout, false);
+	m_resources[(int)ObjectType::VERTEX_SHADER]["defaultVS"] = defaultVS;
+
+	//////////////////////////////////////////////////////////////////////////
+	// Default Pixel Shader
+	ObjectHandle defaultPS;
+	m_dx11Renderer->CreatePixelShader(defaultPS, s_pixelShaderDir + "defaultPS.hlsl", false);
+	m_resources[(int)ObjectType::PIXEL_SHADER]["defaultPS"] = defaultPS;
 }
 
 void GraphicsSystem::TestUpdateCamera(const float dt)
@@ -138,3 +173,8 @@ void GraphicsSystem::TestUpdateCamera(const float dt)
 		testCamera->Elevate(-dt);
 	}
 }
+
+const string GraphicsSystem::s_shaderDir = "../MeshRenderer_Lite_Framework/Assets/Shaders/";
+const string GraphicsSystem::s_vertexShaderDir = "../MeshRenderer_Lite_Framework/Assets/Shaders/VertexShaders/";
+const string GraphicsSystem::s_pixelShaderDir = "../MeshRenderer_Lite_Framework/Assets/Shaders/PixelShaders/";
+const string GraphicsSystem::s_textureDir = "../MeshRenderer_Lite_Framework/Assets/Shaders/";

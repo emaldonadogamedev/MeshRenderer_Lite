@@ -2,6 +2,8 @@
 
 #include <Systems/Graphics/GraphicsUtilities/D3DObject.h>
 
+class GraphicsSystem;
+
 class DX11RendererData
 {
 public:
@@ -95,5 +97,6 @@ private:
 		DXGI_FORMAT_R32G32B32A32_SINT
 	};
 
+	friend GraphicsSystem;
 	friend DX11Renderer;
 };

@@ -59,7 +59,10 @@ cbuffer ViewProjBuffer : register(b1)
 };
 
 static const unsigned char s_maxBoneCount = 200;
-struct AnimationBuffer
+//--------------------------------------------------------------------------------------
+// Per Camera - Constant Buffer Variables
+//--------------------------------------------------------------------------------------
+cbuffer AnimationBonesBuffer : register(b2)
 {
 	matrix boneMatrices[s_maxBoneCount];
 };

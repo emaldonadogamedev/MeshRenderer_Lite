@@ -25,15 +25,16 @@ bool DX11Renderer::InitializeRenderer(const int width, const int height, HWND hw
 	return m_isInitialized = true;
 }
 
+
 void DX11Renderer::ReleaseData()
 {
+	//CLEANUP DIRECT3D
 	SafeRelease(m_renderData->m_d3dRasterStateDefault);
 	SafeRelease(m_renderData->m_d3dRasterStateSolCullBack);
 	SafeRelease(m_renderData->m_d3dRasterStateSolCullFront);
 	SafeRelease(m_renderData->m_d3dRasterStateWireframe);
 	SafeRelease(m_renderData->m_d3dRasterStateImgui);
 
-	//CLEANUP DIRECT3D
 	if (m_renderData->m_pImmediateContext)
 		m_renderData->m_pImmediateContext->ClearState();
 
@@ -52,6 +53,11 @@ void DX11Renderer::ClearBuffer(void)
 void DX11Renderer::SwapBuffers(void)
 {
 	HR(m_renderData->m_pSwapChain->Present(0, 0));
+}
+
+const DX11RendererData& DX11Renderer::GetRendererData() const
+{
+	return *m_renderData;
 }
 
 void DX11Renderer::Draw(unsigned vertexCount, unsigned startVertexLocation)
