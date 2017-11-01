@@ -9,12 +9,7 @@ enum class ComponentType : char
 	TRANSFORM,
 
 	//Graphics
-	SPRITE,
-	SPRITE_ANIMATED,
-	MODEL,
-	MODEL_ANIMATED,
-	PARTICLE_SYSTEM,
-	LIGHT,
+	RENDERABLE,
 	
 	//Physics
 

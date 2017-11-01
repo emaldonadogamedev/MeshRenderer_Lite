@@ -6,7 +6,7 @@
 
 #include <d3d11.h>
 
-ForwardRenderStage::ForwardRenderStage(DX11Renderer* const renderData, std::vector<IRenderComponent*> * const gfxComponents):
+ForwardRenderStage::ForwardRenderStage(DX11Renderer* const renderData, RenderCompVec* const gfxComponents):
 	IRenderStage(renderData, gfxComponents)
 {
 
@@ -32,7 +32,7 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources)
 		//forward render model
 
 	renderData.m_pImmediateContext->VSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
-	renderData.m_pImmediateContext->VSSetConstantBuffers(1, 1, &renderData.testViewProjConstBuffer);
+	//renderData.m_pImmediateContext->VSSetConstantBuffers(1, 1, &renderData.testViewProjConstBuffer);
 	renderData.m_pImmediateContext->PSSetShader(renderData.testPixelShader, NULL, 0);
 
 	m_renderer->Draw(3, 0);

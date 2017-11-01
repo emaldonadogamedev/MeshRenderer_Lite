@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Systems/Core/ISystem.h>
+#include <Systems/Graphics/Components/IRenderComponent.h>
 #include <Systems/Graphics/GraphicsUtilities/ObjectHandle.h>
 #include <memory>
 #include <array>
@@ -16,6 +17,7 @@ class ModelManager;
 //typedefs
 typedef std::unordered_map<string, ObjectHandle> HandleDictionary;
 typedef std::array<HandleDictionary, (size_t)ObjectType::COUNT>  HandleDictionaryVec;
+typedef std::array<IRenderComponent*, (size_t)RenderComponentType::COUNT> RenderCompVec;
 
 class GraphicsSystem : public ISystem
 {
@@ -42,7 +44,7 @@ protected:
 	std::unique_ptr<Camera> testCamera;
 
 	std::unique_ptr<DX11Renderer> m_dx11Renderer;
-	std::vector<IRenderComponent*> m_renderComponents;
+	RenderCompVec m_renderComponents;
 	std::vector<IRenderStage*> m_renderStages;
 
 	std::unique_ptr<ModelManager> m_modelManager;

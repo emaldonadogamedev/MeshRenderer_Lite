@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Systems/Graphics/Components/IRenderComponent.h>
 #include <Systems/Graphics/GraphicsUtilities/ObjectHandle.h>
 #include <string>
 #include <vector>
@@ -10,6 +11,7 @@
 //typedefs
 typedef std::unordered_map<std::string, ObjectHandle> HandleDictionary;
 typedef std::array<HandleDictionary, (size_t)ObjectType::COUNT>  HandleDictionaryVec;
+typedef std::array<IRenderComponent*, (size_t)RenderComponentType::COUNT> RenderCompVec;
 
 class DX11Renderer;
 class IRenderComponent;
@@ -17,7 +19,7 @@ class IRenderComponent;
 class IRenderStage
 {
 public:
-	IRenderStage(DX11Renderer* const rendererData, std::vector<IRenderComponent*> * const gfxComponents)
+	IRenderStage(DX11Renderer* const rendererData, RenderCompVec* const gfxComponents)
 		:m_renderer(rendererData)
 		,m_gfxSystemComponents(gfxComponents) {}
 	virtual ~IRenderStage() {};
@@ -28,5 +30,5 @@ public:
 
 protected:
 	DX11Renderer* const m_renderer;
-	std::vector<IRenderComponent*>* const m_gfxSystemComponents;
+	RenderCompVec* const m_gfxSystemComponents;
 };

@@ -123,7 +123,7 @@ void PopulateBoneNodeData(BoneNodePtr& root, const aiNode* const assimpRoot, con
 	const unsigned int numberOfChildren = assimpRoot->mNumChildren;
 	for (unsigned int i = 0; i < numberOfChildren; ++i)
 	{
-		BoneNodePtr newChildNode = std::make_unique<BoneNode>();
+		BoneNodePtr newChildNode = std::make_unique<BoneStructureNode>();
 		newChildNode->parent = root.get();
 		const std::string assimpChildName = std::string(assimpRoot->mChildren[i]->mName.C_Str());
 		PopulateBoneNodeData(newChildNode, assimpRoot->mChildren[i], assimpChildName);
@@ -136,7 +136,7 @@ void ModelManager::PopulateAnimationData(Model& model, const aiScene* const assi
 {
 	if (assimpScene->HasAnimations())
 	{
-		model.m_rootNode = std::make_unique<BoneNode>();
+		model.m_rootNode = std::make_unique<BoneStructureNode>();
 
 		//LOAD ROOT NODE
 		PopulateBoneNodeData(model.m_rootNode, assimpScene->mRootNode, std::string(assimpScene->mRootNode->mName.C_Str()));

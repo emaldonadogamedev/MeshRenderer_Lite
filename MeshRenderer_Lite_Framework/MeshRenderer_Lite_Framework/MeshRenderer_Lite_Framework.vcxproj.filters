@@ -146,9 +146,6 @@
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\ForwardRenderStage\ForwardRenderStage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Systems\Graphics\Components\IRenderComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Src\Systems\Graphics\GraphicsUtilities\LightData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -195,6 +192,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Src\Systems\Core\GameObject\GameObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Systems\Graphics\Components\IRenderComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Systems\Graphics\Components\ModelComponent\ModelComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

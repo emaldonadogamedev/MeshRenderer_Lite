@@ -33,21 +33,23 @@ struct BoneMatrixInfo
 	XMMATRIX finalTransformation;
 };
 
-struct BoneNode;
+struct BoneStructureNode;
 
-typedef std::unique_ptr<BoneNode> BoneNodePtr;
+typedef std::unique_ptr<BoneStructureNode> BoneNodePtr;
 typedef std::unordered_map<std::string, BoneNodePtr> BoneNodePtrUmap;
 typedef std::vector<BoneNodePtr> BoneNodePtrVec;
 
-struct BoneNode
+struct BoneStructureNode
 {
 	std::string name;
 	XMMATRIX transformation;
-	BoneNode* parent = nullptr;
+	BoneStructureNode* parent = nullptr;
 	//BoneNodePtrUmap children;
 	BoneNodePtrVec children;
 };
 
+//Meant to indicate a specific part of the loaded scene
+//Example: a humanoid model can have entries such as: HEAD, LEG1, LEG2, ARM1, ARM2, etc.
 struct MeshEntry
 {
 	int materialIndex = 0;
