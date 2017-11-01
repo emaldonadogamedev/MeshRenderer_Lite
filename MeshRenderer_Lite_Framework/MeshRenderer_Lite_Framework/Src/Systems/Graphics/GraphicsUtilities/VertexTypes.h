@@ -78,7 +78,8 @@ struct VertexAnimation
 		float tx, float ty, float tz,
 		float u, float v,
 		XMFLOAT4 col = XMFLOAT4(1, 1, 1, 1))
-		: position(px, py, pz), normal(nx, ny, nz),
+		: position(px, py, pz), 
+		normal(nx, ny, nz),
 		uv(u, v),
 		tangent(tx, ty, tz),
 		color(col),

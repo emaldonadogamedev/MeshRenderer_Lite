@@ -35,7 +35,7 @@ PrimitiveGenerator::~PrimitiveGenerator(void)
 
 }
 
-void PrimitiveGenerator::CreateBox(float width, float height, float depth, ModelData& ModelData)
+void PrimitiveGenerator::CreateBox(float width, float height, float depth, Model& ModelData)
 {
 	//
 	// Create the vertices.
@@ -116,7 +116,7 @@ void PrimitiveGenerator::CreateBox(float width, float height, float depth, Model
 	ModelData.m_indices.assign(&i[0], &i[sizeof(i)/sizeof(i[0])]);
 }
 
-void PrimitiveGenerator::CreateQuad(float width, float height, float zLevel, ModelData& ModelData)
+void PrimitiveGenerator::CreateQuad(float width, float height, float zLevel, Model& ModelData)
 {
 	// Create the vertices.
 	std::vector<VertexAnimation> v;

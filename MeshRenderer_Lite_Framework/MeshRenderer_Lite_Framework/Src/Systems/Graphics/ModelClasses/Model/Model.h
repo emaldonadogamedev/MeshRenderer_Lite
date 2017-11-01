@@ -19,23 +19,18 @@ enum ModelType
 	ONLY_ANIMATION
 };
 
-struct VertexWeight
+struct BoneMatrixInfo
 {
-	VertexWeight(unsigned int vID, float w):vertexID(vID), weight(w) {}
-
-	unsigned int vertexID;
-	float weight;
-};
-
-struct Bone
-{
+	BoneMatrixInfo()
+	{
+		offsetMatrix = finalTransformation = DirectX::XMMatrixIdentity();
+	}
 	std::string name;
-	std::vector<VertexWeight> weights;
-
 	//Fun fact:
 	//the job of the offset matrix it to move the vertex position from the local space of
 	//the mesh into the bone space of that particular bone
-	DirectX::XMMATRIX offsetMatrix;
+	XMMATRIX offsetMatrix;
+	XMMATRIX finalTransformation;
 };
 
 struct BoneNode;
@@ -53,18 +48,15 @@ struct BoneNode
 	BoneNodePtrVec children;
 };
 
-struct ModelData
+struct MeshEntry
 {
-	std::vector<VertexAnimation> m_vertices;
-	ObjectHandle m_vertexBufferHandle;
-
-	std::vector<unsigned int> m_indices;
-	ObjectHandle m_indexBufferHandle;
-
-	std::vector<Bone> m_bones;
+	int materialIndex = 0;
+	int numIndices = 0;
+	int baseVertex = 0;
+	int baseIndex = 0;
 };
 
-typedef std::vector<ModelData> ModelDataList;
+typedef std::vector<MeshEntry> MeshEntryList;
 
 class Model
 {
@@ -80,20 +72,35 @@ public:
 	const std::string& GetFileName() const;
 	void GetFileName(const std::string& fileName);
 
-	ModelDataList m_modelDataList;
+	MeshEntryList m_meshEntryList;
 
 	BoneNodePtr m_rootNode;
 	std::unordered_map<std::string, aiAnimation*> m_animations;
 
 protected:
+	//Generic model info.
 	ModelType m_modelType;
 	std::string m_modelFileName;
 
+	//VBuffer & IBuffer data
+	std::vector<VertexAnimation> m_vertices;
+	std::vector<unsigned int> m_indices;
+	ObjectHandle m_vertexBufferHandle;
+	ObjectHandle m_indexBufferHandle;
+
+	//Bone-animation information
+	std::vector<BoneMatrixInfo> m_boneMatrices;
+	unsigned int m_numBones;
+	std::unordered_map<std::string, unsigned int> m_boneMapping; // maps a bone name to its index
+
+	//Assimp data
 	const aiScene* m_assimpScene;
 	Assimp::Importer m_modelImporter;
 
-	static const char s_MaxJointCount = 120;
+	//bone matrices for rendering
+	static const unsigned char s_MaxJointCount = 200;
 	static XMMATRIX boneMatrices[s_MaxJointCount];
 
+	friend class PrimitiveGenerator;
 	friend class ModelManager;
 };

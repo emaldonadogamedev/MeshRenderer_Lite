@@ -6,7 +6,7 @@
 
 class GraphicsSystem;
 class Model;
-struct ModelData;
+struct MeshEntry;
 namespace DirectX {
 	struct XMFLOAT3;
 }
@@ -32,9 +32,9 @@ public:
 private:
 	Model* LoadModel(const std::string& fileName);
 	void PopulateAnimationData(Model& model, const aiScene* const assimpScene);
-	void PopulateVertexModelData(ModelData& modelData, const aiMesh* const assimpMesh);
-	void PopulateIndexModelData(ModelData& modelData, const aiMesh* const assimpMesh);
-	void PopulateBoneData(ModelData& modelData, const aiMesh* const assimpMesh);
+	void PopulateVertexModelData(Model& model, const aiMesh* const assimpMesh);
+	void PopulateIndexModelData(Model& model, const aiMesh* const assimpMesh);
+	void PopulateBoneData(Model& model, const aiMesh* const assimpMesh, const unsigned int meshIndex);
 
 	ModelUmap m_loadedModels;
 

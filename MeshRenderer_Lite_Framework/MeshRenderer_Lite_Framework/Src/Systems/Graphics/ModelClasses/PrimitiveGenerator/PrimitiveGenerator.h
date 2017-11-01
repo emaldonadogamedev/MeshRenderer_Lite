@@ -19,47 +19,47 @@ public:
 	///<summary>
 	/// Creates a box centered at the origin with the given dimensions.
 	///</summary>
-	void CreateBox(float width, float height, float depth, ModelData& ModelData);
+	void CreateBox(float width, float height, float depth, Model& ModelData);
 
 	///<summary>
 	/// Creates a box centered at the origin with the given dimensions.
 	///</summary>
-	void CreateQuad(float width, float height, float zLevel, ModelData& ModelData);
+	void CreateQuad(float width, float height, float zLevel, Model& ModelData);
 
 	///<summary>
 	/// Creates a sphere centered at the origin with the given radius.  The
 	/// slices and stacks parameters control the degree of tessellation.
 	///</summary>
-	void CreateSphere(float radius, unsigned sliceCount, unsigned stackCount, ModelData& ModelData);
+	void CreateSphere(float radius, unsigned sliceCount, unsigned stackCount, Model& ModelData);
 
 	///<summary>
 	/// Creates a geosphere centered at the origin with the given radius.  The
 	/// depth controls the level of tessellation.
 	///</summary>
-	void CreateGeosphere(float radius, unsigned numSubdivisions, ModelData& ModelData);
+	void CreateGeosphere(float radius, unsigned numSubdivisions, Model& ModelData);
 
 	///<summary>
 	/// Creates a cylinder parallel to the y-axis, and centered about the origin.  
 	/// The bottom and top radius can vary to form various cone shapes rather than true
 	// cylinders.  The slices and stacks parameters control the degree of tessellation.
 	///</summary>
-	void CreateCylinder(float bottomRadius, float topRadius, float height, unsigned sliceCount, unsigned stackCount, ModelData& ModelData);
+	void CreateCylinder(float bottomRadius, float topRadius, float height, unsigned sliceCount, unsigned stackCount, Model& ModelData);
 
 	///<summary>
 	/// Creates an mxn grid in the xz-plane with m rows and n columns, centered
 	/// at the origin with the specified width and depth.
 	///</summary>
-	void CreateGrid(float width, float depth, unsigned m, unsigned n, ModelData& ModelData);
+	void CreateGrid(float width, float depth, unsigned m, unsigned n, Model& ModelData);
 
-	void CreateTeapot(const unsigned n, ModelData& ModelData);
+	void CreateTeapot(const unsigned n, Model& ModelData);
 
 	///<summary>
 	/// Creates a quad covering the screen in NDC coordinates.  This is useful for
 	/// post-processing effects.
 	///</summary>
-	void CreateFullscreenQuad(ModelData& ModelData);
+	void CreateFullscreenQuad(Model& ModelData);
 
-	void CreateTeapot(float size, size_t tessellation, ModelData& ModelData);
+	void CreateTeapot(float size, size_t tessellation, Model& ModelData);
 
 	//void CreateSamplingPlane(std::vector<float3>& vertexPositions, float4x4 view, ModelData& ModelData);
 

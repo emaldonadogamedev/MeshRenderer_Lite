@@ -56,10 +56,11 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 	auto newUniqModel = std::make_unique<Model>();
 
 	const unsigned int loadFlags = aiProcess_Triangulate
-		| aiProcess_GenNormals
+		| aiProcess_GenSmoothNormals
 		| aiProcess_GenUVCoords
-		| aiProcess_MakeLeftHanded //Make left-hand side loading, we're using DirectX
-		| aiProcessPreset_TargetRealtime_MaxQuality;
+		| aiProcess_ConvertToLeftHanded //Make left-hand side loading, we're using DirectX
+		//| aiProcessPreset_TargetRealtime_MaxQuality <-- not using it for now
+		;
 
 	auto loadedScene = newUniqModel->m_modelImporter.ReadFile((s_modelDir + fileName).c_str(), loadFlags);
 	//const aiScene* scene = aiImportFile((s_modelDir + fileName).c_str(), loadFlags);
@@ -68,23 +69,40 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 	{
 		Model* const newModel = newUniqModel.get();
 		newModel->m_assimpScene = loadedScene;
-
-		newModel->SetModelType(loadedScene->HasAnimations() ? ModelType::MODEL_STATIC : MODEL_STATIC);
+		newModel->SetModelType(loadedScene->HasAnimations() ? ModelType::MODEL_SKINNED: MODEL_STATIC);
 
 		PopulateAnimationData(*newModel, loadedScene);
-
+		
+		// Count the number of vertices and indices in the scene
 		const unsigned int numberOfMeshes = loadedScene->mNumMeshes;
-		ModelData newModelData;
+		unsigned int vertexCount = 0;
+		unsigned int indicesCount = 0;
 
+		newModel->m_meshEntryList.resize(numberOfMeshes);
+		for (int i = 0; i < newModel->m_meshEntryList.size(); i++) {
+			newModel->m_meshEntryList[i].materialIndex = loadedScene->mMeshes[i]->mMaterialIndex;
+			//The * 3 is because it's assumed that the faces are triangulated
+			newModel->m_meshEntryList[i].numIndices = loadedScene->mMeshes[i]->mNumFaces * 3;
+			newModel->m_meshEntryList[i].baseVertex = vertexCount;
+			newModel->m_meshEntryList[i].baseIndex = indicesCount;
+
+			vertexCount += loadedScene->mMeshes[i]->mNumVertices;
+			indicesCount += newModel->m_meshEntryList[i].numIndices;
+		}
+
+		//reserve the memory for vertices and indices
+		newModel->m_vertices.reserve(vertexCount);
+		newModel->m_indices.reserve(indicesCount);
+
+		//Populate all vertex, index, and bone data
 		for (unsigned int meshIndex = 0; meshIndex < numberOfMeshes; ++meshIndex) 
 		{
+			MeshEntry newMeshEntry;
 			const aiMesh* const currentMesh = loadedScene->mMeshes[meshIndex];
 
-			PopulateVertexModelData(newModelData, currentMesh);
-			PopulateIndexModelData(newModelData, currentMesh);
-			PopulateBoneData(newModelData, currentMesh);
-
-			newModel->m_modelDataList.emplace_back(newModelData);
+			PopulateVertexModelData(*newModel, currentMesh);
+			PopulateIndexModelData(*newModel, currentMesh);
+			PopulateBoneData(*newModel, currentMesh, meshIndex);
 		}
 
 		m_loadedModels[fileName] = std::move(newUniqModel);
@@ -134,10 +152,9 @@ void ModelManager::PopulateAnimationData(Model& model, const aiScene* const assi
 	}
 }
 
-void ModelManager::PopulateVertexModelData(ModelData& modelData, const aiMesh* const assimpMesh)
+void ModelManager::PopulateVertexModelData(Model& model, const aiMesh* const assimpMesh)
 {
 	const unsigned int numberOfVertices = assimpMesh->mNumVertices;
-	modelData.m_vertices.reserve(numberOfVertices);
 
 	const bool hasPositions = assimpMesh->HasPositions();
 	const bool hasNormals = assimpMesh->HasNormals();
@@ -152,9 +169,11 @@ void ModelManager::PopulateVertexModelData(ModelData& modelData, const aiMesh* c
 	auto textureCoordsPtr = *assimpMesh->mTextureCoords;
 	auto colorsPtr = *assimpMesh->mColors;
 
+	//Vertex with animation data(bone IDs and weights)
+	VertexAnimation newVertex;
+
 	for (unsigned int vertexIndex = 0; vertexIndex < numberOfVertices; ++vertexIndex)
 	{
-		VertexAnimation newVertex;
 		if (hasPositions)
 		{
 			newVertex.position.x = positionsPtr->x;
@@ -199,69 +218,78 @@ void ModelManager::PopulateVertexModelData(ModelData& modelData, const aiMesh* c
 			newVertex.color.z = colorsPtr->a;
 		}
 
-		modelData.m_vertices.emplace_back(std::move(newVertex));
+		model.m_vertices.emplace_back(newVertex);
 	}
 }
 
-void ModelManager::PopulateIndexModelData(ModelData& modelData, const aiMesh* const assimpMesh)
+void ModelManager::PopulateIndexModelData(Model& model, const aiMesh* const assimpMesh)
 {
 	if (assimpMesh->HasFaces())
 	{
 		const unsigned int numberOfFaces = assimpMesh->mNumFaces;
-		modelData.m_indices.resize(numberOfFaces * 3);
-
-		auto facesPtr = assimpMesh->mFaces;
+		const auto* facesPtr = assimpMesh->mFaces;
 
 		for (unsigned int faceIndex = 0; faceIndex < numberOfFaces; ++faceIndex)
 		{
-			unsigned int currentBaseIndex = faceIndex * 3;
-			modelData.m_indices[currentBaseIndex] = facesPtr->mIndices[0];
-			modelData.m_indices[currentBaseIndex + 1] = facesPtr->mIndices[1];
-			modelData.m_indices[currentBaseIndex + 2] = facesPtr->mIndices[2];
+			model.m_indices.emplace_back(facesPtr->mIndices[0]);
+			model.m_indices.emplace_back(facesPtr->mIndices[1]);
+			model.m_indices.emplace_back(facesPtr->mIndices[2]);
 			++facesPtr;
 		}
 	}
 }
 
-void ModelManager::PopulateBoneData(ModelData& modelData, const aiMesh* const assimpMesh)
+void ModelManager::PopulateBoneData(Model& model, const aiMesh* const assimpMesh, const unsigned int meshIndex)
 {
 	if (assimpMesh->HasBones())
 	{
-		std::vector<char> vertexWeightCountTracker(modelData.m_vertices.size(), 0);
+		std::vector<char> vertexWeightCountTracker(model.m_vertices.size(), 0);
 
 		const unsigned int numberOfBones = assimpMesh->mNumBones;
 		auto bonesPtr = assimpMesh->mBones;
 
 		for (unsigned int boneIndex = 0; boneIndex < numberOfBones; ++boneIndex)
 		{
-			Bone newBone;
-			newBone.name = std::string(bonesPtr[boneIndex]->mName.C_Str());
-			newBone.offsetMatrix = XMMATRIX(&bonesPtr[boneIndex]->mOffsetMatrix.a1);
-			
-			const unsigned int numberOfWeights = bonesPtr[boneIndex]->mNumWeights;
-			auto weightPtr = bonesPtr[boneIndex]->mWeights;
-			for (unsigned int weightIndex = 0; weightIndex < numberOfWeights; ++weightIndex)
+			unsigned int newOrOldBoneIndex = 0;
+			const std::string boneName = std::string(bonesPtr[boneIndex]->mName.C_Str());
+			const auto it = model.m_boneMapping.find(boneName);
+			//if no bone mapped, we'll add a new one
+			if (it == model.m_boneMapping.end())
 			{
-				//See if the vertex has space left to store weights (MAX is 4)
-				const char ptrOffset = vertexWeightCountTracker[weightPtr->mVertexId];
+				// Allocate an index for a new bone
+				newOrOldBoneIndex = model.m_numBones;
+				model.m_numBones++;
+				BoneMatrixInfo boneMtxInfo;
+				boneMtxInfo.offsetMatrix = DirectX::XMMATRIX(&bonesPtr[boneIndex]->mOffsetMatrix.a1);
+				model.m_boneMatrices.emplace_back(boneMtxInfo);
+				model.m_boneMapping[boneName] = newOrOldBoneIndex;
+			}
+			else
+			{
+				//Now it's getting the old Bone Index
+				newOrOldBoneIndex = model.m_boneMapping[boneName];
+			}
+
+			for (unsigned int weightIndex = 0; weightIndex < assimpMesh->mBones[boneIndex]->mNumWeights; weightIndex++) {
+				const unsigned int VertexID = model.m_meshEntryList[meshIndex].baseVertex + bonesPtr[boneIndex]->mWeights[weightIndex].mVertexId;
+				const float Weight = bonesPtr[boneIndex]->mWeights[weightIndex].mWeight;
+
+				//Check if we still can add bone id and weight to the vertex
+				// Max bone transformation influence is 4
+				const char ptrOffset = vertexWeightCountTracker[VertexID];
 				if (ptrOffset < 4)
 				{
-					auto& vertex = modelData.m_vertices[weightPtr->mVertexId];
-					int* newBoneID = &vertex.boneIDs.x + vertexWeightCountTracker[weightPtr->mVertexId];
-					float* newWeight = &vertex.boneWeights.x + vertexWeightCountTracker[weightPtr->mVertexId];
+					auto& vertex = model.m_vertices[VertexID];
+					int* const newBoneID = &vertex.boneIDs.x + ptrOffset;
+					float* const newWeight = &vertex.boneWeights.x + ptrOffset;
 
 					//Give the vertex the bone ID as stored in the Bones container of the model data
-					*newBoneID = static_cast<int>(modelData.m_bones.size());
-					*newWeight = weightPtr->mWeight;
+					*newBoneID = static_cast<int>(newOrOldBoneIndex);
+					*newWeight = Weight;
 
-					//Report that a weight has been added
-					++vertexWeightCountTracker[weightPtr->mVertexId];
+					++vertexWeightCountTracker[VertexID];
 				}
-
-				newBone.weights.emplace_back(VertexWeight(weightPtr->mVertexId, weightPtr->mWeight));
-				++weightPtr;
 			}
-			modelData.m_bones.emplace_back(std::move(newBone));
 		}
 	}
 }
