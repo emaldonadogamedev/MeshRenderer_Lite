@@ -7,6 +7,8 @@
 class GraphicsSystem;
 class Model;
 struct MeshEntry;
+class DX11Renderer;
+
 namespace DirectX {
 	struct XMFLOAT3;
 }
@@ -21,7 +23,7 @@ typedef std::unordered_map<std::string, std::unique_ptr<Model>> ModelUmap;
 class ModelManager
 {
 public:
-	ModelManager();
+	ModelManager(DX11Renderer * const renderer);
 	~ModelManager();
 
 	const Model* GetModel(const std::string& fileName);
@@ -37,6 +39,7 @@ private:
 	void PopulateBoneData(Model& model, const aiMesh* const assimpMesh, const unsigned int meshIndex);
 
 	ModelUmap m_loadedModels;
+	DX11Renderer * const m_renderer;
 
 	static const std::string s_modelDir;
 

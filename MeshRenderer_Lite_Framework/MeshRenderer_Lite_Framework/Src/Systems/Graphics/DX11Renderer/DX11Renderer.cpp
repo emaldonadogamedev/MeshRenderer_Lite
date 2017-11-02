@@ -1,6 +1,7 @@
 #include <Utilities/precompiled.h>
 #include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
 
+#include <Systems/Graphics/BufferClasses/ConstantBuffers.h>
 #include <Systems/Graphics/DX11Renderer/DX11RendererData.h>
 #include <Systems/Graphics/GraphicsUtilities/ObjectHandle.h>
 #include <Systems/Graphics/GraphicsUtilities/VertexTypes.h>
@@ -18,6 +19,8 @@ bool DX11Renderer::InitializeRenderer(const int width, const int height, HWND hw
 {
 	if (!InitializeD3D(width, height, hwnd))
 		return false;
+
+
 
 	if (!InitializeTestData(width, height))
 		return false;
@@ -548,7 +551,7 @@ void DX11Renderer::BindVertexShader(const ObjectHandle& vertexShader)
 
 	//TODO: For now we're only using one input layout, make this work with multiple
 	m_renderData->m_pImmediateContext->VSSetShader(shader.vertexShader, nullptr, 0);
-	//m_renderData->m_pImmediateContext->IASetInputLayout(shader.layout);
+	m_renderData->m_pImmediateContext->IASetInputLayout(shader.layout);
 }
 
 void DX11Renderer::BindPixelShader(const ObjectHandle& pixelShader)
@@ -725,6 +728,15 @@ continue_Init:
 
 bool DX11Renderer::InitializeConstBuffers()
 {
+	D3D11_BUFFER_DESC bd;
+	ZeroMemory(&bd, sizeof(bd));
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(PerObectBuffer);
+	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bd.CPUAccessFlags = 0;
+	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testViewProjConstBuffer));
+
 	return true;
 }
 
@@ -733,29 +745,29 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 	using namespace DirectX;
 
 	int hResult;
-	ID3D10Blob* blobVS, *blobPS;
-	CompileShaderHelper(hResult, &blobVS, "../MeshRenderer_Lite_Framework/Assets/Shaders/VertexShaders/testVS.hlsl", "vs_5_0", "main");
-	HR(m_renderData->m_pDevice->CreateVertexShader(blobVS->GetBufferPointer(), blobVS->GetBufferSize(), NULL, &m_renderData->testVertexShader));
+	//ID3D10Blob* blobVS, *blobPS;
+	//CompileShaderHelper(hResult, &blobVS, "../MeshRenderer_Lite_Framework/Assets/Shaders/VertexShaders/testVS.hlsl", "vs_5_0", "main");
+	//HR(m_renderData->m_pDevice->CreateVertexShader(blobVS->GetBufferPointer(), blobVS->GetBufferSize(), NULL, &m_renderData->testVertexShader));
 
 	// Define the input layout
-	D3D11_INPUT_ELEMENT_DESC layout[] 
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-	};
-	UINT numElements = ARRAYSIZE(layout);
+	//D3D11_INPUT_ELEMENT_DESC layout[] 
+	//{
+	//	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	//	{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+	//};
+	//UINT numElements = ARRAYSIZE(layout);
 
 	// Create the input layout
-	HR(m_renderData->m_pDevice->CreateInputLayout(layout, numElements, blobVS->GetBufferPointer(),
-		blobVS->GetBufferSize(), &m_renderData->m_pVSInputLayoutVertexWire));
-	blobVS->Release();
+	//HR(m_renderData->m_pDevice->CreateInputLayout(layout, numElements, blobVS->GetBufferPointer(),
+	//	blobVS->GetBufferSize(), &m_renderData->m_pVSInputLayoutVertexWire));
+	//blobVS->Release();
 
 	// Set the input layout
-	m_renderData->m_pImmediateContext->IASetInputLayout(m_renderData->m_pVSInputLayoutVertexWire);
+	//m_renderData->m_pImmediateContext->IASetInputLayout(m_renderData->m_pVSInputLayoutVertexWire);
 
-	CompileShaderHelper(hResult, &blobPS, "../MeshRenderer_Lite_Framework/Assets/Shaders/PixelShaders/testPS.hlsl", "ps_5_0", "main");
-	HR(m_renderData->m_pDevice->CreatePixelShader(blobPS->GetBufferPointer(), blobPS->GetBufferSize(), NULL, &m_renderData->testPixelShader));
-	blobPS->Release();
+	//CompileShaderHelper(hResult, &blobPS, "../MeshRenderer_Lite_Framework/Assets/Shaders/PixelShaders/testPS.hlsl", "ps_5_0", "main");
+	//HR(m_renderData->m_pDevice->CreatePixelShader(blobPS->GetBufferPointer(), blobPS->GetBufferSize(), NULL, &m_renderData->testPixelShader));
+	//blobPS->Release();
 
 	// Create vertex buffer
 	VertexWire vertices[3] =
@@ -768,19 +780,19 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(vertices);
-	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	//bd.ByteWidth = sizeof(vertices);
+	//bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bd.CPUAccessFlags = 0;
-	D3D11_SUBRESOURCE_DATA InitData;
-	ZeroMemory(&InitData, sizeof(InitData));
-
+	//D3D11_SUBRESOURCE_DATA InitData;
+	//ZeroMemory(&InitData, sizeof(InitData));
+	//
 	// Set vertex buffer
-	UINT stride = sizeof(VertexWire);
-	UINT offset = 0;
-	m_renderData->m_pImmediateContext->IASetVertexBuffers(0, 1, &m_renderData->testVertBuffer, &stride, &offset);
+	//UINT stride = sizeof(VertexWire);
+	//UINT offset = 0;
+	////m_renderData->m_pImmediateContext->IASetVertexBuffers(0, 1, &m_renderData->testVertBuffer, &stride, &offset);
 
 	// Set primitive topology
-	m_renderData->m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//m_renderData->m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// Create the constant buffers
 	bd.Usage = D3D11_USAGE_DEFAULT;
@@ -809,10 +821,10 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 	m_renderData->m_pImmediateContext->UpdateSubresource(m_renderData->testViewProjConstBuffer, 0, NULL, &testViewProjBuffer, 0, 0);
 
 	// prepare the triangle
-	m_renderData->m_pImmediateContext->VSSetShader(m_renderData->testVertexShader, NULL, 0);
+	//m_renderData->m_pImmediateContext->VSSetShader(m_renderData->testVertexShader, NULL, 0);
 	m_renderData->m_pImmediateContext->VSSetConstantBuffers(0, 1, &m_renderData->testPerObjectConstBuffer);
 	m_renderData->m_pImmediateContext->VSSetConstantBuffers(1, 1, &m_renderData->testViewProjConstBuffer);
-	m_renderData->m_pImmediateContext->PSSetShader(m_renderData->testPixelShader, NULL, 0);
+	//m_renderData->m_pImmediateContext->PSSetShader(m_renderData->testPixelShader, NULL, 0);
 
 	return true;
 }

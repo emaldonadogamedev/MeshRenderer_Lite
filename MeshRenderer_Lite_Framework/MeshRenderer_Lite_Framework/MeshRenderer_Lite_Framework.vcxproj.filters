@@ -90,6 +90,9 @@
     <ClCompile Include="Src\Systems\Core\GameObject\GameObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Systems\Graphics\Components\ModelComponent\ModelComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Utilities\precompiled.h">

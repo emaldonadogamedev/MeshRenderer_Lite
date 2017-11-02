@@ -4,17 +4,15 @@
 #include <Systems/Graphics/GraphicsUtilities/ObjectHandle.h>
 #include <string>
 #include <vector>
-#include <array>
 #include <unordered_map>
 
 
 //typedefs
 typedef std::unordered_map<std::string, ObjectHandle> HandleDictionary;
-typedef std::array<HandleDictionary, (size_t)ObjectType::COUNT>  HandleDictionaryVec;
-typedef std::array<IRenderComponent*, (size_t)RenderComponentType::COUNT> RenderCompVec;
+typedef std::vector<HandleDictionary>  HandleDictionaryVec;
+typedef std::vector<std::vector<IRenderComponent*>> RenderCompVec;
 
 class DX11Renderer;
-class IRenderComponent;
 
 class IRenderStage
 {

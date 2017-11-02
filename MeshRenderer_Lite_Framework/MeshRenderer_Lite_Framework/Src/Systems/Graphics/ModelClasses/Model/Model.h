@@ -67,6 +67,10 @@ public:
 	~Model(void);
 
 	void GenerateBuffers(DX11Renderer* const renderContext);
+	const ObjectHandle GetVBufferHandle() const;
+	const ObjectHandle GetIBufferHandle() const;
+	const int GetVertexCount() const;
+	const int GetIndicesCount()const;
 
 	ModelType GetModelType(void) const;
 	void SetModelType(ModelType type);

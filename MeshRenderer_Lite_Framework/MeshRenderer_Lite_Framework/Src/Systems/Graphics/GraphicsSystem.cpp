@@ -4,9 +4,11 @@
 
 #include <Engine/Engine.h>
 #include <Systems/Graphics/CameraClasses/Camera.h>
+#include <Systems/Graphics/Components/ModelComponent/ModelComponent.h>
 #include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
 #include <Systems/Graphics/DX11Renderer/DX11RendererData.h>
 #include <Systems/Graphics/DX11RenderStages/ForwardRenderStage/ForwardRenderStage.h>
+#include <Systems/Graphics/ModelClasses/Model/Model.h>
 #include <Systems/Graphics/ModelClasses/ModelManager/ModelManager.h>
 #include <Systems/Input/InputSystem.h>
 #include <Systems/Input/Keyboard.h>
@@ -17,8 +19,10 @@ GraphicsSystem::GraphicsSystem(Engine* const eng)
 	:ISystem(eng)
 	,m_dx11Renderer(std::make_unique<DX11Renderer>())
 	,testCamera(std::make_unique<Camera>())
-	,m_modelManager(std::make_unique<ModelManager>())
+	,m_modelManager(std::make_unique<ModelManager>(m_dx11Renderer.get()))
 {
+	m_renderComponents.resize((size_t)RenderComponentType::COUNT);
+	m_resources.resize((size_t)ObjectType::COUNT);
 }
 
 GraphicsSystem::~GraphicsSystem()
@@ -35,6 +39,10 @@ bool GraphicsSystem::Initialize()
 	LoadShadersShaders();
 	LoadBasicModels();
 
+	ModelComponent* test3DComp = new ModelComponent(nullptr);
+	test3DComp->SetModel(m_modelManager->GetModel("box.obj"));
+	m_renderComponents[(char)RenderComponentType::RENDERABLE_3D].emplace_back(std::move(test3DComp));
+
 	//Render stages
 	AddRenderStages();
 
@@ -43,7 +51,8 @@ bool GraphicsSystem::Initialize()
 
 void GraphicsSystem::Update(const float dt)
 {
-	m_dx11Renderer->ClearBuffer();
+	//Is being handled on the forward render stage
+	//m_dx11Renderer->ClearBuffer();
 
 	//TEST!!!
 	//UPDATE CAMERA
@@ -53,7 +62,6 @@ void GraphicsSystem::Update(const float dt)
 	//m_dx11Renderer->testViewProjBuffer.projectionMtx = testCamera->GetProjection();
 	m_dx11Renderer->m_renderData->m_pImmediateContext->UpdateSubresource(m_dx11Renderer->m_renderData->testViewProjConstBuffer, 
 		0, NULL, &m_dx11Renderer->testViewProjBuffer, 0, 0);
-	m_dx11Renderer->m_renderData->m_pImmediateContext->VSSetConstantBuffers(1, 1, &m_dx11Renderer->m_renderData->testViewProjConstBuffer);
 
 	for (const auto renderStage : m_renderStages)
 	{

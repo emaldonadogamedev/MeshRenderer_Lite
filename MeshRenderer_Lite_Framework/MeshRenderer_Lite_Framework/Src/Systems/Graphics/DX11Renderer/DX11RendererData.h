@@ -54,9 +54,6 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// TEST RESOURCES!
-	ID3D11Buffer* testVertBuffer = nullptr;
-	ID3D11VertexShader* testVertexShader = nullptr;
-	ID3D11PixelShader* testPixelShader = nullptr;
 	ID3D11Buffer* testPerObjectConstBuffer = nullptr;
 	ID3D11Buffer* testViewProjConstBuffer = nullptr;
 

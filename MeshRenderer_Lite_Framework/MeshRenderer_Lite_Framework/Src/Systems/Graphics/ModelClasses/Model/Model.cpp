@@ -21,6 +21,26 @@ void Model::GenerateBuffers(DX11Renderer* renderContext)
 	renderContext->CreateIndexBuffer(m_indexBufferHandle, BufferUsage::USAGE_DEFAULT, sizeof(unsigned int) * m_indices.size(), m_indices.data());
 }
 
+const ObjectHandle Model::GetVBufferHandle() const
+{
+	return m_vertexBufferHandle;
+}
+
+const ObjectHandle Model::GetIBufferHandle() const
+{
+	return m_indexBufferHandle;
+}
+
+const int Model::GetVertexCount() const
+{
+	return (int)m_vertices.size();
+}
+
+const int Model::GetIndicesCount() const
+{
+	return (int)m_indices.size();
+}
+
 ModelType Model::GetModelType() const
 {
 	return m_modelType;

@@ -6,7 +6,8 @@
 #include <assimp/scene.h>
 #include <Systems/Graphics/ModelClasses/Model/Model.h>
 
-ModelManager::ModelManager()
+ModelManager::ModelManager(DX11Renderer * const renderer)
+	:m_renderer(renderer)
 {
 }
 
@@ -58,8 +59,8 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 	const unsigned int loadFlags = aiProcess_Triangulate
 		| aiProcess_GenSmoothNormals
 		| aiProcess_GenUVCoords
-		| aiProcess_ConvertToLeftHanded //Make left-hand side loading, we're using DirectX
-		//| aiProcessPreset_TargetRealtime_MaxQuality <-- not using it for now
+		| aiProcess_MakeLeftHanded //Make left-hand side loading, we're using DirectX
+		| aiProcessPreset_TargetRealtime_MaxQuality
 		;
 
 	auto loadedScene = newUniqModel->m_modelImporter.ReadFile((s_modelDir + fileName).c_str(), loadFlags);
@@ -106,6 +107,8 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 		}
 
 		m_loadedModels[fileName] = std::move(newUniqModel);
+
+		newModel->GenerateBuffers(m_renderer);
 
 		return newModel;
 	}

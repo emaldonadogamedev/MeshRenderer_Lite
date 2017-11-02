@@ -10,14 +10,13 @@
 class Camera;
 class CameraManager;
 class DX11Renderer;
-class IRenderComponent;
 class IRenderStage;
 class ModelManager;
 
 //typedefs
 typedef std::unordered_map<string, ObjectHandle> HandleDictionary;
-typedef std::array<HandleDictionary, (size_t)ObjectType::COUNT>  HandleDictionaryVec;
-typedef std::array<IRenderComponent*, (size_t)RenderComponentType::COUNT> RenderCompVec;
+typedef std::vector<HandleDictionary>  HandleDictionaryVec;
+typedef std::vector<std::vector<IRenderComponent*>> RenderCompVec;
 
 class GraphicsSystem : public ISystem
 {
