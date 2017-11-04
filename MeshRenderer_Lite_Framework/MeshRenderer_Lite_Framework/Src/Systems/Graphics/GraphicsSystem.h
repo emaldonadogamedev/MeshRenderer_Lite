@@ -32,12 +32,16 @@ public:
 	void Resize(const int w, const int h);
 
 protected:
+	//Initialize helpers
+	void InitializeImGui();
 	void AddRenderStages();
-	void AddRenderStageHelper(IRenderStage* renderStage);
+	void AddRenderStageHelper(IRenderStage* const renderStage);
 	void LoadBasicModels();
 	void LoadShadersShaders();
 
+	//Update helpers
 	void TestUpdateCamera(const float dt);
+	void UpdateModelComponents();
 
 	//Cameras
 	std::unique_ptr<Camera> testCamera;

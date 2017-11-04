@@ -3,11 +3,14 @@
 #include <Systems/Graphics/GraphicsSystem.h>
 
 #include <Engine/Engine.h>
+#include <Imgui/imgui.h>
+#include <Imgui/imgui_impl_dx11.h>
 #include <Systems/Graphics/CameraClasses/Camera.h>
 #include <Systems/Graphics/Components/ModelComponent/ModelComponent.h>
 #include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
 #include <Systems/Graphics/DX11Renderer/DX11RendererData.h>
 #include <Systems/Graphics/DX11RenderStages/ForwardRenderStage/ForwardRenderStage.h>
+#include <Systems/Graphics/DX11RenderStages/UI Stage/ImGuiStage.h>
 #include <Systems/Graphics/ModelClasses/Model/Model.h>
 #include <Systems/Graphics/ModelClasses/ModelManager/ModelManager.h>
 #include <Systems/Input/InputSystem.h>
@@ -40,28 +43,26 @@ bool GraphicsSystem::Initialize()
 	LoadBasicModels();
 
 	ModelComponent* test3DComp = new ModelComponent(nullptr);
-	test3DComp->SetModel(m_modelManager->GetModel("box.obj"));
+	test3DComp->SetModel(m_modelManager->GetModel("gh_sample_animation.fbx"));
 	m_renderComponents[(char)RenderComponentType::RENDERABLE_3D].emplace_back(std::move(test3DComp));
 
 	//Render stages
 	AddRenderStages();
+
+	InitializeImGui();
 
 	return result;
 }
 
 void GraphicsSystem::Update(const float dt)
 {
-	//Is being handled on the forward render stage
-	//m_dx11Renderer->ClearBuffer();
-
 	//TEST!!!
-	//UPDATE CAMERA
 	TestUpdateCamera(dt);
 	testCamera->Update();
-	m_dx11Renderer->testViewProjBuffer.viewMtx = testCamera->GetView();
+	m_dx11Renderer->m_renderData->testViewProjBuffer.viewMtx = testCamera->GetView();
 	//m_dx11Renderer->testViewProjBuffer.projectionMtx = testCamera->GetProjection();
 	m_dx11Renderer->m_renderData->m_pImmediateContext->UpdateSubresource(m_dx11Renderer->m_renderData->testViewProjConstBuffer, 
-		0, NULL, &m_dx11Renderer->testViewProjBuffer, 0, 0);
+		0, NULL, &m_dx11Renderer->m_renderData->testViewProjBuffer, 0, 0);
 
 	for (const auto renderStage : m_renderStages)
 	{
@@ -71,6 +72,16 @@ void GraphicsSystem::Update(const float dt)
 	}
 
 	m_dx11Renderer->SwapBuffers();
+}
+
+void GraphicsSystem::UpdateModelComponents()
+{
+	auto& modelComponents = m_renderComponents.at((int)RenderComponentType::RENDERABLE_3D);
+
+	for (auto& model : modelComponents)
+	{
+
+	}
 }
 
 void GraphicsSystem::Shutdown()
@@ -94,17 +105,26 @@ void GraphicsSystem::Resize(const int w, const int h)
 	testCamera->Resize(DirectX::XM_PIDIV4, fov, 0.01f, 1000.0f);
 }
 
+void GraphicsSystem::InitializeImGui()
+{
+	const WindowSystem* window = reinterpret_cast<WindowSystem*>(m_engineOwner->GetSystem("Windows"));
+
+	// Setup ImGui binding
+	ImGui_ImplDX11_Init(window->GetWindowsHandler(), m_dx11Renderer->GetRendererData().m_pDevice,
+		m_dx11Renderer->GetRendererData().m_pImmediateContext);
+}
+
 void GraphicsSystem::AddRenderStages()
 {
 	//TODO: FINISH THESE
 	//Add shadow map stage
 	//Add reflection map stage
 	AddRenderStageHelper(new ForwardRenderStage(m_dx11Renderer.get(), &m_renderComponents));
-	//Add UI stage
+	AddRenderStageHelper(new ImGuiStage(m_dx11Renderer.get(), &m_renderComponents));
 
 }
 
-void GraphicsSystem::AddRenderStageHelper(IRenderStage* renderStage)
+void GraphicsSystem::AddRenderStageHelper(IRenderStage* const renderStage)
 {
 	if (renderStage)
 	{

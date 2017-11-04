@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Systems/Graphics/GraphicsUtilities/D3DObject.h>
+#include <Systems/Graphics/BufferClasses/ConstantBuffers.h>
 
 class GraphicsSystem;
 
@@ -16,7 +17,7 @@ public:
 
 	//Pointer to the main render target stored on the GPU
 	ID3D11RenderTargetView* m_pMainRenderTargetView = nullptr;
-	float m_clearColor[4] = { 0,0,0,0 };
+	XMVECTOR m_clearColor = { 0,0.3f,0,1 };
 
 	D3D_DRIVER_TYPE m_DriverType;
 	D3D_FEATURE_LEVEL m_FeatureLevel;
@@ -54,7 +55,10 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// TEST RESOURCES!
+	PerObectBuffer testPerObjectBuffer;
 	ID3D11Buffer* testPerObjectConstBuffer = nullptr;
+
+	ViewProjBuffer testViewProjBuffer;
 	ID3D11Buffer* testViewProjConstBuffer = nullptr;
 
 private:

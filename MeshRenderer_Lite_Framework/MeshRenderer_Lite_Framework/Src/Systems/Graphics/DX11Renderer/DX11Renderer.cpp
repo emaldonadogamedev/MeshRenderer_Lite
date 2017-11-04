@@ -1,7 +1,6 @@
 #include <Utilities/precompiled.h>
 #include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
 
-#include <Systems/Graphics/BufferClasses/ConstantBuffers.h>
 #include <Systems/Graphics/DX11Renderer/DX11RendererData.h>
 #include <Systems/Graphics/GraphicsUtilities/ObjectHandle.h>
 #include <Systems/Graphics/GraphicsUtilities/VertexTypes.h>
@@ -49,7 +48,7 @@ void DX11Renderer::ReleaseData()
 
 void DX11Renderer::ClearBuffer(void)
 {
-	m_renderData->m_pImmediateContext->ClearRenderTargetView(m_renderData->m_pMainRenderTargetView, m_renderData->m_clearColor);
+	m_renderData->m_pImmediateContext->ClearRenderTargetView(m_renderData->m_pMainRenderTargetView, m_renderData->m_clearColor.m128_f32);
 	m_renderData->m_pImmediateContext->ClearDepthStencilView(m_renderData->m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 }
 
@@ -375,7 +374,7 @@ void DX11Renderer::BindConstantBuffer(unsigned slot, const ObjectHandle& constan
 	{
 		m_renderData->m_pImmediateContext->CSSetConstantBuffers(slot, 1, &buffer);
 	}
-	else //if shaderType is Hull Shader
+	else //shaderType is Hull Shader
 	{
 		m_renderData->m_pImmediateContext->HSSetConstantBuffers(slot, 1, &buffer);
 	}
@@ -579,6 +578,7 @@ bool DX11Renderer::InitializeD3D(const int width, const int height, HWND hwnd)
 
 	const D3D_FEATURE_LEVEL featureLevels[] =
 	{
+		D3D_FEATURE_LEVEL_11_1,
 		D3D_FEATURE_LEVEL_11_0,
 		D3D_FEATURE_LEVEL_10_1,
 		D3D_FEATURE_LEVEL_10_0,
@@ -745,86 +745,40 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 	using namespace DirectX;
 
 	int hResult;
-	//ID3D10Blob* blobVS, *blobPS;
-	//CompileShaderHelper(hResult, &blobVS, "../MeshRenderer_Lite_Framework/Assets/Shaders/VertexShaders/testVS.hlsl", "vs_5_0", "main");
-	//HR(m_renderData->m_pDevice->CreateVertexShader(blobVS->GetBufferPointer(), blobVS->GetBufferSize(), NULL, &m_renderData->testVertexShader));
-
-	// Define the input layout
-	//D3D11_INPUT_ELEMENT_DESC layout[] 
-	//{
-	//	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	//	{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-	//};
-	//UINT numElements = ARRAYSIZE(layout);
-
-	// Create the input layout
-	//HR(m_renderData->m_pDevice->CreateInputLayout(layout, numElements, blobVS->GetBufferPointer(),
-	//	blobVS->GetBufferSize(), &m_renderData->m_pVSInputLayoutVertexWire));
-	//blobVS->Release();
-
-	// Set the input layout
-	//m_renderData->m_pImmediateContext->IASetInputLayout(m_renderData->m_pVSInputLayoutVertexWire);
-
-	//CompileShaderHelper(hResult, &blobPS, "../MeshRenderer_Lite_Framework/Assets/Shaders/PixelShaders/testPS.hlsl", "ps_5_0", "main");
-	//HR(m_renderData->m_pDevice->CreatePixelShader(blobPS->GetBufferPointer(), blobPS->GetBufferSize(), NULL, &m_renderData->testPixelShader));
-	//blobPS->Release();
-
-	// Create vertex buffer
-	VertexWire vertices[3] =
-	{
-		{XMFLOAT3(0.0f, 0.5f, 0.0f), XMFLOAT4(1.0f,0,0,1.0f)},
-		{XMFLOAT3(0.45f, -0.5, 0.0f), XMFLOAT4(0.0f,1.0f,0,1.0f)},
-		{XMFLOAT3(-0.45f, -0.5f, 0.0f), XMFLOAT4(0.0f,0,1.0f,1.0f)}
-	};
 
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	//bd.ByteWidth = sizeof(vertices);
-	//bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bd.CPUAccessFlags = 0;
-	//D3D11_SUBRESOURCE_DATA InitData;
-	//ZeroMemory(&InitData, sizeof(InitData));
-	//
-	// Set vertex buffer
-	//UINT stride = sizeof(VertexWire);
-	//UINT offset = 0;
-	////m_renderData->m_pImmediateContext->IASetVertexBuffers(0, 1, &m_renderData->testVertBuffer, &stride, &offset);
-
-	// Set primitive topology
-	//m_renderData->m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// Create the constant buffers
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(CBNeverChanges);
+	bd.ByteWidth = sizeof(ViewProjBuffer);
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.CPUAccessFlags = 0;
 	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testViewProjConstBuffer));
 
 
-	bd.ByteWidth = sizeof(CBChangesEveryFrame);
+	bd.ByteWidth = sizeof(PerObectBuffer);
 	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testPerObjectConstBuffer));
 
 	// Initialize the world matrices
-	testPerObjectBuffer.worldMtx = DirectX::XMMatrixScaling(1,1,1) /* DirectX::XMMatrixRotationY(XM_PIDIV4)*/ * DirectX::XMMatrixTranslation(-4.0, -1, 0);
-	testPerObjectBuffer.worldMtx = XMMatrixTranspose(testPerObjectBuffer.worldMtx);
-	m_renderData->m_pImmediateContext->UpdateSubresource(m_renderData->testPerObjectConstBuffer, 0, NULL, &testPerObjectBuffer, 0, 0);
+	m_renderData->testPerObjectBuffer.worldMtx = XMMatrixScaling(1,1,1) * DirectX::XMMatrixRotationX(XM_PIDIV2) * XMMatrixTranslation(0, 0, 0);
+	m_renderData->testPerObjectBuffer.worldMtx = XMMatrixTranspose(m_renderData->testPerObjectBuffer.worldMtx);
+	m_renderData->m_pImmediateContext->UpdateSubresource(m_renderData->testPerObjectConstBuffer, 0, NULL, &m_renderData->testPerObjectBuffer, 0, 0);
 
 	// Initialize the view matrix
-	DirectX::XMVECTOR Eye = DirectX::XMVectorSet(0.0f, 0.0f, -17.f, 0.0f);
-	DirectX::XMVECTOR At  = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	DirectX::XMVECTOR Up  = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	testViewProjBuffer.viewMtx = DirectX::XMMatrixTranspose(DirectX::XMMatrixLookAtLH(Eye, At, Up));
+	const XMVECTOR Eye = XMVectorSet(0.0f, 0.0f, -17.f, 0.0f);
+	const XMVECTOR At  = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	const XMVECTOR Up  = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	m_renderData->testViewProjBuffer.viewMtx = XMMatrixTranspose(XMMatrixLookAtLH(Eye, At, Up));
 
 	// Initialize the projection matrix
-	testViewProjBuffer.projectionMtx = XMMatrixTranspose(DirectX::XMMatrixPerspectiveFovLH(XM_PIDIV4, width / (FLOAT)height, 0.01f, 1000.0f));
-	m_renderData->m_pImmediateContext->UpdateSubresource(m_renderData->testViewProjConstBuffer, 0, NULL, &testViewProjBuffer, 0, 0);
+	m_renderData->testViewProjBuffer.projectionMtx = XMMatrixTranspose(XMMatrixPerspectiveFovLH(XM_PIDIV4, width / (FLOAT)height, 0.01f, 1000.0f));
+	m_renderData->m_pImmediateContext->UpdateSubresource(m_renderData->testViewProjConstBuffer, 0, NULL, &m_renderData->testViewProjBuffer, 0, 0);
 
-	// prepare the triangle
-	//m_renderData->m_pImmediateContext->VSSetShader(m_renderData->testVertexShader, NULL, 0);
-	m_renderData->m_pImmediateContext->VSSetConstantBuffers(0, 1, &m_renderData->testPerObjectConstBuffer);
-	m_renderData->m_pImmediateContext->VSSetConstantBuffers(1, 1, &m_renderData->testViewProjConstBuffer);
-	//m_renderData->m_pImmediateContext->PSSetShader(m_renderData->testPixelShader, NULL, 0);
+	// Set primitive topology
+	m_renderData->m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	return true;
 }

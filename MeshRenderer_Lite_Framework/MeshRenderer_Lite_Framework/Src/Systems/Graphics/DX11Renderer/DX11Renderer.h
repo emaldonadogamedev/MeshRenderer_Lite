@@ -68,17 +68,17 @@ protected:
 	//////////////////////////////////////////////////////////////////////////
 	//FOR TESTING
 	bool InitializeTestData(const int width, const int height);
-	struct CBChangesEveryFrame
-	{
-		XMMATRIX worldMtx;
-	};
-	CBChangesEveryFrame testPerObjectBuffer;
+	//struct CBChangesEveryFrame
+	//{
+	//	XMMATRIX worldMtx;
+	//};
+	//CBChangesEveryFrame testPerObjectBuffer;
 
-	struct CBNeverChanges
-	{
-		XMMATRIX viewMtx, projectionMtx;
-	};
-	CBNeverChanges testViewProjBuffer;
+	//struct CBNeverChanges
+	//{
+	//	XMMATRIX viewMtx, projectionMtx;
+	//};
+	//CBNeverChanges testViewProjBuffer;
 	//END FOR TESTING
 
 	std::unique_ptr<DX11RendererData> m_renderData;

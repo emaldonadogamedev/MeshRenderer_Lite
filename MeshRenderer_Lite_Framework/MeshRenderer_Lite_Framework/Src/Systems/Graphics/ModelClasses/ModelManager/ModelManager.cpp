@@ -64,13 +64,13 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 		;
 
 	auto loadedScene = newUniqModel->m_modelImporter.ReadFile((s_modelDir + fileName).c_str(), loadFlags);
-	//const aiScene* scene = aiImportFile((s_modelDir + fileName).c_str(), loadFlags);
 	
 	if (loadedScene)
 	{
 		Model* const newModel = newUniqModel.get();
 		newModel->m_assimpScene = loadedScene;
-		newModel->SetModelType(loadedScene->HasAnimations() ? ModelType::MODEL_SKINNED: MODEL_STATIC);
+		newModel->m_animationEnabled = loadedScene->HasAnimations();
+		newModel->SetModelType(newModel->m_animationEnabled ? ModelType::MODEL_SKINNED: ModelType::MODEL_STATIC);
 
 		PopulateAnimationData(*newModel, loadedScene);
 		
@@ -234,6 +234,7 @@ void ModelManager::PopulateIndexModelData(Model& model, const aiMesh* const assi
 
 		for (unsigned int faceIndex = 0; faceIndex < numberOfFaces; ++faceIndex)
 		{
+			//Since we load the model triangulated, all faces will have 3 indices
 			model.m_indices.emplace_back(facesPtr->mIndices[0]);
 			model.m_indices.emplace_back(facesPtr->mIndices[1]);
 			model.m_indices.emplace_back(facesPtr->mIndices[2]);
@@ -283,8 +284,8 @@ void ModelManager::PopulateBoneData(Model& model, const aiMesh* const assimpMesh
 				if (ptrOffset < 4)
 				{
 					auto& vertex = model.m_vertices[VertexID];
-					int* const newBoneID = &vertex.boneIDs.x + ptrOffset;
-					float* const newWeight = &vertex.boneWeights.x + ptrOffset;
+					int* const newBoneID = reinterpret_cast<int* const>(&vertex.boneIDs) + ptrOffset;
+					float* const newWeight = (&vertex.boneWeights.x) + ptrOffset;
 
 					//Give the vertex the bone ID as stored in the Bones container of the model data
 					*newBoneID = static_cast<int>(newOrOldBoneIndex);

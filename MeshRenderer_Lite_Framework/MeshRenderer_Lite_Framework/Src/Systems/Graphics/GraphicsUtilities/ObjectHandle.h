@@ -6,6 +6,7 @@ class ObjectHandle
 {
 public:
   ObjectHandle();
+  ObjectHandle(ObjectType type, int id);
   ~ObjectHandle();
 
   ObjectType GetType()const;

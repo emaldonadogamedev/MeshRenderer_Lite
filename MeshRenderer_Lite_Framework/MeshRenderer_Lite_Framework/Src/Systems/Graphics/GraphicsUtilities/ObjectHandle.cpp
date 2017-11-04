@@ -9,6 +9,12 @@ ObjectHandle::ObjectHandle(void) : m_objType(ObjectType::NONE), m_handleId(-1)
 
 }
 
+ObjectHandle::ObjectHandle(ObjectType type, int id)
+	:m_objType(type)
+	,m_handleId(id)
+{
+}
+
 ObjectHandle::~ObjectHandle()
 {
 

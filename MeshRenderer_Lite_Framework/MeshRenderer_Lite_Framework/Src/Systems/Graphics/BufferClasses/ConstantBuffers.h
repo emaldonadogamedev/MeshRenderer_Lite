@@ -4,15 +4,17 @@
 
 using DirectX::XMVECTOR;
 using DirectX::XMMATRIX;
+using DirectX::XMVectorSet;
+using DirectX::XMMatrixIdentity;
 
 struct ViewProjBuffer
 {
-	XMMATRIX viewMtx;
-	XMMATRIX invViewMtx;
-	XMMATRIX projectionMtx;
-	XMMATRIX invProjectionMtx;
-	XMMATRIX viewProjection;
-	XMVECTOR cameraPosition;
+	XMMATRIX viewMtx = XMMatrixIdentity();
+	XMMATRIX invViewMtx = XMMatrixIdentity();;
+	XMMATRIX projectionMtx = XMMatrixIdentity();;
+	XMMATRIX invProjectionMtx = XMMatrixIdentity();
+	XMMATRIX viewProjection = XMMatrixIdentity();
+	XMVECTOR cameraPosition = XMVectorSet(0,0,-17,0);
 };
 
 struct PerObectBuffer

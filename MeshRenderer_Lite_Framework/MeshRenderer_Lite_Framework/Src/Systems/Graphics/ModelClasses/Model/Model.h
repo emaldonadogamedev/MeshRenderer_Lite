@@ -11,8 +11,9 @@ struct aiAnimation;
 
 using DirectX::XMMATRIX;
 using DirectX::XMVECTOR;
+using Assimp::Importer;
 
-enum ModelType
+enum class ModelType : char
 {
 	MODEL_STATIC,
 	MODEL_SKINNED,
@@ -95,13 +96,16 @@ protected:
 	ObjectHandle m_indexBufferHandle;
 
 	//Bone-animation information
+	float m_runningTime = 0.0f;
+
+	bool m_animationEnabled = false;
 	std::vector<BoneMatrixInfo> m_boneMatrices;
 	unsigned int m_numBones;
 	std::unordered_map<std::string, unsigned int> m_boneMapping; // maps a bone name to its index
 
 	//Assimp data
 	const aiScene* m_assimpScene;
-	Assimp::Importer m_modelImporter;
+	Importer m_modelImporter;
 
 	//bone matrices for rendering
 	static const unsigned char s_MaxJointCount = 200;
