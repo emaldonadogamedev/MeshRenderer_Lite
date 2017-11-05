@@ -61,6 +61,9 @@ public:
 	ViewProjBuffer testViewProjBuffer;
 	ID3D11Buffer* testViewProjConstBuffer = nullptr;
 
+	AnimationBuffer testAnimationBuffer;
+	ID3D11Buffer* testAnimationConstBuffer = nullptr;
+
 private:
 	template<typename Container>
 	int NextAvailableIndex(const Container& container)

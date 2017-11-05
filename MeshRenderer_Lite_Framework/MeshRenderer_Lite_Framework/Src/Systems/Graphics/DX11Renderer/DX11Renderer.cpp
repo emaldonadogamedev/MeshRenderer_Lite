@@ -57,7 +57,7 @@ void DX11Renderer::SwapBuffers(void)
 	HR(m_renderData->m_pSwapChain->Present(0, 0));
 }
 
-const DX11RendererData& DX11Renderer::GetRendererData() const
+DX11RendererData& DX11Renderer::GetRendererData() const
 {
 	return *m_renderData;
 }
@@ -731,7 +731,6 @@ bool DX11Renderer::InitializeConstBuffers()
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.Usage = D3D11_USAGE_DEFAULT;
 	bd.ByteWidth = sizeof(PerObectBuffer);
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.CPUAccessFlags = 0;
@@ -758,9 +757,11 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 	bd.CPUAccessFlags = 0;
 	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testViewProjConstBuffer));
 
-
 	bd.ByteWidth = sizeof(PerObectBuffer);
 	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testPerObjectConstBuffer));
+
+	bd.ByteWidth = sizeof(AnimationBuffer);
+	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testAnimationConstBuffer));
 
 	// Initialize the world matrices
 	m_renderData->testPerObjectBuffer.worldMtx = XMMatrixScaling(1,1,1) * DirectX::XMMatrixRotationX(XM_PIDIV2) * XMMatrixTranslation(0, 0, 0);

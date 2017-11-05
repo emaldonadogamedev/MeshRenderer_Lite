@@ -63,15 +63,15 @@ struct VertexAnimation
 	XMFLOAT4 color;
 
 	//Animation bone information
-	XMINT4 boneIDs;
-	XMFLOAT4 boneWeights;
+	unsigned int boneIDs[4] = { 0,0,0,0 };
+	float boneWeights[4] = { 0,0,0,0 };
 
 
 	VertexAnimation() :position(0, 0, 0), normal(0, 0, 0), tangent(0, 0, 0), biTangent(0, 0, 0), uv(0, 0), 
-		color(1, 1, 1, 1), boneIDs(XMINT4(0, 0, 0, 0)),boneWeights(XMFLOAT4(0, 0, 0, 0)) {}
+		color(1, 1, 1, 1) {}
 
 	VertexAnimation(XMFLOAT3 pos, XMFLOAT3 norm, XMFLOAT2 uv, XMFLOAT3 tangent, XMFLOAT4 col) :position(pos),
-		normal(norm), uv(uv), tangent(tangent), color(col), boneIDs(XMINT4(0, 0, 0, 0)), boneWeights(XMFLOAT4(0, 0, 0, 0)) {}
+		normal(norm), uv(uv), tangent(tangent), color(col) {}
 	VertexAnimation(
 		float px, float py, float pz,
 		float nx, float ny, float nz,
@@ -82,9 +82,7 @@ struct VertexAnimation
 		normal(nx, ny, nz),
 		uv(u, v),
 		tangent(tx, ty, tz),
-		color(col),
-		boneIDs(XMINT4(0, 0, 0, 0)),
-		boneWeights(XMFLOAT4(0,0,0,0))
+		color(col)
 	{
 	}
 };

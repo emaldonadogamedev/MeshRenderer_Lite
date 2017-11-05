@@ -7,6 +7,7 @@ enum class RenderComponentType : char
 	RENDERABLE_3D,
 	RENDERABLE_LIGHT,
 	RENDERABLE_PARTICLE_SYSTEM,
+
 	COUNT,
 };
 
@@ -20,7 +21,8 @@ public:
 	}
 
 	virtual ~IRenderComponent() override
-	{}
+	{
+	}
 
 protected:
 	const RenderComponentType m_renderCompType;

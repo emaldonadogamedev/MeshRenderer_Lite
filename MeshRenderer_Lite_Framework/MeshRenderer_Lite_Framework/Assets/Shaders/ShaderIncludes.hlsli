@@ -15,7 +15,7 @@ struct VertexInputType
 	float4 color		: COLOR;
 
 	//Animation bone information
-	int4 boneIDs		: BONES;
+	uint4 boneIDs		: BONES;
 	float4 boneWeights	: WEIGHTS;
 };
 
@@ -58,9 +58,9 @@ cbuffer ViewProjBuffer : register(b1)
 	float4 cameraPosition;
 };
 
-static const unsigned int s_maxBoneCount = 200;
+static const unsigned int s_maxBoneCount = 100;
 //--------------------------------------------------------------------------------------
-// Per Camera - Constant Buffer Variables
+// Animation bones buffer per mesh entry
 //--------------------------------------------------------------------------------------
 cbuffer AnimationBonesBuffer : register(b2)
 {

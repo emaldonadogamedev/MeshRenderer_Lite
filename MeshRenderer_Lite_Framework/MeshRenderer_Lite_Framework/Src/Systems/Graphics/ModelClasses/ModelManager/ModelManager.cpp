@@ -16,7 +16,7 @@ ModelManager::~ModelManager()
 	EraseAllModels();
 }
 
-const Model* ModelManager::GetModel(const std::string& fileName)
+Model* ModelManager::GetModel(const std::string& fileName)
 {
 	const auto& it = m_loadedModels.find(fileName);
 	if (it != m_loadedModels.end())
@@ -27,7 +27,7 @@ const Model* ModelManager::GetModel(const std::string& fileName)
 	return LoadModel(fileName);
 }
 
-const Model* ModelManager::ReLoadModel(const std::string& fileName)
+Model* ModelManager::ReLoadModel(const std::string& fileName)
 {
 	EraseModel(fileName);
 	return LoadModel(fileName);
@@ -59,7 +59,7 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 	const unsigned int loadFlags = aiProcess_Triangulate
 		| aiProcess_GenSmoothNormals
 		| aiProcess_GenUVCoords
-		| aiProcess_MakeLeftHanded //Make left-hand side loading, we're using DirectX
+		| aiProcess_MakeLeftHanded //Make left-hand side loading, since I'm using DirectX
 		| aiProcessPreset_TargetRealtime_MaxQuality
 		;
 
@@ -70,6 +70,9 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 		Model* const newModel = newUniqModel.get();
 		newModel->m_assimpScene = loadedScene;
 		newModel->m_animationEnabled = loadedScene->HasAnimations();
+		auto trans = loadedScene->mRootNode->mTransformation;
+		trans.Inverse();
+		newModel->m_globalInverseTransform = XMMATRIX(&trans.a1);
 		newModel->SetModelType(newModel->m_animationEnabled ? ModelType::MODEL_SKINNED: ModelType::MODEL_STATIC);
 
 		PopulateAnimationData(*newModel, loadedScene);
@@ -82,7 +85,7 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 		newModel->m_meshEntryList.resize(numberOfMeshes);
 		for (int i = 0; i < newModel->m_meshEntryList.size(); i++) {
 			newModel->m_meshEntryList[i].materialIndex = loadedScene->mMeshes[i]->mMaterialIndex;
-			//The * 3 is because it's assumed that the faces are triangulated
+			//The * 3 is because the model is loaded as triangulated
 			newModel->m_meshEntryList[i].numIndices = loadedScene->mMeshes[i]->mNumFaces * 3;
 			newModel->m_meshEntryList[i].baseVertex = vertexCount;
 			newModel->m_meshEntryList[i].baseIndex = indicesCount;
@@ -150,6 +153,9 @@ void ModelManager::PopulateAnimationData(Model& model, const aiScene* const assi
 		for (unsigned int animIndex = 0; animIndex < numberOfAnimations; ++animIndex)
 		{
 			const std::string animName = assimpScene->mAnimations[animIndex]->mName.C_Str();
+			if (animIndex == 0)
+				model.m_currentAnimName = animName;
+
 			model.m_animations[animName] = assimpScene->mAnimations[animIndex];
 		}
 	}
@@ -254,24 +260,24 @@ void ModelManager::PopulateBoneData(Model& model, const aiMesh* const assimpMesh
 
 		for (unsigned int boneIndex = 0; boneIndex < numberOfBones; ++boneIndex)
 		{
-			unsigned int newOrOldBoneIndex = 0;
+			unsigned int BoneIndex = 0;
 			const std::string boneName = std::string(bonesPtr[boneIndex]->mName.C_Str());
 			const auto it = model.m_boneMapping.find(boneName);
 			//if no bone mapped, we'll add a new one
 			if (it == model.m_boneMapping.end())
 			{
 				// Allocate an index for a new bone
-				newOrOldBoneIndex = model.m_numBones;
+				BoneIndex = model.m_numBones;
 				model.m_numBones++;
 				BoneMatrixInfo boneMtxInfo;
 				boneMtxInfo.offsetMatrix = DirectX::XMMATRIX(&bonesPtr[boneIndex]->mOffsetMatrix.a1);
 				model.m_boneMatrices.emplace_back(boneMtxInfo);
-				model.m_boneMapping[boneName] = newOrOldBoneIndex;
+				model.m_boneMapping[boneName] = BoneIndex;
 			}
 			else
 			{
 				//Now it's getting the old Bone Index
-				newOrOldBoneIndex = model.m_boneMapping[boneName];
+				BoneIndex = model.m_boneMapping[boneName];
 			}
 
 			for (unsigned int weightIndex = 0; weightIndex < assimpMesh->mBones[boneIndex]->mNumWeights; weightIndex++) {
@@ -280,18 +286,14 @@ void ModelManager::PopulateBoneData(Model& model, const aiMesh* const assimpMesh
 
 				//Check if we still can add bone id and weight to the vertex
 				// Max bone transformation influence is 4
-				const char ptrOffset = vertexWeightCountTracker[VertexID];
+				char& ptrOffset = vertexWeightCountTracker[VertexID];
 				if (ptrOffset < 4)
 				{
-					auto& vertex = model.m_vertices[VertexID];
-					int* const newBoneID = reinterpret_cast<int* const>(&vertex.boneIDs) + ptrOffset;
-					float* const newWeight = (&vertex.boneWeights.x) + ptrOffset;
-
 					//Give the vertex the bone ID as stored in the Bones container of the model data
-					*newBoneID = static_cast<int>(newOrOldBoneIndex);
-					*newWeight = Weight;
-
-					++vertexWeightCountTracker[VertexID];
+					auto& vertex = model.m_vertices[VertexID];
+					vertex.boneIDs[ptrOffset] = BoneIndex;
+					vertex.boneWeights[ptrOffset];
+					++ptrOffset;
 				}
 			}
 		}

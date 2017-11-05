@@ -58,6 +58,15 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources)
 		renderData.m_pImmediateContext->VSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
 		renderData.m_pImmediateContext->PSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
 
+		//Update bone anim. const buffer
+		for (int i = 0; i < model->m_boneMatrices.size(); ++i)
+		{
+			renderData.testAnimationBuffer.boneMatrices[i] = model->m_boneMatrices[i].finalTransformation;
+		}
+		renderData.m_pImmediateContext->UpdateSubresource(renderData.testAnimationConstBuffer,
+			0, NULL, &renderData.testAnimationBuffer, 0, 0);
+		renderData.m_pImmediateContext->VSSetConstantBuffers(2, 1, &renderData.testAnimationConstBuffer);
+
 		for (auto& meshEntry : model->m_meshEntryList)
 		{
 			m_renderer->DrawIndexed(meshEntry.numIndices, meshEntry.baseIndex, meshEntry.baseVertex);

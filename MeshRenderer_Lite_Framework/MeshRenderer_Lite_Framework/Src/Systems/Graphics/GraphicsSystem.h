@@ -7,6 +7,7 @@
 #include <array>
 #include <unordered_map>
 
+class Model;
 class Camera;
 class CameraManager;
 class DX11Renderer;
@@ -41,7 +42,8 @@ protected:
 
 	//Update helpers
 	void TestUpdateCamera(const float dt);
-	void UpdateModelComponents();
+	void UpdateModelComponents(const float dt);
+	void UpdateAnimation(Model& model, const float dt);
 
 	//Cameras
 	std::unique_ptr<Camera> testCamera;

@@ -15,10 +15,10 @@ public:
 
 	const XMMATRIX& GetWorldTransform() const;
 	
-	const Model* GetModel() const;
-	void SetModel(const Model* model);
+	Model* GetModel() const;
+	void SetModel(Model* model);
 
 protected:
 
-	const Model* m_model = nullptr;
+	Model* m_model = nullptr;
 };

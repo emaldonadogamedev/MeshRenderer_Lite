@@ -5,7 +5,10 @@
 #include <Systems/Graphics/GraphicsUtilities/ObjectHandle.h>
 #include <assimp/Importer.hpp>
 
+class GraphicsSystem;
 class DX11Renderer;
+class PrimitiveGenerator;
+
 struct aiScene;
 struct aiAnimation;
 
@@ -76,15 +79,17 @@ public:
 	ModelType GetModelType(void) const;
 	void SetModelType(ModelType type);
 
+	bool IsAnimationActive() const;
+
 	const std::string& GetFileName() const;
-	void GetFileName(const std::string& fileName);
+	void SetFileName(const std::string& fileName);
 
 	MeshEntryList m_meshEntryList;
 
 	BoneNodePtr m_rootNode;
 	std::unordered_map<std::string, aiAnimation*> m_animations;
 
-protected:
+//protected:
 	//Generic model info.
 	ModelType m_modelType;
 	std::string m_modelFileName;
@@ -97,8 +102,9 @@ protected:
 
 	//Bone-animation information
 	float m_runningTime = 0.0f;
-
+	std::string m_currentAnimName;
 	bool m_animationEnabled = false;
+	XMMATRIX m_globalInverseTransform;
 	std::vector<BoneMatrixInfo> m_boneMatrices;
 	unsigned int m_numBones;
 	std::unordered_map<std::string, unsigned int> m_boneMapping; // maps a bone name to its index
@@ -107,10 +113,7 @@ protected:
 	const aiScene* m_assimpScene;
 	Importer m_modelImporter;
 
-	//bone matrices for rendering
-	static const unsigned char s_MaxJointCount = 200;
-	static XMMATRIX boneMatrices[s_MaxJointCount];
-
 	friend class PrimitiveGenerator;
 	friend class ModelManager;
+	friend class GraphicsSystem;
 };

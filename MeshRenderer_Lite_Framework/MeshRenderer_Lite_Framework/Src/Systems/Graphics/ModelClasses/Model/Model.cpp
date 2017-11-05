@@ -51,12 +51,17 @@ void Model::SetModelType(ModelType type)
 	m_modelType = type;
 }
 
+bool Model::IsAnimationActive() const
+{
+	return m_animationEnabled;
+}
+
 const std::string& Model::GetFileName() const
 {
 	return m_modelFileName;
 }
 
-void Model::GetFileName(const std::string& fileName)
+void Model::SetFileName(const std::string& fileName)
 {
 	m_modelFileName = fileName;
 }

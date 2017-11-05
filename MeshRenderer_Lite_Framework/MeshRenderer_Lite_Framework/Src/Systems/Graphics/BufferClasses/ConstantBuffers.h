@@ -28,7 +28,7 @@ struct PerObectBuffer
 	int padding;
 };
 
-static const unsigned char s_maxBoneCount = 200;
+static const unsigned char s_maxBoneCount = 100;
 struct AnimationBuffer
 {
 	XMMATRIX boneMatrices[s_maxBoneCount];

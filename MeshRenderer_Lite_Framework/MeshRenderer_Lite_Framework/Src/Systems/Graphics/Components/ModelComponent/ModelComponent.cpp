@@ -29,12 +29,12 @@ const XMMATRIX& ModelComponent::GetWorldTransform() const
 	return XMMatrixIdentity();
 }
 
-const Model* ModelComponent::GetModel() const
+Model* ModelComponent::GetModel() const
 {
 	return m_model;
 }
 
-void ModelComponent::SetModel(const Model* model)
+void ModelComponent::SetModel(Model* model)
 {
 	m_model = model;
 }

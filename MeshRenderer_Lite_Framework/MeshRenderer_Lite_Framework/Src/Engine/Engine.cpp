@@ -30,6 +30,8 @@ Engine::~Engine(void)
 
 bool Engine::Initialize(HINSTANCE hInstance)
 {
+	//TODO:
+	//DON'T HAVE A STATIC VARIABLE!!
 	// set the engine pointer to this class for the window system
 	s_engineApp = this;
 	
@@ -267,7 +269,7 @@ const GameClock& Engine::GetClock(void) const
 
 Engine* Engine::s_engineApp;
 
-bool Engine::AddSystemHelper(ISystem* sys /*= nullptr*/)
+bool Engine::AddSystemHelper(ISystem* const sys)
 {
 	if (!sys)
 		return false;

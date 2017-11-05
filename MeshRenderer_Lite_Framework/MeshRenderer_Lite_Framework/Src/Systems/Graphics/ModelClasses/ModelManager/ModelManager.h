@@ -26,8 +26,8 @@ public:
 	ModelManager(DX11Renderer * const renderer);
 	~ModelManager();
 
-	const Model* GetModel(const std::string& fileName);
-	const Model* ReLoadModel(const std::string& fileName);
+	Model* GetModel(const std::string& fileName);
+	Model* ReLoadModel(const std::string& fileName);
 	void EraseModel(const std::string& fileName);
 	void EraseAllModels();
 
