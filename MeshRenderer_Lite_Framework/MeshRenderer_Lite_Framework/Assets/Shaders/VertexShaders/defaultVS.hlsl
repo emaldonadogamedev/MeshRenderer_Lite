@@ -6,13 +6,16 @@ PixelInputType main(VertexInputType vertex)
 
 	float4 pos = float4(vertex.position, 1.0f);
 
-	if (vertex.boneWeights.x > 0.0f)
+	if (isAnimated)
 	{
 		matrix boneTransform = boneMatrices[vertex.boneIDs.x] * vertex.boneWeights.x;
 		boneTransform += boneMatrices[vertex.boneIDs.y] * vertex.boneWeights.y;
 		boneTransform += boneMatrices[vertex.boneIDs.z] * vertex.boneWeights.z;
 		boneTransform += boneMatrices[vertex.boneIDs.w] * vertex.boneWeights.w;
-		mul(pos, boneTransform);
+		pos = mul(pos, boneTransform);
+
+		//TODO: Remove this line since it's only for testing
+		pos.w = 1.0f;
 	}
 
 	result.worldPos = mul(pos, worldMtx);

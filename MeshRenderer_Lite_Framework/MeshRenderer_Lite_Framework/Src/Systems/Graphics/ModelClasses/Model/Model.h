@@ -23,19 +23,19 @@ enum class ModelType : char
 	ONLY_ANIMATION
 };
 
-struct BoneMatrixInfo
-{
-	BoneMatrixInfo()
-	{
-		offsetMatrix = finalTransformation = DirectX::XMMatrixIdentity();
-	}
-	std::string name;
-	//Fun fact:
-	//the job of the offset matrix it to move the vertex position from the local space of
-	//the mesh into the bone space of that particular bone
-	XMMATRIX offsetMatrix;
-	XMMATRIX finalTransformation;
-};
+//struct BoneMatrixInfo
+//{
+//	BoneMatrixInfo()
+//	{
+//		offsetMatrix = finalTransformation = DirectX::XMMatrixIdentity();
+//	}
+//	std::string name;
+//	//Fun fact:
+//	//the job of the offset matrix it to move the vertex position from the local space of
+//	//the mesh into the bone space of that particular bone
+//	XMMATRIX offsetMatrix;
+//	XMMATRIX finalTransformation;
+//};
 
 struct BoneStructureNode;
 
@@ -104,8 +104,11 @@ public:
 	float m_runningTime = 0.0f;
 	std::string m_currentAnimName;
 	bool m_animationEnabled = false;
+	bool m_renderBones = false;
 	XMMATRIX m_globalInverseTransform;
-	std::vector<BoneMatrixInfo> m_boneMatrices;
+	std::vector<XMVECTOR> m_boneLocations;
+	std::vector<XMMATRIX> m_boneOffsetMtxVec;
+	std::vector<XMMATRIX> m_boneFinalTransformMtxVec;
 	unsigned int m_numBones;
 	std::unordered_map<std::string, unsigned int> m_boneMapping; // maps a bone name to its index
 

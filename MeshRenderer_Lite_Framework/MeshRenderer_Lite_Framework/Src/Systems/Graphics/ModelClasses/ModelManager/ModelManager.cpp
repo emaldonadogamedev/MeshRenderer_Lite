@@ -72,7 +72,7 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 		newModel->m_animationEnabled = loadedScene->HasAnimations();
 		auto trans = loadedScene->mRootNode->mTransformation;
 		trans.Inverse();
-		newModel->m_globalInverseTransform = XMMATRIX(&trans.a1);
+		newModel->m_globalInverseTransform = DirectX::XMMatrixInverse(nullptr, XMMATRIX(&trans.a1));
 		newModel->SetModelType(newModel->m_animationEnabled ? ModelType::MODEL_SKINNED: ModelType::MODEL_STATIC);
 
 		PopulateAnimationData(*newModel, loadedScene);
@@ -109,6 +109,7 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 			PopulateBoneData(*newModel, currentMesh, meshIndex);
 		}
 
+		newModel->m_boneFinalTransformMtxVec.resize(newModel->m_boneOffsetMtxVec.size(), DirectX::XMMatrixIdentity());
 		m_loadedModels[fileName] = std::move(newUniqModel);
 
 		newModel->GenerateBuffers(m_renderer);
@@ -269,15 +270,13 @@ void ModelManager::PopulateBoneData(Model& model, const aiMesh* const assimpMesh
 				// Allocate an index for a new bone
 				BoneIndex = model.m_numBones;
 				model.m_numBones++;
-				BoneMatrixInfo boneMtxInfo;
-				boneMtxInfo.offsetMatrix = DirectX::XMMATRIX(&bonesPtr[boneIndex]->mOffsetMatrix.a1);
-				model.m_boneMatrices.emplace_back(boneMtxInfo);
+				model.m_boneOffsetMtxVec.emplace_back(std::move(DirectX::XMMATRIX(&bonesPtr[boneIndex]->mOffsetMatrix.a1)));
 				model.m_boneMapping[boneName] = BoneIndex;
 			}
 			else
 			{
 				//Now it's getting the old Bone Index
-				BoneIndex = model.m_boneMapping[boneName];
+				BoneIndex = it->second;
 			}
 
 			for (unsigned int weightIndex = 0; weightIndex < assimpMesh->mBones[boneIndex]->mNumWeights; weightIndex++) {
@@ -292,7 +291,7 @@ void ModelManager::PopulateBoneData(Model& model, const aiMesh* const assimpMesh
 					//Give the vertex the bone ID as stored in the Bones container of the model data
 					auto& vertex = model.m_vertices[VertexID];
 					vertex.boneIDs[ptrOffset] = BoneIndex;
-					vertex.boneWeights[ptrOffset];
+					vertex.boneWeights[ptrOffset] = Weight;
 					++ptrOffset;
 				}
 			}

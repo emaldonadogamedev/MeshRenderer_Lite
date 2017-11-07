@@ -25,7 +25,7 @@ struct PerObectBuffer
 	int useTexture;
 	int useNormalMap;
 	int isSkydome;
-	int padding;
+	int isAnimated;
 };
 
 static const unsigned char s_maxBoneCount = 100;

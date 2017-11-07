@@ -49,6 +49,7 @@ bool GraphicsSystem::Initialize()
 
 	ModelComponent* test3DComp = new ModelComponent(nullptr);
 	test3DComp->SetModel(m_modelManager->GetModel("gh_sample_animation.fbx"));
+	//test3DComp->SetModel(m_modelManager->GetModel("simpleMan2.6.fbx"));
 	m_renderComponents[(char)RenderComponentType::RENDERABLE_3D].emplace_back(std::move(test3DComp));
 
 	AddRenderStages();
@@ -145,10 +146,10 @@ void CalcInterpolatedScaling(aiVector3D& Out, float AnimationTime, const aiNodeA
 
 int FindPosition(float AnimationTime, const aiNodeAnim* pNodeAnim)
 {
-	for (int i = 0; i < pNodeAnim->mNumPositionKeys - 1; i++) {
-		if (AnimationTime < (float)pNodeAnim->mPositionKeys[i + 1].mTime) {
+	for (int i = 0; i < pNodeAnim->mNumPositionKeys - 1; i++) 
+	{
+		if (AnimationTime < (float)pNodeAnim->mPositionKeys[i + 1].mTime)
 			return i;
-		}
 	}
 
 	assert(0);
@@ -157,7 +158,8 @@ int FindPosition(float AnimationTime, const aiNodeAnim* pNodeAnim)
 }
 void CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime, const aiNodeAnim* pNodeAnim)
 {
-	if (pNodeAnim->mNumPositionKeys == 1) {
+	if (pNodeAnim->mNumPositionKeys == 1) 
+	{
 		Out = pNodeAnim->mPositionKeys[0].mValue;
 		return;
 	}
@@ -178,10 +180,10 @@ int FindRotation(float AnimationTime, const aiNodeAnim* pNodeAnim)
 {
 	assert(pNodeAnim->mNumRotationKeys > 0);
 
-	for (int i = 0; i < pNodeAnim->mNumRotationKeys - 1; i++) {
-		if (AnimationTime < (float)pNodeAnim->mRotationKeys[i + 1].mTime) {
+	for (int i = 0; i < pNodeAnim->mNumRotationKeys - 1; i++) 
+	{
+		if (AnimationTime < (float)pNodeAnim->mRotationKeys[i + 1].mTime) 
 			return i;
-		}
 	}
 
 	assert(0);
@@ -191,7 +193,8 @@ int FindRotation(float AnimationTime, const aiNodeAnim* pNodeAnim)
 void CalcInterpolatedRotation(aiQuaternion& Out, float AnimationTime, const aiNodeAnim* pNodeAnim)
 {
 	// we need at least two values to interpolate...
-	if (pNodeAnim->mNumRotationKeys == 1) {
+	if (pNodeAnim->mNumRotationKeys == 1) 
+	{
 		Out = pNodeAnim->mRotationKeys[0].mValue;
 		return;
 	}
@@ -214,9 +217,10 @@ void ReadNodeHeirarchy(Model& model, float AnimationTime, const aiNode* pNode, c
 
 	XMMATRIX NodeTransformation(&pNode->mTransformation.a1);
 
-	const aiNodeAnim* pNodeAnim = FindNodeAnim(currentAnimation, NodeName);
+	const aiNodeAnim* const pNodeAnim = FindNodeAnim(currentAnimation, NodeName);
 
-	if (pNodeAnim) {
+	if (pNodeAnim) 
+	{
 		// Interpolate scaling and generate scaling transformation matrix
 		aiVector3D Scaling;
 		CalcInterpolatedScaling(Scaling, AnimationTime, pNodeAnim);
@@ -230,7 +234,6 @@ void ReadNodeHeirarchy(Model& model, float AnimationTime, const aiNode* pNode, c
 		RotationM.r[0] = DirectX::XMVectorSet(ai3x3.a1, ai3x3.a2, ai3x3.a3, 0);
 		RotationM.r[1] = DirectX::XMVectorSet(ai3x3.b1, ai3x3.b2, ai3x3.b3, 0);
 		RotationM.r[2] = DirectX::XMVectorSet(ai3x3.c1, ai3x3.c2, ai3x3.c3, 0);
-		RotationM.r[3] = DirectX::XMVectorSet(0, 0, 0, 1.0f);
 
 		// Interpolate translation and generate translation transformation matrix
 		aiVector3D Translation;
@@ -238,20 +241,23 @@ void ReadNodeHeirarchy(Model& model, float AnimationTime, const aiNode* pNode, c
 		const XMMATRIX TranslationM = DirectX::XMMatrixTranslation(Translation.x, Translation.y, Translation.z);
 
 		// Combine the above transformations
-		NodeTransformation = DirectX::XMMatrixTranspose(ScalingM * RotationM * TranslationM);
+		NodeTransformation = ScalingM * RotationM * TranslationM;
 	}
 
-	const XMMATRIX GlobalTransformation = ParentTransform * NodeTransformation;
+	const XMMATRIX GlobalTransformation = NodeTransformation * ParentTransform;
 	
 	auto it = model.m_boneMapping.find(NodeName);
 
-	if (it != model.m_boneMapping.end()) {
+	if (it != model.m_boneMapping.end()) 
+	{
 		const unsigned int BoneIndex = it->second;
-		model.m_boneMatrices[BoneIndex].finalTransformation = 
-			DirectX::XMMatrixTranspose(model.m_boneMatrices[BoneIndex].offsetMatrix * GlobalTransformation * model.m_globalInverseTransform);
+		model.m_boneFinalTransformMtxVec[BoneIndex] = 
+			//DirectX::XMMatrixTranspose(model.m_globalInverseTransform * GlobalTransformation * model.m_boneMatrices[BoneIndex].offsetMatrix);
+			DirectX::XMMatrixTranspose(model.m_boneOffsetMtxVec[BoneIndex] *  GlobalTransformation * model.m_globalInverseTransform);
 	}
 
-	for (int i = 0; i < pNode->mNumChildren; i++) {
+	for (int i = 0; i < pNode->mNumChildren; i++) 
+	{
 		ReadNodeHeirarchy(model, AnimationTime, pNode->mChildren[i], currentAnimation, GlobalTransformation);
 	}
 }
@@ -262,24 +268,15 @@ void GraphicsSystem::UpdateAnimation(Model& model, const float dt)
 	model.m_runningTime += dt;
 	auto currentAnim = model.m_animations[model.m_currentAnimName];
 	if (model.m_runningTime > (float)currentAnim->mDuration)
-	{
 		model.m_runningTime = 0;
-	}
 
-	XMMATRIX identity = XMMatrixIdentity();
+	const XMMATRIX identity = XMMatrixIdentity();
 
 	float TicksPerSecond = (float)(currentAnim->mTicksPerSecond != 0 ? currentAnim->mTicksPerSecond : 25.0f);
 	float TimeInTicks = model.m_runningTime * TicksPerSecond;
 	float AnimationTime = fmod(TimeInTicks, (float)currentAnim->mDuration);
 
 	ReadNodeHeirarchy(model, AnimationTime, model.m_assimpScene->mRootNode, currentAnim, identity);
-
-	std::vector<XMMATRIX> Transforms;
-	Transforms.resize(model.m_numBones, XMMatrixIdentity());
-
-	for (int i = 0; i < model.m_numBones; i++) {
-		Transforms[i] = model.m_boneMatrices[i].finalTransformation;
-	}
 }
 
 void GraphicsSystem::Shutdown()

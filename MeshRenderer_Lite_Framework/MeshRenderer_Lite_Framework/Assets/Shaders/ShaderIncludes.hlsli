@@ -41,7 +41,7 @@ cbuffer ConstantBuffer : register(b0)
 	int useTexture;
 	int useNormalMap;
 	int isSkydome;
-	int padding;
+	int isAnimated;
 }
 
 //--------------------------------------------------------------------------------------

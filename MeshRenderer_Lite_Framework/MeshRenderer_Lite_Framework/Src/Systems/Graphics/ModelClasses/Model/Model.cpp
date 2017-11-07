@@ -8,6 +8,8 @@ Model::Model()
 	,m_rootNode(nullptr)
 	, m_numBones(0)
 {
+	m_boneOffsetMtxVec.reserve(100);
+	m_boneFinalTransformMtxVec.reserve(100);
 }
 
 Model::~Model()
