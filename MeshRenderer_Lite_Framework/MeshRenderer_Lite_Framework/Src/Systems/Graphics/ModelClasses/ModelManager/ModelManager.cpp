@@ -71,7 +71,6 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 		newModel->m_assimpScene = loadedScene;
 		newModel->m_animationEnabled = loadedScene->HasAnimations();
 		auto trans = loadedScene->mRootNode->mTransformation;
-		trans.Inverse();
 		newModel->m_globalInverseTransform = DirectX::XMMatrixInverse(nullptr, XMMATRIX(&trans.a1));
 		newModel->SetModelType(newModel->m_animationEnabled ? ModelType::MODEL_SKINNED: ModelType::MODEL_STATIC);
 
@@ -262,7 +261,7 @@ void ModelManager::PopulateBoneData(Model& model, const aiMesh* const assimpMesh
 		for (unsigned int boneIndex = 0; boneIndex < numberOfBones; ++boneIndex)
 		{
 			unsigned int BoneIndex = 0;
-			const std::string boneName = std::string(bonesPtr[boneIndex]->mName.C_Str());
+			const std::string boneName(bonesPtr[boneIndex]->mName.C_Str());
 			const auto it = model.m_boneMapping.find(boneName);
 			//if no bone mapped, we'll add a new one
 			if (it == model.m_boneMapping.end())
@@ -279,7 +278,7 @@ void ModelManager::PopulateBoneData(Model& model, const aiMesh* const assimpMesh
 				BoneIndex = it->second;
 			}
 
-			for (unsigned int weightIndex = 0; weightIndex < assimpMesh->mBones[boneIndex]->mNumWeights; weightIndex++) {
+			for (unsigned int weightIndex = 0; weightIndex < assimpMesh->mBones[boneIndex]->mNumWeights; ++weightIndex) {
 				const unsigned int VertexID = model.m_meshEntryList[meshIndex].baseVertex + bonesPtr[boneIndex]->mWeights[weightIndex].mVertexId;
 				const float Weight = bonesPtr[boneIndex]->mWeights[weightIndex].mWeight;
 

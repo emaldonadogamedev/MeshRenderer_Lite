@@ -210,4 +210,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\Owner\Desktop\ogldev-source\ogldev-source\Content\boblampclean.md5mesh" />
+  </ItemGroup>
 </Project>

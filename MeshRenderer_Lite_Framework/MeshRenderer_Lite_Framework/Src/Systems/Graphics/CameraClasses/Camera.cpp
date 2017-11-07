@@ -10,7 +10,7 @@ namespace {
 	DirectX::XMVECTOR s_defaultForward = DirectX::XMVectorSet(0, 0, 1, 0);
 }
 
-Camera::Camera() : m_Position(XMVectorSet(0.0f, 0.0f, -456.0f, 0.0f)),
+Camera::Camera() : m_Position(XMVectorSet(0.0f, 0.0f, -56.0f, 0.0f)),
 m_LookAt(XMVectorSet(0.0f, 0.0f, 0.0f,0)),
 m_Up(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)),
 m_Right(XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f)),

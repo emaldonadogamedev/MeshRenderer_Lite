@@ -137,6 +137,9 @@
     <ClInclude Include="Src\Utilities\dxerr.h" />
     <ClInclude Include="Src\Utilities\precompiled.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\Owner\Desktop\ogldev-source\ogldev-source\Content\boblampclean.md5mesh" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{ECCC2061-7C84-4BCF-A5F9-968EC15CA139}</ProjectGuid>
     <RootNamespace>MeshRenderer_Lite_Framework</RootNamespace>
