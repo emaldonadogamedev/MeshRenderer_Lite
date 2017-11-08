@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Systems/Graphics/GraphicsUtilities/D3DObject.h>
+#include <Systems/Graphics/GraphicsUtilities/D3DObjects.h>
 #include <Systems/Graphics/BufferClasses/ConstantBuffers.h>
 
 class GraphicsSystem;

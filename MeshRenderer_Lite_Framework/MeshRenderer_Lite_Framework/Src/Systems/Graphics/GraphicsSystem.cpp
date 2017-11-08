@@ -18,6 +18,7 @@
 #include <Systems/Graphics/DX11RenderStages/UI Stage/ImGuiStage.h>
 #include <Systems/Graphics/ModelClasses/Model/Model.h>
 #include <Systems/Graphics/ModelClasses/ModelManager/ModelManager.h>
+#include <Systems/Graphics/TextureClasses/TextureManager/TextureManager.h>
 #include <Systems/Input/InputSystem.h>
 #include <Systems/Input/Keyboard.h>
 #include <Systems/Input/Mouse.h>
@@ -30,6 +31,7 @@ GraphicsSystem::GraphicsSystem(Engine* const eng)
 	,m_dx11Renderer(std::make_unique<DX11Renderer>())
 	,testCamera(std::make_unique<Camera>())
 	,m_modelManager(std::make_unique<ModelManager>(m_dx11Renderer.get()))
+	,m_textureManager(std::make_unique<TextureManager>(m_dx11Renderer.get()))
 {
 	m_renderComponents.resize((size_t)RenderComponentType::COUNT);
 	m_resources.resize((size_t)ObjectType::COUNT);
@@ -50,9 +52,9 @@ bool GraphicsSystem::Initialize()
 	LoadBasicModels();
 
 	ModelComponent* test3DComp = new ModelComponent(nullptr);
-	test3DComp->SetModel(m_modelManager->GetModel("CylinderAnim.fbx"));
+	//test3DComp->SetModel(m_modelManager->GetModel("CylinderAnim.fbx"));
 	//test3DComp->SetModel(m_modelManager->GetModel("simpleMan2.6.fbx"));
-	//test3DComp->SetModel(m_modelManager->GetModel("boblampclean.md5mesh"));
+	test3DComp->SetModel(m_modelManager->GetModel("boblampclean.md5mesh"));
 	m_renderComponents[(char)RenderComponentType::RENDERABLE_3D].emplace_back(std::move(test3DComp));
 
 	AddRenderStages();
@@ -241,28 +243,17 @@ void ReadNodeHeirarchy(Model& model, float AnimationTime, const aiNode* pNode, c
 		CalcInterpolatedScaling(Scaling, AnimationTime, pNodeAnim);
 		aiMatrix4x4 assScale;
 		aiMatrix4x4::Scaling(Scaling, assScale);
-		XMMATRIX ScalingM = //XMMatrixTranspose(XMMatrixScaling(Scaling.x, Scaling.y, Scaling.z));
-      (XMMatrixScaling(Scaling.x, Scaling.y, Scaling.z));
 
 		// Interpolate rotation and generate rotation transformation matrix
 		aiQuaternion RotationQ;
 		CalcInterpolatedRotation(RotationQ, AnimationTime, pNodeAnim);
 		aiMatrix4x4 assOrientation(RotationQ.GetMatrix());
-		XMMATRIX RotationM2 = XMMatrixIdentity();
-		RotationM2.r[0] = DirectX::XMVectorSet(assOrientation.a1, assOrientation.a2, assOrientation.a3, 0);
-		RotationM2.r[1] = DirectX::XMVectorSet(assOrientation.b1, assOrientation.b2, assOrientation.b3, 0);
-		RotationM2.r[2] = DirectX::XMVectorSet(assOrientation.c1, assOrientation.c2, assOrientation.c3, 0);
-
-		const XMMATRIX RotationM = //XMMatrixTranspose(XMMatrixRotationQuaternion(XMVectorSet(RotationQ.x, RotationQ.y, RotationQ.z, RotationQ.w)));
-      (XMMatrixRotationQuaternion(XMVectorSet(RotationQ.x, RotationQ.y, RotationQ.z, RotationQ.w)));
 
 		// Interpolate translation and generate translation transformation matrix
 		aiVector3D Translation;
 		CalcInterpolatedPosition(Translation, AnimationTime, pNodeAnim);
 		aiMatrix4x4 assTrans;
 		aiMatrix4x4::Translation(Translation, assTrans);
-		const XMMATRIX TranslationM = //XMMatrixTranspose(XMMatrixTranslation(Translation.x, Translation.y, Translation.z));
-      (XMMatrixTranslation(Translation.x, Translation.y, Translation.z));
 
 		// Combine the above transformations
 		//NodeTransformation = (assScale * assOrientation * assTrans);

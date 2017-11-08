@@ -92,9 +92,15 @@ const XMMATRIX& Transform::GetWorldTransform() const
 
 void Transform::UpdateWorldMatrix()
 {
+	//m_worldTransform = XMMatrixTranspose(
+	//	XMMatrixScalingFromVector(m_scale) *
+	//	XMMatrixRotationQuaternion(m_rotation) *
+	//	XMMatrixTranslationFromVector(m_position)
+	//);
+
 	m_worldTransform = XMMatrixTranspose(
-		XMMatrixScalingFromVector(m_scale) *
+		XMMatrixTranslationFromVector(m_position) *
 		XMMatrixRotationQuaternion(m_rotation) *
-		XMMatrixTranslationFromVector(m_position)
+		XMMatrixScalingFromVector(m_scale)
 	);
 }

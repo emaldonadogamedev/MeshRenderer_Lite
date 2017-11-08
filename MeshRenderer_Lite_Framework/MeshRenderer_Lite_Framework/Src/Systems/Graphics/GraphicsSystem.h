@@ -13,6 +13,7 @@ class CameraManager;
 class DX11Renderer;
 class IRenderStage;
 class ModelManager;
+class TextureManager;
 
 //typedefs
 typedef std::unordered_map<string, ObjectHandle> HandleDictionary;
@@ -53,6 +54,7 @@ protected:
 	std::vector<IRenderStage*> m_renderStages;
 
 	std::unique_ptr<ModelManager> m_modelManager;
+	std::unique_ptr<TextureManager> m_textureManager;
 
 	//Resource Collection
 	HandleDictionaryVec m_resources;
