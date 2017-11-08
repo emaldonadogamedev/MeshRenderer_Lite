@@ -71,8 +71,9 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 		Model* const newModel = newUniqModel.get();
 		newModel->m_assimpScene = loadedScene;
 		newModel->m_animationEnabled = loadedScene->HasAnimations();
-		auto trans = loadedScene->mRootNode->mTransformation;
-		newModel->m_globalInverseTransform = DirectX::XMMatrixInverse(nullptr, XMMATRIX(&trans.a1));
+		auto inv = loadedScene->mRootNode->mTransformation;
+		inv.Inverse();
+		newModel->m_globalInverseTransform = std::move(inv);
 		newModel->SetModelType(newModel->m_animationEnabled ? ModelType::MODEL_SKINNED: ModelType::MODEL_STATIC);
 
 		PopulateAnimationData(*newModel, loadedScene);
@@ -270,7 +271,7 @@ void ModelManager::PopulateBoneData(Model& model, const aiMesh* const assimpMesh
 				// Allocate an index for a new bone
 				BoneIndex = model.m_numBones;
 				model.m_numBones++;
-				model.m_boneOffsetMtxVec.emplace_back(std::move(DirectX::XMMATRIX(&bonesPtr[boneIndex]->mOffsetMatrix.a1)));
+				model.m_boneOffsetMtxVec.emplace_back(bonesPtr[boneIndex]->mOffsetMatrix);
 				model.m_boneMapping[boneName] = BoneIndex;
 			}
 			else

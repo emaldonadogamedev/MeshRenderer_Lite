@@ -105,9 +105,9 @@ public:
 	std::string m_currentAnimName;
 	bool m_animationEnabled = false;
 	bool m_renderBones = false;
-	XMMATRIX m_globalInverseTransform;
+	aiMatrix4x4 m_globalInverseTransform;
 	std::vector<XMVECTOR> m_boneLocations;
-	std::vector<XMMATRIX> m_boneOffsetMtxVec;
+	std::vector<aiMatrix4x4> m_boneOffsetMtxVec;
 	std::vector<XMMATRIX> m_boneFinalTransformMtxVec;
 	unsigned int m_numBones;
 	std::unordered_map<std::string, unsigned int> m_boneMapping; // maps a bone name to its index

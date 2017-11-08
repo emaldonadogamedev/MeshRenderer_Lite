@@ -223,11 +223,11 @@ void CalcInterpolatedRotation(aiQuaternion& Out, float AnimationTime, const aiNo
 	Out = Out.Normalize();
 }
 
-void ReadNodeHeirarchy(Model& model, float AnimationTime, const aiNode* pNode, const aiAnimation* currentAnimation ,const XMMATRIX& ParentTransform)
+void ReadNodeHeirarchy(Model& model, float AnimationTime, const aiNode* pNode, const aiAnimation* currentAnimation ,const aiMatrix4x4& ParentTransform)
 {
 	const string NodeName(pNode->mName.data);
 
-	XMMATRIX NodeTransformation(&pNode->mTransformation.a1);
+	aiMatrix4x4 NodeTransformation(pNode->mTransformation);
 
   //if(NodeName.find("$AssimpFbx$"))
     //return;
@@ -239,17 +239,19 @@ void ReadNodeHeirarchy(Model& model, float AnimationTime, const aiNode* pNode, c
 		// Interpolate scaling and generate scaling transformation matrix
 		aiVector3D Scaling;
 		CalcInterpolatedScaling(Scaling, AnimationTime, pNodeAnim);
+		aiMatrix4x4 assScale;
+		aiMatrix4x4::Scaling(Scaling, assScale);
 		XMMATRIX ScalingM = //XMMatrixTranspose(XMMatrixScaling(Scaling.x, Scaling.y, Scaling.z));
       (XMMatrixScaling(Scaling.x, Scaling.y, Scaling.z));
 
 		// Interpolate rotation and generate rotation transformation matrix
 		aiQuaternion RotationQ;
 		CalcInterpolatedRotation(RotationQ, AnimationTime, pNodeAnim);
-		aiMatrix3x3 ai3x3 = RotationQ.GetMatrix();
+		aiMatrix4x4 assOrientation(RotationQ.GetMatrix());
 		XMMATRIX RotationM2 = XMMatrixIdentity();
-		RotationM2.r[0] = DirectX::XMVectorSet(ai3x3.a1, ai3x3.a2, ai3x3.a3, 0);
-		RotationM2.r[1] = DirectX::XMVectorSet(ai3x3.b1, ai3x3.b2, ai3x3.b3, 0);
-		RotationM2.r[2] = DirectX::XMVectorSet(ai3x3.c1, ai3x3.c2, ai3x3.c3, 0);
+		RotationM2.r[0] = DirectX::XMVectorSet(assOrientation.a1, assOrientation.a2, assOrientation.a3, 0);
+		RotationM2.r[1] = DirectX::XMVectorSet(assOrientation.b1, assOrientation.b2, assOrientation.b3, 0);
+		RotationM2.r[2] = DirectX::XMVectorSet(assOrientation.c1, assOrientation.c2, assOrientation.c3, 0);
 
 		const XMMATRIX RotationM = //XMMatrixTranspose(XMMatrixRotationQuaternion(XMVectorSet(RotationQ.x, RotationQ.y, RotationQ.z, RotationQ.w)));
       (XMMatrixRotationQuaternion(XMVectorSet(RotationQ.x, RotationQ.y, RotationQ.z, RotationQ.w)));
@@ -257,24 +259,33 @@ void ReadNodeHeirarchy(Model& model, float AnimationTime, const aiNode* pNode, c
 		// Interpolate translation and generate translation transformation matrix
 		aiVector3D Translation;
 		CalcInterpolatedPosition(Translation, AnimationTime, pNodeAnim);
+		aiMatrix4x4 assTrans;
+		aiMatrix4x4::Translation(Translation, assTrans);
 		const XMMATRIX TranslationM = //XMMatrixTranspose(XMMatrixTranslation(Translation.x, Translation.y, Translation.z));
       (XMMatrixTranslation(Translation.x, Translation.y, Translation.z));
 
 		// Combine the above transformations
-		NodeTransformation = XMMatrixTranspose(ScalingM * RotationM * TranslationM);
-      //XMMatrixTranspose(TranslationM * RotationM2 * ScalingM);
+		//NodeTransformation = (assScale * assOrientation * assTrans);
+		NodeTransformation = (assTrans * assOrientation * assScale);
 	}
 
-	const XMMATRIX GlobalTransformation = (NodeTransformation * ParentTransform);
-	
+	//const aiMatrix4x4 GlobalTransformation = (NodeTransformation * ParentTransform);
+	const aiMatrix4x4 GlobalTransformation = (ParentTransform * NodeTransformation);
+
 	auto it = model.m_boneMapping.find(NodeName);
 
 	if (it != model.m_boneMapping.end()) 
 	{
 		const unsigned int BoneIndex = it->second;
-		model.m_boneFinalTransformMtxVec[BoneIndex] = 
-			XMMatrixTranspose(model.m_globalInverseTransform * GlobalTransformation * model.m_boneOffsetMtxVec[BoneIndex]);
-			//(model.m_boneOffsetMtxVec[BoneIndex] *  GlobalTransformation * model.m_globalInverseTransform);
+		//const aiMatrix4x4 assFinal = model.m_boneOffsetMtxVec[BoneIndex] * GlobalTransformation * model.m_globalInverseTransform;
+		const aiMatrix4x4 assFinal = model.m_globalInverseTransform * GlobalTransformation * model.m_boneOffsetMtxVec[BoneIndex];
+		XMMATRIX final;
+		final.r[0] = XMVectorSet(assFinal.a1, assFinal.a2, assFinal.a3, assFinal.a4);
+		final.r[1] = XMVectorSet(assFinal.b1, assFinal.b2, assFinal.b3, assFinal.b4);
+		final.r[2] = XMVectorSet(assFinal.c1, assFinal.c2, assFinal.c3, assFinal.c4);
+		final.r[3] = XMVectorSet(assFinal.d1, assFinal.d2, assFinal.d3, assFinal.d4);
+
+		model.m_boneFinalTransformMtxVec[BoneIndex] = std::move(final);
 	}
 
 	for (int i = 0; i < pNode->mNumChildren; i++) 
@@ -291,13 +302,11 @@ void GraphicsSystem::UpdateAnimation(Model& model, const float dt)
 	if (model.m_runningTime > (float)currentAnim->mDuration)
 		model.m_runningTime = 0;
 
-	const XMMATRIX identity = XMMatrixIdentity();
-
 	float TicksPerSecond = (float)(currentAnim->mTicksPerSecond != 0 ? currentAnim->mTicksPerSecond : 25.0f);
 	float TimeInTicks = m_engineOwner->GetClock().GetTotalTime() * TicksPerSecond;
 	float AnimationTime = fmod(TimeInTicks, (float)currentAnim->mDuration);
 
-	ReadNodeHeirarchy(model, AnimationTime, model.m_assimpScene->mRootNode, currentAnim, identity);
+	ReadNodeHeirarchy(model, AnimationTime, model.m_assimpScene->mRootNode, currentAnim, aiMatrix4x4());
 }
 
 void GraphicsSystem::Shutdown()
