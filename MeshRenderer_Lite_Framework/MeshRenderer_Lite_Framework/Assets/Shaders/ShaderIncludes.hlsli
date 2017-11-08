@@ -66,3 +66,18 @@ cbuffer AnimationBonesBuffer : register(b2)
 {
 	matrix boneMatrices[s_maxBoneCount];
 };
+
+matrix Transpose(in matrix mat)
+{
+	matrix result;
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			result[i][j] = mat[j][i];
+		}
+
+	}
+
+	return result;
+}

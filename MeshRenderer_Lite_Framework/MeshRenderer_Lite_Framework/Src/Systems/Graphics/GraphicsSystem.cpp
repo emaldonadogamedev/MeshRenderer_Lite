@@ -261,7 +261,7 @@ void ReadNodeHeirarchy(Model& model, float AnimationTime, const aiNode* pNode, c
       (XMMatrixTranslation(Translation.x, Translation.y, Translation.z));
 
 		// Combine the above transformations
-		NodeTransformation = XMMatrixTranspose(ScalingM * RotationM2 * TranslationM);
+		NodeTransformation = XMMatrixTranspose(ScalingM * RotationM * TranslationM);
       //XMMatrixTranspose(TranslationM * RotationM2 * ScalingM);
 	}
 
@@ -273,7 +273,7 @@ void ReadNodeHeirarchy(Model& model, float AnimationTime, const aiNode* pNode, c
 	{
 		const unsigned int BoneIndex = it->second;
 		model.m_boneFinalTransformMtxVec[BoneIndex] = 
-      XMMatrixTranspose(model.m_globalInverseTransform * GlobalTransformation * model.m_boneOffsetMtxVec[BoneIndex]);
+			XMMatrixTranspose(model.m_globalInverseTransform * GlobalTransformation * model.m_boneOffsetMtxVec[BoneIndex]);
 			//(model.m_boneOffsetMtxVec[BoneIndex] *  GlobalTransformation * model.m_globalInverseTransform);
 	}
 
