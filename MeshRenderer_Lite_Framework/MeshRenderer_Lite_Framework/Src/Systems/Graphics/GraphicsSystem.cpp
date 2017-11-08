@@ -50,9 +50,9 @@ bool GraphicsSystem::Initialize()
 	LoadBasicModels();
 
 	ModelComponent* test3DComp = new ModelComponent(nullptr);
-	//test3DComp->SetModel(m_modelManager->GetModel("CylinderAnim.fbx"));
+	test3DComp->SetModel(m_modelManager->GetModel("CylinderAnim.fbx"));
 	//test3DComp->SetModel(m_modelManager->GetModel("simpleMan2.6.fbx"));
-	test3DComp->SetModel(m_modelManager->GetModel("boblampclean.md5mesh"));
+	//test3DComp->SetModel(m_modelManager->GetModel("boblampclean.md5mesh"));
 	m_renderComponents[(char)RenderComponentType::RENDERABLE_3D].emplace_back(std::move(test3DComp));
 
 	AddRenderStages();
@@ -138,7 +138,8 @@ void CalcInterpolatedScaling(aiVector3D& Out, float AnimationTime, const aiNodeA
 	}
 
 	int ScalingIndex = FindScaling(AnimationTime, pNodeAnim);
-	int NextScalingIndex = (ScalingIndex + 1);
+  //Hack so the cylinder will loop
+	int NextScalingIndex = (ScalingIndex + 1) % pNodeAnim->mNumScalingKeys;
 	assert(NextScalingIndex < pNodeAnim->mNumScalingKeys);
 	float DeltaTime = (float)(pNodeAnim->mScalingKeys[NextScalingIndex].mTime - pNodeAnim->mScalingKeys[ScalingIndex].mTime);
 	float Factor = std::fabs( (AnimationTime - (float)pNodeAnim->mScalingKeys[ScalingIndex].mTime) / DeltaTime);
@@ -172,7 +173,8 @@ void CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime, const aiNode
 	}
 
 	int PositionIndex = FindPosition(AnimationTime, pNodeAnim);
-	int NextPositionIndex = (PositionIndex + 1);
+  //hack so cylinder will loop
+	int NextPositionIndex = (PositionIndex + 1) % pNodeAnim->mNumPositionKeys;
 	assert(NextPositionIndex < pNodeAnim->mNumPositionKeys);
 	float DeltaTime = (float)(pNodeAnim->mPositionKeys[NextPositionIndex].mTime - pNodeAnim->mPositionKeys[PositionIndex].mTime);
 	float Factor = std::fabs((AnimationTime - (float)pNodeAnim->mPositionKeys[PositionIndex].mTime) / DeltaTime);
@@ -209,7 +211,8 @@ void CalcInterpolatedRotation(aiQuaternion& Out, float AnimationTime, const aiNo
 	}
 
 	int RotationIndex = FindRotation(AnimationTime, pNodeAnim);
-	int NextRotationIndex = (RotationIndex + 1);
+  //Hack so the cylinder will loop
+	int NextRotationIndex = (RotationIndex + 1) % pNodeAnim->mNumRotationKeys;
 	assert(NextRotationIndex < pNodeAnim->mNumRotationKeys);
 	float DeltaTime = (float)(pNodeAnim->mRotationKeys[NextRotationIndex].mTime - pNodeAnim->mRotationKeys[RotationIndex].mTime);
 	float Factor = std::fabs((AnimationTime - (float)pNodeAnim->mRotationKeys[RotationIndex].mTime) / DeltaTime);
@@ -226,6 +229,9 @@ void ReadNodeHeirarchy(Model& model, float AnimationTime, const aiNode* pNode, c
 
 	XMMATRIX NodeTransformation(&pNode->mTransformation.a1);
 
+  //if(NodeName.find("$AssimpFbx$"))
+    //return;
+
 	const aiNodeAnim* const pNodeAnim = FindNodeAnim(currentAnimation, NodeName);
 
 	if (pNodeAnim) 
@@ -233,7 +239,8 @@ void ReadNodeHeirarchy(Model& model, float AnimationTime, const aiNode* pNode, c
 		// Interpolate scaling and generate scaling transformation matrix
 		aiVector3D Scaling;
 		CalcInterpolatedScaling(Scaling, AnimationTime, pNodeAnim);
-		XMMATRIX ScalingM = XMMatrixTranspose(XMMatrixScaling(Scaling.x, Scaling.y, Scaling.z));
+		XMMATRIX ScalingM = //XMMatrixTranspose(XMMatrixScaling(Scaling.x, Scaling.y, Scaling.z));
+      (XMMatrixScaling(Scaling.x, Scaling.y, Scaling.z));
 
 		// Interpolate rotation and generate rotation transformation matrix
 		aiQuaternion RotationQ;
@@ -244,15 +251,18 @@ void ReadNodeHeirarchy(Model& model, float AnimationTime, const aiNode* pNode, c
 		RotationM2.r[1] = DirectX::XMVectorSet(ai3x3.b1, ai3x3.b2, ai3x3.b3, 0);
 		RotationM2.r[2] = DirectX::XMVectorSet(ai3x3.c1, ai3x3.c2, ai3x3.c3, 0);
 
-		const XMMATRIX RotationM = XMMatrixTranspose(XMMatrixRotationQuaternion(XMVectorSet(RotationQ.x, RotationQ.y, RotationQ.z, RotationQ.w)));
+		const XMMATRIX RotationM = //XMMatrixTranspose(XMMatrixRotationQuaternion(XMVectorSet(RotationQ.x, RotationQ.y, RotationQ.z, RotationQ.w)));
+      (XMMatrixRotationQuaternion(XMVectorSet(RotationQ.x, RotationQ.y, RotationQ.z, RotationQ.w)));
 
 		// Interpolate translation and generate translation transformation matrix
 		aiVector3D Translation;
 		CalcInterpolatedPosition(Translation, AnimationTime, pNodeAnim);
-		const XMMATRIX TranslationM = XMMatrixTranspose(XMMatrixTranslation(Translation.x, Translation.y, Translation.z));
+		const XMMATRIX TranslationM = //XMMatrixTranspose(XMMatrixTranslation(Translation.x, Translation.y, Translation.z));
+      (XMMatrixTranslation(Translation.x, Translation.y, Translation.z));
 
 		// Combine the above transformations
-		NodeTransformation = (ScalingM * RotationM2 * TranslationM);
+		NodeTransformation = XMMatrixTranspose(ScalingM * RotationM2 * TranslationM);
+      //XMMatrixTranspose(TranslationM * RotationM2 * ScalingM);
 	}
 
 	const XMMATRIX GlobalTransformation = (NodeTransformation * ParentTransform);
@@ -263,7 +273,7 @@ void ReadNodeHeirarchy(Model& model, float AnimationTime, const aiNode* pNode, c
 	{
 		const unsigned int BoneIndex = it->second;
 		model.m_boneFinalTransformMtxVec[BoneIndex] = 
-			(model.m_globalInverseTransform * GlobalTransformation * model.m_boneOffsetMtxVec[BoneIndex]);
+      XMMatrixTranspose(model.m_globalInverseTransform * GlobalTransformation * model.m_boneOffsetMtxVec[BoneIndex]);
 			//(model.m_boneOffsetMtxVec[BoneIndex] *  GlobalTransformation * model.m_globalInverseTransform);
 	}
 
@@ -394,32 +404,32 @@ void GraphicsSystem::TestUpdateCamera(const float dt)
 
 	if (input->m_keyboard->IsKeyHeld(KeyboardEvent::VirtualKey::KEY_W))
 	{
-		testCamera->Walk(dt);
+		testCamera->Walk(dt * 10);
 	}
 
 	if (input->m_keyboard->IsKeyHeld(KeyboardEvent::VirtualKey::KEY_S))
 	{
-		testCamera->Walk(-dt);
+		testCamera->Walk(-dt * 10);
 	}
 
 	if (input->m_keyboard->IsKeyHeld(KeyboardEvent::VirtualKey::KEY_A))
 	{
-		testCamera->Strafe(dt);
+		testCamera->Strafe(dt * 10);
 	}
 
 	if (input->m_keyboard->IsKeyHeld(KeyboardEvent::VirtualKey::KEY_D))
 	{
-		testCamera->Strafe(-dt);
+		testCamera->Strafe(-dt * 10);
 	}
 
 	if (input->m_keyboard->IsKeyHeld(KeyboardEvent::VirtualKey::KEY_Q))
 	{
-		testCamera->Elevate(dt);
+		testCamera->Elevate(dt * 10);
 	}
 
 	if (input->m_keyboard->IsKeyHeld(KeyboardEvent::VirtualKey::KEY_E))
 	{
-		testCamera->Elevate(-dt);
+		testCamera->Elevate(-dt * 10);
 	}
 }
 
