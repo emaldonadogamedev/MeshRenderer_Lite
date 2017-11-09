@@ -23,7 +23,7 @@ class IComponent
 {
 public:
 	//constructors/destructors
-	IComponent(const ComponentType type, const GameObject* owner):m_componentType(type), m_owner(owner){}
+	IComponent(const ComponentType type, const GameObject* owner, bool isActive = true):m_componentType(type), m_owner(owner),m_isActive(isActive){}
 	virtual ~IComponent() {};
 
 	//Getters/Setters

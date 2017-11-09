@@ -47,33 +47,36 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources)
 	const auto& modelComponents = m_gfxSystemComponents->at((int)RenderComponentType::RENDERABLE_3D);
 	for (const IRenderComponent* component : modelComponents)
 	{
-		const auto model = (static_cast<const ModelComponent*>(component))->GetModel();
-		m_renderer->BindVertexBuffer(model->GetVBufferHandle(), sizeof(VertexAnimation));
-		m_renderer->BindIndexBuffer(model->GetIBufferHandle());
-
-		//TODO:
-		//UPDATE Per Object Const Buffer with current component transform
-		// before we bind the it to the shaders
-
-		renderData.testPerObjectBuffer.isAnimated = model->m_modelType == ModelType::MODEL_SKINNED;
-		renderData.m_pImmediateContext->UpdateSubresource(renderData.testPerObjectConstBuffer,
-			0, NULL, &renderData.testPerObjectBuffer, 0, 0);
-
-		renderData.m_pImmediateContext->VSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
-		renderData.m_pImmediateContext->PSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
-
-		//Update bone anim. const buffer
-		std::memcpy(renderData.testAnimationBuffer.boneMatrices, model->m_boneFinalTransformMtxVec.data(),
-			sizeof(XMMATRIX) * model->m_boneFinalTransformMtxVec.size());
-		
-		renderData.m_pImmediateContext->UpdateSubresource(renderData.testAnimationConstBuffer,
-			0, NULL, &renderData.testAnimationBuffer, 0, 0);
-		renderData.m_pImmediateContext->VSSetConstantBuffers(2, 1, &renderData.testAnimationConstBuffer);
-
-		//Draw each mesh entry, it's all one big VBuffer and IBufer though
-		for (auto& meshEntry : model->m_meshEntryList)
+		if (component->GetIsActive())
 		{
-			m_renderer->DrawIndexed(meshEntry.numIndices, meshEntry.baseIndex, meshEntry.baseVertex);
+			const auto model = (static_cast<const ModelComponent*>(component))->GetModel();
+			m_renderer->BindVertexBuffer(model->GetVBufferHandle(), sizeof(VertexAnimation));
+			m_renderer->BindIndexBuffer(model->GetIBufferHandle());
+
+			//TODO:
+			//UPDATE Per Object Const Buffer with current component transform
+			// before we bind the it to the shaders
+
+			renderData.testPerObjectBuffer.isAnimated = model->m_modelType == ModelType::MODEL_SKINNED;
+			renderData.m_pImmediateContext->UpdateSubresource(renderData.testPerObjectConstBuffer,
+				0, NULL, &renderData.testPerObjectBuffer, 0, 0);
+
+			renderData.m_pImmediateContext->VSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
+			renderData.m_pImmediateContext->PSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
+
+			//Update bone anim. const buffer
+			std::memcpy(renderData.testAnimationBuffer.boneMatrices, model->m_boneFinalTransformMtxVec.data(),
+				sizeof(XMMATRIX) * model->m_boneFinalTransformMtxVec.size());
+
+			renderData.m_pImmediateContext->UpdateSubresource(renderData.testAnimationConstBuffer,
+				0, NULL, &renderData.testAnimationBuffer, 0, 0);
+			renderData.m_pImmediateContext->VSSetConstantBuffers(2, 1, &renderData.testAnimationConstBuffer);
+
+			//Draw each mesh entry, it's all one big VBuffer and IBufer though
+			for (auto& meshEntry : model->m_meshEntryList)
+			{
+				m_renderer->DrawIndexed(meshEntry.numIndices, meshEntry.baseIndex, meshEntry.baseVertex);
+			}
 		}
 	}
 }
