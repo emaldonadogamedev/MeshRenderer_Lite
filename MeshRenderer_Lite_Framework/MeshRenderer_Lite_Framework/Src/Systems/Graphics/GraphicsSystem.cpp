@@ -288,16 +288,16 @@ void ReadNodeHeirarchy(Model& model, float AnimationTime, const aiNode* pNode, c
 
 void GraphicsSystem::UpdateAnimation(Model& model, const float dt)
 {
-	model.m_runningTime += dt;
 	auto currentAnim = model.m_animations[model.m_currentAnimName];
+	model.m_runningTime += dt * (float)(currentAnim->mTicksPerSecond != 0 ? currentAnim->mTicksPerSecond : 25.0f);
 	if (model.m_runningTime > (float)currentAnim->mDuration)
 		model.m_runningTime = 0;
 
-	float TicksPerSecond = (float)(currentAnim->mTicksPerSecond != 0 ? currentAnim->mTicksPerSecond : 25.0f);
-	float TimeInTicks = m_engineOwner->GetClock().GetTotalTime() * TicksPerSecond;
-	float AnimationTime = fmod(TimeInTicks, (float)currentAnim->mDuration);
+	//float TicksPerSecond = (float)(currentAnim->mTicksPerSecond != 0 ? currentAnim->mTicksPerSecond : 25.0f);
+	//float TimeInTicks = model.m_runningTime * TicksPerSecond;
+	//float AnimationTime = fmod(TimeInTicks, (float)currentAnim->mDuration);
 
-	ReadNodeHeirarchy(model, AnimationTime, model.m_assimpScene->mRootNode, currentAnim, aiMatrix4x4());
+	ReadNodeHeirarchy(model, model.m_runningTime, model.m_assimpScene->mRootNode, currentAnim, aiMatrix4x4());
 }
 
 void GraphicsSystem::Shutdown()

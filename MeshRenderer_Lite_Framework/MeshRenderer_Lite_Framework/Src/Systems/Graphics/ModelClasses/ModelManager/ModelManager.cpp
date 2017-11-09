@@ -78,6 +78,9 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 
 		PopulateAnimationData(*newModel, loadedScene);
 		
+
+		//TODO: LOAD TEXTURES!!
+
 		// Count the number of vertices and indices in the scene
 		const unsigned int numberOfMeshes = loadedScene->mNumMeshes;
 		unsigned int vertexCount = 0;
@@ -102,7 +105,6 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 		//Populate all vertex, index, and bone data
 		for (unsigned int meshIndex = 0; meshIndex < numberOfMeshes; ++meshIndex) 
 		{
-			MeshEntry newMeshEntry;
 			const aiMesh* const currentMesh = loadedScene->mMeshes[meshIndex];
 
 			PopulateVertexModelData(*newModel, currentMesh);

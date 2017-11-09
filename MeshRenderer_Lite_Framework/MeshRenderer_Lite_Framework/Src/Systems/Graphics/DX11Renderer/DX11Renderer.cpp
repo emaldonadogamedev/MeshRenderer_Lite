@@ -766,7 +766,7 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 	// Initialize the world matrices
 	//m_renderData->testPerObjectBuffer.worldMtx = XMMatrixScaling(1,1,1) * DirectX::XMMatrixRotationX(XM_PIDIV2) * XMMatrixTranslation(0, 0, 0);
 	//m_renderData->testPerObjectBuffer.worldMtx = XMMatrixTranspose(m_renderData->testPerObjectBuffer.worldMtx);
-	m_renderData->testPerObjectBuffer.worldMtx = XMMatrixTranspose(XMMatrixTranslation(0, 0, -5) *  DirectX::XMMatrixRotationX(XM_PIDIV2) * XMMatrixScaling(1.5, 1.5, 1.5));
+	m_renderData->testPerObjectBuffer.worldMtx = XMMatrixTranspose(XMMatrixTranslation(-12, 0, -5) *  DirectX::XMMatrixRotationX(XM_PIDIV2) * XMMatrixScaling(-1.5, 1.5, 1.5));
 	m_renderData->m_pImmediateContext->UpdateSubresource(m_renderData->testPerObjectConstBuffer, 0, NULL, &m_renderData->testPerObjectBuffer, 0, 0);
 
 	// Initialize the view matrix
