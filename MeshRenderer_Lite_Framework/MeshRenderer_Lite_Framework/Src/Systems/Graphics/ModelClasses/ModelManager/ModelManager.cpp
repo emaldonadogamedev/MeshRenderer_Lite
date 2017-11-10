@@ -4,6 +4,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+
 #include <Systems/Graphics/ModelClasses/Model/Model.h>
 
 ModelManager::ModelManager(DX11Renderer * const renderer)
@@ -61,25 +62,23 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 		| aiProcess_GenUVCoords
 		| aiProcess_ConvertToLeftHanded //Make left-hand side loading, since I'm using DirectX
 		| aiProcessPreset_TargetRealtime_MaxQuality
-		|  aiProcess_JoinIdenticalVertices
+		| aiProcess_JoinIdenticalVertices
 		;
 
-	auto loadedScene = newUniqModel->m_modelImporter.ReadFile((s_modelDir + fileName).c_str(), loadFlags);
-	
+	auto const loadedScene = newUniqModel->m_modelImporter.ReadFile((s_modelDir + fileName).c_str(), loadFlags);
+
 	if (loadedScene)
 	{
 		Model* const newModel = newUniqModel.get();
 		newModel->m_assimpScene = loadedScene;
 		newModel->m_animationEnabled = loadedScene->HasAnimations();
+		newModel->SetModelType(newModel->m_animationEnabled ? ModelType::MODEL_SKINNED : ModelType::MODEL_STATIC);
 		auto inv = loadedScene->mRootNode->mTransformation;
 		inv.Inverse();
 		newModel->m_globalInverseTransform = std::move(inv);
-		newModel->SetModelType(newModel->m_animationEnabled ? ModelType::MODEL_SKINNED: ModelType::MODEL_STATIC);
 
 		PopulateAnimationData(*newModel, loadedScene);
-		
-
-		//TODO: LOAD TEXTURES!!
+		PopulateMaterialData(*newModel, loadedScene);
 
 		// Count the number of vertices and indices in the scene
 		const unsigned int numberOfMeshes = loadedScene->mNumMeshes;
@@ -88,7 +87,7 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 
 		newModel->m_meshEntryList.resize(numberOfMeshes);
 		for (int i = 0; i < newModel->m_meshEntryList.size(); i++) {
-			newModel->m_meshEntryList[i].materialIndex = loadedScene->mMeshes[i]->mMaterialIndex;
+			newModel->m_meshEntryList[i].assImpMaterialIndex = loadedScene->mMeshes[i]->mMaterialIndex;
 			//The * 3 is because the model is loaded as triangulated
 			newModel->m_meshEntryList[i].numIndices = loadedScene->mMeshes[i]->mNumFaces * 3;
 			newModel->m_meshEntryList[i].baseVertex = vertexCount;
@@ -119,8 +118,44 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 
 		return newModel;
 	}
+	
+	std::string err = newUniqModel->m_modelImporter.GetErrorString();
 
 	return nullptr;
+}
+
+const std::string ExtractFileName(const aiString& assPath)
+{
+	std::string result(assPath.data);
+
+	const size_t r = result.find_last_of('\\') + 1;
+
+	if (r != std::string::npos) {
+		result = result.substr(r, result.size() - r);
+	}
+
+	return result;
+}
+
+void ModelManager::PopulateMaterialData(Model& model, const aiScene* const assimpScene)
+{
+	if (assimpScene->HasMaterials()) 
+	{
+		const unsigned int numberOfMaterials = assimpScene->mNumMaterials;
+		aiMaterial** const materialPtr = assimpScene->mMaterials;
+		for (unsigned int materialIndex = 0; materialIndex < numberOfMaterials; ++materialIndex)
+		{
+			aiString assPath;
+			const auto diffTexture = materialPtr[materialIndex]->GetTexture(aiTextureType_DIFFUSE,0, &assPath);
+			//0 means success
+			if (diffTexture == 0)
+				model.m_diffTextures.emplace_back(ExtractFileName(assPath));
+
+			const auto normalTexture = materialPtr[materialIndex]->GetTexture(aiTextureType_NORMALS, 0, &assPath);
+			if (normalTexture == 0)
+				model.m_normalTextures.emplace_back(ExtractFileName(assPath));
+		}
+	}
 }
 
 void PopulateBoneNodeData(BoneNodePtr& root, const aiNode* const assimpRoot, const std::string& assimpRootName)
@@ -228,7 +263,7 @@ void ModelManager::PopulateVertexModelData(Model& model, const aiMesh* const ass
 			newVertex.color.x = colorsPtr->r;
 			newVertex.color.y = colorsPtr->g;
 			newVertex.color.z = colorsPtr->b;
-			newVertex.color.z = colorsPtr->a;
+			newVertex.color.w = colorsPtr->a;
 		}
 
 		model.m_vertices.emplace_back(newVertex);

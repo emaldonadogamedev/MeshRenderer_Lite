@@ -1,4 +1,5 @@
 #include "../ShaderIncludes.hlsli"
+#include "VertexShaderIncludes.hlsli"
 
 PixelInputType main(VertexInputType vertex)
 {
@@ -20,7 +21,12 @@ PixelInputType main(VertexInputType vertex)
 	result.position = mul(result.worldPos, viewMtx);
 	result.position = mul(result.position, projectionMtx);
 
-	result.color = color;
+	//JUST AS A TEST, look closely at the moving vertices
+	pos = normalize(pos);
+	result.color = pos;
+
+	//TODO: GO BACK TO THIS!
+	//result.color = vertex.color;
 
 	return result;
 }

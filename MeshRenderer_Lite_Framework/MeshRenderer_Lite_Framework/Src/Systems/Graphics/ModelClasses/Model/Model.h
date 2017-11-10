@@ -23,24 +23,10 @@ enum class ModelType : char
 	ONLY_ANIMATION
 };
 
-//struct BoneMatrixInfo
-//{
-//	BoneMatrixInfo()
-//	{
-//		offsetMatrix = finalTransformation = DirectX::XMMatrixIdentity();
-//	}
-//	std::string name;
-//	//Fun fact:
-//	//the job of the offset matrix it to move the vertex position from the local space of
-//	//the mesh into the bone space of that particular bone
-//	XMMATRIX offsetMatrix;
-//	XMMATRIX finalTransformation;
-//};
 
 struct BoneStructureNode;
 
 typedef std::unique_ptr<BoneStructureNode> BoneNodePtr;
-typedef std::unordered_map<std::string, BoneNodePtr> BoneNodePtrUmap;
 typedef std::vector<BoneNodePtr> BoneNodePtrVec;
 
 struct BoneStructureNode
@@ -56,7 +42,7 @@ struct BoneStructureNode
 //Example: a humanoid model can have entries such as: HEAD, LEG1, LEG2, ARM1, ARM2, etc.
 struct MeshEntry
 {
-	int materialIndex = 0;
+	int assImpMaterialIndex = 0;
 	int numIndices = 0;
 	int baseVertex = 0;
 	int baseIndex = 0;
@@ -111,6 +97,8 @@ public:
 	std::vector<XMMATRIX> m_boneFinalTransformMtxVec;
 	unsigned int m_numBones;
 	std::unordered_map<std::string, unsigned int> m_boneMapping; // maps a bone name to its index
+	std::vector<std::string> m_diffTextures;
+	std::vector<std::string> m_normalTextures;
 
 	//Assimp data
 	const aiScene* m_assimpScene;

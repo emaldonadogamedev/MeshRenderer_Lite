@@ -33,6 +33,7 @@ public:
 
 private:
 	Model* LoadModel(const std::string& fileName);
+	void PopulateMaterialData(Model& model, const aiScene* const assimpScene);
 	void PopulateAnimationData(Model& model, const aiScene* const assimpScene);
 	void PopulateVertexModelData(Model& model, const aiMesh* const assimpMesh);
 	void PopulateIndexModelData(Model& model, const aiMesh* const assimpMesh);

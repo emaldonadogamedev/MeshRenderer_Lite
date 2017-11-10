@@ -52,9 +52,9 @@ bool GraphicsSystem::Initialize()
 	LoadBasicModels();
 
 	ModelComponent* test3DComp = new ModelComponent(nullptr);
-	//test3DComp->SetModel(m_modelManager->GetModel("CylinderAnim.fbx"));
-	//test3DComp->SetModel(m_modelManager->GetModel("simpleMan2.6.fbx"));
-	test3DComp->SetModel(m_modelManager->GetModel("boblampclean.md5mesh"));
+	//test3DComp->SetModel(m_modelManager->GetModel("spider.obj"));
+	test3DComp->SetModel(m_modelManager->GetModel("CylinderAnim.fbx"));
+	//test3DComp->SetModel(m_modelManager->GetModel("boblampclean.md5mesh"));
 	m_renderComponents[(char)RenderComponentType::RENDERABLE_3D].emplace_back(std::move(test3DComp));
 
 	AddRenderStages();
@@ -293,10 +293,6 @@ void GraphicsSystem::UpdateAnimation(Model& model, const float dt)
 	if (model.m_runningTime > (float)currentAnim->mDuration)
 		model.m_runningTime = 0;
 
-	//float TicksPerSecond = (float)(currentAnim->mTicksPerSecond != 0 ? currentAnim->mTicksPerSecond : 25.0f);
-	//float TimeInTicks = model.m_runningTime * TicksPerSecond;
-	//float AnimationTime = fmod(TimeInTicks, (float)currentAnim->mDuration);
-
 	ReadNodeHeirarchy(model, model.m_runningTime, model.m_assimpScene->mRootNode, currentAnim, aiMatrix4x4());
 }
 
@@ -366,7 +362,7 @@ void GraphicsSystem::LoadBasicModels()
 	m_modelManager->LoadModel("box.obj");
 	m_modelManager->LoadModel("sphere.obj");
 	m_modelManager->LoadModel("spider.obj");
-	m_modelManager->LoadModel("simpleMan2.6.fbx");
+	m_modelManager->LoadModel("Tower.fbx");
 	m_modelManager->LoadModel("gh_sample_animation.fbx");
 	m_modelManager->LoadModel("CylinderAnim.fbx");
 	m_modelManager->LoadModel("boblampclean.md5mesh");

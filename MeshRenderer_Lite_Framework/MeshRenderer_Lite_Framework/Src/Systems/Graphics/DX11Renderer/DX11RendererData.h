@@ -49,9 +49,10 @@ public:
 	std::vector<Buffer> constantBuffers;
 
 	//Sampler states for textures
-	ID3D11SamplerState* m_pDiffSampleState = nullptr;
-	ID3D11SamplerState* m_pSpecSampleState = nullptr;
-	ID3D11SamplerState* m_pNormalSampleState = nullptr;
+	ID3D11SamplerState* m_pWrapSamplerState = nullptr;
+	ID3D11SamplerState* m_pMirrorSamplerState = nullptr;
+	ID3D11SamplerState* m_pClampSamplerState = nullptr;
+	ID3D11SamplerState* m_pBorderSamplerState = nullptr;
 
 	//////////////////////////////////////////////////////////////////////////
 	// TEST RESOURCES!

@@ -30,13 +30,20 @@ bool DX11Renderer::InitializeRenderer(const int width, const int height, HWND hw
 
 void DX11Renderer::ReleaseData()
 {
-	//CLEANUP DIRECT3D
+	//cleanup rasterizers
 	SafeRelease(m_renderData->m_d3dRasterStateDefault);
 	SafeRelease(m_renderData->m_d3dRasterStateSolCullBack);
 	SafeRelease(m_renderData->m_d3dRasterStateSolCullFront);
 	SafeRelease(m_renderData->m_d3dRasterStateWireframe);
 	SafeRelease(m_renderData->m_d3dRasterStateImgui);
 
+	//cleanup texture samplers
+	SafeRelease(m_renderData->m_pWrapSamplerState);
+	SafeRelease(m_renderData->m_pMirrorSamplerState);
+	SafeRelease(m_renderData->m_pClampSamplerState);
+	SafeRelease(m_renderData->m_pBorderSamplerState);
+	
+	//CLEANUP DIRECT3D
 	if (m_renderData->m_pImmediateContext)
 		m_renderData->m_pImmediateContext->ClearState();
 
@@ -787,6 +794,42 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 
 bool DX11Renderer::InitializeTextureSamplers()
 {
+	D3D11_SAMPLER_DESC samplerDesc;
+	ZeroMemory(&samplerDesc, sizeof(D3D11_SAMPLER_DESC));
+
+	// Create a texture sampler state description.
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MaxAnisotropy = 1;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;// D3D11_COMPARISON_ALWAYS;
+	samplerDesc.BorderColor[0] = 0;
+	samplerDesc.BorderColor[1] = 0;
+	samplerDesc.BorderColor[2] = 0;
+	samplerDesc.BorderColor[3] = 0;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = 0;
+
+	// Create the texture sampler state.
+	HR(m_renderData->m_pDevice->CreateSamplerState(&samplerDesc, &m_renderData->m_pWrapSamplerState));
+
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_MIRROR;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_MIRROR;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_MIRROR;
+	HR(m_renderData->m_pDevice->CreateSamplerState(&samplerDesc, &m_renderData->m_pMirrorSamplerState));
+
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	HR(m_renderData->m_pDevice->CreateSamplerState(&samplerDesc, &m_renderData->m_pClampSamplerState));
+
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+	HR(m_renderData->m_pDevice->CreateSamplerState(&samplerDesc, &m_renderData->m_pBorderSamplerState));
+
 	return true;
 }
 
