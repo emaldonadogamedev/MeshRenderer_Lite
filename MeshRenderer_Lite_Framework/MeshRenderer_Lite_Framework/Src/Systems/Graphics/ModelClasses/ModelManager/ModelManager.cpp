@@ -119,7 +119,7 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 		return newModel;
 	}
 	
-	std::string err = newUniqModel->m_modelImporter.GetErrorString();
+	const std::string err = newUniqModel->m_modelImporter.GetErrorString();
 
 	return nullptr;
 }

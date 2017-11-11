@@ -39,8 +39,10 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources)
 	{
 		if (ImGui::Begin("Animation Properties"))
 		{
-			ImGui::Checkbox("Enabled", &model->m_animationEnabled);// ImGui::SameLine(150);
-			ImGui::Checkbox("Draw Bones", &model->m_animationEnabled);
+			ImGui::Checkbox("Play Animation", &model->m_animationEnabled);
+			ImGui::SliderFloat("Ticks per second", &model->m_ticksPerSecond, 1.0f, 100.0f);
+
+			ImGui::Checkbox("Draw Bones", &model->m_renderBones);
 
 			ImGui::End();
 		}

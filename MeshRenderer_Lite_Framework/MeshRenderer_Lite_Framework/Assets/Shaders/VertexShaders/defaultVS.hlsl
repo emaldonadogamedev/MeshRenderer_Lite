@@ -14,7 +14,6 @@ PixelInputType main(VertexInputType vertex)
 		boneTransform += boneMatrices[vertex.boneIDs.z] * vertex.boneWeights.z;
 		boneTransform += boneMatrices[vertex.boneIDs.w] * vertex.boneWeights.w;
 		pos = mul(pos, boneTransform);
-
 	}
 
 	result.worldPos = mul(pos, worldMtx);

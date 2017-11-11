@@ -53,8 +53,8 @@ bool GraphicsSystem::Initialize()
 
 	ModelComponent* test3DComp = new ModelComponent(nullptr);
 	//test3DComp->SetModel(m_modelManager->GetModel("spider.obj"));
-	test3DComp->SetModel(m_modelManager->GetModel("CylinderAnim.fbx"));
-	//test3DComp->SetModel(m_modelManager->GetModel("boblampclean.md5mesh"));
+	//test3DComp->SetModel(m_modelManager->GetModel("gh_sample_animation.fbx"));
+	test3DComp->SetModel(m_modelManager->GetModel("boblampclean.md5mesh"));
 	m_renderComponents[(char)RenderComponentType::RENDERABLE_3D].emplace_back(std::move(test3DComp));
 
 	AddRenderStages();
@@ -189,7 +189,7 @@ void CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime, const aiNode
 
 int FindRotation(float AnimationTime, const aiNodeAnim* pNodeAnim)
 {
-	assert(pNodeAnim->mNumRotationKeys > 0);
+	//assert(pNodeAnim->mNumRotationKeys > 0);
 
 	for (int i = 0; i < pNodeAnim->mNumRotationKeys - 1; i++) 
 	{
@@ -199,9 +199,9 @@ int FindRotation(float AnimationTime, const aiNodeAnim* pNodeAnim)
 
 	return pNodeAnim->mNumRotationKeys - 1;
 
-	assert(0);
-
-	return 0;
+	//assert(0);
+	//
+	//return 0;
 }
 void CalcInterpolatedRotation(aiQuaternion& Out, float AnimationTime, const aiNodeAnim* pNodeAnim)
 {
@@ -256,7 +256,6 @@ void ReadNodeHeirarchy(Model& model, float AnimationTime, const aiNode* pNode, c
 		aiMatrix4x4::Translation(Translation, assTrans);
 
 		// Combine the above transformations
-		//NodeTransformation = (assScale * assOrientation * assTrans);
 		NodeTransformation = (assTrans * assOrientation * assScale);
 	}
 
@@ -268,7 +267,6 @@ void ReadNodeHeirarchy(Model& model, float AnimationTime, const aiNode* pNode, c
 	if (it != model.m_boneMapping.end()) 
 	{
 		const unsigned int BoneIndex = it->second;
-		//const aiMatrix4x4 assFinal = model.m_boneOffsetMtxVec[BoneIndex] * GlobalTransformation * model.m_globalInverseTransform;
 		const aiMatrix4x4 assFinal = model.m_globalInverseTransform * GlobalTransformation * model.m_boneOffsetMtxVec[BoneIndex];
 		XMMATRIX final;
 		final.r[0] = XMVectorSet(assFinal.a1, assFinal.a2, assFinal.a3, assFinal.a4);
@@ -289,7 +287,7 @@ void ReadNodeHeirarchy(Model& model, float AnimationTime, const aiNode* pNode, c
 void GraphicsSystem::UpdateAnimation(Model& model, const float dt)
 {
 	auto currentAnim = model.m_animations[model.m_currentAnimName];
-	model.m_runningTime += dt * (float)(currentAnim->mTicksPerSecond != 0 ? currentAnim->mTicksPerSecond : 25.0f);
+	model.m_runningTime += dt * model.m_ticksPerSecond;// (float)(currentAnim->mTicksPerSecond != 0 ? currentAnim->mTicksPerSecond : 25.0f);
 	if (model.m_runningTime > (float)currentAnim->mDuration)
 		model.m_runningTime = 0;
 
@@ -361,7 +359,6 @@ void GraphicsSystem::LoadBasicModels()
 {
 	m_modelManager->LoadModel("box.obj");
 	m_modelManager->LoadModel("sphere.obj");
-	m_modelManager->LoadModel("spider.obj");
 	m_modelManager->LoadModel("Tower.fbx");
 	m_modelManager->LoadModel("gh_sample_animation.fbx");
 	m_modelManager->LoadModel("CylinderAnim.fbx");

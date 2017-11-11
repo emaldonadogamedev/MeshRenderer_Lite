@@ -65,8 +65,9 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources)
 			renderData.m_pImmediateContext->PSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
 
 			//Update bone anim. const buffer
+			const int copySize = model->m_boneFinalTransformMtxVec.size();
 			std::memcpy(renderData.testAnimationBuffer.boneMatrices, model->m_boneFinalTransformMtxVec.data(),
-				sizeof(XMMATRIX) * model->m_boneFinalTransformMtxVec.size());
+				sizeof(XMMATRIX) * (copySize > Model::s_maxBoneCount ? Model::s_maxBoneCount : copySize ));
 
 			renderData.m_pImmediateContext->UpdateSubresource(renderData.testAnimationConstBuffer,
 				0, NULL, &renderData.testAnimationBuffer, 0, 0);

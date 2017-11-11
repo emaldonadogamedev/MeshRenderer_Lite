@@ -26,7 +26,7 @@ cbuffer ViewProjBuffer : register(b1)
 	float4 cameraPosition;
 };
 
-static const unsigned int s_maxBoneCount = 100;
+static const unsigned int s_maxBoneCount = 150;
 //--------------------------------------------------------------------------------------
 // Animation bones buffer per mesh entry
 //--------------------------------------------------------------------------------------

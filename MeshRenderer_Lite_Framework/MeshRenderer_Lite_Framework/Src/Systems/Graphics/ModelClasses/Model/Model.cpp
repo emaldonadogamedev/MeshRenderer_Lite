@@ -6,10 +6,11 @@
 Model::Model()
 	:m_modelType(ModelType::MODEL_STATIC)
 	,m_rootNode(nullptr)
-	, m_numBones(0)
+	,m_numBones(0)
+	,m_ticksPerSecond(24.0f)
 {
-	m_boneOffsetMtxVec.reserve(100);
-	m_boneFinalTransformMtxVec.reserve(100);
+	m_boneOffsetMtxVec.reserve(s_maxBoneCount);
+	m_boneFinalTransformMtxVec.reserve(s_maxBoneCount);
 }
 
 Model::~Model()

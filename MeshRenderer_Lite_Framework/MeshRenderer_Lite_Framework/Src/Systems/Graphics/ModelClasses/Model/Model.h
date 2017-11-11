@@ -88,6 +88,7 @@ public:
 
 	//Bone-animation information
 	float m_runningTime = 0.0f;
+	float m_ticksPerSecond = 24.0f;
 	std::string m_currentAnimName;
 	bool m_animationEnabled = false;
 	bool m_renderBones = false;
@@ -103,6 +104,9 @@ public:
 	//Assimp data
 	const aiScene* m_assimpScene;
 	Importer m_modelImporter;
+
+
+	static const unsigned char s_maxBoneCount = 150;
 
 	friend class PrimitiveGenerator;
 	friend class ModelManager;
