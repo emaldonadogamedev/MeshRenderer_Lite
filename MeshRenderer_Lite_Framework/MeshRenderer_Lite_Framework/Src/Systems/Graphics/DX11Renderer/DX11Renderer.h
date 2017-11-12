@@ -21,19 +21,19 @@ public:
 	bool InitializeRenderer(const int width, const int height, HWND hwnd);
 	void ReleaseData();
 
-	void ClearBuffer(void);
-	void SwapBuffers(void);
+	void ClearBuffer(void) const;
+	void SwapBuffers(void) const;
 
 	DX11RendererData& GetRendererData() const;
 
 	//////////////////////////////////////////////////////////////////////////
 	//Drawing Functions
-	void Draw(unsigned vertexCount, unsigned startVertexLocation = 0);
-	void DrawIndexed(unsigned indexCount, unsigned startIndexLocation = 0, unsigned baseVertexLocation = 0);
+	void Draw(unsigned vertexCount, unsigned startVertexLocation = 0) const;
+	void DrawIndexed(unsigned indexCount, unsigned startIndexLocation = 0, unsigned baseVertexLocation = 0) const;
 	void DrawInstanced(unsigned vertexCount, unsigned instanceCount, unsigned startVertexLocation = 0,
-		unsigned startInstanceLocation = 0);
+		unsigned startInstanceLocation = 0) const;
 	void DrawIndexedInstanced(unsigned indexCountPerInstance, unsigned instanceCount, unsigned startIndexLocation = 0,
-		unsigned baseVertexLocation = 0, unsigned startInstanceLocation = 0);
+		unsigned baseVertexLocation = 0, unsigned startInstanceLocation = 0) const;
 
 	//////////////////////////////////////////////////////////////////////////
 	//Buffer functions
@@ -70,7 +70,7 @@ protected:
 	bool InitializeTestData(const int width, const int height);
 
 	std::unique_ptr<DX11RendererData> m_renderData;
-	ObjectHandle CreateHandle(const ObjectType type, const int handle);
+	ObjectHandle CreateHandle(const ObjectType type, const int handle) const;
 
 	bool m_isInitialized = false;
 
@@ -78,5 +78,5 @@ protected:
 
 private:
 	void CompileShaderHelper(int& HResult, ID3D10Blob** blobPtrOut, const std::string& fileName,
-		const std::string& target, const std::string& szEntryPoint);
+		const std::string& target, const std::string& szEntryPoint) const;
 };

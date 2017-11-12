@@ -33,6 +33,10 @@ public:
 
 	void Resize(const int w, const int h);
 
+#pragma region
+	const std::unordered_map<std::string, std::unique_ptr<Model>>& GetLoadedModels() const;
+#pragma endregion
+
 protected:
 	//Initialize helpers
 	void InitializeImGui();

@@ -103,7 +103,7 @@ void GraphicsSystem::UpdateModelComponents(const float dt)
 }
 
 #pragma  region ANIMATION HELPERS
-const aiNodeAnim* FindNodeAnim(const aiAnimation* pAnimation, const string& NodeName)
+const aiNodeAnim* FindNodeAnim(const aiAnimation* const pAnimation, const string& NodeName)
 {
 	for (int i = 0; i < pAnimation->mNumChannels; i++) {
 		const aiNodeAnim* pNodeAnim = pAnimation->mChannels[i];
@@ -116,7 +116,7 @@ const aiNodeAnim* FindNodeAnim(const aiAnimation* pAnimation, const string& Node
 	return NULL;
 }
 
-int FindScaling(float AnimationTime, const aiNodeAnim* pNodeAnim)
+int FindScaling(float AnimationTime, const aiNodeAnim* const pNodeAnim)
 {
 	assert(pNodeAnim->mNumScalingKeys > 0);
 
@@ -132,7 +132,7 @@ int FindScaling(float AnimationTime, const aiNodeAnim* pNodeAnim)
 
 	return 0;
 }
-void CalcInterpolatedScaling(aiVector3D& Out, float AnimationTime, const aiNodeAnim* pNodeAnim)
+void CalcInterpolatedScaling(aiVector3D& Out, float AnimationTime, const aiNodeAnim* const pNodeAnim)
 {
 	if (pNodeAnim->mNumScalingKeys == 1) {
 		Out = pNodeAnim->mScalingKeys[0].mValue;
@@ -152,7 +152,7 @@ void CalcInterpolatedScaling(aiVector3D& Out, float AnimationTime, const aiNodeA
 	Out = Start + Factor * Delta;
 }
 
-int FindPosition(float AnimationTime, const aiNodeAnim* pNodeAnim)
+int FindPosition(float AnimationTime, const aiNodeAnim* const pNodeAnim)
 {
 	for (int i = 0; i < pNodeAnim->mNumPositionKeys - 1; i++) 
 	{
@@ -166,7 +166,7 @@ int FindPosition(float AnimationTime, const aiNodeAnim* pNodeAnim)
 
 	return 0;
 }
-void CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime, const aiNodeAnim* pNodeAnim)
+void CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime, const aiNodeAnim* const pNodeAnim)
 {
 	if (pNodeAnim->mNumPositionKeys == 1) 
 	{
@@ -187,7 +187,7 @@ void CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime, const aiNode
 	Out = Start + Factor * Delta;
 }
 
-int FindRotation(float AnimationTime, const aiNodeAnim* pNodeAnim)
+int FindRotation(float AnimationTime, const aiNodeAnim* const pNodeAnim)
 {
 	//assert(pNodeAnim->mNumRotationKeys > 0);
 
@@ -225,7 +225,7 @@ void CalcInterpolatedRotation(aiQuaternion& Out, float AnimationTime, const aiNo
 	Out = Out.Normalize();
 }
 
-void ReadNodeHeirarchy(Model& model, float AnimationTime, const aiNode* pNode, const aiAnimation* currentAnimation ,const aiMatrix4x4& ParentTransform)
+void ReadNodeHeirarchy(Model& model, const float AnimationTime, const aiNode* pNode, const aiAnimation* currentAnimation ,const aiMatrix4x4& ParentTransform)
 {
 	const string NodeName(pNode->mName.data);
 
@@ -268,7 +268,7 @@ void ReadNodeHeirarchy(Model& model, float AnimationTime, const aiNode* pNode, c
 	{
 		const unsigned int BoneIndex = it->second;
 		const aiMatrix4x4 assFinal = model.m_globalInverseTransform * GlobalTransformation * model.m_boneOffsetMtxVec[BoneIndex];
-		XMMATRIX final;
+		static XMMATRIX final;
 		final.r[0] = XMVectorSet(assFinal.a1, assFinal.a2, assFinal.a3, assFinal.a4);
 		final.r[1] = XMVectorSet(assFinal.b1, assFinal.b2, assFinal.b3, assFinal.b4);
 		final.r[2] = XMVectorSet(assFinal.c1, assFinal.c2, assFinal.c3, assFinal.c4);
@@ -288,7 +288,7 @@ void GraphicsSystem::UpdateAnimation(Model& model, const float dt)
 {
 	auto currentAnim = model.m_animations[model.m_currentAnimName];
 	model.m_runningTime += dt * model.m_ticksPerSecond;// (float)(currentAnim->mTicksPerSecond != 0 ? currentAnim->mTicksPerSecond : 25.0f);
-	if (model.m_runningTime > (float)currentAnim->mDuration)
+	if (model.m_runningTime >= (float)currentAnim->mDuration)
 		model.m_runningTime = 0;
 
 	ReadNodeHeirarchy(model, model.m_runningTime, model.m_assimpScene->mRootNode, currentAnim, aiMatrix4x4());
@@ -326,6 +326,11 @@ void GraphicsSystem::Resize(const int w, const int h)
 {
 	const float fov = (float)w / (float)h;
 	testCamera->Resize(DirectX::XM_PIDIV4, fov, 0.01f, 1000.0f);
+}
+
+const std::unordered_map<std::string, std::unique_ptr<Model>>& GraphicsSystem::GetLoadedModels() const
+{
+	return m_modelManager->m_loadedModels;
 }
 
 void GraphicsSystem::InitializeImGui()

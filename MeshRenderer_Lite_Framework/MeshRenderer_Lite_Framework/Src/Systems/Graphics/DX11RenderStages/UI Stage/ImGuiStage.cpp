@@ -34,15 +34,17 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources)
 	bool drawit = true;
 
 	const auto& modelComponent = (ModelComponent*)m_gfxSystemComponents->at((int)RenderComponentType::RENDERABLE_3D)[0];
-	auto model = modelComponent->GetModel();
+	
 	if (modelComponent)
 	{
+		auto model = modelComponent->GetModel();
 		if (ImGui::Begin("Animation Properties"))
 		{
 			ImGui::Checkbox("Play Animation", &model->m_animationEnabled);
 			ImGui::SliderFloat("Ticks per second", &model->m_ticksPerSecond, 1.0f, 100.0f);
 
 			ImGui::Checkbox("Draw Bones", &model->m_renderBones);
+			//if(ImGui::ListBox\\)
 
 			ImGui::End();
 		}

@@ -53,13 +53,13 @@ void DX11Renderer::ReleaseData()
 	SafeRelease(m_renderData->m_pDevice);
 }
 
-void DX11Renderer::ClearBuffer(void)
+void DX11Renderer::ClearBuffer(void) const
 {
 	m_renderData->m_pImmediateContext->ClearRenderTargetView(m_renderData->m_pMainRenderTargetView, m_renderData->m_clearColor.m128_f32);
 	m_renderData->m_pImmediateContext->ClearDepthStencilView(m_renderData->m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 }
 
-void DX11Renderer::SwapBuffers(void)
+void DX11Renderer::SwapBuffers(void) const
 {
 	HR(m_renderData->m_pSwapChain->Present(0, 0));
 }
@@ -69,22 +69,22 @@ DX11RendererData& DX11Renderer::GetRendererData() const
 	return *m_renderData;
 }
 
-void DX11Renderer::Draw(unsigned vertexCount, unsigned startVertexLocation)
+void DX11Renderer::Draw(unsigned vertexCount, unsigned startVertexLocation) const
 {
 	m_renderData->m_pImmediateContext->Draw(vertexCount, startVertexLocation);
 }
 
-void DX11Renderer::DrawIndexed(unsigned indexCount, unsigned startIndexLocation, unsigned baseVertexLocation)
+void DX11Renderer::DrawIndexed(unsigned indexCount, unsigned startIndexLocation, unsigned baseVertexLocation) const
 {
 	m_renderData->m_pImmediateContext->DrawIndexed(indexCount, startIndexLocation, baseVertexLocation);
 }
 
-void DX11Renderer::DrawInstanced(unsigned vertexCount, unsigned instanceCount, unsigned startVertexLocation, unsigned startInstanceLocation)
+void DX11Renderer::DrawInstanced(unsigned vertexCount, unsigned instanceCount, unsigned startVertexLocation, unsigned startInstanceLocation) const
 {
 	m_renderData->m_pImmediateContext->DrawInstanced(vertexCount, instanceCount, startVertexLocation, startInstanceLocation);
 }
 
-void DX11Renderer::DrawIndexedInstanced(unsigned indexCountPerInstance, unsigned instanceCount, unsigned startIndexLocation, unsigned baseVertexLocation, unsigned startInstanceLocation)
+void DX11Renderer::DrawIndexedInstanced(unsigned indexCountPerInstance, unsigned instanceCount, unsigned startIndexLocation, unsigned baseVertexLocation, unsigned startInstanceLocation) const
 {
 	m_renderData->m_pImmediateContext->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
 }
@@ -773,7 +773,7 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 	// Initialize the world matrices
 	//m_renderData->testPerObjectBuffer.worldMtx = XMMatrixScaling(1,1,1) * DirectX::XMMatrixRotationX(XM_PIDIV2) * XMMatrixTranslation(0, 0, 0);
 	//m_renderData->testPerObjectBuffer.worldMtx = XMMatrixTranspose(m_renderData->testPerObjectBuffer.worldMtx);
-	m_renderData->testPerObjectBuffer.worldMtx = XMMatrixTranspose(XMMatrixTranslation(-12, 0, -5) *  DirectX::XMMatrixRotationX(XM_PIDIV2) * XMMatrixScaling(-1.5, 1.5, 1.5));
+	m_renderData->testPerObjectBuffer.worldMtx = XMMatrixTranspose(XMMatrixTranslation(0, 0, 0) *  DirectX::XMMatrixRotationX(XM_PIDIV2) * XMMatrixScaling(1.5, 1.5, 1.5));
 	m_renderData->m_pImmediateContext->UpdateSubresource(m_renderData->testPerObjectConstBuffer, 0, NULL, &m_renderData->testPerObjectBuffer, 0, 0);
 
 	// Initialize the view matrix
@@ -833,7 +833,7 @@ bool DX11Renderer::InitializeTextureSamplers()
 	return true;
 }
 
-ObjectHandle DX11Renderer::CreateHandle(const ObjectType type, const int handle)
+ObjectHandle DX11Renderer::CreateHandle(const ObjectType type, const int handle) const
 {
 	ObjectHandle newHandle;
 	newHandle.SetType(type);
@@ -843,7 +843,7 @@ ObjectHandle DX11Renderer::CreateHandle(const ObjectType type, const int handle)
 }
 
 void DX11Renderer::CompileShaderHelper(int& HResult, ID3D10Blob** blobPtrOut, const std::string& fileName,
-	const std::string& target, const std::string& szEntryPoint)
+	const std::string& target, const std::string& szEntryPoint) const
 {
 	DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
 #ifdef _DEBUG

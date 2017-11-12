@@ -14,6 +14,8 @@ PixelInputType main(VertexInputType vertex)
 		boneTransform += boneMatrices[vertex.boneIDs.z] * vertex.boneWeights.z;
 		boneTransform += boneMatrices[vertex.boneIDs.w] * vertex.boneWeights.w;
 		pos = mul(pos, boneTransform);
+
+		result.color = (-pos);
 	}
 
 	result.worldPos = mul(pos, worldMtx);
@@ -21,8 +23,8 @@ PixelInputType main(VertexInputType vertex)
 	result.position = mul(result.position, projectionMtx);
 
 	//JUST AS A TEST, look closely at the moving vertices
-	pos = normalize(pos);
-	result.color = pos;
+	//pos = normalize(pos);
+	//result.color = pos;
 
 	//TODO: GO BACK TO THIS!
 	//result.color = vertex.color;
