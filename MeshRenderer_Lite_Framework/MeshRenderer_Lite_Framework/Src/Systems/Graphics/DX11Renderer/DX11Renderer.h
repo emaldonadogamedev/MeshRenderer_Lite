@@ -60,6 +60,12 @@ public:
 	void BindGeometryShader(const ObjectHandle& geometryShader);
 	void BindComputeShader(const ObjectHandle& computeShader);
 
+	//////////////////////////////////////////////////////////////////////////
+	//Texture functions
+	void CreateTexture2D(ObjectHandle& texture, const std::string& fileName, bool generateMipChain = true);
+	
+	void BindTexture2D(unsigned slot, const ObjectHandle& texture);
+
 protected:
 	bool InitializeD3D(const int width, const int height, HWND hwnd);
 	bool InitializeConstBuffers();
@@ -75,6 +81,7 @@ protected:
 	bool m_isInitialized = false;
 
 	friend GraphicsSystem;
+	friend class TextureManager;
 
 private:
 	void CompileShaderHelper(int& HResult, ID3D10Blob** blobPtrOut, const std::string& fileName,

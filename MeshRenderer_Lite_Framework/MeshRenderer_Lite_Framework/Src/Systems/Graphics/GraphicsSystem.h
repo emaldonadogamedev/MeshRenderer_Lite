@@ -43,7 +43,8 @@ protected:
 	void AddRenderStages();
 	void AddRenderStageHelper(IRenderStage* const renderStage);
 	void LoadBasicModels();
-	void LoadShadersShaders();
+	void LoadModelHelper(const std::string& fileName);
+	void LoadBasicShaders();
 
 	//Update helpers
 	void TestUpdateCamera(const float dt);

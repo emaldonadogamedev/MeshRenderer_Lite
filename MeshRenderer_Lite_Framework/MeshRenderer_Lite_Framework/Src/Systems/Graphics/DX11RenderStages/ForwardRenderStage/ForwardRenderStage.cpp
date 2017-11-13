@@ -8,8 +8,8 @@
 
 #include <d3d11.h>
 
-ForwardRenderStage::ForwardRenderStage(DX11Renderer* const renderData, RenderCompVec* const gfxComponents):
-	IRenderStage(renderData, gfxComponents)
+ForwardRenderStage::ForwardRenderStage(DX11Renderer* const renderData, RenderCompVec* const gfxComponents)
+	:IRenderStage(renderData, gfxComponents)
 {
 
 }
@@ -28,6 +28,13 @@ void ForwardRenderStage::PreRender()
 	renderData.m_pImmediateContext->ClearDepthStencilView(renderData.m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 	renderData.m_pImmediateContext->RSSetState(renderData.m_d3dRasterStateDefault);
 
+	static ID3D11SamplerState* const samplerStates[4] = {
+		renderData.m_pWrapSamplerState,
+		renderData.m_pMirrorSamplerState,
+		renderData.m_pClampSamplerState,
+		renderData.m_pBorderSamplerState
+	};
+	renderData.m_pImmediateContext->PSSetSamplers(0, 4, samplerStates);
 }
 
 void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources)
@@ -76,7 +83,20 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources)
 			//Draw each mesh entry, it's all one big VBuffer and IBufer though
 			for (auto& meshEntry : model->m_meshEntryList)
 			{
+				const auto& textures2D = graphicsResources.at((int)ObjectType::TEXTURE_2D);
+				const auto it = textures2D.find(meshEntry.diffTextureName);
+				if (it != textures2D.end())
+				{
+					const Texture2D& diffText = renderData.textures2D[*it->second];
+					renderData.m_pImmediateContext->PSSetShaderResources(0, 1, &diffText.srv);
+				}
+
 				m_renderer->DrawIndexed(meshEntry.numIndices, meshEntry.baseIndex, meshEntry.baseVertex);
+			}
+
+			if (model->m_debugDrawEnabled)
+			{
+
 			}
 		}
 	}

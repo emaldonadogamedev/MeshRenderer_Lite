@@ -8,6 +8,7 @@ Model::Model()
 	,m_rootNode(nullptr)
 	,m_numBones(0)
 	,m_ticksPerSecond(24.0f)
+	, m_debugDrawEnabled(false)
 {
 	m_boneOffsetMtxVec.reserve(s_maxBoneCount);
 	m_boneFinalTransformMtxVec.reserve(s_maxBoneCount);

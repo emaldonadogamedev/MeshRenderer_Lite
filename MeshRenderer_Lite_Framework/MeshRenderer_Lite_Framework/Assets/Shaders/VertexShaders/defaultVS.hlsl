@@ -21,7 +21,7 @@ PixelInputType main(VertexInputType vertex)
 	result.worldPos = mul(pos, worldMtx);
 	result.position = mul(result.worldPos, viewMtx);
 	result.position = mul(result.position, projectionMtx);
-
+	result.uv = vertex.uv;
 	//JUST AS A TEST, look closely at the moving vertices
 	//pos = normalize(pos);
 	//result.color = pos;

@@ -99,6 +99,9 @@
     <ClCompile Include="Src\Systems\Graphics\TextureClasses\TextureManager\TextureManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\ForwardDebugStage\AnimationDebugStage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Utilities\precompiled.h">
@@ -213,6 +216,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Src\Systems\Graphics\GraphicsUtilities\D3DObjects.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\ForwardDebugStage\AnimationDebugStage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

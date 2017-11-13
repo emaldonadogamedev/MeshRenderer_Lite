@@ -42,6 +42,7 @@ struct BoneStructureNode
 //Example: a humanoid model can have entries such as: HEAD, LEG1, LEG2, ARM1, ARM2, etc.
 struct MeshEntry
 {
+	std::string diffTextureName;
 	int assImpMaterialIndex = 0;
 	int numIndices = 0;
 	int baseVertex = 0;
@@ -93,13 +94,19 @@ public:
 	bool m_animationEnabled = false;
 	bool m_renderBones = false;
 	aiMatrix4x4 m_globalInverseTransform;
-	std::vector<XMVECTOR> m_boneLocations;
 	std::vector<aiMatrix4x4> m_boneOffsetMtxVec;
 	std::vector<XMMATRIX> m_boneFinalTransformMtxVec;
 	unsigned int m_numBones;
 	std::unordered_map<std::string, unsigned int> m_boneMapping; // maps a bone name to its index
-	std::vector<std::string> m_diffTextures;
-	std::vector<std::string> m_normalTextures;
+	
+	//FOR DEBUG DRAW!!
+	bool m_debugDrawEnabled;
+	std::vector<XMVECTOR> m_boneLocations;
+	std::vector<unsigned int> m_boneLocIndBuff;
+	ObjectHandle m_boneLocIndBufferHandle;
+
+	std::unordered_map<int, std::string> m_diffTextures;
+	std::unordered_map<int, std::string> m_normalTextures;
 
 	//Assimp data
 	const aiScene* m_assimpScene;

@@ -566,6 +566,79 @@ void DX11Renderer::BindPixelShader(const ObjectHandle& pixelShader)
 	m_renderData->m_pImmediateContext->PSSetShader(shader.pixelShader, nullptr, 0);
 }
 
+void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const std::string& fileName, bool generateMipChain /*= true*/)
+{
+	const size_t r = fileName.find_last_of('.') + 1;
+	const char l = tolower(fileName[r]);
+	const auto wFileName = std::wstring(fileName.begin(), fileName.end());
+	DirectX::ScratchImage image;
+
+	DirectX::TexMetadata metaData;
+	metaData.format = DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT;
+	metaData.dimension = DirectX::TEX_DIMENSION::TEX_DIMENSION_TEXTURE2D;
+	metaData.depth = 1;
+
+	//in case the file is tga / NOTE: DO NOT USE .TIFF TEXTURES!!!
+	if (l == 't')
+	{
+		DirectX::LoadFromTGAFile(wFileName.c_str(), &metaData, image);
+	}
+	//in case the file is dds
+	else if (l == 'd')
+	{
+		DirectX::LoadFromDDSFile(wFileName.c_str(), 0, &metaData, image);
+	}
+	//else use wic
+	else
+	{
+		DirectX::LoadFromWICFile(wFileName.c_str(), 0, &metaData, image);
+	}
+
+
+	ID3D11ShaderResourceView* srv;
+	const HRESULT hResult = DirectX::CreateShaderResourceView(m_renderData->m_pDevice, image.GetImages(), image.GetImageCount(), image.GetMetadata(), &srv);
+
+	if (FAILED(hResult))
+		return;
+
+	//Assign newly created texture to the object handle
+	if (textureHandle && textureHandle.GetType() == ObjectType::TEXTURE_2D)
+	{
+		//If the handle already exists, update the data
+		Texture2D& texture = m_renderData->textures2D[*textureHandle];
+		//texture.size = Area(image.Width, texDesc.Height);
+
+		if (texture.srv)
+			texture.srv->Release();
+
+		texture.srv = srv;
+	}
+
+	else
+	{
+		//Create the handle and assign the data
+		Texture2D texture;
+		//texture.size = Area(texDesc.Width, texDesc.Height);
+		texture.srv = srv;
+
+		int index = m_renderData->NextAvailableIndex(m_renderData->textures2D);
+
+		//No free space in the texture container
+		if (index == -1)
+		{
+			m_renderData->textures2D.emplace_back(texture);
+			textureHandle = CreateHandle(ObjectType::TEXTURE_2D, m_renderData->textures2D.size() - 1);
+		}
+
+		//Insert into available slot
+		else
+		{
+			m_renderData->textures2D[index] = texture;
+			textureHandle = CreateHandle(ObjectType::TEXTURE_2D, index);
+		}
+	}
+}
+
 bool DX11Renderer::InitializeD3D(const int width, const int height, HWND hwnd)
 {
 	UINT createDeviceFlags = 0;
@@ -585,7 +658,7 @@ bool DX11Renderer::InitializeD3D(const int width, const int height, HWND hwnd)
 
 	const D3D_FEATURE_LEVEL featureLevels[] =
 	{
-		D3D_FEATURE_LEVEL_11_1,
+		//D3D_FEATURE_LEVEL_11_1,
 		D3D_FEATURE_LEVEL_11_0,
 		D3D_FEATURE_LEVEL_10_1,
 		D3D_FEATURE_LEVEL_10_0,
@@ -771,9 +844,9 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testAnimationConstBuffer));
 
 	// Initialize the world matrices
-	//m_renderData->testPerObjectBuffer.worldMtx = XMMatrixScaling(1,1,1) * DirectX::XMMatrixRotationX(XM_PIDIV2) * XMMatrixTranslation(0, 0, 0);
+	//m_renderData->testPerObjectBuffer.worldMtx = XMMatrixScaling(1,1,1) * DirectX::XMMatrixRotationX(XM_PIDIV2) * XMMatrixTranslation(-1, 1, 0);
 	//m_renderData->testPerObjectBuffer.worldMtx = XMMatrixTranspose(m_renderData->testPerObjectBuffer.worldMtx);
-	m_renderData->testPerObjectBuffer.worldMtx = XMMatrixTranspose(XMMatrixTranslation(0, 0, 0) *  DirectX::XMMatrixRotationX(XM_PIDIV2) * XMMatrixScaling(1.5, 1.5, 1.5));
+	m_renderData->testPerObjectBuffer.worldMtx = XMMatrixTranspose(XMMatrixTranslation(0, 0, 0) *  DirectX::XMMatrixRotationX(XM_PIDIV2) * XMMatrixScaling(1,1,1));
 	m_renderData->m_pImmediateContext->UpdateSubresource(m_renderData->testPerObjectConstBuffer, 0, NULL, &m_renderData->testPerObjectBuffer, 0, 0);
 
 	// Initialize the view matrix
@@ -804,13 +877,13 @@ bool DX11Renderer::InitializeTextureSamplers()
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.MipLODBias = 0.0f;
 	samplerDesc.MaxAnisotropy = 1;
-	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;// D3D11_COMPARISON_ALWAYS;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
 	samplerDesc.BorderColor[0] = 0;
 	samplerDesc.BorderColor[1] = 0;
 	samplerDesc.BorderColor[2] = 0;
 	samplerDesc.BorderColor[3] = 0;
 	samplerDesc.MinLOD = 0;
-	samplerDesc.MaxLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	// Create the texture sampler state.
 	HR(m_renderData->m_pDevice->CreateSamplerState(&samplerDesc, &m_renderData->m_pWrapSamplerState));

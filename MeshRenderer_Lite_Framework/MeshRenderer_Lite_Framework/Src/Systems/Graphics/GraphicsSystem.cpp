@@ -48,7 +48,7 @@ bool GraphicsSystem::Initialize()
 	bool result = m_dx11Renderer->InitializeRenderer(window->GetWindowWidth(), window->GetWindowHeight(), window->GetWindowsHandler());
 
 	//Load resources
-	LoadShadersShaders();
+	LoadBasicShaders();
 	LoadBasicModels();
 
 	ModelComponent* test3DComp = new ModelComponent(nullptr);
@@ -72,6 +72,8 @@ void GraphicsSystem::Update(const float dt)
 	TestUpdateCamera(dt);
 	testCamera->Update();
 	m_dx11Renderer->m_renderData->testViewProjBuffer.viewMtx = testCamera->GetView();
+	m_dx11Renderer->m_renderData->testViewProjBuffer.invViewMtx = 
+		DirectX::XMMatrixInverse(nullptr, m_dx11Renderer->m_renderData->testViewProjBuffer.viewMtx);
 	//m_dx11Renderer->testViewProjBuffer.projectionMtx = testCamera->GetProjection();
 	m_dx11Renderer->m_renderData->m_pImmediateContext->UpdateSubresource(m_dx11Renderer->m_renderData->testViewProjConstBuffer, 
 		0, NULL, &m_dx11Renderer->m_renderData->testViewProjBuffer, 0, 0);
@@ -267,6 +269,8 @@ void ReadNodeHeirarchy(Model& model, const float AnimationTime, const aiNode* pN
 	if (it != model.m_boneMapping.end()) 
 	{
 		const unsigned int BoneIndex = it->second;
+		model.m_boneLocations[BoneIndex] = XMVectorSet(NodeTransformation.a4, NodeTransformation.b4, NodeTransformation.c4, 1.0f);
+
 		const aiMatrix4x4 assFinal = model.m_globalInverseTransform * GlobalTransformation * model.m_boneOffsetMtxVec[BoneIndex];
 		static XMMATRIX final;
 		final.r[0] = XMVectorSet(assFinal.a1, assFinal.a2, assFinal.a3, assFinal.a4);
@@ -335,7 +339,7 @@ const std::unordered_map<std::string, std::unique_ptr<Model>>& GraphicsSystem::G
 
 void GraphicsSystem::InitializeImGui()
 {
-	const WindowSystem* window = reinterpret_cast<WindowSystem*>(m_engineOwner->GetSystem("Windows"));
+	const WindowSystem* const window = reinterpret_cast<WindowSystem*>(m_engineOwner->GetSystem("Windows"));
 
 	// Setup ImGui binding
 	ImGui_ImplDX11_Init(window->GetWindowsHandler(), m_dx11Renderer->GetRendererData().m_pDevice,
@@ -360,17 +364,33 @@ void GraphicsSystem::AddRenderStageHelper(IRenderStage* const renderStage)
 	}
 }
 
-void GraphicsSystem::LoadBasicModels()
+void GraphicsSystem::LoadModelHelper(const std::string& fileName)
 {
-	m_modelManager->LoadModel("box.obj");
-	m_modelManager->LoadModel("sphere.obj");
-	m_modelManager->LoadModel("Tower.fbx");
-	m_modelManager->LoadModel("gh_sample_animation.fbx");
-	m_modelManager->LoadModel("CylinderAnim.fbx");
-	m_modelManager->LoadModel("boblampclean.md5mesh");
+	const auto newModel = m_modelManager->LoadModel(fileName);
+
+	ObjectHandle textHandle;
+	for (auto& meshEntry : newModel->m_meshEntryList)
+	{
+		if (!meshEntry.diffTextureName.empty())
+		{
+			m_dx11Renderer->CreateTexture2D(textHandle, m_textureManager->s_textureDir + meshEntry.diffTextureName);
+			if (textHandle)
+				m_resources[(int)ObjectType::TEXTURE_2D][meshEntry.diffTextureName] = textHandle;
+		}
+	}
 }
 
-void GraphicsSystem::LoadShadersShaders()
+void GraphicsSystem::LoadBasicModels()
+{
+	LoadModelHelper("box.obj");
+	LoadModelHelper("sphere.obj");
+	LoadModelHelper("Tower.fbx");
+	LoadModelHelper("gh_sample_animation.fbx");
+	LoadModelHelper("CylinderAnim.fbx");
+	LoadModelHelper("boblampclean.md5mesh");
+}
+
+void GraphicsSystem::LoadBasicShaders()
 {
 	//////////////////////////////////////////////////////////////////////////
 	// Default Vertex Shader

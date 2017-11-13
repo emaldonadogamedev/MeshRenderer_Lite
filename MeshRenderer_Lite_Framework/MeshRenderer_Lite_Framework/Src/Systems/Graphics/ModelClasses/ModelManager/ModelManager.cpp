@@ -88,6 +88,9 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 		newModel->m_meshEntryList.resize(numberOfMeshes);
 		for (int i = 0; i < newModel->m_meshEntryList.size(); i++) {
 			newModel->m_meshEntryList[i].assImpMaterialIndex = loadedScene->mMeshes[i]->mMaterialIndex;
+			if(!newModel->m_diffTextures.empty())
+				newModel->m_meshEntryList[i].diffTextureName = newModel->m_diffTextures[loadedScene->mMeshes[i]->mMaterialIndex];
+
 			//The * 3 is because the model is loaded as triangulated
 			newModel->m_meshEntryList[i].numIndices = loadedScene->mMeshes[i]->mNumFaces * 3;
 			newModel->m_meshEntryList[i].baseVertex = vertexCount;
@@ -111,7 +114,24 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 			PopulateBoneData(*newModel, currentMesh, meshIndex);
 		}
 
-		newModel->m_boneFinalTransformMtxVec.resize(newModel->m_boneOffsetMtxVec.size(), DirectX::XMMatrixIdentity());
+		const size_t boneAmount = newModel->m_boneOffsetMtxVec.size();
+		newModel->m_boneFinalTransformMtxVec.resize(boneAmount, DirectX::XMMatrixIdentity());
+		newModel->m_boneLocations.resize(boneAmount);
+		
+		//Prepare the index buffer for debug info.
+		newModel->m_boneLocIndBuff.reserve(boneAmount * 6);
+		int ind = 0;
+		for (int i = 0; i < boneAmount; ++i)
+		{
+			newModel->m_boneLocIndBuff.emplace_back(ind);
+			newModel->m_boneLocIndBuff.emplace_back(ind + 1);
+			newModel->m_boneLocIndBuff.emplace_back(ind + 2);
+			newModel->m_boneLocIndBuff.emplace_back(ind);
+			newModel->m_boneLocIndBuff.emplace_back(ind + 2);
+			newModel->m_boneLocIndBuff.emplace_back(ind + 3);
+			ind += 4;
+		}
+
 		m_loadedModels[fileName] = std::move(newUniqModel);
 
 		newModel->GenerateBuffers(m_renderer);
@@ -128,10 +148,10 @@ const std::string ExtractFileName(const aiString& assPath)
 {
 	std::string result(assPath.data);
 
-	const size_t r = result.find_last_of('\\') + 1;
+	const size_t offset = result.find_last_of('\\') + 1;
 
-	if (r != std::string::npos) {
-		result = result.substr(r, result.size() - r);
+	if (offset != std::string::npos) {
+		result = result.substr(offset, result.size() - offset);
 	}
 
 	return result;
@@ -146,14 +166,16 @@ void ModelManager::PopulateMaterialData(Model& model, const aiScene* const assim
 		for (unsigned int materialIndex = 0; materialIndex < numberOfMaterials; ++materialIndex)
 		{
 			aiString assPath;
-			const auto diffTexture = materialPtr[materialIndex]->GetTexture(aiTextureType_DIFFUSE,0, &assPath);
+			static aiTextureMapping mapping = aiTextureMapping_UV;
+			const auto diffTexture = materialPtr[materialIndex]->GetTexture(aiTextureType_DIFFUSE,0, &assPath, &mapping);
+			
 			//0 means success
 			if (diffTexture == 0)
-				model.m_diffTextures.emplace_back(ExtractFileName(assPath));
+				model.m_diffTextures[materialIndex] = ExtractFileName(assPath);
 
 			const auto normalTexture = materialPtr[materialIndex]->GetTexture(aiTextureType_NORMALS, 0, &assPath);
 			if (normalTexture == 0)
-				model.m_normalTextures.emplace_back(ExtractFileName(assPath));
+				model.m_normalTextures[materialIndex] = ExtractFileName(assPath);
 		}
 	}
 }
