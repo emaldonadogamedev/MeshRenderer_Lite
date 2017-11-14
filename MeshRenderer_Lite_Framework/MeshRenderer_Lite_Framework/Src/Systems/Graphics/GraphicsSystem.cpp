@@ -269,7 +269,7 @@ void ReadNodeHeirarchy(Model& model, const float AnimationTime, const aiNode* pN
 	if (it != model.m_boneMapping.end()) 
 	{
 		const unsigned int BoneIndex = it->second;
-		model.m_boneLocations[BoneIndex] = XMVectorSet(NodeTransformation.a4, NodeTransformation.b4, NodeTransformation.c4, 1.0f);
+		model.m_boneLocations[BoneIndex] = XMVectorSet(GlobalTransformation.a4, GlobalTransformation.b4, GlobalTransformation.c4, 1.0f);
 
 		const aiMatrix4x4 assFinal = model.m_globalInverseTransform * GlobalTransformation * model.m_boneOffsetMtxVec[BoneIndex];
 		static XMMATRIX final;

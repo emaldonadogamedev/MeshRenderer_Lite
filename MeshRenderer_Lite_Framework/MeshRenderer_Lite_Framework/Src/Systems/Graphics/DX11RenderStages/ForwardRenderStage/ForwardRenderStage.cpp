@@ -125,7 +125,7 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources)
 			if (model->m_debugDrawEnabled)
 			{
 				m_renderer->BindIndexBuffer(model->m_boneLocIndBufferHandle);
-				m_renderer->DrawIndexed(model->m_boneLocIndBuff.size(), 0, 0);
+				m_renderer->DrawIndexed(model->m_boneLocations.size() * 6, 0, 0);
 			}
 		}
 	}
