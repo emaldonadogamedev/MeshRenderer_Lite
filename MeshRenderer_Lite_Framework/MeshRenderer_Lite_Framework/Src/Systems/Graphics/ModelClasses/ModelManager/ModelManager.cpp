@@ -5,6 +5,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
+#include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
 #include <Systems/Graphics/ModelClasses/Model/Model.h>
 
 ModelManager::ModelManager(DX11Renderer * const renderer)
@@ -114,27 +115,24 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 			PopulateBoneData(*newModel, currentMesh, meshIndex);
 		}
 
+		newModel->GenerateBuffers(m_renderer);
+
 		const size_t boneAmount = newModel->m_boneOffsetMtxVec.size();
 		newModel->m_boneFinalTransformMtxVec.resize(boneAmount, DirectX::XMMatrixIdentity());
 		newModel->m_boneLocations.resize(boneAmount);
 		
 		//Prepare the index buffer for debug info.
-		newModel->m_boneLocIndBuff.reserve(boneAmount * 6);
+		newModel->m_boneLocIndBuff.resize(boneAmount * 6, 0);
 		int ind = 0;
-		for (int i = 0; i < boneAmount; ++i)
+		for (unsigned int i = 1; i < newModel->m_boneLocIndBuff.size(); ++i)
 		{
-			newModel->m_boneLocIndBuff.emplace_back(ind);
-			newModel->m_boneLocIndBuff.emplace_back(ind + 1);
-			newModel->m_boneLocIndBuff.emplace_back(ind + 2);
-			newModel->m_boneLocIndBuff.emplace_back(ind);
-			newModel->m_boneLocIndBuff.emplace_back(ind + 2);
-			newModel->m_boneLocIndBuff.emplace_back(ind + 3);
-			ind += 4;
+			newModel->m_boneLocIndBuff[i] = i;
 		}
 
-		m_loadedModels[fileName] = std::move(newUniqModel);
+		if(!newModel->m_boneLocIndBuff.empty())
+			m_renderer->CreateIndexBuffer(newModel->m_boneLocIndBufferHandle, BufferUsage::USAGE_DEFAULT, sizeof(unsigned int) * newModel->m_boneLocIndBuff.size(), newModel->m_boneLocIndBuff.data());
 
-		newModel->GenerateBuffers(m_renderer);
+		m_loadedModels[fileName] = std::move(newUniqModel);
 
 		return newModel;
 	}

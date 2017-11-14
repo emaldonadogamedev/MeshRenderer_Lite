@@ -92,7 +92,6 @@ public:
 	float m_ticksPerSecond = 24.0f;
 	std::string m_currentAnimName;
 	bool m_animationEnabled = false;
-	bool m_renderBones = false;
 	aiMatrix4x4 m_globalInverseTransform;
 	std::vector<aiMatrix4x4> m_boneOffsetMtxVec;
 	std::vector<XMMATRIX> m_boneFinalTransformMtxVec;
@@ -100,6 +99,7 @@ public:
 	std::unordered_map<std::string, unsigned int> m_boneMapping; // maps a bone name to its index
 	
 	//FOR DEBUG DRAW!!
+	bool m_drawSkin = true;
 	bool m_debugDrawEnabled;
 	std::vector<XMVECTOR> m_boneLocations;
 	std::vector<unsigned int> m_boneLocIndBuff;
@@ -113,7 +113,8 @@ public:
 	Importer m_modelImporter;
 
 
-	static const unsigned char s_maxBoneCount = 150;
+	static const unsigned char s_maxBoneCount = 120;
+	static const unsigned short s_maxBoneLocCount = 120 * 6;
 
 	friend class PrimitiveGenerator;
 	friend class ModelManager;

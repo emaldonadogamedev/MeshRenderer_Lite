@@ -32,4 +32,5 @@ static const unsigned char s_maxBoneCount = 100;
 struct AnimationBuffer
 {
 	XMMATRIX boneMatrices[s_maxBoneCount];
+	XMVECTOR boneLocations[s_maxBoneCount];
 };

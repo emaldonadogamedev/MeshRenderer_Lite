@@ -57,6 +57,7 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources)
 		if (component->GetIsActive())
 		{
 			const auto model = (static_cast<const ModelComponent*>(component))->GetModel();
+
 			m_renderer->BindVertexBuffer(model->GetVBufferHandle(), sizeof(VertexAnimation));
 			m_renderer->BindIndexBuffer(model->GetIBufferHandle());
 
@@ -73,12 +74,19 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources)
 
 			//Update bone anim. const buffer
 			const int copySize = model->m_boneFinalTransformMtxVec.size();
+			const int copyVecLocSize = model->m_boneLocations.size();
 			std::memcpy(renderData.testAnimationBuffer.boneMatrices, model->m_boneFinalTransformMtxVec.data(),
 				sizeof(XMMATRIX) * (copySize > Model::s_maxBoneCount ? Model::s_maxBoneCount : copySize ));
+			std::memcpy(renderData.testAnimationBuffer.boneLocations, model->m_boneLocations.data(),
+				sizeof(XMVECTOR) * (copyVecLocSize > Model::s_maxBoneLocCount ? Model::s_maxBoneLocCount : copyVecLocSize) 
+								 * (unsigned char)model->m_debugDrawEnabled);
 
 			renderData.m_pImmediateContext->UpdateSubresource(renderData.testAnimationConstBuffer,
 				0, NULL, &renderData.testAnimationBuffer, 0, 0);
 			renderData.m_pImmediateContext->VSSetConstantBuffers(2, 1, &renderData.testAnimationConstBuffer);
+
+			if (!model->m_drawSkin)
+				break;
 
 			//Draw each mesh entry, it's all one big VBuffer and IBufer though
 			for (auto& meshEntry : model->m_meshEntryList)
@@ -93,10 +101,31 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources)
 
 				m_renderer->DrawIndexed(meshEntry.numIndices, meshEntry.baseIndex, meshEntry.baseVertex);
 			}
+		}
+	}
 
+	//////////////////////////////////////////////////////////////////////////
+	//DEBUG!!!
+	//Set shaders
+	handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("AnimationDebugVS");
+	m_renderer->BindVertexShader(handle);
+	handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("AnimationDebugPS");
+	m_renderer->BindPixelShader(handle);
+
+	renderData.m_pImmediateContext->VSSetConstantBuffers(1, 1, &renderData.testViewProjConstBuffer);
+	renderData.m_pImmediateContext->VSSetConstantBuffers(2, 1, &renderData.testAnimationConstBuffer);
+
+	m_renderer->BindNullVertexBuffer();
+
+	for (const IRenderComponent* component : modelComponents)
+	{
+		if (component->GetIsActive())
+		{
+			const auto model = (static_cast<const ModelComponent*>(component))->GetModel();
 			if (model->m_debugDrawEnabled)
 			{
-
+				m_renderer->BindIndexBuffer(model->m_boneLocIndBufferHandle);
+				m_renderer->DrawIndexed(model->m_boneLocIndBuff.size(), 0, 0);
 			}
 		}
 	}

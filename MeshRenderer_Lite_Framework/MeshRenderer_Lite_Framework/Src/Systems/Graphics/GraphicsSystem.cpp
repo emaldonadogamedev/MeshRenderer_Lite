@@ -394,8 +394,9 @@ void GraphicsSystem::LoadBasicShaders()
 {
 	//////////////////////////////////////////////////////////////////////////
 	// Default Vertex Shader
-	ObjectHandle defaultVS;
-	static const InputLayout defaultVS_inputLayout = {
+	ObjectHandle vsHandle;
+	static const InputLayout defaultVS_inputLayout = 
+	{
 		InputData("POSITION", DataFormat::FLOAT3, false),
 		InputData("NORMAL", DataFormat::FLOAT3, false),
 		InputData("TANGENT", DataFormat::FLOAT3, false),
@@ -406,14 +407,23 @@ void GraphicsSystem::LoadBasicShaders()
 		InputData("WEIGHTS", DataFormat::FLOAT4, false)
 	};
 
-	m_dx11Renderer->CreateVertexShader(defaultVS, s_vertexShaderDir + "defaultVS.hlsl", defaultVS_inputLayout, false);
-	m_resources[(int)ObjectType::VERTEX_SHADER]["defaultVS"] = defaultVS;
+	m_dx11Renderer->CreateVertexShader(vsHandle, s_vertexShaderDir + "defaultVS.hlsl", defaultVS_inputLayout, false);
+	m_resources[(int)ObjectType::VERTEX_SHADER]["defaultVS"] = vsHandle;
+
+	vsHandle = ObjectHandle::Null();
+	m_dx11Renderer->CreateVertexShader(vsHandle, s_vertexShaderDir + "AnimationDebugVS.hlsl", defaultVS_inputLayout, false);
+	m_resources[(int)ObjectType::VERTEX_SHADER]["AnimationDebugVS"] = vsHandle;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Default Pixel Shader
-	ObjectHandle defaultPS;
-	m_dx11Renderer->CreatePixelShader(defaultPS, s_pixelShaderDir + "defaultPS.hlsl", false);
-	m_resources[(int)ObjectType::PIXEL_SHADER]["defaultPS"] = defaultPS;
+	ObjectHandle psHandle;
+	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "defaultPS.hlsl", false);
+	m_resources[(int)ObjectType::PIXEL_SHADER]["defaultPS"] = psHandle;
+	
+	psHandle = ObjectHandle::Null();
+	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "AnimationDebugPS.hlsl", false);
+	m_resources[(int)ObjectType::PIXEL_SHADER]["AnimationDebugPS"] = psHandle;
+
 }
 
 void GraphicsSystem::TestUpdateCamera(const float dt)

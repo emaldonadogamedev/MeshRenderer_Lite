@@ -43,7 +43,8 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources)
 			ImGui::Checkbox("Play Animation", &model->m_animationEnabled);
 			ImGui::SliderFloat("Ticks per second", &model->m_ticksPerSecond, 1.0f, 100.0f);
 
-			ImGui::Checkbox("Draw Bones", &model->m_renderBones);
+			ImGui::Checkbox("Draw Bones", &model->m_debugDrawEnabled);
+			ImGui::Checkbox("Draw Skin", &model->m_drawSkin);
 			//if(ImGui::ListBox\\)
 
 			ImGui::End();
