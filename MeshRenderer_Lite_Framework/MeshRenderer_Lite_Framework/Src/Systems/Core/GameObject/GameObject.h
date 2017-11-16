@@ -12,6 +12,8 @@ public:
 
 	//public methods
 	IComponent * GetComponent(ComponentType mType) const;
+	const std::vector<IComponent*>& GetComponents(ComponentType mType) const;
+
 	void AddComponent(IComponent* component);
 
 	bool m_isActive;
@@ -23,7 +25,7 @@ public:
 	std::string m_tag;
 
 private:
-	IComponent* m_components[(int)ComponentType::COUNT];
+	std::vector<IComponent*> m_components[(int)ComponentType::COUNT];
 
 	std::vector<GameObject*> m_children;
 };

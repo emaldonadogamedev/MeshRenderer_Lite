@@ -1,10 +1,9 @@
 #pragma once
 
 #include <Systems/Core/ISystem.h>
-#include <Systems/Graphics/Components/IRenderComponent.h>
+#include <Systems/Core/Components/IComponent.h>
 #include <Systems/Graphics/GraphicsUtilities/ObjectHandle.h>
 #include <memory>
-#include <array>
 #include <unordered_map>
 
 class Model;
@@ -18,7 +17,7 @@ class TextureManager;
 //typedefs
 typedef std::unordered_map<string, ObjectHandle> HandleDictionary;
 typedef std::vector<HandleDictionary>  HandleDictionaryVec;
-typedef std::vector<std::vector<IRenderComponent*>> RenderCompVec;
+typedef std::vector<std::vector<IComponent*>> RenderCompVec;
 
 class GraphicsSystem : public ISystem
 {
@@ -36,6 +35,9 @@ public:
 #pragma region
 	const std::unordered_map<std::string, std::unique_ptr<Model>>& GetLoadedModels() const;
 #pragma endregion
+
+
+	virtual void AddComponent(IComponent* component) override;
 
 protected:
 	//Initialize helpers

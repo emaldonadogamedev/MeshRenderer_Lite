@@ -19,8 +19,6 @@ bool DX11Renderer::InitializeRenderer(const int width, const int height, HWND hw
 	if (!InitializeD3D(width, height, hwnd))
 		return false;
 
-
-
 	if (!InitializeTestData(width, height))
 		return false;
 

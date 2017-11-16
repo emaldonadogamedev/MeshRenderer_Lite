@@ -9,7 +9,10 @@ enum class ComponentType : char
 	TRANSFORM,
 
 	//Graphics
-	RENDERABLE,
+	RENDERABLE_3D,
+	RENDERABLE_LIGHT,
+	RENDERABLE_PARTICLE_SYSTEM,
+	RENDERABLE_PATH,
 	
 	//Physics
 

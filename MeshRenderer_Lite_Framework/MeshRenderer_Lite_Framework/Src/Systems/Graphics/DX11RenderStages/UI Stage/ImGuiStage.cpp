@@ -33,7 +33,7 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources)
 
 	bool drawit = true;
 
-	const auto& modelComponent = (ModelComponent*)m_gfxSystemComponents->at((int)RenderComponentType::RENDERABLE_3D)[0];
+	const auto& modelComponent = (ModelComponent*)m_gfxSystemComponents->at((int)ComponentType::RENDERABLE_3D)[0];
 	
 	if (modelComponent)
 	{
@@ -45,9 +45,16 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources)
 
 			ImGui::Checkbox("Draw Bones", &model->m_debugDrawEnabled);
 			ImGui::Checkbox("Draw Skin", &model->m_drawSkin);
+
 			//if(ImGui::ListBox\\)
 
 			ImGui::End();
+		}
+
+		if (ImGui::Begin("Transform Properties"))
+		{
+			ImGui::SliderFloat3("position: ", nullptr, -100, 100, "%.3f", 0.5f);
+			ImGui::SliderFloat3("scale: ", nullptr, -100, 100, "%.3f", 0.5f);
 		}
 	}
 

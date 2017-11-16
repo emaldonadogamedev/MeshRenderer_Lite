@@ -16,6 +16,7 @@ class IMessage;
 class InputSystem;
 class WindowSystem;
 class GraphicsSystem;
+class GameObject;
 
 using std::string;
 using std::vector;
@@ -61,6 +62,10 @@ protected:
 
 	GameClock m_clock;
 	//POINT m_MousePosition;
+
+	//////////////////////////////////////////////////////////////////////////
+	// FOR TEST!
+	std::unique_ptr<GameObject> testObj;
 
 	//Engine system pointers
 	vector<ISystem*> m_systems;

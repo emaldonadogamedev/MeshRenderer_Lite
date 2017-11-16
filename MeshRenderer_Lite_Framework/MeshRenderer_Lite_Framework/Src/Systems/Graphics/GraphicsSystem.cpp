@@ -33,7 +33,7 @@ GraphicsSystem::GraphicsSystem(Engine* const eng)
 	,m_modelManager(std::make_unique<ModelManager>(m_dx11Renderer.get()))
 	,m_textureManager(std::make_unique<TextureManager>(m_dx11Renderer.get()))
 {
-	m_renderComponents.resize((size_t)RenderComponentType::COUNT);
+	m_renderComponents.resize((size_t)ComponentType::COUNT);
 	m_resources.resize((size_t)ObjectType::COUNT);
 }
 
@@ -55,7 +55,7 @@ bool GraphicsSystem::Initialize()
 	//test3DComp->SetModel(m_modelManager->GetModel("spider.obj"));
 	//test3DComp->SetModel(m_modelManager->GetModel("gh_sample_animation.fbx"));
 	test3DComp->SetModel(m_modelManager->GetModel("boblampclean.md5mesh"));
-	m_renderComponents[(char)RenderComponentType::RENDERABLE_3D].emplace_back(std::move(test3DComp));
+	m_renderComponents[(char)ComponentType::RENDERABLE_3D].emplace_back(std::move(test3DComp));
 
 	AddRenderStages();
 
@@ -90,7 +90,7 @@ void GraphicsSystem::Update(const float dt)
 
 void GraphicsSystem::UpdateModelComponents(const float dt)
 {
-	auto& modelComponents = m_renderComponents.at((int)RenderComponentType::RENDERABLE_3D);
+	auto& modelComponents = m_renderComponents.at((int)ComponentType::RENDERABLE_3D);
 
 	for (auto& component : modelComponents)
 	{
@@ -335,6 +335,11 @@ void GraphicsSystem::Resize(const int w, const int h)
 const std::unordered_map<std::string, std::unique_ptr<Model>>& GraphicsSystem::GetLoadedModels() const
 {
 	return m_modelManager->m_loadedModels;
+}
+
+void GraphicsSystem::AddComponent(IComponent* component)
+{
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void GraphicsSystem::InitializeImGui()

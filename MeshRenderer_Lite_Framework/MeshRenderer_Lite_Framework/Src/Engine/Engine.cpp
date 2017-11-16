@@ -7,6 +7,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windowsx.h>
 
+#include <Systems/Core/GameObject/GameObject.h>
 #include <Systems/Graphics/GraphicsSystem.h>
 #include <Systems/Input/InputSystem.h>
 #include <Systems/Input/Keyboard.h>
@@ -54,6 +55,9 @@ bool Engine::Initialize(HINSTANCE hInstance)
 		if (!it->Initialize())
 			return m_isRunning = false;
 	}
+
+	//
+	testObj = std::make_unique<GameObject>();
 
 	return m_isRunning = true;
 }

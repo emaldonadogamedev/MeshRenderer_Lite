@@ -33,6 +33,7 @@ protected:
 	const MessageType m_messageType;
 };
 
+class IComponent;
 class Engine;
 
 class ISystem
@@ -46,6 +47,7 @@ public:
 	const string& GetName()const { return m_systemName; }
 	bool IsInitialized()const { return m_isInitialized; }
 	virtual void ReceiveMessage(const IMessage& msg) = 0;
+	virtual void AddComponent(IComponent* component) {}
 
 protected:
 	string m_systemName;

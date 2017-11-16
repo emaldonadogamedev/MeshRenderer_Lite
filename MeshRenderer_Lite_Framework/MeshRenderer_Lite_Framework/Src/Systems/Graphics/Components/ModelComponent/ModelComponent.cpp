@@ -6,7 +6,7 @@
 
 
 ModelComponent::ModelComponent(const GameObject* owner)
-	:IRenderComponent(RenderComponentType::RENDERABLE_3D, owner)
+	:IComponent(ComponentType::RENDERABLE_3D, owner)
 {
 
 }
@@ -37,4 +37,14 @@ Model* ModelComponent::GetModel() const
 void ModelComponent::SetModel(Model* model)
 {
 	m_model = model;
+}
+
+const bool ModelComponent::GetIsVisible() const
+{
+	return m_isVisible;
+}
+
+void ModelComponent::SetIsVisible(const bool visible)
+{
+	m_isVisible = visible;
 }

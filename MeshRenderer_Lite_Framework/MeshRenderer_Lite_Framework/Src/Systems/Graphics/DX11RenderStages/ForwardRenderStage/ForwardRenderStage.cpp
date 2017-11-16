@@ -51,8 +51,8 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources)
 	renderData.m_pImmediateContext->PSSetConstantBuffers(1, 1, &renderData.testViewProjConstBuffer);
 
 	//forward render all of the objects
-	const auto& modelComponents = m_gfxSystemComponents->at((int)RenderComponentType::RENDERABLE_3D);
-	for (const IRenderComponent* component : modelComponents)
+	const auto& modelComponents = m_gfxSystemComponents->at((int)ComponentType::RENDERABLE_3D);
+	for (const auto* component : modelComponents)
 	{
 		if (component->GetIsActive())
 		{
@@ -117,7 +117,7 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources)
 
 	m_renderer->BindNullVertexBuffer();
 
-	for (const IRenderComponent* component : modelComponents)
+	for (const auto* component : modelComponents)
 	{
 		if (component->GetIsActive())
 		{

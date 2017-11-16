@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Systems/Graphics/Components/IRenderComponent.h>
+#include <Systems/Core/Components/IComponent.h>
 #include <Systems/Graphics/GraphicsUtilities/ObjectHandle.h>
 #include <string>
 #include <vector>
@@ -10,7 +10,7 @@
 //typedefs
 typedef std::unordered_map<std::string, ObjectHandle> HandleDictionary;
 typedef std::vector<HandleDictionary>  HandleDictionaryVec;
-typedef std::vector<std::vector<IRenderComponent*>> RenderCompVec;
+typedef std::vector<std::vector<IComponent*>> RenderCompVec;
 
 class DX11Renderer;
 
