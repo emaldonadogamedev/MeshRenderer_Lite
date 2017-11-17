@@ -10,7 +10,7 @@
 //typedefs
 typedef std::unordered_map<std::string, ObjectHandle> HandleDictionary;
 typedef std::vector<HandleDictionary>  HandleDictionaryVec;
-typedef std::vector<std::vector<IComponent*>> RenderCompVec;
+typedef std::map<ComponentType, std::vector<IComponent*>> RenderCompVec;
 
 class DX11Renderer;
 

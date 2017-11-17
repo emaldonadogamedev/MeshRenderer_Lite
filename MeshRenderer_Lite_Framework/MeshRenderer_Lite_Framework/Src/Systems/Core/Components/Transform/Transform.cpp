@@ -11,7 +11,7 @@ Transform::Transform(GameObject* owner) : IComponent(ComponentType::TRANSFORM, o
 	, m_forward(XMVectorSet(0.f, 0.f, 1.f,0))
 	, m_worldTransform()
 {
-
+	m_rotation = DirectX::XMQuaternionRotationMatrix(DirectX::XMMatrixRotationX(XM_PIDIV2));
 }
 
 Transform::~Transform()
@@ -19,17 +19,17 @@ Transform::~Transform()
 
 }
 
-const XMVECTOR& Transform::GetPosition() const
+XMVECTOR& Transform::GetPosition()
 {
 	return m_position;
 }
 
-const XMVECTOR& Transform::GetOrientation() const
+XMVECTOR& Transform::GetOrientation()
 {
 	return m_rotation;
 }
 
-const XMVECTOR& Transform::GetScale() const
+XMVECTOR& Transform::GetScale()
 {
 	return m_scale;
 }

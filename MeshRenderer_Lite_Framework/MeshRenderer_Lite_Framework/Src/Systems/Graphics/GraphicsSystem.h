@@ -17,7 +17,7 @@ class TextureManager;
 //typedefs
 typedef std::unordered_map<string, ObjectHandle> HandleDictionary;
 typedef std::vector<HandleDictionary>  HandleDictionaryVec;
-typedef std::vector<std::vector<IComponent*>> RenderCompVec;
+typedef std::map<ComponentType,std::vector<IComponent*>> RenderCompVec;
 
 class GraphicsSystem : public ISystem
 {

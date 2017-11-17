@@ -3,6 +3,8 @@
 
 #include <Imgui/imgui.h>
 #include <Imgui/imgui_impl_dx11.h>
+#include <Systems/Core/Components/Transform/Transform.h>
+#include <Systems/Core/GameObject/GameObject.h>
 #include <Systems/Graphics/Components/ModelComponent/ModelComponent.h>
 #include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
 #include <Systems/Graphics/DX11Renderer/DX11RendererData.h>
@@ -33,10 +35,11 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources)
 
 	bool drawit = true;
 
-	const auto& modelComponent = (ModelComponent*)m_gfxSystemComponents->at((int)ComponentType::RENDERABLE_3D)[0];
+	const auto& modelComponent = (ModelComponent*)m_gfxSystemComponents->at(ComponentType::RENDERABLE_3D)[0];
 	
 	if (modelComponent)
 	{
+		auto* const transform = (Transform*)modelComponent->GetOwner()->GetComponent(ComponentType::TRANSFORM);
 		auto model = modelComponent->GetModel();
 		if (ImGui::Begin("Animation Properties"))
 		{
@@ -53,8 +56,11 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources)
 
 		if (ImGui::Begin("Transform Properties"))
 		{
-			ImGui::SliderFloat3("position: ", nullptr, -100, 100, "%.3f", 0.5f);
-			ImGui::SliderFloat3("scale: ", nullptr, -100, 100, "%.3f", 0.5f);
+			ImGui::SliderFloat3("position: ", transform->GetPosition().m128_f32, -100.0f, 100.0f, "%.3f");
+			ImGui::SliderFloat4("orientation: ", transform->GetOrientation().m128_f32, -1.0f, 1.0f, "%.3f");
+			ImGui::SliderFloat3("scale: ", transform->GetScale().m128_f32, -100.0f, 100.0f, "%.3f");
+
+			ImGui::End();
 		}
 	}
 

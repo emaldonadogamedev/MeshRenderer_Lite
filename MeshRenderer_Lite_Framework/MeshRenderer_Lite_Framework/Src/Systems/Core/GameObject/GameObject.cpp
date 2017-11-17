@@ -15,18 +15,21 @@ GameObject::~GameObject()
 
 IComponent* GameObject::GetComponent(ComponentType mType) const
 {
-	return m_components[(char)mType][0];
+	if(m_components[(unsigned char)mType].size())
+		return m_components[(unsigned char)mType][0];
+
+	return nullptr;
 }
 
 const std::vector<IComponent*>& GameObject::GetComponents(ComponentType mType) const
 {
-	return m_components[(char)mType];
+	return m_components[(unsigned char)mType];
 }
 
 void GameObject::AddComponent(IComponent* component)
 {
 	if (component)
 	{
-		m_components[(char)component->GetComponentType()].push_back(component);
+		m_components[(unsigned char)component->GetComponentType()].emplace_back(component);
 	}
 }

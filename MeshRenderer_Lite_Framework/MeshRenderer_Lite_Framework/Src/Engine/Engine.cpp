@@ -7,7 +7,10 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windowsx.h>
 
+#include <Systems/Core/Components/Transform/Transform.h>
 #include <Systems/Core/GameObject/GameObject.h>
+#include <Systems/Graphics/Components/ModelComponent/ModelComponent.h>
+#include <Systems/Graphics/Components/PathComponent/PathComponent.h>
 #include <Systems/Graphics/GraphicsSystem.h>
 #include <Systems/Input/InputSystem.h>
 #include <Systems/Input/Keyboard.h>
@@ -58,6 +61,17 @@ bool Engine::Initialize(HINSTANCE hInstance)
 
 	//
 	testObj = std::make_unique<GameObject>();
+	testObj->AddComponent(new Transform(testObj.get()));
+	ModelComponent* test3DComp = new ModelComponent(testObj.get());
+	const auto& loadedModels = m_graphicsSystem->GetLoadedModels();
+
+	//test3DComp->SetModel(loadedModels.at("spider.obj").get());
+	//test3DComp->SetModel(loadedModels.at("gh_sample_animation.fbx").get());
+	test3DComp->SetModel(loadedModels.at("boblampclean.md5mesh").get());
+
+	testObj->AddComponent(test3DComp);
+	m_graphicsSystem->AddComponent(test3DComp);
+	//testObj->AddComponent(new PathComponent(testObj.get()));
 
 	return m_isRunning = true;
 }

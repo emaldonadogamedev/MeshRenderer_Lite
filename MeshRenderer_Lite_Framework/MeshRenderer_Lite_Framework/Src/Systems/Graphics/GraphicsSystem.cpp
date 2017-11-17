@@ -33,7 +33,7 @@ GraphicsSystem::GraphicsSystem(Engine* const eng)
 	,m_modelManager(std::make_unique<ModelManager>(m_dx11Renderer.get()))
 	,m_textureManager(std::make_unique<TextureManager>(m_dx11Renderer.get()))
 {
-	m_renderComponents.resize((size_t)ComponentType::COUNT);
+	//m_renderComponents.resize((size_t)ComponentType::COUNT);
 	m_resources.resize((size_t)ObjectType::COUNT);
 }
 
@@ -50,12 +50,6 @@ bool GraphicsSystem::Initialize()
 	//Load resources
 	LoadBasicShaders();
 	LoadBasicModels();
-
-	ModelComponent* test3DComp = new ModelComponent(nullptr);
-	//test3DComp->SetModel(m_modelManager->GetModel("spider.obj"));
-	//test3DComp->SetModel(m_modelManager->GetModel("gh_sample_animation.fbx"));
-	test3DComp->SetModel(m_modelManager->GetModel("boblampclean.md5mesh"));
-	m_renderComponents[(char)ComponentType::RENDERABLE_3D].emplace_back(std::move(test3DComp));
 
 	AddRenderStages();
 
@@ -90,7 +84,7 @@ void GraphicsSystem::Update(const float dt)
 
 void GraphicsSystem::UpdateModelComponents(const float dt)
 {
-	auto& modelComponents = m_renderComponents.at((int)ComponentType::RENDERABLE_3D);
+	auto& modelComponents = m_renderComponents.at(ComponentType::RENDERABLE_3D);
 
 	for (auto& component : modelComponents)
 	{
@@ -272,6 +266,7 @@ void ReadNodeHeirarchy(Model& model, const float AnimationTime, const aiNode* pN
 		model.m_boneLocations[BoneIndex] = XMVectorSet(NodeTransformation.a4, NodeTransformation.b4, NodeTransformation.c4, 1.0f);
 
 		const aiMatrix4x4 assFinal = model.m_globalInverseTransform * GlobalTransformation * model.m_boneOffsetMtxVec[BoneIndex];
+		
 		static XMMATRIX final;
 		final.r[0] = XMVectorSet(assFinal.a1, assFinal.a2, assFinal.a3, assFinal.a4);
 		final.r[1] = XMVectorSet(assFinal.b1, assFinal.b2, assFinal.b3, assFinal.b4);
@@ -303,11 +298,11 @@ void GraphicsSystem::Shutdown()
 	//Delete all render components
 	for (auto& compVec : m_renderComponents)
 	{
-		for (auto component : compVec)
+		for (auto component : compVec.second)
 		{
 			SafeDelete(component);
 		}
-		compVec.clear();
+		compVec.second.clear();
 	}
 	m_renderComponents.clear();
 
@@ -339,7 +334,10 @@ const std::unordered_map<std::string, std::unique_ptr<Model>>& GraphicsSystem::G
 
 void GraphicsSystem::AddComponent(IComponent* component)
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	if (component)
+	{
+		m_renderComponents[component->GetComponentType()].emplace_back(component);
+	}
 }
 
 void GraphicsSystem::InitializeImGui()

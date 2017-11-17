@@ -1,6 +1,8 @@
 #include<Utilities/precompiled.h>
 #include<Systems/Graphics/DX11RenderStages/ForwardRenderStage/ForwardRenderStage.h>
 
+#include <Systems/Core/Components/Transform/Transform.h>
+#include <Systems/Core/GameObject/GameObject.h>
 #include<Systems/Graphics/Components/ModelComponent/ModelComponent.h>
 #include<Systems/Graphics/DX11Renderer/DX11Renderer.h>
 #include<Systems/Graphics/DX11Renderer/DX11RendererData.h>
@@ -51,7 +53,7 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources)
 	renderData.m_pImmediateContext->PSSetConstantBuffers(1, 1, &renderData.testViewProjConstBuffer);
 
 	//forward render all of the objects
-	const auto& modelComponents = m_gfxSystemComponents->at((int)ComponentType::RENDERABLE_3D);
+	const auto& modelComponents = m_gfxSystemComponents->at(ComponentType::RENDERABLE_3D);
 	for (const auto* component : modelComponents)
 	{
 		if (component->GetIsActive())
@@ -61,9 +63,9 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources)
 			m_renderer->BindVertexBuffer(model->GetVBufferHandle(), sizeof(VertexAnimation));
 			m_renderer->BindIndexBuffer(model->GetIBufferHandle());
 
-			//TODO:
-			//UPDATE Per Object Const Buffer with current component transform
-			// before we bind the it to the shaders
+			auto* const transform = (Transform*)component->GetOwner()->GetComponent(ComponentType::TRANSFORM);
+			transform->UpdateWorldMatrix();
+			renderData.testPerObjectBuffer.worldMtx = transform->GetWorldTransform();
 
 			renderData.testPerObjectBuffer.isAnimated = model->m_modelType == ModelType::MODEL_SKINNED;
 			renderData.m_pImmediateContext->UpdateSubresource(renderData.testPerObjectConstBuffer,

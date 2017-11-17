@@ -11,9 +11,9 @@ public:
 	Transform(GameObject* owner);
 	virtual ~Transform();
 
-	const XMVECTOR& GetPosition() const;
-	const XMVECTOR& GetOrientation() const;
-	const XMVECTOR& GetScale() const;
+	XMVECTOR& GetPosition();
+	XMVECTOR& GetOrientation();
+	XMVECTOR& GetScale();
 
 	void SetPositionn(const XMVECTOR& position);
 	void SetScale(const XMVECTOR &scale);

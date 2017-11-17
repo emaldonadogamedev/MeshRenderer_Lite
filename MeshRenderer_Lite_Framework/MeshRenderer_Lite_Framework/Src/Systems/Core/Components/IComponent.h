@@ -2,7 +2,7 @@
 
 class GameObject;
 
-enum class ComponentType : char 
+enum class ComponentType : unsigned char 
 {
 	//List the components here after creating them 
 	//Core

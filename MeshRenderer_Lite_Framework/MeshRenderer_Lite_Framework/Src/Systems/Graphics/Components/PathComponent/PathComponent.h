@@ -14,7 +14,7 @@ public:
 
 	const XMVECTOR UpdateSplinePoint(const float dt);
 
-	float m_tValueIncrease = 0.33f;
+	float m_tValueIncrease = 0.20f;
 	float m_speed = 3.0f;
 	std::deque<XMVECTOR> m_controlPoints;
 
