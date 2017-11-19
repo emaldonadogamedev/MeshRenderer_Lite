@@ -11,7 +11,7 @@ Transform::Transform(GameObject* owner) : IComponent(ComponentType::TRANSFORM, o
 	, m_forward(XMVectorSet(0.f, 0.f, 1.f,0))
 	, m_worldTransform()
 {
-	m_rotation = DirectX::XMQuaternionRotationMatrix(DirectX::XMMatrixRotationX(XM_PIDIV2));
+	//m_rotation = DirectX::XMQuaternionRotationMatrix(DirectX::XMMatrixRotationX(XM_PIDIV2));
 }
 
 Transform::~Transform()
@@ -92,15 +92,11 @@ const XMMATRIX& Transform::GetWorldTransform() const
 
 void Transform::UpdateWorldMatrix()
 {
-	//m_worldTransform = XMMatrixTranspose(
-	//	XMMatrixScalingFromVector(m_scale) *
-	//	XMMatrixRotationQuaternion(m_rotation) *
-	//	XMMatrixTranslationFromVector(m_position)
-	//);
+	m_orientationQuat = XMQuaternionRotationMatrix(XMMatrixRotationRollPitchYawFromVector(m_rotation));
 
 	m_worldTransform = XMMatrixTranspose(
-		XMMatrixTranslationFromVector(m_position) *
-		XMMatrixRotationQuaternion(m_rotation) *
-		XMMatrixScalingFromVector(m_scale)
+		XMMatrixScalingFromVector(m_scale) *
+		XMMatrixRotationQuaternion(m_orientationQuat) *
+		XMMatrixTranslationFromVector(m_position)
 	);
 }

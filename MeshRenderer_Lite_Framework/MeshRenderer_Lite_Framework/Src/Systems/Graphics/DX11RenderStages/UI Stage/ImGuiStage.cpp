@@ -56,9 +56,9 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources)
 
 		if (ImGui::Begin("Transform Properties"))
 		{
-			ImGui::SliderFloat3("position: ", transform->GetPosition().m128_f32, -100.0f, 100.0f, "%.3f");
-			ImGui::SliderFloat4("orientation: ", transform->GetOrientation().m128_f32, -1.0f, 1.0f, "%.3f");
-			ImGui::SliderFloat3("scale: ", transform->GetScale().m128_f32, -100.0f, 100.0f, "%.3f");
+			ImGui::SliderFloat3("position: ", transform->GetPosition().m128_f32, -40.0f, 40.0f, "%.3f");
+			ImGui::SliderFloat3("rotation: ", transform->GetOrientation().m128_f32, 0, DirectX::XM_2PI, "%.3f");
+			ImGui::SliderFloat3("scale: ", transform->GetScale().m128_f32, -40.0f, 40.0f, "%.3f");
 
 			ImGui::End();
 		}

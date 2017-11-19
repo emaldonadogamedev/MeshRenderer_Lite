@@ -227,9 +227,6 @@ void ReadNodeHeirarchy(Model& model, const float AnimationTime, const aiNode* pN
 
 	aiMatrix4x4 NodeTransformation(pNode->mTransformation);
 
-  //if(NodeName.find("$AssimpFbx$"))
-    //return;
-
 	const aiNodeAnim* const pNodeAnim = FindNodeAnim(currentAnimation, NodeName);
 
 	if (pNodeAnim) 
@@ -277,9 +274,8 @@ void ReadNodeHeirarchy(Model& model, const float AnimationTime, const aiNode* pN
 	}
 
 	for (int i = 0; i < pNode->mNumChildren; i++) 
-	{
 		ReadNodeHeirarchy(model, AnimationTime, pNode->mChildren[i], currentAnimation, GlobalTransformation);
-	}
+
 }
 #pragma endregion
 

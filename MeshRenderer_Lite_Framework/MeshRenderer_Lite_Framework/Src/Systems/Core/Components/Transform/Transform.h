@@ -35,6 +35,7 @@ public:
 protected:
 	XMVECTOR m_position;
 	XMVECTOR m_rotation;
+	XMVECTOR m_orientationQuat;
 	XMVECTOR m_scale;
 
 	XMVECTOR m_right;
