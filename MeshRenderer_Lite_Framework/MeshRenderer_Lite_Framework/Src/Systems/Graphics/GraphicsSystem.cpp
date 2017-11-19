@@ -10,10 +10,14 @@
 #include <Engine/Engine.h>
 #include <Imgui/imgui.h>
 #include <Imgui/imgui_impl_dx11.h>
+#include <Systems/Core/Components/Transform/Transform.h>
+#include <Systems/Core/GameObject/GameObject.h>
 #include <Systems/Graphics/CameraClasses/Camera.h>
 #include <Systems/Graphics/Components/ModelComponent/ModelComponent.h>
+#include <Systems/Graphics/Components/PathComponent/PathComponent.h>
 #include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
 #include <Systems/Graphics/DX11Renderer/DX11RendererData.h>
+#include <Systems/Graphics/DX11RenderStages/ForwardDebugStage/PathWalkDebugStage.h>
 #include <Systems/Graphics/DX11RenderStages/ForwardRenderStage/ForwardRenderStage.h>
 #include <Systems/Graphics/DX11RenderStages/UI Stage/ImGuiStage.h>
 #include <Systems/Graphics/ModelClasses/Model/Model.h>
@@ -61,6 +65,7 @@ bool GraphicsSystem::Initialize()
 void GraphicsSystem::Update(const float dt)
 {
 	UpdateModelComponents(dt);
+	UpdatePathComponents(dt);
 
 	//TEST!!!
 	TestUpdateCamera(dt);
@@ -75,7 +80,7 @@ void GraphicsSystem::Update(const float dt)
 	for (const auto renderStage : m_renderStages)
 	{
 		renderStage->PreRender();
-		renderStage->Render(m_resources);
+		renderStage->Render(m_resources, dt);
 		renderStage->PostRender();
 	}
 
@@ -289,6 +294,25 @@ void GraphicsSystem::UpdateAnimation(Model& model, const float dt)
 	ReadNodeHeirarchy(model, model.m_runningTime, model.m_assimpScene->mRootNode, currentAnim, aiMatrix4x4());
 }
 
+void GraphicsSystem::UpdatePathComponents(const float dt)
+{
+	auto& pathComponents = m_renderComponents.at(ComponentType::RENDERABLE_PATH);
+
+	for (auto& component : pathComponents)
+	{
+		if (component->GetIsActive())
+		{
+			auto path = (static_cast<PathComponent*>(component));
+			if (path->m_usePath)
+			{
+				auto transform = (Transform*)path->GetOwner()->GetComponent(ComponentType::TRANSFORM);
+				path->UpdatePath(dt);
+				transform->SetPositionn(path->GetCurrentSplinePoint());
+			}
+		}
+	}
+}
+
 void GraphicsSystem::Shutdown()
 {
 	//Delete all render components
@@ -351,8 +375,8 @@ void GraphicsSystem::AddRenderStages()
 	//Add shadow map stage
 	//Add reflection map stage
 	AddRenderStageHelper(new ForwardRenderStage(m_dx11Renderer.get(), &m_renderComponents));
+	AddRenderStageHelper(new PathWalkDebugStage(m_dx11Renderer.get(), &m_renderComponents));
 	AddRenderStageHelper(new ImGuiStage(m_dx11Renderer.get(), &m_renderComponents));
-
 }
 
 void GraphicsSystem::AddRenderStageHelper(IRenderStage* const renderStage)
@@ -413,6 +437,10 @@ void GraphicsSystem::LoadBasicShaders()
 	m_dx11Renderer->CreateVertexShader(vsHandle, s_vertexShaderDir + "AnimationDebugVS.hlsl", defaultVS_inputLayout, false);
 	m_resources[(int)ObjectType::VERTEX_SHADER]["AnimationDebugVS"] = vsHandle;
 
+	vsHandle = ObjectHandle::Null();
+	m_dx11Renderer->CreateVertexShader(vsHandle, s_vertexShaderDir + "SimpleVS.hlsl", defaultVS_inputLayout, false);
+	m_resources[(int)ObjectType::VERTEX_SHADER]["SimpleVS"] = vsHandle;
+
 	//////////////////////////////////////////////////////////////////////////
 	// Default Pixel Shader
 	ObjectHandle psHandle;
@@ -422,6 +450,10 @@ void GraphicsSystem::LoadBasicShaders()
 	psHandle = ObjectHandle::Null();
 	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "AnimationDebugPS.hlsl", false);
 	m_resources[(int)ObjectType::PIXEL_SHADER]["AnimationDebugPS"] = psHandle;
+
+	psHandle = ObjectHandle::Null();
+	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "SimplePS.hlsl", false);
+	m_resources[(int)ObjectType::PIXEL_SHADER]["SimplePS"] = psHandle;
 
 }
 

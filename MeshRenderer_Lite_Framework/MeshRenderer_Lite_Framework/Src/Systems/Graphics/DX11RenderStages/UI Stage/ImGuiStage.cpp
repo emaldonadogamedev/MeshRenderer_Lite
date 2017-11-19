@@ -6,6 +6,7 @@
 #include <Systems/Core/Components/Transform/Transform.h>
 #include <Systems/Core/GameObject/GameObject.h>
 #include <Systems/Graphics/Components/ModelComponent/ModelComponent.h>
+#include <Systems/Graphics/Components/PathComponent/PathComponent.h>
 #include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
 #include <Systems/Graphics/DX11Renderer/DX11RendererData.h>
 #include <Systems/Graphics/ModelClasses/Model/Model.h>
@@ -26,7 +27,7 @@ void ImGuiStage::PreRender()
 {
 }
 
-void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources)
+void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const float dt)
 {
 	ImGui_ImplDX11_NewFrame();
 
@@ -35,30 +36,44 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources)
 
 	bool drawit = true;
 
+	//ImGui::ShowTestWindow(&drawit);
+
 	const auto& modelComponent = (ModelComponent*)m_gfxSystemComponents->at(ComponentType::RENDERABLE_3D)[0];
-	
+	const auto& pathComponent = (PathComponent*)m_gfxSystemComponents->at(ComponentType::RENDERABLE_PATH)[0];
+
 	if (modelComponent)
 	{
 		auto* const transform = (Transform*)modelComponent->GetOwner()->GetComponent(ComponentType::TRANSFORM);
 		auto model = modelComponent->GetModel();
 		if (ImGui::Begin("Animation Properties"))
 		{
+			ImGui::Text("FPS: %.3f", 1.0f/dt);
 			ImGui::Checkbox("Play Animation", &model->m_animationEnabled);
 			ImGui::SliderFloat("Ticks per second", &model->m_ticksPerSecond, 1.0f, 100.0f);
 
 			ImGui::Checkbox("Draw Bones", &model->m_debugDrawEnabled);
 			ImGui::Checkbox("Draw Skin", &model->m_drawSkin);
+			ImGui::Separator();
 
-			//if(ImGui::ListBox\\)
+			if (pathComponent)
+			{
+				ImGui::Checkbox("Use Path: ", &pathComponent->m_usePath);
+				ImGui::DragFloat3("Center Position: ", pathComponent->m_pathCenterPos.m128_f32);
+				ImGui::DragFloat("t Value increase: ", &pathComponent->m_tValueIncrease,0.1f, 0.0f, 10.0f);
+			}
 
 			ImGui::End();
 		}
 
 		if (ImGui::Begin("Transform Properties"))
 		{
-			ImGui::SliderFloat3("position: ", transform->GetPosition().m128_f32, -40.0f, 40.0f, "%.3f");
-			ImGui::SliderFloat3("rotation: ", transform->GetOrientation().m128_f32, 0, DirectX::XM_2PI, "%.3f");
-			ImGui::SliderFloat3("scale: ", transform->GetScale().m128_f32, -40.0f, 40.0f, "%.3f");
+			//ImGui::SliderFloat3("position: ", transform->GetPosition().m128_f32, -40.0f, 40.0f, "%.3f");
+			//ImGui::SliderFloat3("rotation: ", transform->GetOrientation().m128_f32, 0, DirectX::XM_2PI, "%.3f");
+			//ImGui::SliderFloat3("scale: ", transform->GetScale().m128_f32, -20.0f, 20.0f, "%.3f");
+
+			ImGui::DragFloat3("Position: ", transform->GetPosition().m128_f32, 0.1f);
+			ImGui::DragFloat3("Rotation: ", transform->GetOrientation().m128_f32, 0.1f);
+			ImGui::DragFloat3("Scale: ", transform->GetScale().m128_f32, 0.1f);
 
 			ImGui::End();
 		}

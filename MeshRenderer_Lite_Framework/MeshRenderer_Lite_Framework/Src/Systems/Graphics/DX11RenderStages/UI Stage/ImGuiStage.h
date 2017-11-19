@@ -12,7 +12,7 @@ public:
 
 
 	virtual void PreRender() override;
-	virtual void Render(const HandleDictionaryVec& graphicsResources) override;
+	virtual void Render(const HandleDictionaryVec& graphicsResources, const float dt) override;
 	virtual void PostRender() override;
 
 protected:

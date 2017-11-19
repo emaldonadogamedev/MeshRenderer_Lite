@@ -66,12 +66,16 @@ bool Engine::Initialize(HINSTANCE hInstance)
 	const auto& loadedModels = m_graphicsSystem->GetLoadedModels();
 
 	//test3DComp->SetModel(loadedModels.at("box.obj").get());
-	test3DComp->SetModel(loadedModels.at("CylinderAnim.fbx").get());
-	//test3DComp->SetModel(loadedModels.at("boblampclean.md5mesh").get());
+	//test3DComp->SetModel(loadedModels.at("CylinderAnim.fbx").get());
+	test3DComp->SetModel(loadedModels.at("boblampclean.md5mesh").get());
 
 	testObj->AddComponent(test3DComp);
 	m_graphicsSystem->AddComponent(test3DComp);
-	//testObj->AddComponent(new PathComponent(testObj.get()));
+
+	auto* testPathComp = new PathComponent(testObj.get());
+	testPathComp->GenerateVertexBuffer(m_graphicsSystem->m_dx11Renderer.get());
+	testObj->AddComponent(testPathComp);
+	m_graphicsSystem->AddComponent(testPathComp);
 
 	return m_isRunning = true;
 }
@@ -84,7 +88,7 @@ void Engine::Run(void)
 	m_clock.ResetClock();
 
 	//main game loop
-	while (IsRunning())
+	while (m_isRunning)
 	{
 		// If there are Window messages then process them.
 		while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
@@ -109,6 +113,11 @@ void Engine::Run(void)
 			{
 				it->Update(dt);
 			}
+#ifdef _DEBUG
+			const int waitTimeMS = (int)((s_fps60 - dt) * 1000.0f);
+			Sleep(waitTimeMS * (dt < s_fps60));
+#endif
+
 		}
 		else
 		{
@@ -302,7 +311,7 @@ void Engine::CalculateFrameTime(void)
 {
 	m_frameCount++;
 
-	// Compute averages over one second period.
+	// Compute averages ovwer one second period.
 	if ((m_clock.GetTotalTime() - m_timeElapsed) >= 1.0f)
 	{
 		const float fps = (float)m_frameCount; // fps = frameCnt / 1
@@ -316,3 +325,5 @@ void Engine::CalculateFrameTime(void)
 		m_timeElapsed += 1.0f;
 	}
 }
+
+const float Engine::s_fps60 = 1.0f / 60.0f;

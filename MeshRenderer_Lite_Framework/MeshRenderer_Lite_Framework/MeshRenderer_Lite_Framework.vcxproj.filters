@@ -99,10 +99,10 @@
     <ClCompile Include="Src\Systems\Graphics\TextureClasses\TextureManager\TextureManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\ForwardDebugStage\AnimationDebugStage.cpp">
+    <ClCompile Include="Src\Systems\Graphics\Components\PathComponent\PathComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Systems\Graphics\Components\PathComponent\PathComponent.cpp">
+    <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\ForwardDebugStage\PathWalkDebugStage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -218,10 +218,10 @@
     <ClInclude Include="Src\Systems\Graphics\GraphicsUtilities\D3DObjects.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\ForwardDebugStage\AnimationDebugStage.h">
+    <ClInclude Include="Src\Systems\Graphics\Components\PathComponent\PathComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Systems\Graphics\Components\PathComponent\PathComponent.h">
+    <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\ForwardDebugStage\PathWalkDebugStage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

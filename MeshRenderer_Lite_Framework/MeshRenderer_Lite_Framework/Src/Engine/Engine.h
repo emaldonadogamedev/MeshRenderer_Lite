@@ -51,6 +51,7 @@ protected:
 	bool AddSystemHelper(ISystem* const sys = nullptr);
 
 	void CalculateFrameTime(void);
+	static const float s_fps60;
 	unsigned long long m_frameCount = 0;
 	float m_timeElapsed = 0.0f;
 

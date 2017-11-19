@@ -4,11 +4,11 @@
 
 class GraphicsSystem;
 
-class ForwardRenderStage : IRenderStage
+class PathWalkDebugStage : IRenderStage
 {
 public:
-	ForwardRenderStage(DX11Renderer* const renderData, RenderCompVec* const gfxComponents);
-	virtual ~ForwardRenderStage() override;
+	PathWalkDebugStage(DX11Renderer* const renderData, RenderCompVec* const gfxComponents);
+	virtual ~PathWalkDebugStage();
 
 	virtual void PreRender() override;
 	virtual void Render(const HandleDictionaryVec& graphicsResources, const float dt) override;

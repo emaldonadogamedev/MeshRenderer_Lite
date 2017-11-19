@@ -52,6 +52,7 @@ protected:
 	void TestUpdateCamera(const float dt);
 	void UpdateModelComponents(const float dt);
 	void UpdateAnimation(Model& model, const float dt);
+	void UpdatePathComponents(const float dt);
 
 	//Cameras
 	std::unique_ptr<Camera> testCamera;
