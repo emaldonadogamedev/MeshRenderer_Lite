@@ -19,6 +19,9 @@ public:
 	void SetScale(const XMVECTOR &scale);
 	void SetOrientation(const XMVECTOR& orientation);
 	void SetOrientation(const XMMATRIX& orientationMtx);
+	void SetRotationX(float rot);
+	void SetRotationY(float rot);
+	void SetRotationZ(float rot);
 
 	const XMVECTOR& GetRightVector() const;
 	const XMVECTOR& GetUpVector() const;

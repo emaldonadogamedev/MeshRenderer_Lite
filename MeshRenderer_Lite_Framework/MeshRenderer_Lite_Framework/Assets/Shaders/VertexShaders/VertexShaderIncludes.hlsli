@@ -34,5 +34,7 @@ static const unsigned int s_maxBoneLocCount = 120 * 6;
 cbuffer AnimationBonesBuffer : register(b2)
 {
 	matrix boneMatrices[s_maxBoneCount];
+
+	//Debug
 	float4 bonePositions[s_maxBoneLocCount];
 };

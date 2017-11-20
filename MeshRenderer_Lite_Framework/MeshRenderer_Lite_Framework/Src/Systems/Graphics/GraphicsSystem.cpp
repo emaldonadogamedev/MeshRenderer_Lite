@@ -232,6 +232,7 @@ void ReadNodeHeirarchy(Model& model, const float AnimationTime, const aiNode* pN
 
 	aiMatrix4x4 NodeTransformation(pNode->mTransformation);
 
+	//Get the node animation, or determine if this animation uses the node/bone at all
 	const aiNodeAnim* const pNodeAnim = FindNodeAnim(currentAnimation, NodeName);
 
 	if (pNodeAnim) 
@@ -257,7 +258,6 @@ void ReadNodeHeirarchy(Model& model, const float AnimationTime, const aiNode* pN
 		NodeTransformation = (assTrans * assOrientation * assScale);
 	}
 
-	//const aiMatrix4x4 GlobalTransformation = (NodeTransformation * ParentTransform);
 	const aiMatrix4x4 GlobalTransformation = (ParentTransform * NodeTransformation);
 
 	auto it = model.m_boneMapping.find(NodeName);
@@ -308,6 +308,9 @@ void GraphicsSystem::UpdatePathComponents(const float dt)
 				auto transform = (Transform*)path->GetOwner()->GetComponent(ComponentType::TRANSFORM);
 				path->UpdatePath(dt);
 				transform->SetPositionn(path->GetCurrentSplinePoint());
+				const float angle = path->GetCurrentAngle();
+				//transform->SetRotationY(angle);
+				transform->SetRotationZ(angle);
 			}
 		}
 	}
@@ -406,7 +409,9 @@ void GraphicsSystem::LoadModelHelper(const std::string& fileName)
 void GraphicsSystem::LoadBasicModels()
 {
 	LoadModelHelper("box.obj");
+	LoadModelHelper("bunny.obj");
 	LoadModelHelper("sphere.obj");
+	LoadModelHelper("dragon.obj");
 	LoadModelHelper("Tower.fbx");
 	LoadModelHelper("gh_sample_animation.fbx");
 	LoadModelHelper("CylinderAnim.fbx");
@@ -473,12 +478,12 @@ void GraphicsSystem::TestUpdateCamera(const float dt)
 
 	if (input->m_keyboard->IsKeyHeld(KeyboardEvent::VirtualKey::KEY_A))
 	{
-		testCamera->Strafe(dt * 10);
+		testCamera->Strafe(-dt * 10);
 	}
 
 	if (input->m_keyboard->IsKeyHeld(KeyboardEvent::VirtualKey::KEY_D))
 	{
-		testCamera->Strafe(-dt * 10);
+		testCamera->Strafe(dt * 10);
 	}
 
 	if (input->m_keyboard->IsKeyHeld(KeyboardEvent::VirtualKey::KEY_Q))

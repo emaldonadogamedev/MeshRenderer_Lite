@@ -65,8 +65,8 @@ bool Engine::Initialize(HINSTANCE hInstance)
 	ModelComponent* test3DComp = new ModelComponent(testObj.get());
 	const auto& loadedModels = m_graphicsSystem->GetLoadedModels();
 
-	//test3DComp->SetModel(loadedModels.at("box.obj").get());
-	//test3DComp->SetModel(loadedModels.at("CylinderAnim.fbx").get());
+	//test3DComp->SetModel(loadedModels.at("dragon.obj").get());
+	//test3DComp->SetModel(loadedModels.at("bunny.obj").get());
 	test3DComp->SetModel(loadedModels.at("boblampclean.md5mesh").get());
 
 	testObj->AddComponent(test3DComp);

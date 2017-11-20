@@ -60,7 +60,7 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 
 	const unsigned int loadFlags = aiProcess_Triangulate
 		| aiProcess_GenSmoothNormals
-		| aiProcess_GenUVCoords
+		//| aiProcess_GenUVCoords
 		| aiProcess_ConvertToLeftHanded //Make left-hand side loading, since I'm using DirectX
 		| aiProcessPreset_TargetRealtime_MaxQuality
 		| aiProcess_JoinIdenticalVertices
@@ -87,7 +87,8 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 		unsigned int indicesCount = 0;
 
 		newModel->m_meshEntryList.resize(numberOfMeshes);
-		for (int i = 0; i < newModel->m_meshEntryList.size(); i++) {
+		for (int i = 0; i < newModel->m_meshEntryList.size(); i++) 
+		{
 			newModel->m_meshEntryList[i].assImpMaterialIndex = loadedScene->mMeshes[i]->mMaterialIndex;
 			if(!newModel->m_diffTextures.empty())
 				newModel->m_meshEntryList[i].diffTextureName = newModel->m_diffTextures[loadedScene->mMeshes[i]->mMaterialIndex];

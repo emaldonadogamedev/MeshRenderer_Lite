@@ -55,6 +55,21 @@ void Transform::SetOrientation(const XMMATRIX& orientationMtx)
 	XMVector3Normalize(m_rotation);
 }
 
+void Transform::SetRotationX(float rot)
+{
+	m_rotation.m128_f32[0] = rot;
+}
+
+void Transform::SetRotationY(float rot)
+{
+	m_rotation.m128_f32[1] = rot;
+}
+
+void Transform::SetRotationZ(float rot)
+{
+	m_rotation.m128_f32[2] = rot;
+}
+
 const XMVECTOR& Transform::GetRightVector() const
 {
 	return m_right;

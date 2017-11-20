@@ -10,6 +10,7 @@ PathComponent::PathComponent(const GameObject* owner)
 	, m_pathCenterPos(XMVectorSet(0,0,0,1.0f))
 {
 	srand(time(NULL));
+
 	DefaultPointSet();
 	PrepareDrawPoints();
 }
@@ -47,15 +48,19 @@ const XMVECTOR PathComponent::GetCurrentSplinePoint()
 	return m_currentPos = DirectX::XMVectorAdd(m_pathCenterPos, XMVectorSet(x,y,z,1.0f));
 }
 
-float PathComponent::GetCurrentDotProduct() const
+float PathComponent::GetCurrentAngle() const
 {
-	return 0;
+	const float dx = m_currentPos.m128_f32[0] - m_prevPos.m128_f32[0];
+	const float dz = m_currentPos.m128_f32[2] - m_prevPos.m128_f32[2];
+
+	const float angle = atan2(dz, dx);
+
+	return (angle < 0 ? DirectX::XM_2PI + angle : angle);
 }
 
 void PathComponent::DefaultPointSet()
 {
 	m_controlPoints.clear();
-	//m_controlPoints.(s_defaultAmountOfPoints);
 
 	const float scale = 250.0f;
 	const float angleIncrease = DirectX::XM_2PI / (float)s_defaultAmountOfPoints;
@@ -63,10 +68,8 @@ void PathComponent::DefaultPointSet()
 	for (float angle = 0 ; angle < DirectX::XM_2PI; angle += angleIncrease)
 	{
 		m_controlPoints.emplace_back(XMVectorSet(std::cos(angle) * scale * RandFloat(0.5f, 1.0f), 0, std::sin(angle) * scale * RandFloat(0.5f, 1.0f), 1.0f));
+		//m_controlPoints.emplace_back(XMVectorSet(std::cos(angle) * scale, 0, std::sin(angle) * scale, 1.0f));
 	}
-
-	m_currentP0_index = 0;
-	m_currentP3_index = 3;
 }
 
 void PathComponent::PrepareDrawPoints()

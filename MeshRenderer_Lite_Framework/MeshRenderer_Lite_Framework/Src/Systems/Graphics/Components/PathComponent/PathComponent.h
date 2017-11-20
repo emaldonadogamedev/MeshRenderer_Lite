@@ -24,7 +24,7 @@ public:
 
 	int GetPathVertexCount() const;
 	const XMVECTOR GetCurrentSplinePoint();
-	float GetCurrentDotProduct()const;
+	float GetCurrentAngle()const;
 
 	bool m_usePath = false;
 	float m_tValueIncrease = 0.20f;
