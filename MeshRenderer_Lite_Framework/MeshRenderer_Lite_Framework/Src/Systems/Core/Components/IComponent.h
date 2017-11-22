@@ -13,7 +13,8 @@ enum class ComponentType : unsigned char
 	RENDERABLE_LIGHT,
 	RENDERABLE_PARTICLE_SYSTEM,
 	RENDERABLE_PATH,
-	
+	RENDERABLE_CURVE_PATH,
+
 	//Physics
 
 	//Scripting

@@ -110,6 +110,7 @@ void Transform::UpdateWorldMatrix()
 	m_orientationQuat = XMQuaternionRotationMatrix(XMMatrixRotationRollPitchYawFromVector(m_rotation));
 
 	m_worldTransform = XMMatrixTranspose(
+		XMMatrixRotationX(XM_PIDIV2) *
 		XMMatrixScalingFromVector(m_scale) *
 		XMMatrixRotationQuaternion(m_orientationQuat) *
 		XMMatrixTranslationFromVector(m_position)

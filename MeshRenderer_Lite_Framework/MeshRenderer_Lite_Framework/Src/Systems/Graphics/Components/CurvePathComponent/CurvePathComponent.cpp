@@ -1,11 +1,11 @@
 #include <Utilities/precompiled.h>
-#include <Systems/Graphics/Components/PathComponent/PathComponent.h>
+#include <Systems/Graphics/Components/CurvePathComponent/CurvePathComponent.h>
 
 #include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
 
 using DirectX::XMVectorSet;
 
-PathComponent::PathComponent(const GameObject* owner)
+CurvePathComponent::CurvePathComponent(const GameObject* owner)
 	:IComponent(ComponentType::RENDERABLE_PATH, owner)
 	, m_pathCenterPos(XMVectorSet(0,0,0,1.0f))
 {
@@ -15,24 +15,12 @@ PathComponent::PathComponent(const GameObject* owner)
 	PrepareDrawPoints();
 }
 
-PathComponent::~PathComponent()
+CurvePathComponent::~CurvePathComponent()
 {
 
 }
 
-const float PathComponent::GetSplinePointComponent(const float t, const int i, const XMVECTOR& P0, const XMVECTOR& P1, const XMVECTOR& P2, const XMVECTOR& P3)
-{
-	const float result = 0.5f * (
-		(2.0f * P1.m128_f32[i]) + 
-		((-P0.m128_f32[i] + P2.m128_f32[i])  * t) +
-		(((2.0f * P0.m128_f32[i]) - (5.0f * P1.m128_f32[i]) + (4.0f * P2.m128_f32[i]) - P3.m128_f32[i]) * (t * t)) +
-		((-P0.m128_f32[i] + (3.0f * P1.m128_f32[i]) - (3.0f * P2.m128_f32[i]) + P3.m128_f32[i]) * (t * t * t))
-	);
-
-	return result;
-}
-
-const XMVECTOR PathComponent::GetCurrentSplinePoint()
+const XMVECTOR CurvePathComponent::GetCurrentSplinePoint()
 {
 	m_prevPos = m_currentPos;
 
@@ -48,7 +36,7 @@ const XMVECTOR PathComponent::GetCurrentSplinePoint()
 	return m_currentPos = DirectX::XMVectorAdd(m_pathCenterPos, XMVectorSet(x,y,z,1.0f));
 }
 
-float PathComponent::GetCurrentAngle() const
+float CurvePathComponent::GetCurrentAngle() const
 {
 	const float dx = m_currentPos.m128_f32[0] - m_prevPos.m128_f32[0];
 	const float dz = m_currentPos.m128_f32[2] - m_prevPos.m128_f32[2];
@@ -58,21 +46,21 @@ float PathComponent::GetCurrentAngle() const
 	return (angle < 0 ? DirectX::XM_2PI + angle : angle);
 }
 
-void PathComponent::DefaultPointSet()
+void CurvePathComponent::DefaultPointSet()
 {
-	m_controlPoints.clear();
+	m_forwardDiffTable.clear();
+	m_forwardDiffTable.resize((size_t)s_defaultAmountOfPoints + 1);
+	m_pointInterval = 1.0f / s_defaultAmountOfPoints;
+	m_totalLengthOfCurve = 0.f;
 
-	const float scale = 250.0f;
-	const float angleIncrease = DirectX::XM_2PI / (float)s_defaultAmountOfPoints;
-
-	for (float angle = 0 ; angle < DirectX::XM_2PI; angle += angleIncrease)
+	for (size_t i = 1; i < m_forwardDiffTable.size(); ++i)
 	{
-		m_controlPoints.emplace_back(XMVectorSet(std::cos(angle) * scale * RandFloat(0.5f, 1.0f), 0, std::sin(angle) * scale * RandFloat(0.5f, 1.0f), 1.0f));
-		//m_controlPoints.emplace_back(XMVectorSet(std::cos(angle) * scale, 0, std::sin(angle) * scale, 1.0f));
+		//or essentially...  m_forwardDiffTable[i].parametricValue = m_pointInterval * i;
+		m_forwardDiffTable[i].parametricValue = m_forwardDiffTable[i-1].parametricValue + m_pointInterval;
 	}
 }
 
-void PathComponent::PrepareDrawPoints()
+void CurvePathComponent::PrepareDrawPoints()
 {
 	m_drawPoints.clear();
 	for (size_t i = 0; i < m_controlPoints.size(); ++i)
@@ -82,7 +70,7 @@ void PathComponent::PrepareDrawPoints()
 		{
 			m_drawPoints.emplace_back(GetCurrentSplinePoint());
 
-			m_tValue += m_tValueIncrease;
+			m_tValue += m_pointInterval;
 		}
 
 		ShiftPointIndices();
@@ -92,7 +80,7 @@ void PathComponent::PrepareDrawPoints()
 	m_tValue = 0;
 }
 
-void PathComponent::GenerateVertexBuffer(DX11Renderer* renderContext)
+void CurvePathComponent::GenerateVertexBuffer(DX11Renderer* renderContext)
 {
 	m_vertices.clear();
 	m_vertices.resize(m_drawPoints.size());
@@ -105,14 +93,14 @@ void PathComponent::GenerateVertexBuffer(DX11Renderer* renderContext)
 	renderContext->CreateVertexBuffer(m_drawPointsVBuffer, BufferUsage::USAGE_DEFAULT, sizeof(VertexAnimation) * m_vertices.size(), m_vertices.data());
 }
 
-ObjectHandle PathComponent::GetPathVBuffer() const
+ObjectHandle CurvePathComponent::GetPathVBuffer() const
 {
 	return m_drawPointsVBuffer;
 }
 
-void PathComponent::UpdatePath(const float dt)
+void CurvePathComponent::UpdatePath(const float dt)
 {
-	m_tValue += dt * m_tValueIncrease;
+	m_tValue += dt * m_pointInterval;
 	if (m_tValue > 1.0f)
 	{
 		m_tValue = 0;
@@ -120,22 +108,22 @@ void PathComponent::UpdatePath(const float dt)
 	}
 }
 
-int PathComponent::GetPathVertexCount() const
+int CurvePathComponent::GetPathVertexCount() const
 {
 	return m_drawPoints.size();
 }
 
-float PathComponent::Clamp(const float value, const float minValue, const float maxValue) const
+float CurvePathComponent::Clamp(const float value, const float minValue, const float maxValue) const
 {
 	return min( max(minValue, value), maxValue);
 }
 
-float PathComponent::RandFloat(float minValue, float maxValue) const
+float CurvePathComponent::RandFloat(float minValue, float maxValue) const
 {
 	return minValue + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX /(maxValue - minValue)));
 }
 
-void PathComponent::ShiftPointIndices()
+void CurvePathComponent::ShiftPointIndices()
 {
 	const int pointCount = m_controlPoints.size();
 	++m_currentP3_index;
@@ -170,4 +158,36 @@ void PathComponent::ShiftPointIndices()
 
 }
 
-const int PathComponent::s_defaultAmountOfPoints = 15;
+int CurvePathComponent::GetPointIndex(const float v) const
+{
+	//Use (int) to floor the value down
+	return (int)(v / m_pointInterval);
+}
+
+const float CurvePathComponent::LengthBetween2Points(const XMVECTOR& a, const XMVECTOR& b)
+{
+	sqrt( LengthSquaredBetween2Points(a, b) );
+}
+
+const float CurvePathComponent::LengthSquaredBetween2Points(const XMVECTOR& a, const XMVECTOR& b)
+{
+	const float dx = a.m128_f32[0] - b.m128_f32[0];
+	const float dy = a.m128_f32[1] - b.m128_f32[1];
+	const float dz = a.m128_f32[2] - b.m128_f32[2];
+
+	return (dx*dx) + (dy*dy) + (dz*dz);
+}
+
+const float CurvePathComponent::GetSplinePointComponent(const float t, const int i, const XMVECTOR& P0, const XMVECTOR& P1, const XMVECTOR& P2, const XMVECTOR& P3)
+{
+	const float result = 0.5f * (
+		(2.0f * P1.m128_f32[i]) +
+		((-P0.m128_f32[i] + P2.m128_f32[i])  * t) +
+		(((2.0f * P0.m128_f32[i]) - (5.0f * P1.m128_f32[i]) + (4.0f * P2.m128_f32[i]) - P3.m128_f32[i]) * (t * t)) +
+		((-P0.m128_f32[i] + (3.0f * P1.m128_f32[i]) - (3.0f * P2.m128_f32[i]) + P3.m128_f32[i]) * (t * t * t))
+		);
+
+	return result;
+}
+
+const float CurvePathComponent::s_defaultAmountOfPoints = 20;

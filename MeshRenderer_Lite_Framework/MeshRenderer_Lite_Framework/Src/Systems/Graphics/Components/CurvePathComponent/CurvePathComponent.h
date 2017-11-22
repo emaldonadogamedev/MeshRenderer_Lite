@@ -10,11 +10,28 @@ class DX11Renderer;
 
 using DirectX::XMVECTOR;
 
-class PathComponent : public IComponent
+struct TableEntry
+{
+	TableEntry()
+		:parametricValue(0.f)
+		, arclength(0.f)
+	{}
+	TableEntry(const float pV = 0.f, const float aL = 0.f)
+		:parametricValue(pV)
+		,arclength(aL)
+	{}
+	float parametricValue;
+	float arclength;
+};
+
+typedef std::vector<TableEntry> ForwardDiffTable;
+typedef const XMVECTOR (*InterpolatingFunction)(const XMVECTOR& a, const XMVECTOR& b, const float factor);
+
+class CurvePathComponent : public IComponent
 {
 public:
-	PathComponent(const GameObject* owner);
-	virtual ~PathComponent();
+	CurvePathComponent(const GameObject* owner);
+	virtual ~CurvePathComponent();
 
 	//Initialization
 	void GenerateVertexBuffer(DX11Renderer* renderContext);
@@ -27,8 +44,9 @@ public:
 	float GetCurrentAngle()const;
 
 	bool m_usePath = false;
-	float m_tValueIncrease = 0.20f;
+	float m_pointInterval;// d or delta u  which is the unique continuous diff factor ( 1 / #amount of points)
 	float m_walkUpdateFreq = 2.0f;
+	float m_totalLengthOfCurve;
 	XMVECTOR m_pathCenterPos;
 	std::vector<XMVECTOR> m_controlPoints;
 	std::vector<XMVECTOR> m_drawPoints;
@@ -40,8 +58,12 @@ private:
 	float RandFloat(float minValue = 0, float maxValue = 1.0f) const;
 	void ShiftPointIndices();
 
+	int GetPointIndex(const float v) const;
+
 	ObjectHandle m_drawPointsVBuffer;
 	std::vector<VertexAnimation> m_vertices;
+
+	ForwardDiffTable m_forwardDiffTable;
 
 	XMVECTOR m_currentPos;
 	XMVECTOR m_prevPos;
@@ -51,7 +73,9 @@ private:
 	size_t m_currentP2_index = 2;
 	size_t m_currentP3_index = 3;
 
+	static const float LengthBetween2Points(const XMVECTOR& a, const XMVECTOR& b);
+	static const float LengthSquaredBetween2Points(const XMVECTOR& a, const XMVECTOR& b);
 	static const float GetSplinePointComponent(const float t, const int i, const XMVECTOR& P0, const XMVECTOR& P1, const XMVECTOR& P2, const XMVECTOR& P3);
 
-	static const int s_defaultAmountOfPoints;
+	static const float s_defaultAmountOfPoints;
 };

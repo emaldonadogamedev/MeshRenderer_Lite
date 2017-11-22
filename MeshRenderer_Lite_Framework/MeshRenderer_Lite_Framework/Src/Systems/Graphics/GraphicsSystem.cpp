@@ -309,8 +309,8 @@ void GraphicsSystem::UpdatePathComponents(const float dt)
 				path->UpdatePath(dt);
 				transform->SetPositionn(path->GetCurrentSplinePoint());
 				const float angle = path->GetCurrentAngle();
-				//transform->SetRotationY(angle);
-				transform->SetRotationZ(angle);
+				transform->SetRotationY(angle);
+				//transform->SetRotationZ(angle);
 			}
 		}
 	}

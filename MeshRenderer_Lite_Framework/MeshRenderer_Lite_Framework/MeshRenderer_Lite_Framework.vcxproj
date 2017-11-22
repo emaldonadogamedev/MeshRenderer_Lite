@@ -68,6 +68,7 @@
     <ClCompile Include="Src\Systems\Graphics\CameraClasses\CamaeraManager.cpp" />
     <ClCompile Include="Src\Systems\Graphics\CameraClasses\Camera.cpp" />
     <ClCompile Include="Src\Systems\Graphics\Components\ModelComponent\ModelComponent.cpp" />
+    <ClCompile Include="Src\Systems\Graphics\Components\CurvePathComponent\CurvePathComponent.cpp" />
     <ClCompile Include="Src\Systems\Graphics\Components\PathComponent\PathComponent.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11Renderer\DX11Renderer.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\ForwardDebugStage\PathWalkDebugStage.cpp" />
@@ -117,6 +118,7 @@
     <ClInclude Include="Src\Systems\Graphics\CameraClasses\CameraManager.h" />
     <ClInclude Include="Src\Systems\Graphics\CameraClasses\Viewport.h" />
     <ClInclude Include="Src\Systems\Graphics\Components\ModelComponent\ModelComponent.h" />
+    <ClInclude Include="Src\Systems\Graphics\Components\CurvePathComponent\CurvePathComponent.h" />
     <ClInclude Include="Src\Systems\Graphics\Components\PathComponent\PathComponent.h" />
     <ClInclude Include="Src\Systems\Graphics\DX11Renderer\DX11Renderer.h" />
     <ClInclude Include="Src\Systems\Graphics\DX11Renderer\DX11RendererData.h" />
