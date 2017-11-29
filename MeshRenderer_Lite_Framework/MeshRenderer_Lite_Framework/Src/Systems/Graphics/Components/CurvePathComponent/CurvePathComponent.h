@@ -12,10 +12,6 @@ using DirectX::XMVECTOR;
 
 struct TableEntry
 {
-	TableEntry()
-		:parametricValue(0.f)
-		, arclength(0.f)
-	{}
 	TableEntry(const float pV = 0.f, const float aL = 0.f)
 		:parametricValue(pV)
 		,arclength(aL)

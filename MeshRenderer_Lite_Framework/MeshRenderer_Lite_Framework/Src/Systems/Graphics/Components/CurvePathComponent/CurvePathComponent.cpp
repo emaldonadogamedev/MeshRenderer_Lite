@@ -190,4 +190,4 @@ const float CurvePathComponent::GetSplinePointComponent(const float t, const int
 	return result;
 }
 
-const float CurvePathComponent::s_defaultAmountOfPoints = 20;
+const float CurvePathComponent::s_defaultAmountOfPoints = 15;

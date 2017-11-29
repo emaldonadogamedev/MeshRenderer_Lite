@@ -55,7 +55,7 @@ float PathComponent::GetCurrentAngle() const
 
 	const float angle = atan2(dz, dx);
 
-	return (angle < 0 ? DirectX::XM_2PI + angle : angle);
+	return ( ((angle < 0) * DirectX::XM_2PI) + angle);
 }
 
 void PathComponent::DefaultPointSet()

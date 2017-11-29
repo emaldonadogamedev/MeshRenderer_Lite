@@ -378,7 +378,7 @@ void GraphicsSystem::AddRenderStages()
 	//Add shadow map stage
 	//Add reflection map stage
 	AddRenderStageHelper(new ForwardRenderStage(m_dx11Renderer.get(), &m_renderComponents));
-	AddRenderStageHelper(new PathWalkDebugStage(m_dx11Renderer.get(), &m_renderComponents));
+	//AddRenderStageHelper(new PathWalkDebugStage(m_dx11Renderer.get(), &m_renderComponents));
 	AddRenderStageHelper(new ImGuiStage(m_dx11Renderer.get(), &m_renderComponents));
 }
 
