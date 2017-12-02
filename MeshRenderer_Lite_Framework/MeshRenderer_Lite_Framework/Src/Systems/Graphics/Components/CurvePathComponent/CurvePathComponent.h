@@ -10,17 +10,18 @@ class DX11Renderer;
 
 using DirectX::XMVECTOR;
 
-struct TableEntry
+struct CurveSegment
 {
-	TableEntry(const float pV = 0.f, const float aL = 0.f)
+	CurveSegment(const float pV = 0.f, const float aL = 0.f)
 		:parametricValue(pV)
 		,arclength(aL)
 	{}
 	float parametricValue;
 	float arclength;
 };
+typedef std::vector<CurveSegment> SegmentList;
+typedef std::vector<SegmentList> ForwardDiffTable;
 
-typedef std::vector<TableEntry> ForwardDiffTable;
 typedef const XMVECTOR (*InterpolatingFunction)(const XMVECTOR& a, const XMVECTOR& b, const float factor);
 
 class CurvePathComponent : public IComponent
@@ -73,5 +74,6 @@ private:
 	static const float LengthSquaredBetween2Points(const XMVECTOR& a, const XMVECTOR& b);
 	static const float GetSplinePointComponent(const float t, const int i, const XMVECTOR& P0, const XMVECTOR& P1, const XMVECTOR& P2, const XMVECTOR& P3);
 
-	static const float s_defaultAmountOfPoints;
+	static const float s_defaultAmountOfEntries;
+	static const int s_defaultAmountOfPoints;
 };

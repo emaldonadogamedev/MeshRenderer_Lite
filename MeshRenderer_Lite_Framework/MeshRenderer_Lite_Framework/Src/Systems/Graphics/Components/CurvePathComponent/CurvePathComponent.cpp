@@ -49,14 +49,40 @@ float CurvePathComponent::GetCurrentAngle() const
 void CurvePathComponent::DefaultPointSet()
 {
 	m_forwardDiffTable.clear();
-	m_forwardDiffTable.resize((size_t)s_defaultAmountOfPoints + 1);
-	m_pointInterval = 1.0f / s_defaultAmountOfPoints;
+	m_forwardDiffTable.resize((size_t)s_defaultAmountOfPoints);
+	m_pointInterval = 1.0f / s_defaultAmountOfEntries;
 	m_totalLengthOfCurve = 0.f;
 
-	for (size_t i = 1; i < m_forwardDiffTable.size(); ++i)
+	for (int p = 0; p < s_defaultAmountOfPoints; ++p)
 	{
-		//or essentially...  m_forwardDiffTable[i].parametricValue = m_pointInterval * i;
-		m_forwardDiffTable[i].parametricValue = m_forwardDiffTable[i-1].parametricValue + m_pointInterval;
+		float p0_t, p1_t, curveSegmentLength = 0.f;
+		m_forwardDiffTable[p].resize(s_defaultAmountOfEntries + 1);
+
+		const XMVECTOR& P0 = m_controlPoints[m_currentP0_index];
+		const XMVECTOR& P1 = m_controlPoints[m_currentP1_index];
+		const XMVECTOR& P2 = m_controlPoints[m_currentP2_index];
+		const XMVECTOR& P3 = m_controlPoints[m_currentP3_index];
+
+		for (size_t i = 1; i < m_forwardDiffTable[p].size(); ++i) 
+		{
+			p0_t = m_forwardDiffTable[p][i - 1].parametricValue;
+			p1_t = p0_t + m_pointInterval;
+
+			const float x0 = GetSplinePointComponent(p0_t, 0, P0, P1, P2, P3);
+			const float y0 = GetSplinePointComponent(p0_t, 1, P0, P1, P2, P3);
+			const float z0 = GetSplinePointComponent(p0_t, 2, P0, P1, P2, P3);
+
+			const float x1 = GetSplinePointComponent(p1_t, 0, P0, P1, P2, P3);
+			const float y1 = GetSplinePointComponent(p1_t, 1, P0, P1, P2, P3);
+			const float z1 = GetSplinePointComponent(p1_t, 2, P0, P1, P2, P3);
+
+			XMVECTOR P0 = XMVectorSet(x0, y0, z0, 1.0f);
+			XMVECTOR P1 = XMVectorSet(x1, y1, z1, 1.0f);
+
+			curveSegmentLength += LengthBetween2Points(P0, P1);
+
+			m_forwardDiffTable[p][i].parametricValue = p1_t;
+		}
 	}
 }
 
@@ -166,7 +192,7 @@ int CurvePathComponent::GetPointIndex(const float v) const
 
 const float CurvePathComponent::LengthBetween2Points(const XMVECTOR& a, const XMVECTOR& b)
 {
-	sqrt( LengthSquaredBetween2Points(a, b) );
+	return sqrt( LengthSquaredBetween2Points(a, b) );
 }
 
 const float CurvePathComponent::LengthSquaredBetween2Points(const XMVECTOR& a, const XMVECTOR& b)
@@ -190,4 +216,6 @@ const float CurvePathComponent::GetSplinePointComponent(const float t, const int
 	return result;
 }
 
-const float CurvePathComponent::s_defaultAmountOfPoints = 15;
+const float CurvePathComponent::s_defaultAmountOfEntries = 20;
+
+const int CurvePathComponent::s_defaultAmountOfPoints = 10;

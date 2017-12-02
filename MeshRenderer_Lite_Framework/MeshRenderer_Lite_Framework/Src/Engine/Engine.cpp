@@ -10,7 +10,7 @@
 #include <Systems/Core/Components/Transform/Transform.h>
 #include <Systems/Core/GameObject/GameObject.h>
 #include <Systems/Graphics/Components/ModelComponent/ModelComponent.h>
-#include <Systems/Graphics/Components/PathComponent/PathComponent.h>
+#include <Systems/Graphics/Components/CurvePathComponent/CurvePathComponent.h>
 #include <Systems/Graphics/GraphicsSystem.h>
 #include <Systems/Input/InputSystem.h>
 #include <Systems/Input/Keyboard.h>
@@ -72,7 +72,7 @@ bool Engine::Initialize(HINSTANCE hInstance)
 	testObj->AddComponent(test3DComp);
 	m_graphicsSystem->AddComponent(test3DComp);
 
-	auto* testPathComp = new PathComponent(testObj.get());
+	auto* testPathComp = new CurvePathComponent(testObj.get());
 	testPathComp->GenerateVertexBuffer(m_graphicsSystem->m_dx11Renderer.get());
 	testObj->AddComponent(testPathComp);
 	m_graphicsSystem->AddComponent(testPathComp);
