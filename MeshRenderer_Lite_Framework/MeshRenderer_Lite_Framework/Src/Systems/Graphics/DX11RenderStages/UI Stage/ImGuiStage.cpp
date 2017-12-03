@@ -6,7 +6,7 @@
 #include <Systems/Core/Components/Transform/Transform.h>
 #include <Systems/Core/GameObject/GameObject.h>
 #include <Systems/Graphics/Components/ModelComponent/ModelComponent.h>
-#include <Systems/Graphics/Components/PathComponent/PathComponent.h>
+#include <Systems/Graphics/Components/CurvePathComponent/CurvePathComponent.h>
 #include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
 #include <Systems/Graphics/DX11Renderer/DX11RendererData.h>
 #include <Systems/Graphics/ModelClasses/Model/Model.h>
@@ -39,7 +39,7 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const floa
 	//ImGui::ShowTestWindow(&drawit);
 
 	const auto& modelComponent = (ModelComponent*)m_gfxSystemComponents->at(ComponentType::RENDERABLE_3D)[0];
-	const auto& pathComponent = (PathComponent*)m_gfxSystemComponents->at(ComponentType::RENDERABLE_PATH)[0];
+	const auto& pathComponent = (CurvePathComponent*)m_gfxSystemComponents->at(ComponentType::RENDERABLE_CURVE_PATH)[0];
 
 	if (modelComponent)
 	{
@@ -59,7 +59,7 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const floa
 			{
 				ImGui::Checkbox("Use Path: ", &pathComponent->m_usePath);
 				ImGui::DragFloat3("Center Position: ", pathComponent->m_pathCenterPos.m128_f32);
-				ImGui::DragFloat("t Value increase: ", &pathComponent->m_tValueIncrease,0.1f, 0.0f, 10.0f);
+				//ImGui::DragFloat("t Value increase: ", &pathComponent->m_pointInterval,0.1f, 0.0f, 10.0f);
 			}
 
 			ImGui::End();

@@ -3,7 +3,7 @@
 
 #include <Systems/Core/Components/Transform/Transform.h>
 #include <Systems/Core/GameObject/GameObject.h>
-#include<Systems/Graphics/Components/PathComponent/PathComponent.h>
+#include<Systems/Graphics/Components/CurvePathComponent/CurvePathComponent.h>
 #include<Systems/Graphics/Components/ModelComponent/ModelComponent.h>
 #include<Systems/Graphics/DX11Renderer/DX11Renderer.h>
 #include<Systems/Graphics/DX11Renderer/DX11RendererData.h>
@@ -27,7 +27,7 @@ void PathWalkDebugStage::PreRender()
 void PathWalkDebugStage::Render(const HandleDictionaryVec& graphicsResources, const float dt)
 {
 	auto& renderData = m_renderer->GetRendererData();
-	renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
+	renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 
 	//Set shaders
 	ObjectHandle handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("SimpleVS");
@@ -41,7 +41,7 @@ void PathWalkDebugStage::Render(const HandleDictionaryVec& graphicsResources, co
 	{
 		if (component->GetIsActive())
 		{
-			const auto path = static_cast<const PathComponent*>(component);
+			const auto path = static_cast<const CurvePathComponent*>(component);
 			renderData.testPerObjectBuffer.worldMtx = XMMatrixTranspose(XMMatrixTranslationFromVector(path->m_pathCenterPos));
 
 			renderData.m_pImmediateContext->UpdateSubresource(renderData.testPerObjectConstBuffer,

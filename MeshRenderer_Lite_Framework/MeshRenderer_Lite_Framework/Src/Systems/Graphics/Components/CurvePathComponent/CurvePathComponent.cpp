@@ -6,7 +6,7 @@
 using DirectX::XMVectorSet;
 
 CurvePathComponent::CurvePathComponent(const GameObject* owner)
-	:IComponent(ComponentType::RENDERABLE_PATH, owner)
+	:IComponent(ComponentType::RENDERABLE_CURVE_PATH, owner)
 	, m_pathCenterPos(XMVectorSet(0,0,0,1.0f))
 {
 	srand(time(NULL));
@@ -49,13 +49,23 @@ float CurvePathComponent::GetCurrentAngle() const
 void CurvePathComponent::DefaultPointSet()
 {
 	m_forwardDiffTable.clear();
-	m_forwardDiffTable.resize((size_t)s_defaultAmountOfPoints);
+	m_controlPoints.resize((size_t)s_defaultAmountOfPoints);
+	m_forwardDiffTable.resize((size_t)s_defaultAmountOfPoints - 2);
 	m_pointInterval = 1.0f / s_defaultAmountOfEntries;
 	m_totalLengthOfCurve = 0.f;
 
+	//prepare the control points
+	const float increment_X = 400.f / s_defaultAmountOfPoints;
+	float x = -200.0f;
 	for (int p = 0; p < s_defaultAmountOfPoints; ++p)
 	{
-		float p0_t, p1_t, curveSegmentLength = 0.f;
+		m_controlPoints[p] = XMVectorSet(x, 0, RandFloat(-100.f, 100.f), 1.0f);
+		x += increment_X;
+	}
+
+	for (int p = 0; p < m_forwardDiffTable.size(); ++p)
+	{
+		float p0_t = 0.f, p1_t = 0.f, curveSegmentLength = 0.f;
 		m_forwardDiffTable[p].resize(s_defaultAmountOfEntries + 1);
 
 		const XMVECTOR& P0 = m_controlPoints[m_currentP0_index];
@@ -63,33 +73,50 @@ void CurvePathComponent::DefaultPointSet()
 		const XMVECTOR& P2 = m_controlPoints[m_currentP2_index];
 		const XMVECTOR& P3 = m_controlPoints[m_currentP3_index];
 
-		for (size_t i = 1; i < m_forwardDiffTable[p].size(); ++i) 
+		const float x0 = GetSplinePointComponent(p0_t, 0, P0, P1, P2, P3);
+		const float y0 = GetSplinePointComponent(p0_t, 1, P0, P1, P2, P3);
+		const float z0 = GetSplinePointComponent(p0_t, 2, P0, P1, P2, P3);
+
+		XMVECTOR current_P0 = XMVectorSet(x0, y0, z0, 1.0f);
+		XMVECTOR current_P1;
+
+		for (size_t i = 1; i < m_forwardDiffTable[p].size(); ++i)
 		{
-			p0_t = m_forwardDiffTable[p][i - 1].parametricValue;
 			p1_t = p0_t + m_pointInterval;
 
-			const float x0 = GetSplinePointComponent(p0_t, 0, P0, P1, P2, P3);
-			const float y0 = GetSplinePointComponent(p0_t, 1, P0, P1, P2, P3);
-			const float z0 = GetSplinePointComponent(p0_t, 2, P0, P1, P2, P3);
-
+			//calculate the new point
 			const float x1 = GetSplinePointComponent(p1_t, 0, P0, P1, P2, P3);
 			const float y1 = GetSplinePointComponent(p1_t, 1, P0, P1, P2, P3);
 			const float z1 = GetSplinePointComponent(p1_t, 2, P0, P1, P2, P3);
+			current_P1 = XMVectorSet(x1, y1, z1, 1.0f);
 
-			XMVECTOR P0 = XMVectorSet(x0, y0, z0, 1.0f);
-			XMVECTOR P1 = XMVectorSet(x1, y1, z1, 1.0f);
+			curveSegmentLength += LengthBetween2Points(current_P0, current_P1);
+			m_forwardDiffTable[p][i].arclength = curveSegmentLength;
 
-			curveSegmentLength += LengthBetween2Points(P0, P1);
+			//update the P0
+			current_P0 = current_P1;
 
+			//Update the t0 value
 			m_forwardDiffTable[p][i].parametricValue = p1_t;
+			p0_t = p1_t;
 		}
+
+		//normalize all of the arc lengths for the current segment
+		for (size_t i = 1; i < m_forwardDiffTable[p].size(); ++i)
+		{
+			m_forwardDiffTable[p][i].arclength /= curveSegmentLength;
+		}
+
+		ShiftPointIndices();
 	}
+
+	ResetSplineSamplers();
 }
 
 void CurvePathComponent::PrepareDrawPoints()
 {
 	m_drawPoints.clear();
-	for (size_t i = 0; i < m_controlPoints.size(); ++i)
+	for (size_t i = 0; i < m_forwardDiffTable.size(); ++i)
 	{
 		m_tValue = 0;
 		while (m_tValue <= 1.0f)
@@ -101,6 +128,8 @@ void CurvePathComponent::PrepareDrawPoints()
 
 		ShiftPointIndices();
 	}
+
+	ResetSplineSamplers();
 
 	//Return current t value to 0 for updating
 	m_tValue = 0;
@@ -151,37 +180,32 @@ float CurvePathComponent::RandFloat(float minValue, float maxValue) const
 
 void CurvePathComponent::ShiftPointIndices()
 {
-	const int pointCount = m_controlPoints.size();
 	++m_currentP3_index;
-	if (m_currentP3_index >= pointCount)
+	if (m_currentP3_index >= m_controlPoints.size())
 	{
-		m_currentP3_index = 0;
-		m_currentP2_index = pointCount - 1;
-		m_currentP1_index = pointCount - 2;
-		m_currentP0_index = pointCount - 3;
-		return;
-	}
-
-	else if (m_currentP3_index == 1)
-	{
-		m_currentP2_index = 0;
-		m_currentP1_index = pointCount - 1;
-		m_currentP0_index = pointCount - 2;
-		return;
-	}
-
-	else if (m_currentP3_index == 2)
-	{
-		m_currentP2_index = 1;
-		m_currentP1_index = 0;
-		m_currentP0_index = pointCount - 1;
+		m_currentP0_index = 0;
+		m_currentP1_index = 1;
+		m_currentP2_index = 2;
+		m_currentP3_index = 3;
 		return;
 	}
 
 	m_currentP2_index = m_currentP3_index - 1;
 	m_currentP1_index = m_currentP3_index - 2;
 	m_currentP0_index = m_currentP3_index - 3;
+}
 
+void CurvePathComponent::ResetSplineSamplers()
+{
+	m_currentP0_index = 0;
+	m_currentP1_index = 1;
+	m_currentP2_index = 2;
+	m_currentP3_index = 3;
+}
+
+int CurvePathComponent::GetSplineIndex(const float u) const
+{
+	return (int)(u / m_pointInterval);
 }
 
 int CurvePathComponent::GetPointIndex(const float v) const
@@ -218,4 +242,4 @@ const float CurvePathComponent::GetSplinePointComponent(const float t, const int
 
 const float CurvePathComponent::s_defaultAmountOfEntries = 20;
 
-const int CurvePathComponent::s_defaultAmountOfPoints = 10;
+const int CurvePathComponent::s_defaultAmountOfPoints = 10 + (rand() % 5) ;

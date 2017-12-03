@@ -41,7 +41,7 @@ public:
 	float GetCurrentAngle()const;
 
 	bool m_usePath = false;
-	float m_pointInterval;// d or delta u  which is the unique continuous diff factor ( 1 / #amount of points)
+	float m_pointInterval;// d or delta u  which is the unique continuous diff factor ( 1 / #amount of table intervals)
 	float m_walkUpdateFreq = 2.0f;
 	float m_totalLengthOfCurve;
 	XMVECTOR m_pathCenterPos;
@@ -54,6 +54,8 @@ private:
 	float Clamp(const float value, const float minValue = 0.0f, const float maxValue = 1.0f) const;
 	float RandFloat(float minValue = 0, float maxValue = 1.0f) const;
 	void ShiftPointIndices();
+	void ResetSplineSamplers();
+	int GetSplineIndex(const float u)const;
 
 	int GetPointIndex(const float v) const;
 
