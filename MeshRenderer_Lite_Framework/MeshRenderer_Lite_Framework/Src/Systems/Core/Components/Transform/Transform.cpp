@@ -107,7 +107,11 @@ const XMMATRIX& Transform::GetWorldTransform() const
 
 void Transform::UpdateWorldMatrix()
 {
-	m_orientationQuat = XMQuaternionRotationMatrix(XMMatrixRotationRollPitchYawFromVector(m_rotation));
+	m_orientationQuat = XMQuaternionRotationMatrix(
+		XMMatrixRotationX(m_rotation.m128_f32[0]) *
+		XMMatrixRotationY(m_rotation.m128_f32[1]) *
+		XMMatrixRotationZ(m_rotation.m128_f32[2])
+	);
 
 	m_worldTransform = XMMatrixTranspose (
 		XMMatrixRotationX(XM_PIDIV2) *

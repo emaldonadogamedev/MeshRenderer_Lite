@@ -29,28 +29,50 @@ const XMVECTOR CurvePathComponent::GetCurrentSplinePoint()
 	const XMVECTOR& P2 = m_controlPoints[m_currentP2_index];
 	const XMVECTOR& P3 = m_controlPoints[m_currentP3_index];
 
-	const float x = GetSplinePointComponent(m_tValue, 0, P0, P1, P2, P3);
-	const float y = GetSplinePointComponent(m_tValue, 1, P0, P1, P2, P3);
-	const float z = GetSplinePointComponent(m_tValue, 2, P0, P1, P2, P3);
+	float timeRatio = 0;
+	if (m_segmentStatus == SegmentStatus::EASE_IN)
+	{
+		timeRatio = m_currentTime / m_segmentDuration;
+	}
 
-	return m_currentPos = DirectX::XMVectorAdd(m_pathCenterPos, XMVectorSet(x,y,z,1.0f));
+	else if (m_segmentStatus == SegmentStatus::EASE_OUT)
+	{
+		float t2 = (m_segmentDuration * (float)(m_segmentCount - 1));
+		float t = t2 + m_currentTime;
+		timeRatio = 1.0 - ((t - t2) / (m_pathDuration - t2));
+	}
+
+	else
+	{
+		timeRatio = m_currentTime / m_segmentDuration;
+	}
+
+	const int splineIndex = GetSplineIndex(timeRatio);
+	const float t = m_forwardDiffTable[m_currentSegmentIndex][splineIndex].parametricValue;
+
+	const float x = GetSplinePointComponent(t, 0, P0, P1, P2, P3);
+	const float y = GetSplinePointComponent(t, 1, P0, P1, P2, P3);
+	const float z = GetSplinePointComponent(t, 2, P0, P1, P2, P3);
+
+	return m_currentPos = DirectX::XMVectorAdd(m_pathCenterPos, XMVectorSet(x,y,z,0));
 }
 
 float CurvePathComponent::GetCurrentAngle() const
 {
 	const float dx = m_currentPos.m128_f32[0] - m_prevPos.m128_f32[0];
-	const float dz = m_currentPos.m128_f32[2] - m_prevPos.m128_f32[2];
+	const float dz = -(m_currentPos.m128_f32[2] - m_prevPos.m128_f32[2]);
 
 	const float angle = atan2(dz, dx);
 
-	return (angle < 0 ? DirectX::XM_2PI + angle : angle);
+	return angle;// < 0 ? DirectX::XM_2PI - angle : angle;
 }
 
 void CurvePathComponent::DefaultPointSet()
 {
 	m_forwardDiffTable.clear();
 	m_controlPoints.resize((size_t)s_defaultAmountOfPoints);
-	m_forwardDiffTable.resize((size_t)s_defaultAmountOfPoints - 2);
+	m_forwardDiffTable.resize(m_segmentCount = (size_t)(s_defaultAmountOfPoints - 2));
+	m_segmentDuration = m_pathDuration / (float)m_segmentCount;
 	m_pointInterval = 1.0f / s_defaultAmountOfEntries;
 	m_totalLengthOfCurve = 0.f;
 
@@ -118,12 +140,21 @@ void CurvePathComponent::PrepareDrawPoints()
 	m_drawPoints.clear();
 	for (size_t i = 0; i < m_forwardDiffTable.size(); ++i)
 	{
-		m_tValue = 0;
-		while (m_tValue <= 1.0f)
-		{
-			m_drawPoints.emplace_back(GetCurrentSplinePoint());
+		float tValue = 0;
+		const XMVECTOR& P0 = m_controlPoints[m_currentP0_index];
+		const XMVECTOR& P1 = m_controlPoints[m_currentP1_index];
+		const XMVECTOR& P2 = m_controlPoints[m_currentP2_index];
+		const XMVECTOR& P3 = m_controlPoints[m_currentP3_index];
 
-			m_tValue += m_pointInterval;
+		while (tValue <= 1.0f)
+		{
+
+			const float x = GetSplinePointComponent(tValue, 0, P0, P1, P2, P3);
+			const float y = GetSplinePointComponent(tValue, 1, P0, P1, P2, P3);
+			const float z = GetSplinePointComponent(tValue, 2, P0, P1, P2, P3);
+			m_drawPoints.emplace_back(XMVectorSet(x, y, z, 1.0f));
+
+			tValue += m_pointInterval;
 		}
 
 		ShiftPointIndices();
@@ -132,7 +163,7 @@ void CurvePathComponent::PrepareDrawPoints()
 	ResetSplineSamplers();
 
 	//Return current t value to 0 for updating
-	m_tValue = 0;
+	m_currentTime = 0;
 }
 
 void CurvePathComponent::GenerateVertexBuffer(DX11Renderer* renderContext)
@@ -155,10 +186,10 @@ ObjectHandle CurvePathComponent::GetPathVBuffer() const
 
 void CurvePathComponent::UpdatePath(const float dt)
 {
-	m_tValue += dt * m_pointInterval;
-	if (m_tValue > 1.0f)
+	m_currentTime += dt;
+	if (m_currentTime > m_segmentDuration)
 	{
-		m_tValue = 0;
+		m_currentTime = 0;
 		ShiftPointIndices();
 	}
 }
@@ -183,21 +214,26 @@ void CurvePathComponent::ShiftPointIndices()
 	++m_currentP3_index;
 	if (m_currentP3_index >= m_controlPoints.size())
 	{
-		m_currentP0_index = 0;
+		m_currentP0_index = m_currentSegmentIndex = 0;
 		m_currentP1_index = 1;
 		m_currentP2_index = 2;
 		m_currentP3_index = 3;
+		m_segmentStatus = SegmentStatus::EASE_IN;
+
 		return;
 	}
 
 	m_currentP2_index = m_currentP3_index - 1;
 	m_currentP1_index = m_currentP3_index - 2;
 	m_currentP0_index = m_currentP3_index - 3;
+	m_segmentStatus = m_currentSegmentIndex == m_segmentCount - 1 ? SegmentStatus::EASE_OUT : SegmentStatus::NORMAL;
+
+	++m_currentSegmentIndex;
 }
 
 void CurvePathComponent::ResetSplineSamplers()
 {
-	m_currentP0_index = 0;
+	m_currentP0_index = m_currentSegmentIndex = 0;
 	m_currentP1_index = 1;
 	m_currentP2_index = 2;
 	m_currentP3_index = 3;

@@ -10,6 +10,13 @@ class DX11Renderer;
 
 using DirectX::XMVECTOR;
 
+enum class SegmentStatus
+{
+	EASE_IN,
+	NORMAL,
+	EASE_OUT
+};
+
 struct CurveSegment
 {
 	CurveSegment(const float pV = 0.f, const float aL = 0.f)
@@ -44,6 +51,10 @@ public:
 	float m_pointInterval;// d or delta u  which is the unique continuous diff factor ( 1 / #amount of table intervals)
 	float m_walkUpdateFreq = 2.0f;
 	float m_totalLengthOfCurve;
+
+	//time it takes to get from first control point to last control point
+	float m_pathDuration = 3.0f;
+
 	XMVECTOR m_pathCenterPos;
 	std::vector<XMVECTOR> m_controlPoints;
 	std::vector<XMVECTOR> m_drawPoints;
@@ -66,11 +77,16 @@ private:
 
 	XMVECTOR m_currentPos;
 	XMVECTOR m_prevPos;
-	float m_tValue = 0.0f;
+	float m_currentTime = 0.0f;
+	float m_segmentDuration;
+	SegmentStatus m_segmentStatus = SegmentStatus::EASE_IN;
+
 	size_t m_currentP0_index = 0;
 	size_t m_currentP1_index = 1;
 	size_t m_currentP2_index = 2;
 	size_t m_currentP3_index = 3;
+	size_t m_currentSegmentIndex = 0;
+	size_t m_segmentCount = 0;
 
 	static const float LengthBetween2Points(const XMVECTOR& a, const XMVECTOR& b);
 	static const float LengthSquaredBetween2Points(const XMVECTOR& a, const XMVECTOR& b);
@@ -78,4 +94,6 @@ private:
 
 	static const float s_defaultAmountOfEntries;
 	static const int s_defaultAmountOfPoints;
+
+	friend class ImGuiStage;
 };

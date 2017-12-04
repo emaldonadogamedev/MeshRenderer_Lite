@@ -14,7 +14,7 @@
 #include <Systems/Core/GameObject/GameObject.h>
 #include <Systems/Graphics/CameraClasses/Camera.h>
 #include <Systems/Graphics/Components/ModelComponent/ModelComponent.h>
-#include <Systems/Graphics/Components/PathComponent/PathComponent.h>
+#include <Systems/Graphics/Components/CurvePathComponent/CurvePathComponent.h>
 #include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
 #include <Systems/Graphics/DX11Renderer/DX11RendererData.h>
 #include <Systems/Graphics/DX11RenderStages/ForwardDebugStage/PathWalkDebugStage.h>
@@ -64,10 +64,11 @@ bool GraphicsSystem::Initialize()
 
 void GraphicsSystem::Update(const float dt)
 {
+	//Update components
 	UpdateModelComponents(dt);
-	//UpdatePathComponents(dt);
+	UpdateCurvePathComponents(dt);
 
-	//TEST!!!
+	//TEST - Current camera update
 	TestUpdateCamera(dt);
 	testCamera->Update();
 	m_dx11Renderer->m_renderData->testViewProjBuffer.viewMtx = testCamera->GetView();
@@ -77,6 +78,7 @@ void GraphicsSystem::Update(const float dt)
 	m_dx11Renderer->m_renderData->m_pImmediateContext->UpdateSubresource(m_dx11Renderer->m_renderData->testViewProjConstBuffer, 
 		0, NULL, &m_dx11Renderer->m_renderData->testViewProjBuffer, 0, 0);
 
+	//iterate through all render stages(Including UI)
 	for (const auto renderStage : m_renderStages)
 	{
 		renderStage->PreRender();
@@ -84,6 +86,7 @@ void GraphicsSystem::Update(const float dt)
 		renderStage->PostRender();
 	}
 
+	//Finally present image to the screen
 	m_dx11Renderer->SwapBuffers();
 }
 
@@ -294,15 +297,15 @@ void GraphicsSystem::UpdateAnimation(Model& model, const float dt)
 	ReadNodeHeirarchy(model, model.m_runningTime, model.m_assimpScene->mRootNode, currentAnim, aiMatrix4x4());
 }
 
-void GraphicsSystem::UpdatePathComponents(const float dt)
+void GraphicsSystem::UpdateCurvePathComponents(const float dt)
 {
-	auto& pathComponents = m_renderComponents.at(ComponentType::RENDERABLE_PATH);
+	auto& pathComponents = m_renderComponents.at(ComponentType::RENDERABLE_CURVE_PATH);
 
 	for (auto& component : pathComponents)
 	{
 		if (component->GetIsActive())
 		{
-			auto path = (static_cast<PathComponent*>(component));
+			auto path = (static_cast<CurvePathComponent*>(component));
 			if (path->m_usePath)
 			{
 				auto transform = (Transform*)path->GetOwner()->GetComponent(ComponentType::TRANSFORM);
@@ -310,7 +313,6 @@ void GraphicsSystem::UpdatePathComponents(const float dt)
 				transform->SetPositionn(path->GetCurrentSplinePoint());
 				const float angle = path->GetCurrentAngle();
 				transform->SetRotationY(angle);
-				//transform->SetRotationZ(angle);
 			}
 		}
 	}

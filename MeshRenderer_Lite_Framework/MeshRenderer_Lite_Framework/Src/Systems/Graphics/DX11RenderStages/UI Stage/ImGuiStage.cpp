@@ -35,7 +35,6 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const floa
 	renderData.m_pImmediateContext->RSSetState(renderData.m_d3dRasterStateImgui);
 
 	bool drawit = true;
-
 	//ImGui::ShowTestWindow(&drawit);
 
 	const auto& modelComponent = (ModelComponent*)m_gfxSystemComponents->at(ComponentType::RENDERABLE_3D)[0];
@@ -59,20 +58,18 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const floa
 			{
 				ImGui::Checkbox("Use Path: ", &pathComponent->m_usePath);
 				ImGui::DragFloat3("Center Position: ", pathComponent->m_pathCenterPos.m128_f32);
-				//ImGui::DragFloat("t Value increase: ", &pathComponent->m_pointInterval,0.1f, 0.0f, 10.0f);
+				if (ImGui::DragFloat("Path time duration: ", &pathComponent->m_pathDuration, 0.1f, 1.0f, 30.0f))
+				{
+					pathComponent->m_segmentDuration = pathComponent->m_pathDuration / pathComponent->m_segmentCount;
+				}
 			}
-
 			ImGui::End();
 		}
 
 		if (ImGui::Begin("Transform Properties"))
 		{
-			//ImGui::SliderFloat3("position: ", transform->GetPosition().m128_f32, -40.0f, 40.0f, "%.3f");
-			//ImGui::SliderFloat3("rotation: ", transform->GetOrientation().m128_f32, 0, DirectX::XM_2PI, "%.3f");
-			//ImGui::SliderFloat3("scale: ", transform->GetScale().m128_f32, -20.0f, 20.0f, "%.3f");
-
 			ImGui::DragFloat3("Position: ", transform->GetPosition().m128_f32, 0.1f);
-			ImGui::DragFloat3("Rotation: ", transform->GetOrientation().m128_f32, 0.1f);
+			ImGui::DragFloat3("Rotation: ", transform->GetOrientation().m128_f32, 0.1f, 0, XM_2PI);
 			ImGui::DragFloat3("Scale: ", transform->GetScale().m128_f32, 0.1f);
 
 			ImGui::End();
