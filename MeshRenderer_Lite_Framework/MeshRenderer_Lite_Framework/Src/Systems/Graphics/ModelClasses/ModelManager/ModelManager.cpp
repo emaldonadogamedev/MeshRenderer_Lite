@@ -125,7 +125,7 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 		//Prepare the index buffer for debug info.
 		newModel->m_boneLocIndBuff.resize(boneAmount * 6, 0);
 		int ind = 0;
-		for (unsigned int i = 1; i < newModel->m_boneLocIndBuff.size(); ++i)
+		for (unsigned int i = 0; i < newModel->m_boneLocIndBuff.size(); ++i)
 		{
 			newModel->m_boneLocIndBuff[i] = i;
 		}

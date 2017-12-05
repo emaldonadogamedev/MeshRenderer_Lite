@@ -27,13 +27,13 @@ PixelInputType main(in uint vertexID:SV_VertexID)
 
 	//multiply with inverse view matrix to move position into world space
 	//also apply the offset of the bone position to move it to the right spot
-	position = mul(position, (float3x3)boneTransform) +bonePositions[bonePosIndex];
-	//position = mul(position, (float3x3) transpose(invViewMtx)) + bonePositions[bonePosIndex];
+	//position = mul(position, (float3x3)boneTransform) + bonePositions[bonePosIndex];
+	position = mul(position, (float3x3) transpose(invViewMtx));// +bonePositions[bonePosIndex];
 
 	////now proceed with the view and proj. normally
 	result.position = float4(position, 1.0);
 	result.position = mul(result.position, viewMtx);
-	result.position = mul(result.position, projectionMtx);
+	//result.position = mul(result.position, projectionMtx);
 	
 	result.color = float4(1.f, 0.f, 0.f, 1.f);
 

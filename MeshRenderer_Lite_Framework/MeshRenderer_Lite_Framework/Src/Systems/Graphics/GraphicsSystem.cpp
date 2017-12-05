@@ -261,16 +261,19 @@ void ReadNodeHeirarchy(Model& model, const float AnimationTime, const aiNode* pN
 		NodeTransformation = (assTrans * assOrientation * assScale);
 	}
 
-	const aiMatrix4x4 GlobalTransformation = (ParentTransform * NodeTransformation);
+	const aiMatrix4x4 GlobalTransformation = ParentTransform * NodeTransformation;
 
 	auto it = model.m_boneMapping.find(NodeName);
 
 	if (it != model.m_boneMapping.end()) 
 	{
 		const unsigned int BoneIndex = it->second;
-		model.m_boneLocations[BoneIndex] = XMVectorSet(NodeTransformation.a4, NodeTransformation.b4, NodeTransformation.c4, 1.0f);
+		aiMatrix4x4 assFinal = model.m_globalInverseTransform * GlobalTransformation;
 
-		const aiMatrix4x4 assFinal = model.m_globalInverseTransform * GlobalTransformation * model.m_boneOffsetMtxVec[BoneIndex];
+		model.m_boneLocations[BoneIndex] = XMVectorSet(assFinal.a4, assFinal.b4, assFinal.c4, 1.0f);
+		
+		assFinal *= model.m_boneOffsetMtxVec[BoneIndex];
+		
 		
 		static XMMATRIX final;
 		final.r[0] = XMVectorSet(assFinal.a1, assFinal.a2, assFinal.a3, assFinal.a4);
@@ -416,7 +419,7 @@ void GraphicsSystem::LoadBasicModels()
 	LoadModelHelper("dragon.obj");
 	LoadModelHelper("Tower.fbx");
 	LoadModelHelper("gh_sample_animation.fbx");
-	LoadModelHelper("CylinderAnim.fbx");
+	LoadModelHelper("cylinder_skellmesh.fbx");
 	LoadModelHelper("boblampclean.md5mesh");
 }
 

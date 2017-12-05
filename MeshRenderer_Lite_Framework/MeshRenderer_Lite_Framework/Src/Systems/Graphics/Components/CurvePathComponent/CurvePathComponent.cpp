@@ -60,11 +60,15 @@ const XMVECTOR CurvePathComponent::GetCurrentSplinePoint()
 float CurvePathComponent::GetCurrentAngle() const
 {
 	const float dx = m_currentPos.m128_f32[0] - m_prevPos.m128_f32[0];
-	const float dz = -(m_currentPos.m128_f32[2] - m_prevPos.m128_f32[2]);
+	const float dz = m_currentPos.m128_f32[2] - m_prevPos.m128_f32[2];
+
+	const XMVECTOR vec = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(m_currentPos, m_prevPos));
+	return acos(vec.m128_f32[0]);
+
 
 	const float angle = atan2(dz, dx);
 
-	return angle;// < 0 ? DirectX::XM_2PI - angle : angle;
+	return angle < 0 ? DirectX::XM_2PI + angle : angle;
 }
 
 void CurvePathComponent::DefaultPointSet()
