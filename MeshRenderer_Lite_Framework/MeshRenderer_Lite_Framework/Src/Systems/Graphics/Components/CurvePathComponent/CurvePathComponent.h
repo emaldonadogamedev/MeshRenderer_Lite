@@ -10,24 +10,18 @@ class DX11Renderer;
 
 using DirectX::XMVECTOR;
 
-enum class SegmentStatus
+struct TableEntry
 {
-	EASE_IN,
-	NORMAL,
-	EASE_OUT
-};
-
-struct CurveSegment
-{
-	CurveSegment(const float pV = 0.f, const float aL = 0.f)
-		:parametricValue(pV)
+	TableEntry(const float pV = 0.f, const float fcpv = 0.f, const float aL = 0.f)
+		:segmentParametricValue(pV)
+		,fullCurveParametricValue(fcpv)
 		,arclength(aL)
 	{}
-	float parametricValue;
+	float segmentParametricValue;
+	float fullCurveParametricValue;
 	float arclength;
 };
-typedef std::vector<CurveSegment> SegmentList;
-typedef std::vector<SegmentList> ForwardDiffTable;
+typedef std::vector<TableEntry> ForwardDiffTable;
 
 typedef const XMVECTOR (*InterpolatingFunction)(const XMVECTOR& a, const XMVECTOR& b, const float factor);
 
@@ -48,9 +42,9 @@ public:
 	float GetCurrentAngle()const;
 
 	bool m_usePath = false;
-	float m_pointInterval;// d or delta u  which is the unique continuous diff factor ( 1 / #amount of table intervals)
-	float m_walkUpdateFreq = 2.0f;
-	float m_totalLengthOfCurve;
+	float m_tableEntryInterval;// d or delta u  which is the unique continuous diff factor ( 1 / #amount of total intervals)
+	float m_tableEntrySegmentInterval;// d or delta u  which is the unique continuous diff factor ( 1 / #amount of a single segment intervals)
+	float m_walkSpeed = 300.0f;
 
 	//time it takes to get from first control point to last control point
 	float m_pathDuration = 3.0f;
@@ -64,11 +58,12 @@ private:
 	void PrepareDrawPoints();
 	float Clamp(const float value, const float minValue = 0.0f, const float maxValue = 1.0f) const;
 	float RandFloat(float minValue = 0, float maxValue = 1.0f) const;
-	void ShiftPointIndices();
+	void ShiftRightPointIndices();
+	void ShiftLeftPointIndices();
+	void MovePointIndices(const float u);
 	void ResetSplineSamplers();
-	int GetSplineIndex(const float u)const;
-
-	int GetPointIndex(const float v) const;
+	int GetSplineSegmentIndex(const float u) const;
+	int GetSplineSegmentEntryIndex(const float u) const;
 
 	ObjectHandle m_drawPointsVBuffer;
 	std::vector<VertexAnimation> m_vertices;
@@ -76,24 +71,34 @@ private:
 	ForwardDiffTable m_forwardDiffTable;
 
 	XMVECTOR m_currentPos;
-	XMVECTOR m_prevPos;
-	float m_currentTime = 0.0f;
+	XMVECTOR m_nextPos;
+	XMVECTOR m_currVelDir;
+	float m_currentTime = 0;
+	float m_currentPathDuration = 0.f;
+	float m_currentDistTraveled = 0.f;
 	float m_segmentDuration;
-	SegmentStatus m_segmentStatus = SegmentStatus::EASE_IN;
+	float m_currentRate = 0.f;
 
-	size_t m_currentP0_index = 0;
-	size_t m_currentP1_index = 1;
-	size_t m_currentP2_index = 2;
-	size_t m_currentP3_index = 3;
-	size_t m_currentSegmentIndex = 0;
-	size_t m_segmentCount = 0;
+	float m_easeInTime = 0.5f;
+	float m_currEaseInTime = 0;
+
+	float m_easeOutRate = 0.76f;
+
+	int m_currentP0_index = 0;
+	int m_currentP1_index = 1;
+	int m_currentP2_index = 2;
+	int m_currentP3_index = 3;
+	int m_currentSegmentIndex = 0;
+	int m_segmentCount = 0;
+
+	float m_totalLengthOfCurve;
 
 	static const float LengthBetween2Points(const XMVECTOR& a, const XMVECTOR& b);
 	static const float LengthSquaredBetween2Points(const XMVECTOR& a, const XMVECTOR& b);
 	static const float GetSplinePointComponent(const float t, const int i, const XMVECTOR& P0, const XMVECTOR& P1, const XMVECTOR& P2, const XMVECTOR& P3);
 
-	static const float s_defaultAmountOfEntries;
-	static const int s_defaultAmountOfPoints;
+	static const float s_defaultAmountOfEntriesPerSegment;
+	static const int s_defaultAmountOfControlPoints;
 
 	friend class ImGuiStage;
 };

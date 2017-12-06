@@ -27,7 +27,7 @@ void PathWalkDebugStage::PreRender()
 void PathWalkDebugStage::Render(const HandleDictionaryVec& graphicsResources, const float dt)
 {
 	auto& renderData = m_renderer->GetRendererData();
-	renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
 
 	//Set shaders
 	ObjectHandle handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("SimpleVS");

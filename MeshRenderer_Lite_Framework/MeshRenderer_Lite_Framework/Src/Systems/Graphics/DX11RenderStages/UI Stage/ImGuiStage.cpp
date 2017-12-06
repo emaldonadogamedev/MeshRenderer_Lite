@@ -58,10 +58,16 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const floa
 			{
 				ImGui::Checkbox("Use Path: ", &pathComponent->m_usePath);
 				ImGui::DragFloat3("Center Position: ", pathComponent->m_pathCenterPos.m128_f32);
-				if (ImGui::DragFloat("Path time duration: ", &pathComponent->m_pathDuration, 0.1f, 1.0f, 30.0f))
+
+				if (ImGui::DragFloat("Walk speed: ", &pathComponent->m_walkSpeed, 0.1f, 0.f))
 				{
-					pathComponent->m_segmentDuration = pathComponent->m_pathDuration / pathComponent->m_segmentCount;
+					if (pathComponent->m_walkSpeed > 0)
+						pathComponent->m_currentPathDuration = pathComponent->m_totalLengthOfCurve / pathComponent->m_walkSpeed;
+					else
+						pathComponent->m_currentPathDuration = 0;
 				}
+				ImGui::DragFloat("Ease In Time: ", &pathComponent->m_easeInTime, 0.1f, 0.f);
+				ImGui::DragFloat("Ease Out Start Rate: ", &pathComponent->m_easeOutRate, 0.1f, 0.5f, 1.0f);
 			}
 			ImGui::End();
 		}
