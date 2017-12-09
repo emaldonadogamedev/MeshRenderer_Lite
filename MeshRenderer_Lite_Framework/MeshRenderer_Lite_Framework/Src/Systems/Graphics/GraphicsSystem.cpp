@@ -418,6 +418,7 @@ void GraphicsSystem::LoadBasicModels()
 	LoadModelHelper("sphere.obj");
 	LoadModelHelper("dragon.obj");
 	LoadModelHelper("Tower.fbx");
+	LoadModelHelper("tiny_4anim.x");
 	LoadModelHelper("gh_sample_animation.fbx");
 	LoadModelHelper("cylinder_skellmesh.fbx");
 	LoadModelHelper("boblampclean.md5mesh");

@@ -48,7 +48,7 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const floa
 		{
 			ImGui::Text("FPS: %.3f", 1.0f/dt);
 			ImGui::Checkbox("Play Animation", &model->m_animationEnabled);
-			ImGui::SliderFloat("Ticks per second", &model->m_ticksPerSecond, 1.0f, 100.0f);
+			ImGui::SliderFloat("Ticks per second", &model->m_ticksPerSecond, 1.0f, 2000.0f);
 
 			ImGui::Checkbox("Draw Bones", &model->m_debugDrawEnabled);
 			ImGui::Checkbox("Draw Skin", &model->m_drawSkin);
