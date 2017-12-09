@@ -320,7 +320,18 @@ const float CurvePathComponent::GetSplinePointComponent(const float t, const int
 		((-P0.m128_f32[i] + P2.m128_f32[i])  * t) +
 		(((2.0f * P0.m128_f32[i]) - (5.0f * P1.m128_f32[i]) + (4.0f * P2.m128_f32[i]) - P3.m128_f32[i]) * (t * t)) +
 		((-P0.m128_f32[i] + (3.0f * P1.m128_f32[i]) - (3.0f * P2.m128_f32[i]) + P3.m128_f32[i]) * (t * t * t))
-		);
+	);
+
+	return result;
+}
+
+const float CurvePathComponent::GetDerivedSplinePointComponent(const float t, const int i, const XMVECTOR& P0, const XMVECTOR& P1, const XMVECTOR& P2, const XMVECTOR& P3)
+{
+	const float result = 0.5f * (
+		(-P0.m128_f32[i] + P2.m128_f32[i]) +
+		(((2.0f * P0.m128_f32[i]) - (5.0f * P1.m128_f32[i]) + (4.0f * P2.m128_f32[i]) - P3.m128_f32[i]) * t) +
+		((-P0.m128_f32[i] + (3.0f * P1.m128_f32[i]) - (3.0f * P2.m128_f32[i]) + P3.m128_f32[i]) * (t * t))
+	);
 
 	return result;
 }

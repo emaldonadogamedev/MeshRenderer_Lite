@@ -74,7 +74,8 @@ public:
 	MeshEntryList m_meshEntryList;
 
 	BoneNodePtr m_rootNode;
-	std::unordered_map<std::string, aiAnimation*> m_animations;
+	std::vector<const char*> m_animationNameCharPtrs;
+	std::vector<aiAnimation*> m_animations;
 
 //protected:
 	//Generic model info.
@@ -90,7 +91,7 @@ public:
 	//Bone-animation information
 	float m_runningTime = 0.0f;
 	float m_ticksPerSecond = 24.0f;
-	std::string m_currentAnimName;
+	int m_currentAnimIndex;
 	bool m_animationEnabled = false;
 	aiMatrix4x4 m_globalInverseTransform;
 	std::vector<aiMatrix4x4> m_boneOffsetMtxVec;

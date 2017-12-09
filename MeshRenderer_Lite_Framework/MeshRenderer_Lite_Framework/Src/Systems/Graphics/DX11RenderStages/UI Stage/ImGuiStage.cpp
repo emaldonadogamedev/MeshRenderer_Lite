@@ -48,6 +48,12 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const floa
 		{
 			ImGui::Text("FPS: %.3f", 1.0f/dt);
 			ImGui::Checkbox("Play Animation", &model->m_animationEnabled);
+			
+			std::vector<const char*> mm;
+			if (model->m_animationEnabled)
+			{
+				ImGui::ListBox("Available animations:", &model->m_currentAnimIndex, model->m_animationNameCharPtrs.data(), model->m_animationNameCharPtrs.size());
+			}
 			ImGui::SliderFloat("Ticks per second", &model->m_ticksPerSecond, 1.0f, 2000.0f);
 
 			ImGui::Checkbox("Draw Bones", &model->m_debugDrawEnabled);
@@ -66,8 +72,8 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const floa
 					else
 						pathComponent->m_currentPathDuration = 0;
 				}
-				ImGui::DragFloat("Ease In Time: ", &pathComponent->m_easeInTime, 0.1f, 0.f);
-				ImGui::DragFloat("Ease Out Start Rate: ", &pathComponent->m_easeOutRate, 0.1f, 0.5f, 1.0f);
+				ImGui::SliderFloat("Ease In Time(seconds): ", &pathComponent->m_easeInTime, 0, 5.f);
+				ImGui::SliderFloat("Ease Out Start Rate: ", &pathComponent->m_easeOutRate, 0.5f, 1.0f);
 			}
 			ImGui::End();
 		}

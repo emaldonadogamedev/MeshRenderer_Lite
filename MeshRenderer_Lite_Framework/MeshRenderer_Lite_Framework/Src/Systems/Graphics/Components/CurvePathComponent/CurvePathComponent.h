@@ -96,6 +96,7 @@ private:
 	static const float LengthBetween2Points(const XMVECTOR& a, const XMVECTOR& b);
 	static const float LengthSquaredBetween2Points(const XMVECTOR& a, const XMVECTOR& b);
 	static const float GetSplinePointComponent(const float t, const int i, const XMVECTOR& P0, const XMVECTOR& P1, const XMVECTOR& P2, const XMVECTOR& P3);
+	static const float GetDerivedSplinePointComponent(const float t, const int i, const XMVECTOR& P0, const XMVECTOR& P1, const XMVECTOR& P2, const XMVECTOR& P3);
 
 	static const float s_defaultAmountOfEntriesPerSegment;
 	static const int s_defaultAmountOfControlPoints;

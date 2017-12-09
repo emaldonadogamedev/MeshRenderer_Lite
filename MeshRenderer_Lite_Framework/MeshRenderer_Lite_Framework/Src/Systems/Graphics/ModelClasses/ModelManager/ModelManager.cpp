@@ -212,12 +212,13 @@ void ModelManager::PopulateAnimationData(Model& model, const aiScene* const assi
 
 		for (unsigned int animIndex = 0; animIndex < numberOfAnimations; ++animIndex)
 		{
-			const std::string animName = assimpScene->mAnimations[animIndex]->mName.C_Str();
-			if (animIndex == 0)
-				model.m_currentAnimName = animName;
 
-			model.m_animations[animName] = assimpScene->mAnimations[animIndex];
+			model.m_animations.emplace_back(assimpScene->mAnimations[animIndex]);
+			model.m_animationNameCharPtrs.emplace_back(assimpScene->mAnimations[animIndex]->mName.data);
 		}
+
+		//by default use the first animation available
+		model.m_currentAnimIndex = 0;
 	}
 }
 
