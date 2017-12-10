@@ -60,9 +60,12 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 
 	const unsigned int loadFlags = aiProcess_Triangulate
 		| aiProcess_GenSmoothNormals
-		| aiProcess_GenUVCoords
-		| aiProcess_ConvertToLeftHanded //Make left-hand side loading, since I'm using DirectX
-		| aiProcessPreset_TargetRealtime_MaxQuality
+		//| aiProcess_GenUVCoords
+		| aiProcessPreset_TargetRealtime_Fast
+		| aiProcess_MakeLeftHanded //Make left-hand side loading, since I'm using DirectX
+		| aiProcess_FlipUVs
+		| aiProcess_FlipWindingOrder
+	    | aiProcessPreset_TargetRealtime_MaxQuality
 		| aiProcess_JoinIdenticalVertices
 		;
 
@@ -212,7 +215,6 @@ void ModelManager::PopulateAnimationData(Model& model, const aiScene* const assi
 
 		for (unsigned int animIndex = 0; animIndex < numberOfAnimations; ++animIndex)
 		{
-
 			model.m_animations.emplace_back(assimpScene->mAnimations[animIndex]);
 			model.m_animationNameCharPtrs.emplace_back(assimpScene->mAnimations[animIndex]->mName.data);
 		}
@@ -236,7 +238,7 @@ void ModelManager::PopulateVertexModelData(Model& model, const aiMesh* const ass
 	auto normalsPtr = assimpMesh->mNormals;
 	auto tangentsPtr = assimpMesh->mTangents;
 	auto biTangentsPtr = assimpMesh->mBitangents;
-	auto textureCoordsPtr = *assimpMesh->mTextureCoords;
+	//auto textureCoordsPtr = *assimpMesh->mTextureCoords;
 	auto colorsPtr = *assimpMesh->mColors;
 
 	//Vertex with animation data(bone IDs and weights)
@@ -275,9 +277,8 @@ void ModelManager::PopulateVertexModelData(Model& model, const aiMesh* const ass
 		
 		if (hasUVs)
 		{
-			newVertex.uv.x = textureCoordsPtr->x;
-			newVertex.uv.y = textureCoordsPtr->y;
-			++textureCoordsPtr;
+			newVertex.uv.x = assimpMesh->mTextureCoords[0][vertexIndex].x;
+			newVertex.uv.y = assimpMesh->mTextureCoords[0][vertexIndex].y;
 		}
 
 		if (hasColors)

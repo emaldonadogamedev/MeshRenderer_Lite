@@ -49,12 +49,11 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const floa
 			ImGui::Text("FPS: %.3f", 1.0f/dt);
 			ImGui::Checkbox("Play Animation", &model->m_animationEnabled);
 			
-			std::vector<const char*> mm;
 			if (model->m_animationEnabled)
 			{
-				ImGui::ListBox("Available animations:", &model->m_currentAnimIndex, model->m_animationNameCharPtrs.data(), model->m_animationNameCharPtrs.size());
+				ImGui::ListBox("Available animations:", &model->m_currentAnimIndex, model->m_animationNameCharPtrs.data(), model->m_animationNameCharPtrs.size(), 2);
 			}
-			ImGui::SliderFloat("Ticks per second", &model->m_ticksPerSecond, 1.0f, 2000.0f);
+			ImGui::SliderFloat("Ticks per second", &model->m_ticksPerSecond, 1.0f, 3000.0f);
 
 			ImGui::Checkbox("Draw Bones", &model->m_debugDrawEnabled);
 			ImGui::Checkbox("Draw Skin", &model->m_drawSkin);

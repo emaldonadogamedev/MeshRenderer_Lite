@@ -16,6 +16,7 @@ enum class ComponentType : unsigned char
 	RENDERABLE_CURVE_PATH,
 
 	//Physics
+	PHYSICS_IK_CCD,
 
 	//Scripting
 	LUA_SCRIPT,

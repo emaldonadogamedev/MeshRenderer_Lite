@@ -98,8 +98,8 @@ void GraphicsSystem::UpdateModelComponents(const float dt)
 	{
 		auto model = (static_cast<const ModelComponent*>(component))->GetModel();
 		
-		//Update model running time 
-		if (model->m_animationEnabled)
+		//Update model running time
+		if (model->m_animationEnabled && model->m_ticksPerSecond > 0.f)
 		{
 			UpdateAnimation(*model, dt);
 		}
@@ -293,7 +293,7 @@ void ReadNodeHeirarchy(Model& model, const float AnimationTime, const aiNode* pN
 void GraphicsSystem::UpdateAnimation(Model& model, const float dt)
 {
 	const auto currentAnim = model.m_animations[model.m_currentAnimIndex];
-	model.m_runningTime += dt * model.m_ticksPerSecond;// (float)(currentAnim->mTicksPerSecond != 0 ? currentAnim->mTicksPerSecond : 25.0f);
+	model.m_runningTime += dt * model.m_ticksPerSecond;
 	if (model.m_runningTime >= (float)currentAnim->mDuration)
 		model.m_runningTime = 0;
 

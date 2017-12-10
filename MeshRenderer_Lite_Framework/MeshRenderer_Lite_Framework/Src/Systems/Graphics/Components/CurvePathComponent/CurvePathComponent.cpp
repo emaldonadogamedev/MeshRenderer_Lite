@@ -131,8 +131,6 @@ void CurvePathComponent::DefaultPointSet()
 		m_forwardDiffTable[i].arclength /= m_totalLengthOfCurve;
 	}
 
-	m_currentPathDuration = m_totalLengthOfCurve / m_walkSpeed;
-
 	ResetSplineSamplers();
 }
 
