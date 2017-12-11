@@ -44,14 +44,45 @@ const XMVECTOR CurvePathComponent::GetCurrentSplinePoint()
 
 	m_nextPos = DirectX::XMVectorAdd(m_pathCenterPos, XMVectorSet(x, y, z, 0));
 
-	m_currVelDir = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(m_nextPos, m_currentPos) );
+	if (!DirectX::XMVector3Equal(m_nextPos, m_currentPos))
+	{
+		m_currVelDir = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(m_nextPos, m_currentPos));
+	}
 
 	return m_nextPos;
 }
 
-float CurvePathComponent::GetCurrentAngle() const
+float CurvePathComponent::GetCurrentAngle()
 {
-	return asin(m_currVelDir.m128_f32[2]) - DirectX::XM_PIDIV2;
+	//const float dx = m_nextPos.m128_f32[0] - m_currentPos.m128_f32[0];
+	//const float dz = m_nextPos.m128_f32[2] - m_currentPos.m128_f32[2];
+
+	//const float atan2_r = atan2(dz, dx);
+	//
+	//m_currentAngle = atan2_r >= 0.f ? atan2_r : DirectX::XM_2PI + atan2_r;
+
+	//return m_currentAngle;
+
+	const int splineEntryIndex = GetSplineSegmentEntryIndex(Clamp(m_currentRate));
+	float t = m_forwardDiffTable[splineEntryIndex].segmentParametricValue;
+
+	const XMVECTOR& P0 = m_controlPoints[m_currentP0_index];
+	const XMVECTOR& P1 = m_controlPoints[m_currentP1_index];
+	const XMVECTOR& P2 = m_controlPoints[m_currentP2_index];
+	const XMVECTOR& P3 = m_controlPoints[m_currentP3_index];
+
+	float x = GetDerivedSplinePointComponent(t, 0, P0, P1, P2, P3);
+	float y = GetDerivedSplinePointComponent(t, 1, P0, P1, P2, P3);
+	float z = GetDerivedSplinePointComponent(t, 2, P0, P1, P2, P3);
+
+	const auto derived = DirectX::XMVector3Normalize(XMVectorSet(x, y, z, 0));
+	const float dot = (m_currVelDir.m128_f32[0] * derived.m128_f32[0])
+		+ (m_currVelDir.m128_f32[1] * derived.m128_f32[1])
+		+ (m_currVelDir.m128_f32[2] * derived.m128_f32[2]);
+
+	m_currentAngle = acos(dot) - DirectX::XM_PIDIV2;
+
+	return m_currentAngle;
 }
 
 void CurvePathComponent::DefaultPointSet()
@@ -341,7 +372,7 @@ const float CurvePathComponent::GetDerivedSplinePointComponent(const float t, co
 }
 
 //Note: total curve will have #ofSegments * #ofEntries (example: 7 * 25 = 175 entries total)
-const float CurvePathComponent::s_defaultAmountOfEntriesPerSegment = 25;
+const float CurvePathComponent::s_defaultAmountOfEntriesPerSegment = 45;
 
 //Minimum is 10 since we're using catmull-romm spline, which requires 1 extra point on each side of the curve
 const int CurvePathComponent::s_defaultAmountOfControlPoints = 10;// +(rand() % 5);

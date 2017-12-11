@@ -38,7 +38,7 @@ public:
 
 	int GetPathVertexCount() const;
 	const XMVECTOR GetCurrentSplinePoint();
-	float GetCurrentAngle()const;
+	float GetCurrentAngle();
 
 	bool m_usePath = false;
 	float m_tableEntryInterval;// d or delta u  which is the unique continuous diff factor ( 1 / #amount of total intervals)
@@ -72,7 +72,8 @@ private:
 	XMVECTOR m_currentPos;
 	XMVECTOR m_nextPos;
 	XMVECTOR m_currVelDir;
-	float m_currentTime = 0;
+	float m_currentTime = 0.f;
+	float m_currentAngle = 0.f;
 	float m_currentPathDuration = 0.f;
 	float m_currentDistTraveled = 0.f;
 	float m_segmentDuration;
