@@ -15,6 +15,7 @@
 #include <Systems/Graphics/CameraClasses/Camera.h>
 #include <Systems/Graphics/Components/ModelComponent/ModelComponent.h>
 #include <Systems/Graphics/Components/CurvePathComponent/CurvePathComponent.h>
+#include <Systems/Graphics/Components/SimpleCCD/SuperSimpleCCD.h>
 #include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
 #include <Systems/Graphics/DX11Renderer/DX11RendererData.h>
 #include <Systems/Graphics/DX11RenderStages/ForwardDebugStage/PathWalkDebugStage.h>
@@ -132,9 +133,9 @@ int FindScaling(float AnimationTime, const aiNodeAnim* const pNodeAnim)
 
 	return pNodeAnim->mNumScalingKeys - 1;
 
-	assert(0);
-
-	return 0;
+	//assert(0);
+	//
+	//return 0;
 }
 void CalcInterpolatedScaling(aiVector3D& Out, float AnimationTime, const aiNodeAnim* const pNodeAnim)
 {
@@ -144,12 +145,12 @@ void CalcInterpolatedScaling(aiVector3D& Out, float AnimationTime, const aiNodeA
 	}
 
 	int ScalingIndex = FindScaling(AnimationTime, pNodeAnim);
-  //Hack so the cylinder will loop
+    //Hack so the cylinder will loop
 	int NextScalingIndex = (ScalingIndex + 1) % pNodeAnim->mNumScalingKeys;
-	assert(NextScalingIndex < pNodeAnim->mNumScalingKeys);
+	//assert(NextScalingIndex < pNodeAnim->mNumScalingKeys);
 	float DeltaTime = (float)(pNodeAnim->mScalingKeys[NextScalingIndex].mTime - pNodeAnim->mScalingKeys[ScalingIndex].mTime);
 	float Factor = std::fabs( (AnimationTime - (float)pNodeAnim->mScalingKeys[ScalingIndex].mTime) / DeltaTime);
-	assert(Factor >= 0.0f && Factor <= 1.0f);
+	//assert(Factor >= 0.0f && Factor <= 1.0f);
 	const aiVector3D& Start = pNodeAnim->mScalingKeys[ScalingIndex].mValue;
 	const aiVector3D& End = pNodeAnim->mScalingKeys[NextScalingIndex].mValue;
 	const aiVector3D Delta = End - Start;
@@ -166,9 +167,9 @@ int FindPosition(float AnimationTime, const aiNodeAnim* const pNodeAnim)
 
 	return pNodeAnim->mNumPositionKeys - 1;
 
-	assert(0);
-
-	return 0;
+	//assert(0);
+	//
+	//return 0;
 }
 void CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime, const aiNodeAnim* const pNodeAnim)
 {
@@ -179,12 +180,12 @@ void CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime, const aiNode
 	}
 
 	int PositionIndex = FindPosition(AnimationTime, pNodeAnim);
-  //hack so cylinder will loop
+    //hack so cylinder will loop
 	int NextPositionIndex = (PositionIndex + 1) % pNodeAnim->mNumPositionKeys;
-	assert(NextPositionIndex < pNodeAnim->mNumPositionKeys);
+	//assert(NextPositionIndex < pNodeAnim->mNumPositionKeys);
 	float DeltaTime = (float)(pNodeAnim->mPositionKeys[NextPositionIndex].mTime - pNodeAnim->mPositionKeys[PositionIndex].mTime);
 	float Factor = std::fabs((AnimationTime - (float)pNodeAnim->mPositionKeys[PositionIndex].mTime) / DeltaTime);
-	assert(Factor >= 0.0f && Factor <= 1.0f);
+	//assert(Factor >= 0.0f && Factor <= 1.0f);
 	const aiVector3D& Start = pNodeAnim->mPositionKeys[PositionIndex].mValue;
 	const aiVector3D& End = pNodeAnim->mPositionKeys[NextPositionIndex].mValue;
 	aiVector3D Delta = End - Start;
@@ -202,10 +203,6 @@ int FindRotation(float AnimationTime, const aiNodeAnim* const pNodeAnim)
 	}
 
 	return pNodeAnim->mNumRotationKeys - 1;
-
-	//assert(0);
-	//
-	//return 0;
 }
 void CalcInterpolatedRotation(aiQuaternion& Out, float AnimationTime, const aiNodeAnim* pNodeAnim)
 {
@@ -219,10 +216,10 @@ void CalcInterpolatedRotation(aiQuaternion& Out, float AnimationTime, const aiNo
 	int RotationIndex = FindRotation(AnimationTime, pNodeAnim);
   //Hack so the cylinder will loop
 	int NextRotationIndex = (RotationIndex + 1) % pNodeAnim->mNumRotationKeys;
-	assert(NextRotationIndex < pNodeAnim->mNumRotationKeys);
+	//assert(NextRotationIndex < pNodeAnim->mNumRotationKeys);
 	float DeltaTime = (float)(pNodeAnim->mRotationKeys[NextRotationIndex].mTime - pNodeAnim->mRotationKeys[RotationIndex].mTime);
 	float Factor = std::fabs((AnimationTime - (float)pNodeAnim->mRotationKeys[RotationIndex].mTime) / DeltaTime);
-	assert(Factor >= 0.0f && Factor <= 1.0f);
+	//assert(Factor >= 0.0f && Factor <= 1.0f);
 	const aiQuaternion& StartRotationQ = pNodeAnim->mRotationKeys[RotationIndex].mValue;
 	const aiQuaternion& EndRotationQ = pNodeAnim->mRotationKeys[NextRotationIndex].mValue;
 	aiQuaternion::Interpolate(Out, StartRotationQ, EndRotationQ, Factor);
@@ -258,7 +255,7 @@ void ReadNodeHeirarchy(Model& model, const float AnimationTime, const aiNode* pN
 		aiMatrix4x4::Translation(Translation, assTrans);
 
 		// Combine the above transformations
-		NodeTransformation = (assTrans * assOrientation * assScale);
+		NodeTransformation = assTrans * assOrientation * assScale;
 	}
 
 	const aiMatrix4x4 GlobalTransformation = ParentTransform * NodeTransformation;
@@ -329,7 +326,8 @@ void GraphicsSystem::UpdateSimpleCCDComponents(const float dt)
 	{
 		if (component->GetIsActive())
 		{
-
+			auto ccdComp = (SuperSimpleCCD*)component;
+			ccdComp->Update(dt);
 		}
 	}
 }

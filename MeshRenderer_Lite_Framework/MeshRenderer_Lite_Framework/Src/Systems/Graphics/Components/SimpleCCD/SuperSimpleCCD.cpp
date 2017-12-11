@@ -20,9 +20,40 @@ SuperSimpleCCD::~SuperSimpleCCD()
 
 }
 
+void SuperSimpleCCD::SetNewTargetPos()
+{
+	m_targetPos = aiVector3D(RandFloat(-100.0f, 100.0f), 0, RandFloat(-100.0f, 100.0f));
+}
+
 void SuperSimpleCCD::Update(const float dt)
 {
+	if (m_runCCD)
+	{
+		if (m_runCCDSingleStep)
+		{
+			RunCCDSingleStep();
+		}
+		else
+		{
 
+		}
+	}
+}
+
+void SuperSimpleCCD::RunCCDSingleStep()
+{
+	float currentDistance = LengthSquaredBetween2Points(m_endeEffectorPos, m_targetPos);
+	while (currentDistance <= (m_closeEnoughDistance * m_closeEnoughDistance))
+	{
+		auto currentJoint = m_endeEffectorNode;
+		while (currentJoint->mParent)
+		{
+			aiVector3D Vck = currentJoint-;
+
+			//go to the next joint
+			currentJoint = currentJoint->mParent;
+		}
+	}
 }
 
 void SuperSimpleCCD::FindEndEffector()
@@ -55,4 +86,18 @@ float SuperSimpleCCD::Clamp(const float value, const float minValue, const float
 float SuperSimpleCCD::RandFloat(const float minValue, const float maxValue) const
 {
 	return minValue + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (int)(maxValue - minValue)));
+}
+
+const float SuperSimpleCCD::LengthBetween2Points(const aiVector3D& a, const aiVector3D& b)
+{
+	return sqrt(LengthSquaredBetween2Points(a, b));
+}
+
+const float SuperSimpleCCD::LengthSquaredBetween2Points(const aiVector3D& a, const aiVector3D& b)
+{
+	const float dx = a.x - b.x;
+	const float dy = a.y - b.y;
+	const float dz = a.z - b.z;
+
+	return (dx*dx) + (dy*dy) + (dz*dz);
 }
