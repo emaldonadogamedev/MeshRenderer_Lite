@@ -34,21 +34,21 @@ public:
 	//Getters/Setters
 	const ComponentType GetComponentType() const 
 	{ 
-		return m_componentType; 
+		return m_componentType;
 	}
 
 	const GameObject* GetOwner() const 
 	{ 
-		return m_owner; 
+		return m_owner;
 	}
 
 	bool GetIsActive() const 
 	{ 
-		return m_isActive; 
+		return m_isActive;
 	}
-	void SetIsActive(const bool active) 
+	void SetIsActive(const bool active)
 	{ 
-		m_isActive = active; 
+		m_isActive = active;
 	}
 
 protected:

@@ -56,7 +56,7 @@ private:
 	void DefaultPointSet();
 	void PrepareDrawPoints();
 	float Clamp(const float value, const float minValue = 0.0f, const float maxValue = 1.0f) const;
-	float RandFloat(float minValue = 0, float maxValue = 1.0f) const;
+	float RandFloat(const float minValue = 0.f, const float maxValue = 1.0f) const;
 	void ShiftRightPointIndices();
 	void ShiftLeftPointIndices();
 	void MovePointIndices(const float u);

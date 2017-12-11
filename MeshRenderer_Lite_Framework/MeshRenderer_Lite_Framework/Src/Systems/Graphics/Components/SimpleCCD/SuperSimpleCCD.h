@@ -16,7 +16,7 @@ public:
 private:
 	void Update(const float dt);
 
-	float RandFloat(float minValue = 0, float maxValue = 1.0f) const;
+	float RandFloat(const float minValue = 0.f, const float maxValue = 1.0f) const;
 
 	XMVECTOR m_eePos;
 	float m_jointRotationSpeed = 1.0f;

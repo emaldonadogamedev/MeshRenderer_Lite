@@ -321,6 +321,19 @@ void GraphicsSystem::UpdateCurvePathComponents(const float dt)
 	}
 }
 
+void GraphicsSystem::UpdateSimpleCCDComponents(const float dt)
+{
+	auto& simpleCcdComponents = m_renderComponents.at(ComponentType::PHYSICS_IK_CCD);
+
+	for (auto& component : simpleCcdComponents)
+	{
+		if (component->GetIsActive())
+		{
+
+		}
+	}
+}
+
 void GraphicsSystem::Shutdown()
 {
 	//Delete all render components

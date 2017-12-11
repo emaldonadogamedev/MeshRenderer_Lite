@@ -36,7 +36,6 @@ public:
 	const std::unordered_map<std::string, std::unique_ptr<Model>>& GetLoadedModels() const;
 #pragma endregion
 
-
 	virtual void AddComponent(IComponent* component) override;
 
 protected:
@@ -53,6 +52,7 @@ protected:
 	void UpdateModelComponents(const float dt);
 	void UpdateAnimation(Model& model, const float dt);
 	void UpdateCurvePathComponents(const float dt);
+	void UpdateSimpleCCDComponents(const float dt);
 
 	//Cameras
 	std::unique_ptr<Camera> testCamera;

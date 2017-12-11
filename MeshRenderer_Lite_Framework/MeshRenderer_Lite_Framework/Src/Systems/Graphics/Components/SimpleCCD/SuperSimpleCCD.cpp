@@ -16,7 +16,7 @@ void SuperSimpleCCD::Update(const float dt)
 
 }
 
-float SuperSimpleCCD::RandFloat(float minValue, float maxValue) const
+float SuperSimpleCCD::RandFloat(const float minValue, const float maxValue) const
 {
 	return minValue + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (int)(maxValue - minValue)));
 }

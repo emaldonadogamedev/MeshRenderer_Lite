@@ -295,7 +295,7 @@ float CurvePathComponent::Clamp(const float value, const float minValue, const f
 	return min( max(minValue, value), maxValue);
 }
 
-float CurvePathComponent::RandFloat(float minValue, float maxValue) const
+float CurvePathComponent::RandFloat(const float minValue, const float maxValue) const
 {
 	return minValue + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX /(maxValue - minValue)));
 }
