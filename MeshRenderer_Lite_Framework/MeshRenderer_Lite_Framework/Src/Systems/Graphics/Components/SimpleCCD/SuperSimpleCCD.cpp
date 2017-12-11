@@ -35,7 +35,7 @@ void SuperSimpleCCD::Update(const float dt)
 		}
 		else
 		{
-
+			RunCCD_StateMachine();
 		}
 	}
 }
@@ -48,11 +48,29 @@ void SuperSimpleCCD::RunCCDSingleStep()
 		auto currentJoint = m_endeEffectorNode;
 		while (currentJoint->mParent)
 		{
-			aiVector3D Vck = currentJoint-;
+			//aiVector3D Vck = currentJoint;
 
 			//go to the next joint
 			currentJoint = currentJoint->mParent;
 		}
+	}
+}
+
+void SuperSimpleCCD::RunCCD_StateMachine()
+{
+	switch (m_ccdState)
+	{
+	case CCD_STATES::IDLE:
+		m_ccdState = CCD_STATES::CALCULATE_DISTANCE;
+		break;
+	case CCD_STATES::CALCULATE_DISTANCE:
+		break;
+	case CCD_STATES::PREPARE_ROTATION:
+		break;
+	case CCD_STATES::UPDATE_HEIRARCHY:
+		break;
+	default:
+		break;
 	}
 }
 

@@ -35,6 +35,7 @@ public:
 private:
 	void Update(const float dt);
 	void RunCCDSingleStep();
+	void RunCCD_StateMachine();
 
 	void FindEndEffector();
 
@@ -46,6 +47,8 @@ private:
 
 	float m_walkSpeed = 1.0f;
 	float m_jointRotationSpeed = 1.0f;
+
+	CCD_STATES m_ccdState;
 
 	static const float LengthBetween2Points(const aiVector3D& a, const aiVector3D& b);
 	static const float LengthSquaredBetween2Points(const aiVector3D& a, const aiVector3D& b);
