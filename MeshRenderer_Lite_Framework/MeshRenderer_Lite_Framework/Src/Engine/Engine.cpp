@@ -11,6 +11,7 @@
 #include <Systems/Core/GameObject/GameObject.h>
 #include <Systems/Graphics/Components/ModelComponent/ModelComponent.h>
 #include <Systems/Graphics/Components/CurvePathComponent/CurvePathComponent.h>
+#include <Systems/Graphics/Components/SimpleCCD/SuperSimpleCCD.h>
 #include <Systems/Graphics/GraphicsSystem.h>
 #include <Systems/Input/InputSystem.h>
 #include <Systems/Input/Keyboard.h>
@@ -66,9 +67,9 @@ bool Engine::Initialize(HINSTANCE hInstance)
 
 	//test3DComp->SetModel(loadedModels.at("dragon.obj").get());
 	//test3DComp->SetModel(loadedModels.at("bunny.obj").get());
-	//test3DComp->SetModel(loadedModels.at("cylinder_skellmesh.fbx").get());
+	test3DComp->SetModel(loadedModels.at("cylinder_skellmesh.fbx").get());
 	//test3DComp->SetModel(loadedModels.at("tiny_4anim.x").get());
-	test3DComp->SetModel(loadedModels.at("boblampclean.md5mesh").get());
+	//test3DComp->SetModel(loadedModels.at("boblampclean.md5mesh").get());
 
 	testObj->AddComponent(test3DComp);
 	m_graphicsSystem->AddComponent(test3DComp);
@@ -77,6 +78,10 @@ bool Engine::Initialize(HINSTANCE hInstance)
 	testPathComp->GenerateVertexBuffer(m_graphicsSystem->m_dx11Renderer.get());
 	testObj->AddComponent(testPathComp);
 	m_graphicsSystem->AddComponent(testPathComp);
+
+	auto* testSimpleCCD = new SuperSimpleCCD(testObj.get());
+	testObj->AddComponent(testSimpleCCD);
+	m_graphicsSystem->AddComponent(testSimpleCCD);
 
 	return m_isRunning = true;
 }
