@@ -637,6 +637,54 @@ void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const std::strin
 	}
 }
 
+void DX11Renderer::ReleaseObject(const ObjectHandle& object)
+{
+	switch (object.GetType())
+	{
+	case ObjectType::BACK_BUFFER:
+		break;
+	case ObjectType::DEPTH_BUFFER:
+		break;
+	case ObjectType::TEXTURE_1D:
+		break;
+	case ObjectType::TEXTURE_2D:
+		break;
+	case ObjectType::TEXTURE_3D:
+		break;
+	case ObjectType::RENDER_TARGET:
+		break;
+	case ObjectType::SHADER_RESOURCE_VIEW:
+		break;
+	case ObjectType::VERTEX_SHADER:
+		break;
+	case ObjectType::PIXEL_SHADER:
+		break;
+	case ObjectType::GEOMETRY_SHADER:
+		break;
+	case ObjectType::COMPUTE_SHADER:
+		break;
+	case ObjectType::VERTEX_BUFFER:
+	{
+		auto& obj = m_renderData->vertexBuffers[object.GetHandleID()];
+		SafeRelease(obj.buffer);
+		obj.deleted = true;
+		break;
+	}
+	case ObjectType::INDEX_BUFFER:
+		break;
+	case ObjectType::INSTANCE_BUFFER:
+		break;
+	case ObjectType::CONSTANT_BUFFER:
+		break;
+	case ObjectType::FONT_FACTORY:
+		break;
+	case ObjectType::FONT_WRAPPER:
+		break;
+	default:
+		break;
+	}
+}
+
 bool DX11Renderer::InitializeD3D(const int width, const int height, HWND hwnd)
 {
 	UINT createDeviceFlags = 0;

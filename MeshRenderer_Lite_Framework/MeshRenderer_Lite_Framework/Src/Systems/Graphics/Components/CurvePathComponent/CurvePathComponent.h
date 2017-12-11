@@ -23,7 +23,6 @@ struct TableEntry
 };
 typedef std::vector<TableEntry> ForwardDiffTable;
 
-typedef const XMVECTOR (*InterpolatingFunction)(const XMVECTOR& a, const XMVECTOR& b, const float factor);
 
 class CurvePathComponent : public IComponent
 {

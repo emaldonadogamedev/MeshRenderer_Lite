@@ -47,6 +47,7 @@ public:
 	void BindIndexBuffer(const ObjectHandle& indexBuffer);
 	void BindConstantBuffer(unsigned slot, const ObjectHandle& constantBuffer, const ObjectType& shaderType);
 
+
 	//////////////////////////////////////////////////////////////////////////
 	//Shader functions
 	//Create
@@ -65,6 +66,10 @@ public:
 	void CreateTexture2D(ObjectHandle& texture, const std::string& fileName, bool generateMipChain = true);
 	
 	void BindTexture2D(unsigned slot, const ObjectHandle& texture);
+
+	//////////////////////////////////////////////////////////////////////////
+	//Release
+	void ReleaseObject(const ObjectHandle& object);
 
 protected:
 	bool InitializeD3D(const int width, const int height, HWND hwnd);

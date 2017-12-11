@@ -137,6 +137,7 @@ void CurvePathComponent::DefaultPointSet()
 void CurvePathComponent::PrepareDrawPoints()
 {
 	m_drawPoints.clear();
+
 	m_drawPoints.reserve(m_forwardDiffTable.size() );
 	for (int i = 0; i < m_segmentCount; ++i)
 	{
@@ -165,6 +166,11 @@ void CurvePathComponent::PrepareDrawPoints()
 void CurvePathComponent::GenerateVertexBuffer(DX11Renderer* renderContext)
 {
 	m_vertices.clear();
+	if (m_drawPointsVBuffer != ObjectHandle::Null())
+	{
+		renderContext->ReleaseObject(m_drawPointsVBuffer);
+	}
+
 	m_vertices.resize(m_drawPoints.size());
 	for (int i = 0; i < m_vertices.size(); ++i)
 	{

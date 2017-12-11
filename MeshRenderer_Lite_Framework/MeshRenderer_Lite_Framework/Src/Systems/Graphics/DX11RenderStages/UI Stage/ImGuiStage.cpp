@@ -38,7 +38,7 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const floa
 	//ImGui::ShowTestWindow(&drawit);
 
 	const auto& modelComponent = (ModelComponent*)m_gfxSystemComponents->at(ComponentType::RENDERABLE_3D)[0];
-	const auto& pathComponent = (CurvePathComponent*)m_gfxSystemComponents->at(ComponentType::RENDERABLE_CURVE_PATH)[0];
+	const auto& curvePathComponent = (CurvePathComponent*)m_gfxSystemComponents->at(ComponentType::RENDERABLE_CURVE_PATH)[0];
 
 	if (modelComponent)
 	{
@@ -59,20 +59,26 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const floa
 			ImGui::Checkbox("Draw Skin", &model->m_drawSkin);
 			ImGui::Separator();
 
-			if (pathComponent)
+			if (curvePathComponent)
 			{
-				ImGui::Checkbox("Use Path: ", &pathComponent->m_usePath);
-				ImGui::DragFloat3("Center Position: ", pathComponent->m_pathCenterPos.m128_f32);
+				ImGui::Checkbox("Use Path: ", &curvePathComponent->m_usePath);
+				ImGui::DragFloat3("Center Position: ", curvePathComponent->m_pathCenterPos.m128_f32);
 
-				if (ImGui::DragFloat("Walk speed: ", &pathComponent->m_walkSpeed, 0.1f, 0.f))
+				if (ImGui::DragFloat("Walk speed: ", &curvePathComponent->m_walkSpeed, 0.1f, 0.f))
 				{
-					if (pathComponent->m_walkSpeed > 0)
-						pathComponent->m_currentPathDuration = pathComponent->m_totalLengthOfCurve / pathComponent->m_walkSpeed;
+					if (curvePathComponent->m_walkSpeed > 0)
+						curvePathComponent->m_currentPathDuration = curvePathComponent->m_totalLengthOfCurve / curvePathComponent->m_walkSpeed;
 					else
-						pathComponent->m_currentPathDuration = 0;
+						curvePathComponent->m_currentPathDuration = 0;
 				}
-				ImGui::SliderFloat("Ease In Time(seconds): ", &pathComponent->m_easeInTime, 0, 5.f);
-				ImGui::SliderFloat("Ease Out Start Rate: ", &pathComponent->m_easeOutRate, 0.5f, 1.0f);
+				ImGui::SliderFloat("Ease In Time(seconds): ", &curvePathComponent->m_easeInTime, 0, 5.f);
+				ImGui::SliderFloat("Ease Out Start Rate: ", &curvePathComponent->m_easeOutRate, 0.5f, 1.0f);
+				if (ImGui::Button("Generate New Path"))
+				{
+					curvePathComponent->DefaultPointSet();
+					curvePathComponent->PrepareDrawPoints();
+					curvePathComponent->GenerateVertexBuffer(m_renderer);
+				}
 			}
 			ImGui::End();
 		}
