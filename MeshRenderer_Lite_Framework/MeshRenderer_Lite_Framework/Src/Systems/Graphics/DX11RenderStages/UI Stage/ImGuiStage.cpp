@@ -79,6 +79,7 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const floa
 					curvePathComponent->PrepareDrawPoints();
 					curvePathComponent->GenerateVertexBuffer(m_renderer);
 				}
+				ImGui::SliderFloat("Emergency!", &curvePathComponent->deleteThisAfterUsage, -DirectX::XM_PI, DirectX::XM_PI);
 			}
 			ImGui::End();
 		}

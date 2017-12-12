@@ -71,7 +71,11 @@ private:
 
 	XMVECTOR m_currentPos;
 	XMVECTOR m_nextPos;
+	XMVECTOR m_firstAngleVec;
 	XMVECTOR m_currVelDir;
+
+	float deleteThisAfterUsage = 0.f;
+
 	float m_currentTime = 0.f;
 	float m_currentAngle = 0.f;
 	float m_currentPathDuration = 0.f;
