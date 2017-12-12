@@ -47,10 +47,10 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const floa
 		if (ImGui::Begin("Animation Properties"))
 		{
 			ImGui::Text("FPS: %.3f", 1.0f/dt);
-			ImGui::Checkbox("Play Animation", &model->m_animationEnabled);
 			
-			if (model->m_animationEnabled)
+			if (model->GetModelType() == ModelType::MODEL_SKINNED)
 			{
+				ImGui::Checkbox("Play Animation", &model->m_animationEnabled);
 				ImGui::ListBox("Available animations:", &model->m_currentAnimIndex, model->m_animationNameCharPtrs.data(), model->m_animationNameCharPtrs.size(), 2);
 			}
 			ImGui::SliderFloat("Ticks per second", &model->m_ticksPerSecond, 1.0f, 3000.0f);
