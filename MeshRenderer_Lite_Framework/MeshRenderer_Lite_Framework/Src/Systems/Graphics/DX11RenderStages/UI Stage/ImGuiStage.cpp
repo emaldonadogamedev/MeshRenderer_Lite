@@ -64,7 +64,9 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const floa
 				ImGui::Checkbox("Use Path: ", &curvePathComponent->m_usePath);
 				ImGui::DragFloat3("Center Position: ", curvePathComponent->m_pathCenterPos.m128_f32);
 
-				if (ImGui::DragFloat("Walk speed: ", &curvePathComponent->m_walkSpeed, 0.1f, 0.f))
+				ImGui::Text("Current Vel. X=%f, Z=%f", curvePathComponent->m_currVelDir.m128_f32[0], curvePathComponent->m_currVelDir.m128_f32[2]);
+
+				if (ImGui::SliderFloat("Walk speed: ", &curvePathComponent->m_walkSpeed, 10.f, 900.f))
 				{
 					if (curvePathComponent->m_walkSpeed > 0)
 						curvePathComponent->m_currentPathDuration = curvePathComponent->m_totalLengthOfCurve / curvePathComponent->m_walkSpeed;
@@ -79,7 +81,7 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const floa
 					curvePathComponent->PrepareDrawPoints();
 					curvePathComponent->GenerateVertexBuffer(m_renderer);
 				}
-				//ImGui::SliderFloat("Emergency!", &curvePathComponent->deleteThisAfterUsage, -DirectX::XM_PI, DirectX::XM_PI);
+				ImGui::SliderFloat("Emergency!", &curvePathComponent->deleteThisAfterUsage, -DirectX::XM_PI, DirectX::XM_PI);
 			}
 			ImGui::End();
 		}

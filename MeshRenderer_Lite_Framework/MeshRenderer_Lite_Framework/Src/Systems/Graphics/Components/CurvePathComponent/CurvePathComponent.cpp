@@ -63,28 +63,28 @@ float CurvePathComponent::GetCurrentAngle()
 
 	//return m_currentAngle;
 
-	//const int splineEntryIndex = GetSplineSegmentEntryIndex(Clamp(m_currentRate));
-	//float t = m_forwardDiffTable[splineEntryIndex].segmentParametricValue;
-	//
-	//const XMVECTOR& P0 = m_controlPoints[m_currentP0_index];
-	//const XMVECTOR& P1 = m_controlPoints[m_currentP1_index];
-	//const XMVECTOR& P2 = m_controlPoints[m_currentP2_index];
-	//const XMVECTOR& P3 = m_controlPoints[m_currentP3_index];
-	//
-	//float x = GetDerivedSplinePointComponent(t, 0, P0, P1, P2, P3);
-	//float y = GetDerivedSplinePointComponent(t, 1, P0, P1, P2, P3);
-	//float z = GetDerivedSplinePointComponent(t, 2, P0, P1, P2, P3);
+	const int splineEntryIndex = GetSplineSegmentEntryIndex(Clamp(m_currentRate));
+	float t = m_forwardDiffTable[splineEntryIndex].segmentParametricValue;
+	
+	const XMVECTOR& P0 = m_controlPoints[m_currentP0_index];
+	const XMVECTOR& P1 = m_controlPoints[m_currentP1_index];
+	const XMVECTOR& P2 = m_controlPoints[m_currentP2_index];
+	const XMVECTOR& P3 = m_controlPoints[m_currentP3_index];
+	
+	float x = GetDerivedSplinePointComponent(t, 0, P0, P1, P2, P3);
+	float y = GetDerivedSplinePointComponent(t, 1, P0, P1, P2, P3);
+	float z = GetDerivedSplinePointComponent(t, 2, P0, P1, P2, P3);
+	
+	const auto derived = DirectX::XMVector3Normalize(XMVectorSet(x, y, z, 0));
+	const float dot = (m_firstAngleVec.m128_f32[0] * derived.m128_f32[0])
+		+ (m_firstAngleVec.m128_f32[1] * derived.m128_f32[1])
+		+ (m_firstAngleVec.m128_f32[2] * derived.m128_f32[2]);
 
-	//const auto derived = DirectX::XMVector3Normalize(XMVectorSet(x, y, z, 0));
-	//const float dot = (m_currVelDir.m128_f32[0] * derived.m128_f32[0])
-	//	+ (m_currVelDir.m128_f32[1] * derived.m128_f32[1])
-	//	+ (m_currVelDir.m128_f32[2] * derived.m128_f32[2]);
+	//const float dot = (m_firstAngleVec.m128_f32[0] * m_currVelDir.m128_f32[0])
+	//	+ (m_firstAngleVec.m128_f32[1] * m_currVelDir.m128_f32[1])
+	//	+ (m_firstAngleVec.m128_f32[2] * m_currVelDir.m128_f32[2]);
 
-	const float dot = (m_firstAngleVec.m128_f32[0] * m_currVelDir.m128_f32[0])
-		+ (m_firstAngleVec.m128_f32[1] * m_currVelDir.m128_f32[1])
-		+ (m_firstAngleVec.m128_f32[2] * m_currVelDir.m128_f32[2]);
-
-	m_currentAngle = acos(dot) + (DirectX::XM_PIDIV2 * 1.5);
+	m_currentAngle = acos(dot) - 2.757f;// this->deleteThisAfterUsage;
 
 	return m_currentAngle;
 }
@@ -174,9 +174,9 @@ void CurvePathComponent::DefaultPointSet()
 	const XMVECTOR& P2 = m_controlPoints[m_currentP2_index];
 	const XMVECTOR& P3 = m_controlPoints[m_currentP3_index];
 
-	float x1 = GetSplinePointComponent(0, 0, P0, P1, P2, P3);
-	float y1 = GetSplinePointComponent(0, 1, P0, P1, P2, P3);
-	float z1 = GetSplinePointComponent(0, 2, P0, P1, P2, P3);
+	float x1 = GetSplinePointComponent(0.f, 0, P0, P1, P2, P3);
+	float y1 = GetSplinePointComponent(0.f, 1, P0, P1, P2, P3);
+	float z1 = GetSplinePointComponent(0.f, 2, P0, P1, P2, P3);
 	const XMVECTOR current_P0 = XMVectorSet(x1, y1, z1, 1.0f);
 
 	x1 = GetSplinePointComponent(m_tableEntrySegmentInterval, 0, P0, P1, P2, P3);
@@ -385,8 +385,8 @@ const float CurvePathComponent::GetDerivedSplinePointComponent(const float t, co
 {
 	const float result = 0.5f * (
 		(-P0.m128_f32[i] + P2.m128_f32[i]) +
-		(((2.0f * P0.m128_f32[i]) - (5.0f * P1.m128_f32[i]) + (4.0f * P2.m128_f32[i]) - P3.m128_f32[i]) * t) +
-		((-P0.m128_f32[i] + (3.0f * P1.m128_f32[i]) - (3.0f * P2.m128_f32[i]) + P3.m128_f32[i]) * (t * t))
+		(((2.0f * P0.m128_f32[i]) - (5.0f * P1.m128_f32[i]) + (4.0f * P2.m128_f32[i]) - P3.m128_f32[i]) * (2.0f * t)) +
+		((-P0.m128_f32[i] + (3.0f * P1.m128_f32[i]) - (3.0f * P2.m128_f32[i]) + P3.m128_f32[i]) * (3.0f * t * t))
 	);
 
 	return result;
