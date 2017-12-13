@@ -79,7 +79,7 @@ void SuperSimpleCCD::FindEndEffector()
 	/*
 	Note: For now, in order for this to work a ModelComponent is required. So it has to be added to the game object first.
 	*/
-	const auto modelComp = static_cast<ModelComponent*>(m_owner->GetComponent(ComponentType::RENDERABLE_3D));
+	const auto modelComp  = static_cast<const ModelComponent* const>(m_owner->GetComponent(ComponentType::RENDERABLE_3D));
 
 	if (modelComp)
 	{

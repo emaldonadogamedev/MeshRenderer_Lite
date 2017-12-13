@@ -38,3 +38,18 @@ cbuffer AnimationBonesBuffer : register(b2)
 	//Debug
 	float4 bonePositions[s_maxBoneLocCount];
 };
+
+static const unsigned int s_maxControlPointCount = 20;
+
+cbuffer CurvePath_ConstBuffer : register(b3)
+{
+	float4 controlPointPositions[s_maxControlPointCount];
+
+	float scale;
+	float3 padding;
+}
+
+cbuffer CCD_TargetConstBuffer : register(b4)
+{
+	matrix worldMatrix;
+}

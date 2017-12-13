@@ -65,6 +65,9 @@ public:
 	AnimationBuffer testAnimationBuffer;
 	ID3D11Buffer* testAnimationConstBuffer = nullptr;
 
+	XMMATRIX testCCDTargetBuffer;
+	ID3D11Buffer* testCCDTargetConstBuffer = nullptr;
+
 private:
 	template<typename Container>
 	int NextAvailableIndex(const Container& container)

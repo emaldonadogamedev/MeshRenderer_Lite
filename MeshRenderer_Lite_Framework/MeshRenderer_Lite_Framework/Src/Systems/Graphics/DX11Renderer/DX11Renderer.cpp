@@ -854,6 +854,7 @@ continue_Init:
 
 bool DX11Renderer::InitializeConstBuffers()
 {
+	//Prepare the view buffer
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DEFAULT;
@@ -861,6 +862,10 @@ bool DX11Renderer::InitializeConstBuffers()
 	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bd.CPUAccessFlags = 0;
 	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testViewProjConstBuffer));
+
+	//Prepare the CCD target buffer
+	bd.ByteWidth = sizeof(XMMATRIX);
+	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testCCDTargetConstBuffer));
 
 	return true;
 }
