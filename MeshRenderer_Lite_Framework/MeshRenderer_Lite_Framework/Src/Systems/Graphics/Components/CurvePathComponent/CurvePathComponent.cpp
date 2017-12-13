@@ -84,7 +84,17 @@ float CurvePathComponent::GetCurrentAngle()
 	//	+ (m_firstAngleVec.m128_f32[1] * m_currVelDir.m128_f32[1])
 	//	+ (m_firstAngleVec.m128_f32[2] * m_currVelDir.m128_f32[2]);
 
-	m_currentAngle = acos(dot) - 2.757f;// +DirectX::XM_PI + DirectX::XM_PIDIV2;// this->deleteThisAfterUsage;
+	if (derived.m128_f32[0] == 0.0f)
+		m_currentAngle = DirectX::XM_PI;
+	else if(derived.m128_f32[2] == 0.0f)
+		m_currentAngle = DirectX::XM_PI + DirectX::XM_PIDIV2;
+	else if (m_currVelDir.m128_f32[0] >= 0.f && m_currVelDir.m128_f32[2] >= 0.f)
+		m_currentAngle =  -acos(dot) + DirectX::XM_PI + DirectX::XM_PIDIV2;
+	else if(m_currVelDir.m128_f32[0] >= 0.f && m_currVelDir.m128_f32[2] < 0.f)
+		m_currentAngle = acos(dot) + DirectX::XM_PI + DirectX::XM_PIDIV2;
+
+
+	//m_currentAngle = modifier * acos(dot) + DirectX::XM_PI;// -2.757f;// +DirectX::XM_PI + DirectX::XM_PIDIV2;// this->deleteThisAfterUsage;
 
 	//if(m_currVelDir.m128_f32[2] < 0)
 	//	m_currentAngle = acos(dot) + DirectX::XM_PI	;// this->deleteThisAfterUsage;
