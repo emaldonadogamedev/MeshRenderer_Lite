@@ -431,6 +431,7 @@ void GraphicsSystem::LoadBasicModels()
 	LoadModelHelper("Tower.fbx");
 	LoadModelHelper("tiny_4anim.x");
 	LoadModelHelper("gh_sample_animation.fbx");
+	//LoadModelHelper("FiveJointCylinder.fbx"); //doesn't work, creates a scene pointer but does not read mesh data
 	LoadModelHelper("cylinder_skellmesh.fbx");
 	LoadModelHelper("boblampclean.md5mesh");
 }

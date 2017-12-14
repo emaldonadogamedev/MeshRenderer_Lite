@@ -24,4 +24,7 @@ public:
 protected:
 	bool m_isVisible;
 	Model* m_model = nullptr;
+
+	//Simple CCD implementation need to know about the model data for bones, nodes, etc.
+	friend class SuperSimpleCCD;
 };
