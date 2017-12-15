@@ -429,6 +429,9 @@ void GraphicsSystem::LoadModelHelper(const std::string& fileName)
 {
 	const auto newModel = m_modelManager->LoadModel(fileName);
 
+	if (!newModel)
+		return;
+
 	ObjectHandle textHandle;
 	for (auto& meshEntry : newModel->m_meshEntryList)
 	{
@@ -447,7 +450,7 @@ void GraphicsSystem::LoadBasicModels()
 	LoadModelHelper("bunny.obj");
 	LoadModelHelper("sphere.obj");
 	LoadModelHelper("dragon.obj");
-	LoadModelHelper("Tower.fbx");
+	LoadModelHelper("Fan.fbx");
 	LoadModelHelper("tiny_4anim.x");
 	LoadModelHelper("gh_sample_animation.fbx");
 	//LoadModelHelper("FiveJointCylinder.fbx"); //doesn't work, creates a scene pointer but does not read mesh data
