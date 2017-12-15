@@ -7,6 +7,7 @@
 #include <Systems/Core/GameObject/GameObject.h>
 #include <Systems/Graphics/Components/ModelComponent/ModelComponent.h>
 #include <Systems/Graphics/Components/CurvePathComponent/CurvePathComponent.h>
+#include <Systems/Graphics/Components/SimpleCloth/SimpleClothComponent.h>
 #include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
 #include <Systems/Graphics/DX11Renderer/DX11RendererData.h>
 #include <Systems/Graphics/ModelClasses/Model/Model.h>
@@ -39,6 +40,7 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const floa
 
 	const auto& modelComponent = (ModelComponent*)GetComponentHelper(ComponentType::RENDERABLE_3D, 0);
 	const auto& curvePathComponent = (CurvePathComponent*) GetComponentHelper(ComponentType::RENDERABLE_CURVE_PATH, 0);
+	const auto& clothComponent = (SimpleClothComponent*)GetComponentHelper(ComponentType::PHYSICS_SIMPLE_CLOTH, 0);
 
 	if (modelComponent)
 	{
@@ -91,6 +93,18 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const floa
 			ImGui::DragFloat3("Position: ", transform->GetPosition().m128_f32, 0.1f);
 			ImGui::DragFloat3("Rotation: ", transform->GetOrientation().m128_f32, 0.1f, 0, XM_2PI);
 			ImGui::DragFloat3("Scale: ", transform->GetScale().m128_f32, 0.1f);
+
+			ImGui::End();
+		}
+	}
+
+	if (clothComponent)
+	{
+		if (ImGui::Begin("Cloth properties:"))
+		{
+			ImGui::DragFloat3("Fan Position: ", clothComponent->m_fanPos.m128_f32, 0.1f);
+			ImGui::SliderFloat("Fan Strength: ", &clothComponent->m_fanStrength, 0, 100.f);
+			ImGui::SliderFloat("Fan Radius: ", &clothComponent->m_fanRadius, 0, 10.f);
 
 			ImGui::End();
 		}

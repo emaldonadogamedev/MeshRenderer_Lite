@@ -110,20 +110,6 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources, co
 
 	//////////////////////////////////////////////////////////////////////////
 	//forward render all of cloth objects
-	//Set shaders
-	handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("SimpleClothVS");
-	m_renderer->BindVertexShader(handle);
-
-	handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("SimplePS");
-	m_renderer->BindPixelShader(handle);
-
-	renderData.testPerObjectBuffer.worldMtx = XMMatrixIdentity();
-	renderData.m_pImmediateContext->UpdateSubresource(renderData.testPerObjectConstBuffer,
-		0, NULL, &renderData.testPerObjectBuffer, 0, 0);
-
-	renderData.m_pImmediateContext->VSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
-	renderData.m_pImmediateContext->PSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
-	renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	const auto& clothComponents = (*m_gfxSystemComponents)[(int)ComponentType::PHYSICS_SIMPLE_CLOTH];
 	for (auto component : clothComponents)
@@ -131,6 +117,13 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources, co
 		if (component->GetIsActive())
 		{
 			SimpleClothComponent* clothComp = (SimpleClothComponent*)component;
+
+			//Set shaders
+			handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("SimpleClothVS");
+			m_renderer->BindVertexShader(handle);
+
+			handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("SimplePS");
+			m_renderer->BindPixelShader(handle);
 
 			m_renderer->BindVertexBuffer(clothComp->m_drawPointsVB, sizeof(VertexAnimation));
 			m_renderer->BindIndexBuffer(clothComp->m_drawPointsIB);
@@ -147,6 +140,22 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources, co
 
 			//m_renderer->Draw(clothComp->particles.size());// clothComp->m_indexCount, 0, 0);
 			m_renderer->DrawIndexed(clothComp->m_indexCount, 0, 0);
+
+			//////////////////////////////////////////////////////////////////////////
+			//Now draw the "fan"
+
+			m_renderer->BindVertexBuffer(clothComp->m_drawFanVB, sizeof(VertexAnimation));
+			m_renderer->BindIndexBuffer(clothComp->m_drawFanIB);
+
+			handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("SimpleVS");
+			m_renderer->BindVertexShader(handle);
+
+			renderData.testPerObjectBuffer.worldMtx = XMMatrixTranspose( XMMatrixTranslationFromVector(clothComp->m_fanPos));
+			renderData.m_pImmediateContext->UpdateSubresource(renderData.testPerObjectConstBuffer,
+				0, NULL, &renderData.testPerObjectBuffer, 0, 0);
+
+			renderData.m_pImmediateContext->VSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
+			m_renderer->DrawIndexed(36, 0, 0);
 		}
 	}
 

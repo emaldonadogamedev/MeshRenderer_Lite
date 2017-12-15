@@ -14,6 +14,7 @@
 #include <Systems/Graphics/Components/SimpleCCD/SuperSimpleCCD.h>
 #include <Systems/Graphics/Components/SimpleCloth/SimpleClothComponent.h>
 #include <Systems/Graphics/GraphicsSystem.h>
+#include <Systems/Graphics/ModelClasses/Model/Model.h>
 #include <Systems/Input/InputSystem.h>
 #include <Systems/Input/Keyboard.h>
 #include <Systems/Input/Mouse.h>
@@ -84,6 +85,8 @@ bool Engine::Initialize(HINSTANCE hInstance)
 	testObj->AddComponent(testSimpleCloth);
 	m_graphicsSystem->AddComponent(testSimpleCloth);
 	testSimpleCloth->generateVertexBuffers(m_graphicsSystem->m_dx11Renderer.get());
+	testSimpleCloth->m_drawFanVB = loadedModels.at("box.obj")->GetVBufferHandle();
+	testSimpleCloth->m_drawFanIB = loadedModels.at("box.obj")->GetIBufferHandle();
 
 	return m_isRunning = true;
 }

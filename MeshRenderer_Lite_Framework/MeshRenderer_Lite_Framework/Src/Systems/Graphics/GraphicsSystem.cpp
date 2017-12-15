@@ -343,8 +343,6 @@ void GraphicsSystem::UpdateSimpleClothComponents(const float dt)
 		if (component->GetIsActive())
 		{
 			auto clothComp = (SimpleClothComponent*)component;
-			clothComp->addForce(XMVectorSet(0, -9.8, 0, 0) * dt); // add gravity each frame, pointing down
-			clothComp->windForce(XMVectorSet(11.5, 2, .2, 0) * dt); // generate some wind each frame
 
 			clothComp->timeStep(dt);
 		}

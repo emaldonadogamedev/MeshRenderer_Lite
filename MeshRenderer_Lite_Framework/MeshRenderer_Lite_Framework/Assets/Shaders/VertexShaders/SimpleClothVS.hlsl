@@ -7,7 +7,7 @@ PixelInputType main(VertexInputType vertex, in uint vertexID:SV_VertexID)
 
 	////now proceed with the view and proj. normally
 	//result.position = ;
-	result.worldPos = mul(particleData[vertexID].position, worldMtx);
+	result.worldPos = particleData[vertexID].position;
 	result.position = mul(result.worldPos, viewMtx);
 	result.position = mul(result.position, projectionMtx);
 

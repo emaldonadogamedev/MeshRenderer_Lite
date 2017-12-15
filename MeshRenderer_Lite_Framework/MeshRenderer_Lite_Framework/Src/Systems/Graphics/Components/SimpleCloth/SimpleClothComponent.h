@@ -34,14 +34,27 @@ public:
 	//Initialization
 	void generateVertexBuffers(DX11Renderer* renderContext);
 
+	ObjectHandle m_drawFanVB;
+	ObjectHandle m_drawFanIB;
+
 private:
 	XMVECTOR m_spherePos;
 	float m_sphereRadius = 2.0;
 	float m_sphereMoveDirection = 1.0f;
 	float m_sphereMoveSpeed = 3.0f;
 
+	XMVECTOR m_fanPos;
+	XMVECTOR m_centerClothPos;
+	XMVECTOR m_fanDir;
+	float m_fanStrength = 10.f;
+	float m_fanRadius = 1.0f;
+
+
 	ObjectHandle m_drawPointsVB;
 	ObjectHandle m_drawPointsIB;
+
+
+
 	int m_indexCount;
 
 	int m_numParticlesWidth; // number of particles in "width" direction
@@ -70,9 +83,12 @@ private:
 
 	float XmVec_Length(const XMVECTOR& a) const;
 	float XmVec_LengthSquared(const XMVECTOR& a) const;
+	float LengthBetween2Points(const XMVECTOR& a, const XMVECTOR& b);
+	float LengthSquaredBetween2Points(const XMVECTOR& a, const XMVECTOR& b);
 
 	static const int s_CONSTRAINT_ITERATIONS;
 
 	friend class ForwardRenderStage;
+	friend class ImGuiStage;
 	friend class GraphicsSystem;
 };

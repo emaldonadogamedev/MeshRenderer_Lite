@@ -73,7 +73,8 @@ SimpleClothComponent::SimpleClothComponent(const GameObject* owner, float width,
 		getParticle(numParticlesWidth - 1 - i, 0)->makeUnmovable();
 	}
 
-	m_spherePos = XMVectorSet(0, -3.0f, -9.f, 1.0f);
+	m_fanPos = XMVectorSet(0, -3.0f, -11.f, 1.0f);
+	m_centerClothPos = XMVectorSet(width/2.0f, height / 2.0f, 0, 1.0f);
 }
 
 SimpleClothComponent::~SimpleClothComponent()
@@ -83,6 +84,20 @@ SimpleClothComponent::~SimpleClothComponent()
 
 void SimpleClothComponent::timeStep(const float dt)
 {
+	static const XMVECTOR s_GRAVITY = XMVectorSet(0, -9.8, 0, 0);
+	addForce(s_GRAVITY * dt); // add gravity each frame, pointing down
+
+	//If cloth is within radius of fan
+	const float distSquared = LengthBetween2Points(m_centerClothPos, m_fanPos);
+	if (distSquared <= m_fanRadius * m_fanRadius)
+	{
+		const XMVECTOR windDir = -XMVector3Normalize(m_fanPos - m_centerClothPos);
+
+		//windForce(XMVectorSet(11.5, 2, .2, 0) * dt); // generate some wind each frame
+		//Adding strength to the cloth depending on how close it is to the fan
+		windForce(windDir * m_fanStrength * (1.0f - (distSquared/(m_fanRadius * m_fanRadius)))  *  dt);
+	}
+
 	std::vector<Constraint>::iterator constraint;
 	for (int i = 0; i < s_CONSTRAINT_ITERATIONS; i++) // iterate over all constraints several times
 	{
@@ -98,18 +113,7 @@ void SimpleClothComponent::timeStep(const float dt)
 		(*particle).timeStep(dt); // calculate the position of each particle at the next time step.
 	}
 
-	if (m_spherePos.m128_f32[2] > 10.0f)
-	{
-		m_sphereMoveDirection = -1.0f;
-	}
-	else if (m_spherePos.m128_f32[2] < -10.0f)
-	{
-		m_sphereMoveDirection = 1.0f;
-	}
-
-	m_spherePos.m128_f32[2] += m_sphereMoveDirection * m_sphereMoveSpeed * dt;
-
-	ballCollision(m_spherePos, m_sphereRadius);
+	//ballCollision(m_spherePos, m_sphereRadius);
 }
 
 void SimpleClothComponent::addForce(const XMVECTOR& direction)
@@ -245,6 +249,20 @@ float SimpleClothComponent::XmVec_Length(const XMVECTOR& a) const
 float SimpleClothComponent::XmVec_LengthSquared(const XMVECTOR& a) const
 {
 	return (a.m128_f32[0] * a.m128_f32[0]) + (a.m128_f32[1] * a.m128_f32[1]) + (a.m128_f32[2] * a.m128_f32[2]);
+}
+
+float SimpleClothComponent::LengthBetween2Points(const XMVECTOR& a, const XMVECTOR& b)
+{
+	return sqrt(LengthSquaredBetween2Points(a,b));
+}
+
+float SimpleClothComponent::LengthSquaredBetween2Points(const XMVECTOR& a, const XMVECTOR& b)
+{
+	const float dx = a.m128_f32[0] - b.m128_f32[0];
+	const float dy = a.m128_f32[1] - b.m128_f32[1];
+	const float dz = a.m128_f32[2] - b.m128_f32[2];
+
+	return (dx*dx) + (dy*dy) + (dz*dz);
 }
 
 const int SimpleClothComponent::s_CONSTRAINT_ITERATIONS = 100;
