@@ -863,10 +863,6 @@ bool DX11Renderer::InitializeConstBuffers()
 	bd.CPUAccessFlags = 0;
 	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testViewProjConstBuffer));
 
-	//Prepare the CCD target buffer
-	bd.ByteWidth = sizeof(XMMATRIX);
-	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testCCDTargetConstBuffer));
-
 	return true;
 }
 
@@ -893,6 +889,9 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 
 	bd.ByteWidth = sizeof(AnimationBuffer);
 	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testAnimationConstBuffer));
+
+	bd.ByteWidth = sizeof(SimpleCloth_ConstBuffer);
+	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testSimpleClothConstBuffer));
 
 	// Initialize the world matrices
 	//m_renderData->testPerObjectBuffer.worldMtx = XMMatrixScaling(1,1,1) * DirectX::XMMatrixRotationX(XM_PIDIV2) * XMMatrixTranslation(-1, 1, 0);

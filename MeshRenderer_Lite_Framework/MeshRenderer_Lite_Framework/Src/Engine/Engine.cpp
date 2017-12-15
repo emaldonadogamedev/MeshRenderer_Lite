@@ -12,6 +12,7 @@
 #include <Systems/Graphics/Components/ModelComponent/ModelComponent.h>
 #include <Systems/Graphics/Components/CurvePathComponent/CurvePathComponent.h>
 #include <Systems/Graphics/Components/SimpleCCD/SuperSimpleCCD.h>
+#include <Systems/Graphics/Components/SimpleCloth/SimpleClothComponent.h>
 #include <Systems/Graphics/GraphicsSystem.h>
 #include <Systems/Input/InputSystem.h>
 #include <Systems/Input/Keyboard.h>
@@ -74,14 +75,15 @@ bool Engine::Initialize(HINSTANCE hInstance)
 	testObj->AddComponent(test3DComp);
 	m_graphicsSystem->AddComponent(test3DComp);
 
-	auto* testPathComp = new CurvePathComponent(testObj.get());
-	testPathComp->GenerateVertexBuffer(m_graphicsSystem->m_dx11Renderer.get());
-	testObj->AddComponent(testPathComp);
-	m_graphicsSystem->AddComponent(testPathComp);
+	//auto* testPathComp = new CurvePathComponent(testObj.get());
+	//testPathComp->GenerateVertexBuffer(m_graphicsSystem->m_dx11Renderer.get());
+	//testObj->AddComponent(testPathComp);
+	//m_graphicsSystem->AddComponent(testPathComp);
 
-	auto* testSimpleCCD = new SuperSimpleCCD(testObj.get());
-	testObj->AddComponent(testSimpleCCD);
-	m_graphicsSystem->AddComponent(testSimpleCCD);
+	auto* testSimpleCloth = new SimpleClothComponent(testObj.get(), 12, 12, 33, 33 );
+	testObj->AddComponent(testSimpleCloth);
+	m_graphicsSystem->AddComponent(testSimpleCloth);
+	testSimpleCloth->generateVertexBuffers(m_graphicsSystem->m_dx11Renderer.get());
 
 	return m_isRunning = true;
 }

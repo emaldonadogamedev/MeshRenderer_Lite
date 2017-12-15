@@ -37,8 +37,8 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const floa
 	bool drawit = true;
 	//ImGui::ShowTestWindow(&drawit);
 
-	const auto& modelComponent = (ModelComponent*)m_gfxSystemComponents->at(ComponentType::RENDERABLE_3D)[0];
-	const auto& curvePathComponent = (CurvePathComponent*)m_gfxSystemComponents->at(ComponentType::RENDERABLE_CURVE_PATH)[0];
+	const auto& modelComponent = (ModelComponent*)GetComponentHelper(ComponentType::RENDERABLE_3D, 0);
+	const auto& curvePathComponent = (CurvePathComponent*) GetComponentHelper(ComponentType::RENDERABLE_CURVE_PATH, 0);
 
 	if (modelComponent)
 	{

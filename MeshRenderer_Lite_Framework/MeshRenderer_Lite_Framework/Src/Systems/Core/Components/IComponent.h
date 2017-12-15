@@ -17,6 +17,7 @@ enum class ComponentType : unsigned char
 
 	//Physics
 	PHYSICS_IK_CCD,
+	PHYSICS_SIMPLE_CLOTH,
 
 	//Scripting
 	LUA_SCRIPT,

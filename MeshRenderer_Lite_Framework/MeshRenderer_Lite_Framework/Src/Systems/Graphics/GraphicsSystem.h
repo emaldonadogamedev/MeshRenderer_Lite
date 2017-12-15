@@ -17,7 +17,7 @@ class TextureManager;
 //typedefs
 typedef std::unordered_map<string, ObjectHandle> HandleDictionary;
 typedef std::vector<HandleDictionary>  HandleDictionaryVec;
-typedef std::map<ComponentType,std::vector<IComponent*>> RenderCompVec;
+typedef std::vector<std::vector<IComponent*>> RenderCompVec;
 
 class GraphicsSystem : public ISystem
 {
@@ -53,6 +53,7 @@ protected:
 	void UpdateAnimation(Model& model, const float dt);
 	void UpdateCurvePathComponents(const float dt);
 	void UpdateSimpleCCDComponents(const float dt);
+	void UpdateSimpleClothComponents(const float dt);
 
 	//Cameras
 	std::unique_ptr<Camera> testCamera;

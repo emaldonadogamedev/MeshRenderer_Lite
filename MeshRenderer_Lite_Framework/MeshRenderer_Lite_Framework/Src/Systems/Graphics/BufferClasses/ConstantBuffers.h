@@ -34,3 +34,15 @@ struct AnimationBuffer
 	XMMATRIX boneMatrices[s_maxBoneCount];
 	XMVECTOR boneLocations[s_maxBoneCount];
 };
+
+static const unsigned int s_maxParticleData = 1500;
+struct ClothParticleGPU
+{
+	XMVECTOR position;
+	XMVECTOR normal;
+};
+
+struct SimpleCloth_ConstBuffer
+{
+	ClothParticleGPU particleData[s_maxParticleData];
+};

@@ -49,7 +49,14 @@ cbuffer CurvePath_ConstBuffer : register(b3)
 	float3 padding;
 }
 
-cbuffer CCD_TargetConstBuffer : register(b4)
+struct ClothParticleGPU
 {
-	matrix worldMatrix;
+	float4 position;
+	float4 normal;
+};
+static const unsigned int s_maxParticleData = 1500;
+
+cbuffer SimpleCloth_ConstBuffer : register(b4)
+{
+	ClothParticleGPU particleData[s_maxParticleData];
 }

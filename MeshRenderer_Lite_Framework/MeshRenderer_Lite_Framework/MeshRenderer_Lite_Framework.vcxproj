@@ -71,6 +71,9 @@
     <ClCompile Include="Src\Systems\Graphics\Components\CurvePathComponent\CurvePathComponent.cpp" />
     <ClCompile Include="Src\Systems\Graphics\Components\PathComponent\PathComponent.cpp" />
     <ClCompile Include="Src\Systems\Graphics\Components\SimpleCCD\SuperSimpleCCD.cpp" />
+    <ClCompile Include="Src\Systems\Graphics\Components\SimpleCloth\Constraint.cpp" />
+    <ClCompile Include="Src\Systems\Graphics\Components\SimpleCloth\Particle.cpp" />
+    <ClCompile Include="Src\Systems\Graphics\Components\SimpleCloth\SimpleClothComponent.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11Renderer\DX11Renderer.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\ForwardDebugStage\PathWalkDebugStage.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\ForwardRenderStage\ForwardRenderStage.cpp" />
@@ -122,6 +125,9 @@
     <ClInclude Include="Src\Systems\Graphics\Components\CurvePathComponent\CurvePathComponent.h" />
     <ClInclude Include="Src\Systems\Graphics\Components\PathComponent\PathComponent.h" />
     <ClInclude Include="Src\Systems\Graphics\Components\SimpleCCD\SuperSimpleCCD.h" />
+    <ClInclude Include="Src\Systems\Graphics\Components\SimpleCloth\Constraint.h" />
+    <ClInclude Include="Src\Systems\Graphics\Components\SimpleCloth\Particle.h" />
+    <ClInclude Include="Src\Systems\Graphics\Components\SimpleCloth\SimpleClothComponent.h" />
     <ClInclude Include="Src\Systems\Graphics\DX11Renderer\DX11Renderer.h" />
     <ClInclude Include="Src\Systems\Graphics\DX11Renderer\DX11RendererData.h" />
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\ForwardDebugStage\PathWalkDebugStage.h" />

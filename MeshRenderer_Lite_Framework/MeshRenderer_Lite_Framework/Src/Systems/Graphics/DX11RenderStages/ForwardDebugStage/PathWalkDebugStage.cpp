@@ -36,7 +36,7 @@ void PathWalkDebugStage::Render(const HandleDictionaryVec& graphicsResources, co
 	m_renderer->BindPixelShader(handle);
 
 	//forward render all of the objects
-	const auto& pathComponents = m_gfxSystemComponents->at(ComponentType::RENDERABLE_CURVE_PATH);
+	const auto& pathComponents = (*m_gfxSystemComponents)[(int)ComponentType::RENDERABLE_CURVE_PATH];
 	for (const auto* component : pathComponents)
 	{
 		if (component->GetIsActive())

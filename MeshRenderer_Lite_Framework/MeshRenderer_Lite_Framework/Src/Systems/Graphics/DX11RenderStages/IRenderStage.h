@@ -10,7 +10,7 @@
 //typedefs
 typedef std::unordered_map<std::string, ObjectHandle> HandleDictionary;
 typedef std::vector<HandleDictionary>  HandleDictionaryVec;
-typedef std::map<ComponentType, std::vector<IComponent*>> RenderCompVec;
+typedef std::vector<std::vector<IComponent*>> RenderCompVec;
 
 class DX11Renderer;
 
@@ -27,6 +27,18 @@ public:
 	virtual void PostRender() = 0;
 
 protected:
+	IComponent* GetComponentHelper(const ComponentType compType, const int index)
+	{
+		const auto& compVec = (*m_gfxSystemComponents)[(int)compType];
+		const int size = compVec.size();
+		if (size > 0 && index >= 0 && index < size)
+		{
+			return compVec[index];
+		}
+
+		return nullptr;
+	}
+
 	DX11Renderer* const m_renderer;
 	RenderCompVec* const m_gfxSystemComponents;
 };

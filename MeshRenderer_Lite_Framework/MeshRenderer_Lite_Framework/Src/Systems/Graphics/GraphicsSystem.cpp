@@ -16,6 +16,7 @@
 #include <Systems/Graphics/Components/ModelComponent/ModelComponent.h>
 #include <Systems/Graphics/Components/CurvePathComponent/CurvePathComponent.h>
 #include <Systems/Graphics/Components/SimpleCCD/SuperSimpleCCD.h>
+#include <Systems/Graphics/Components/SimpleCloth/SimpleClothComponent.h>
 #include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
 #include <Systems/Graphics/DX11Renderer/DX11RendererData.h>
 #include <Systems/Graphics/DX11RenderStages/ForwardDebugStage/PathWalkDebugStage.h>
@@ -38,7 +39,7 @@ GraphicsSystem::GraphicsSystem(Engine* const eng)
 	,m_modelManager(std::make_unique<ModelManager>(m_dx11Renderer.get()))
 	,m_textureManager(std::make_unique<TextureManager>(m_dx11Renderer.get()))
 {
-	//m_renderComponents.resize((size_t)ComponentType::COUNT);
+	m_renderComponents.resize((size_t)ComponentType::COUNT);
 	m_resources.resize((size_t)ObjectType::COUNT);
 }
 
@@ -68,6 +69,7 @@ void GraphicsSystem::Update(const float dt)
 	//Update components
 	UpdateModelComponents(dt);
 	UpdateCurvePathComponents(dt);
+	UpdateSimpleClothComponents(dt);
 
 	//TEST - Current camera update
 	TestUpdateCamera(dt);
@@ -93,7 +95,7 @@ void GraphicsSystem::Update(const float dt)
 
 void GraphicsSystem::UpdateModelComponents(const float dt)
 {
-	auto& modelComponents = m_renderComponents.at(ComponentType::RENDERABLE_3D);
+	auto& modelComponents = m_renderComponents[(int)ComponentType::RENDERABLE_3D];
 
 	for (auto& component : modelComponents)
 	{
@@ -299,7 +301,7 @@ void GraphicsSystem::UpdateAnimation(Model& model, const float dt)
 
 void GraphicsSystem::UpdateCurvePathComponents(const float dt)
 {
-	auto& pathComponents = m_renderComponents.at(ComponentType::RENDERABLE_CURVE_PATH);
+	auto& pathComponents = m_renderComponents[(int)ComponentType::RENDERABLE_CURVE_PATH];
 
 	for (auto& component : pathComponents)
 	{
@@ -320,7 +322,7 @@ void GraphicsSystem::UpdateCurvePathComponents(const float dt)
 
 void GraphicsSystem::UpdateSimpleCCDComponents(const float dt)
 {
-	auto& simpleCcdComponents = m_renderComponents.at(ComponentType::PHYSICS_IK_CCD);
+	auto& simpleCcdComponents = m_renderComponents[(int)ComponentType::PHYSICS_IK_CCD];
 
 	for (auto& component : simpleCcdComponents)
 	{
@@ -332,16 +334,33 @@ void GraphicsSystem::UpdateSimpleCCDComponents(const float dt)
 	}
 }
 
+void GraphicsSystem::UpdateSimpleClothComponents(const float dt)
+{
+	auto& simpleCcdComponents = m_renderComponents[(int)ComponentType::PHYSICS_SIMPLE_CLOTH];
+
+	for (auto& component : simpleCcdComponents)
+	{
+		if (component->GetIsActive())
+		{
+			auto clothComp = (SimpleClothComponent*)component;
+			clothComp->addForce(XMVectorSet(0, -9.8, 0, 0) * dt); // add gravity each frame, pointing down
+			clothComp->windForce(XMVectorSet(11.5, 2, .2, 0) * dt); // generate some wind each frame
+
+			clothComp->timeStep(dt);
+		}
+	}
+}
+
 void GraphicsSystem::Shutdown()
 {
 	//Delete all render components
 	for (auto& compVec : m_renderComponents)
 	{
-		for (auto component : compVec.second)
+		for (auto component : compVec)
 		{
 			SafeDelete(component);
 		}
-		compVec.second.clear();
+		compVec.clear();
 	}
 	m_renderComponents.clear();
 
@@ -375,7 +394,7 @@ void GraphicsSystem::AddComponent(IComponent* component)
 {
 	if (component)
 	{
-		m_renderComponents[component->GetComponentType()].emplace_back(component);
+		m_renderComponents[(int)component->GetComponentType()].emplace_back(component);
 	}
 }
 
@@ -463,6 +482,10 @@ void GraphicsSystem::LoadBasicShaders()
 	vsHandle = ObjectHandle::Null();
 	m_dx11Renderer->CreateVertexShader(vsHandle, s_vertexShaderDir + "SimpleVS.hlsl", defaultVS_inputLayout, false);
 	m_resources[(int)ObjectType::VERTEX_SHADER]["SimpleVS"] = vsHandle;
+
+	vsHandle = ObjectHandle::Null();
+	m_dx11Renderer->CreateVertexShader(vsHandle, s_vertexShaderDir + "SimpleClothVS.hlsl", defaultVS_inputLayout, false);
+	m_resources[(int)ObjectType::VERTEX_SHADER]["SimpleClothVS"] = vsHandle;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Default Pixel Shader

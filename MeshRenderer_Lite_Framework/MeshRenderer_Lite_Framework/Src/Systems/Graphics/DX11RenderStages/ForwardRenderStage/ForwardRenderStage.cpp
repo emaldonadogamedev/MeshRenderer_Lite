@@ -4,6 +4,7 @@
 #include <Systems/Core/Components/Transform/Transform.h>
 #include <Systems/Core/GameObject/GameObject.h>
 #include<Systems/Graphics/Components/ModelComponent/ModelComponent.h>
+#include<Systems/Graphics/Components/SimpleCloth/SimpleClothComponent.h>
 #include<Systems/Graphics/DX11Renderer/DX11Renderer.h>
 #include<Systems/Graphics/DX11Renderer/DX11RendererData.h>
 #include<Systems/Graphics/ModelClasses/Model/Model.h>
@@ -54,8 +55,8 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources, co
 	renderData.m_pImmediateContext->PSSetConstantBuffers(1, 1, &renderData.testViewProjConstBuffer);
 
 	//forward render all of the objects
-	const auto& modelComponents = m_gfxSystemComponents->at(ComponentType::RENDERABLE_3D);
-	for (const auto* component : modelComponents)
+	const auto& modelComponents = (*m_gfxSystemComponents)[(int)ComponentType::RENDERABLE_3D];
+	for (auto component : modelComponents)
 	{
 		if (component->GetIsActive())
 		{
@@ -108,30 +109,72 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources, co
 	}
 
 	//////////////////////////////////////////////////////////////////////////
-	//DEBUG!!!
+	//forward render all of cloth objects
 	//Set shaders
-	handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("AnimationDebugVS");
+	handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("SimpleClothVS");
 	m_renderer->BindVertexShader(handle);
-	handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("AnimationDebugPS");
+
+	handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("SimplePS");
 	m_renderer->BindPixelShader(handle);
 
-	renderData.m_pImmediateContext->VSSetConstantBuffers(1, 1, &renderData.testViewProjConstBuffer);
-	renderData.m_pImmediateContext->VSSetConstantBuffers(2, 1, &renderData.testAnimationConstBuffer);
+	renderData.testPerObjectBuffer.worldMtx = XMMatrixIdentity();
+	renderData.m_pImmediateContext->UpdateSubresource(renderData.testPerObjectConstBuffer,
+		0, NULL, &renderData.testPerObjectBuffer, 0, 0);
 
-	m_renderer->BindNullVertexBuffer();
+	renderData.m_pImmediateContext->VSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
+	renderData.m_pImmediateContext->PSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
+	renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	for (const auto* component : modelComponents)
+	const auto& clothComponents = (*m_gfxSystemComponents)[(int)ComponentType::PHYSICS_SIMPLE_CLOTH];
+	for (auto component : clothComponents)
 	{
 		if (component->GetIsActive())
 		{
-			const auto model = (static_cast<const ModelComponent*>(component))->GetModel();
-			if (model->m_debugDrawEnabled)
+			SimpleClothComponent* clothComp = (SimpleClothComponent*)component;
+
+			m_renderer->BindVertexBuffer(clothComp->m_drawPointsVB, sizeof(VertexAnimation));
+			m_renderer->BindIndexBuffer(clothComp->m_drawPointsIB);
+
+			auto& particles = clothComp->particles;
+			for (int i = 0; i < particles.size(); ++i)
 			{
-				m_renderer->BindIndexBuffer(model->m_boneLocIndBufferHandle);
-				m_renderer->DrawIndexed(model->m_boneLocIndBuff.size(), 0, 0);
+				renderData.testSimpleClothBuffer.particleData[i].position = particles[i].getPos();
 			}
+
+			renderData.m_pImmediateContext->UpdateSubresource(renderData.testSimpleClothConstBuffer,
+				0, NULL, &renderData.testSimpleClothBuffer, 0, 0);
+			renderData.m_pImmediateContext->VSSetConstantBuffers(4, 1, &renderData.testSimpleClothConstBuffer);
+
+			//m_renderer->Draw(clothComp->particles.size());// clothComp->m_indexCount, 0, 0);
+			m_renderer->DrawIndexed(clothComp->m_indexCount, 0, 0);
 		}
 	}
+
+	////////////////////////////////////////////////////////////////////////////
+	////DEBUG!!!
+	////Set shaders
+	//handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("AnimationDebugVS");
+	//m_renderer->BindVertexShader(handle);
+	//handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("AnimationDebugPS");
+	//m_renderer->BindPixelShader(handle);
+	//
+	//renderData.m_pImmediateContext->VSSetConstantBuffers(1, 1, &renderData.testViewProjConstBuffer);
+	//renderData.m_pImmediateContext->VSSetConstantBuffers(2, 1, &renderData.testAnimationConstBuffer);
+	//
+	//m_renderer->BindNullVertexBuffer();
+	//
+	//for (const auto* component : modelComponents)
+	//{
+	//	if (component->GetIsActive())
+	//	{
+	//		const auto model = (static_cast<const ModelComponent*>(component))->GetModel();
+	//		if (model->m_debugDrawEnabled)
+	//		{
+	//			m_renderer->BindIndexBuffer(model->m_boneLocIndBufferHandle);
+	//			m_renderer->DrawIndexed(model->m_boneLocIndBuff.size(), 0, 0);
+	//		}
+	//	}
+	//}
 }
 
 void ForwardRenderStage::PostRender()
