@@ -450,7 +450,6 @@ void GraphicsSystem::LoadBasicModels()
 	LoadModelHelper("bunny.obj");
 	LoadModelHelper("sphere.obj");
 	LoadModelHelper("dragon.obj");
-	LoadModelHelper("Fan.fbx");
 	LoadModelHelper("tiny_4anim.x");
 	LoadModelHelper("gh_sample_animation.fbx");
 	//LoadModelHelper("FiveJointCylinder.fbx"); //doesn't work, creates a scene pointer but does not read mesh data
