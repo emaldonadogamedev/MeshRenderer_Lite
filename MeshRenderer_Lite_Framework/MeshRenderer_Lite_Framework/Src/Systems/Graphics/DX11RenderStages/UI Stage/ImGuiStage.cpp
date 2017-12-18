@@ -8,6 +8,7 @@
 #include <Systems/Graphics/Components/ModelComponent/ModelComponent.h>
 #include <Systems/Graphics/Components/CurvePathComponent/CurvePathComponent.h>
 #include <Systems/Graphics/Components/SimpleCloth/SimpleClothComponent.h>
+#include <Systems/Graphics/Components/SimpleCCD/SuperSimpleCCD.h>
 #include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
 #include <Systems/Graphics/DX11Renderer/DX11RendererData.h>
 #include <Systems/Graphics/ModelClasses/Model/Model.h>
@@ -41,6 +42,7 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const floa
 	const auto& modelComponent = (ModelComponent*)GetComponentHelper(ComponentType::RENDERABLE_3D, 0);
 	const auto& curvePathComponent = (CurvePathComponent*) GetComponentHelper(ComponentType::RENDERABLE_CURVE_PATH, 0);
 	const auto& clothComponent = (SimpleClothComponent*)GetComponentHelper(ComponentType::PHYSICS_SIMPLE_CLOTH, 0);
+	const auto& ccdComponent = (SuperSimpleCCD*)GetComponentHelper(ComponentType::PHYSICS_IK_CCD, 0);
 
 	if (modelComponent)
 	{
@@ -48,7 +50,7 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const floa
 		auto model = modelComponent->GetModel();
 		if (ImGui::Begin("Animation Properties"))
 		{
-			ImGui::Text("FPS: %.3f", 1.0f/dt);
+			ImGui::Text("FPS: %.3f", 1.0f / dt);
 			
 			if (model->GetModelType() == ModelType::MODEL_SKINNED)
 			{
@@ -98,6 +100,28 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const floa
 		}
 	}
 
+	if (ccdComponent)
+	{
+		if (ImGui::Begin("CCD properties:"))
+		{
+			if (!ccdComponent->m_runCCD && ImGui::Button("Re-run CCD"))
+			{
+				ccdComponent->SetNewTargetPos();
+			}
+			if (!ccdComponent->m_runCCD && ImGui::DragFloat2("Target Position: ", &ccdComponent->m_targetPos.x, 0.1f, -SuperSimpleCCD::s_TARGET_HALF_RANGE, SuperSimpleCCD::s_TARGET_HALF_RANGE))
+			{
+				ccdComponent->m_runCCD = true;
+			}
+
+			static const std::string foundTarget ="Found Target!";
+			static const std::string inconclusiveResult = "Meh...Inconclusive";
+
+			ImGui::LabelText("","CCD: Result: %s", ccdComponent->m_targetFound ? foundTarget.data() : inconclusiveResult.data());
+
+			ImGui::End();
+		}
+	}
+
 	if (clothComponent)
 	{
 		if (ImGui::Begin("Cloth properties:"))
@@ -105,6 +129,7 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const floa
 			ImGui::DragFloat3("Fan Position: ", clothComponent->m_fanPos.m128_f32, 0.1f);
 			ImGui::SliderFloat("Fan Strength: ", &clothComponent->m_fanStrength, 0, 100.f);
 			ImGui::SliderFloat("Fan Radius: ", &clothComponent->m_fanRadius, 0, 10.f);
+			ImGui::SliderFloat("Cloth mass: ", &Particle::s_PARTICLE_MASS, 1.0f, 1000.f);
 
 			ImGui::End();
 		}

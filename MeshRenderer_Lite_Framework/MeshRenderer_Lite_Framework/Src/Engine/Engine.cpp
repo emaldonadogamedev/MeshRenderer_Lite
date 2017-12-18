@@ -64,29 +64,38 @@ bool Engine::Initialize(HINSTANCE hInstance)
 
 	testObj = std::make_unique<GameObject>();
 	testObj->AddComponent(new Transform(testObj.get()));
-	ModelComponent* test3DComp = new ModelComponent(testObj.get());
+	//ModelComponent* test3DComp = new ModelComponent(testObj.get());
 	const auto& loadedModels = m_graphicsSystem->GetLoadedModels();
 
 	//test3DComp->SetModel(loadedModels.at("dragon.obj").get());
 	//test3DComp->SetModel(loadedModels.at("bunny.obj").get());
-	test3DComp->SetModel(loadedModels.at("cylinder_skellmesh.fbx").get());
+	//test3DComp->SetModel(loadedModels.at("cylinder_skellmesh.fbx").get());
 	//test3DComp->SetModel(loadedModels.at("tiny_4anim.x").get());
 	//test3DComp->SetModel(loadedModels.at("boblampclean.md5mesh").get());
 
-	testObj->AddComponent(test3DComp);
-	m_graphicsSystem->AddComponent(test3DComp);
+	//testObj->AddComponent(test3DComp);
+	//m_graphicsSystem->AddComponent(test3DComp);
 
 	//auto* testPathComp = new CurvePathComponent(testObj.get());
 	//testPathComp->GenerateVertexBuffer(m_graphicsSystem->m_dx11Renderer.get());
 	//testObj->AddComponent(testPathComp);
 	//m_graphicsSystem->AddComponent(testPathComp);
 
+	auto* testSimpleCCD = new SuperSimpleCCD(testObj.get());
+	testObj->AddComponent(testSimpleCCD);
+	testSimpleCCD->generateVertexBuffers(m_graphicsSystem->m_dx11Renderer.get());
+	m_graphicsSystem->AddComponent(testSimpleCCD);
+	testSimpleCCD->m_drawBoxTargetVB = loadedModels.at("box.obj")->GetVBufferHandle();
+	testSimpleCCD->m_drawBoxTargetIB = loadedModels.at("box.obj")->GetIBufferHandle();
+
+	/* UNCOMMENT THIS BLOCK OF CODE TO USE THE CLOTH COMPONENT
 	auto* testSimpleCloth = new SimpleClothComponent(testObj.get(), 12, 12, 33, 33 );
 	testObj->AddComponent(testSimpleCloth);
 	m_graphicsSystem->AddComponent(testSimpleCloth);
 	testSimpleCloth->generateVertexBuffers(m_graphicsSystem->m_dx11Renderer.get());
 	testSimpleCloth->m_drawFanVB = loadedModels.at("box.obj")->GetVBufferHandle();
 	testSimpleCloth->m_drawFanIB = loadedModels.at("box.obj")->GetIBufferHandle();
+	*/
 
 	return m_isRunning = true;
 }

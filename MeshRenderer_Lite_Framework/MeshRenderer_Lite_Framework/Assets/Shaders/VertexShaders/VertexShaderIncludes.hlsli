@@ -39,6 +39,9 @@ cbuffer AnimationBonesBuffer : register(b2)
 	float4 bonePositions[s_maxBoneLocCount];
 };
 
+//--------------------------------------------------------------------------------------
+// Curve path const buffer
+//--------------------------------------------------------------------------------------
 static const unsigned int s_maxControlPointCount = 20;
 
 cbuffer CurvePath_ConstBuffer : register(b3)
@@ -49,6 +52,9 @@ cbuffer CurvePath_ConstBuffer : register(b3)
 	float3 padding;
 }
 
+//--------------------------------------------------------------------------------------
+// Simple Cloth Component const buffer
+//--------------------------------------------------------------------------------------
 struct ClothParticleGPU
 {
 	float4 position;
@@ -59,4 +65,18 @@ static const unsigned int s_maxParticleData = 1500;
 cbuffer SimpleCloth_ConstBuffer : register(b4)
 {
 	ClothParticleGPU particleData[s_maxParticleData];
+}
+
+//--------------------------------------------------------------------------------------
+// Simple CCD const buffer
+//--------------------------------------------------------------------------------------
+static const unsigned int s_simpleJointAmount = 5;
+struct SimpleCCD_ConstBuffer
+{
+	float4 jointPositions[s_simpleJointAmount];
+};
+
+cbuffer SimpleCCD_ConstBuffer : register(b5)
+{
+	SimpleCCD_ConstBuffer ccdData;
 }

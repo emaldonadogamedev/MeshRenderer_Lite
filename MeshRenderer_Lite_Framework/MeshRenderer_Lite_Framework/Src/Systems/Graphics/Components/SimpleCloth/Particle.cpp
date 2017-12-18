@@ -7,7 +7,6 @@ Particle::Particle(const XMVECTOR& pos)
 	: m_position(pos)
 	, m_oldPosition(pos)
 	, m_acceleration()
-	, m_mass(1.f)
 	, m_movable(true)
 	, m_accumulatedNormal()
 {
@@ -25,7 +24,7 @@ Particle::~Particle()
 
 void Particle::addForce(const XMVECTOR& f)
 {
-	m_acceleration = DirectX::XMVectorAdd(m_acceleration, XMVectorScale(f, 1.0f/ m_mass));// / mass;
+	m_acceleration = DirectX::XMVectorAdd(m_acceleration, XMVectorScale(f, 1.0f/ s_PARTICLE_MASS));// / mass;
 }
 
 void Particle::timeStep(const float dt)
@@ -77,6 +76,8 @@ void Particle::resetNormal()
 {
 	m_accumulatedNormal = XMVectorSet(0, 0, 0, 0);
 }
+
+float Particle::s_PARTICLE_MASS = 1.0f;
 
 const float Particle::s_DAMPING = 0.001f;
 

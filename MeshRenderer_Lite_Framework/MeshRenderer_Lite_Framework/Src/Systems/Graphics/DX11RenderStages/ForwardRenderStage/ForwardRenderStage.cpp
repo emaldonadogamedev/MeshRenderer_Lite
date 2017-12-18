@@ -4,6 +4,7 @@
 #include <Systems/Core/Components/Transform/Transform.h>
 #include <Systems/Core/GameObject/GameObject.h>
 #include<Systems/Graphics/Components/ModelComponent/ModelComponent.h>
+#include<Systems/Graphics/Components/SimpleCCD/SuperSimpleCCD.h>
 #include<Systems/Graphics/Components/SimpleCloth/SimpleClothComponent.h>
 #include<Systems/Graphics/DX11Renderer/DX11Renderer.h>
 #include<Systems/Graphics/DX11Renderer/DX11RendererData.h>
@@ -109,7 +110,79 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources, co
 	}
 
 	//////////////////////////////////////////////////////////////////////////
+	//forward render all of the simple CCD
+	const auto& ccdComponents = (*m_gfxSystemComponents)[(int)ComponentType::PHYSICS_IK_CCD];
+
+	for (auto component : ccdComponents)
+	{
+		if (component->GetIsActive())
+		{
+			SuperSimpleCCD* ccdComp = (SuperSimpleCCD*)component;
+
+			m_renderer->BindNullVertexBuffer();
+			m_renderer->BindIndexBuffer(ccdComp->m_drawPoints_IB);
+
+			//Set shaders
+			handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("SimpleCCD_VS");
+			m_renderer->BindVertexShader(handle);
+
+			handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("SimplePS");
+			m_renderer->BindPixelShader(handle);
+
+			for (int i = 0; i < SuperSimpleCCD::s_MADE_UP_JOINT_AMOUNT; ++i)
+			{
+				renderData.testSimpleCCDBuffer.jointPositions[i].m128_f32[0] = ccdComp->m_jointPositions[i].x;
+				renderData.testSimpleCCDBuffer.jointPositions[i].m128_f32[1] = ccdComp->m_jointPositions[i].y;
+				renderData.testSimpleCCDBuffer.jointPositions[i].m128_f32[2] = ccdComp->m_jointPositions[i].z;
+			}
+
+			renderData.m_pImmediateContext->UpdateSubresource(renderData.testSimpleCCD_ConstBuffer,
+				0, NULL, &renderData.testSimpleCCDBuffer, 0, 0);
+			renderData.m_pImmediateContext->VSSetConstantBuffers(5, 1, &renderData.testSimpleCCD_ConstBuffer);
+
+			renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+			m_renderer->DrawIndexed(SuperSimpleCCD::s_MADE_UP_JOINT_AMOUNT, 0, 0);
+
+			renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+			m_renderer->DrawIndexed(SuperSimpleCCD::s_MADE_UP_JOINT_AMOUNT, 0, 0);
+
+			////////////////////////////////////////////////////////////////////////////
+			////Now draw the "target" and the end effector...
+			m_renderer->BindVertexBuffer(ccdComp->m_drawBoxTargetVB, sizeof(VertexAnimation));
+			m_renderer->BindIndexBuffer(ccdComp->m_drawBoxTargetIB);
+			
+			handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("SimpleVS");
+			m_renderer->BindVertexShader(handle);
+			
+			renderData.testPerObjectBuffer.isAnimated = false;
+			renderData.testPerObjectBuffer.color = XMVectorSet(1, 1, 1, 1);
+			renderData.testPerObjectBuffer.worldMtx = XMMatrixTranspose(
+				XMMatrixTranslation(ccdComp->m_targetPos.x, ccdComp->m_targetPos.y, ccdComp->m_targetPos.z) *
+				XMMatrixScaling(0.4, 0.4, 0.4)
+			);
+			renderData.m_pImmediateContext->UpdateSubresource(renderData.testPerObjectConstBuffer,
+				0, NULL, &renderData.testPerObjectBuffer, 0, 0);
+			
+			renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			renderData.m_pImmediateContext->VSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
+			m_renderer->DrawIndexed(36, 0, 0);
+
+			//Now draw the enf-effector
+			renderData.testPerObjectBuffer.color = XMVectorSet(1, 0, 0, 1);
+			renderData.testPerObjectBuffer.worldMtx = XMMatrixTranspose(
+				XMMatrixTranslation(ccdComp->m_endEffectorPos.x, ccdComp->m_endEffectorPos.y, ccdComp->m_endEffectorPos.z) *
+				XMMatrixScaling(0.4, 0.4, 0.4)
+			);
+			renderData.m_pImmediateContext->UpdateSubresource(renderData.testPerObjectConstBuffer,
+				0, NULL, &renderData.testPerObjectBuffer, 0, 0);
+			renderData.m_pImmediateContext->PSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
+			m_renderer->DrawIndexed(36, 0, 0);
+		}
+	}
+
+	//////////////////////////////////////////////////////////////////////////
 	//forward render all of cloth objects
+	renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	const auto& clothComponents = (*m_gfxSystemComponents)[(int)ComponentType::PHYSICS_SIMPLE_CLOTH];
 	for (auto component : clothComponents)
@@ -121,9 +194,6 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources, co
 			//Set shaders
 			handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("SimpleClothVS");
 			m_renderer->BindVertexShader(handle);
-
-			handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("SimplePS");
-			m_renderer->BindPixelShader(handle);
 
 			m_renderer->BindVertexBuffer(clothComp->m_drawPointsVB, sizeof(VertexAnimation));
 			m_renderer->BindIndexBuffer(clothComp->m_drawPointsIB);

@@ -35,6 +35,8 @@ struct AnimationBuffer
 	XMVECTOR boneLocations[s_maxBoneCount];
 };
 
+
+
 static const unsigned int s_maxParticleData = 1500;
 struct ClothParticleGPU
 {
@@ -45,4 +47,21 @@ struct ClothParticleGPU
 struct SimpleCloth_ConstBuffer
 {
 	ClothParticleGPU particleData[s_maxParticleData];
+};
+
+static const unsigned int s_simpleJointAmount = 5;
+struct SimpleCCD_ConstBuffer
+{
+	SimpleCCD_ConstBuffer()
+	{
+		for (int i = 0; i < s_simpleJointAmount; ++i)
+		{
+			jointPositions[i] = XMVectorSet(0, 0, 0, 1.0f);
+		}
+	}
+	~SimpleCCD_ConstBuffer()
+	{
+	}
+
+	XMVECTOR jointPositions[s_simpleJointAmount];
 };

@@ -893,6 +893,9 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 	bd.ByteWidth = sizeof(SimpleCloth_ConstBuffer);
 	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testSimpleClothConstBuffer));
 
+	bd.ByteWidth = sizeof(SimpleCCD_ConstBuffer);
+	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testSimpleCCD_ConstBuffer));
+
 	// Initialize the world matrices
 	//m_renderData->testPerObjectBuffer.worldMtx = XMMatrixScaling(1,1,1) * DirectX::XMMatrixRotationX(XM_PIDIV2) * XMMatrixTranslation(-1, 1, 0);
 	//m_renderData->testPerObjectBuffer.worldMtx = XMMatrixTranspose(m_renderData->testPerObjectBuffer.worldMtx);

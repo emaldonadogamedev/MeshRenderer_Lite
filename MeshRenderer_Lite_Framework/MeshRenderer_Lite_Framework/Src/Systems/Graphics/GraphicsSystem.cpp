@@ -69,6 +69,7 @@ void GraphicsSystem::Update(const float dt)
 	//Update components
 	UpdateModelComponents(dt);
 	UpdateCurvePathComponents(dt);
+	UpdateSimpleCCDComponents(dt);
 	UpdateSimpleClothComponents(dt);
 
 	//TEST - Current camera update
@@ -486,6 +487,10 @@ void GraphicsSystem::LoadBasicShaders()
 	vsHandle = ObjectHandle::Null();
 	m_dx11Renderer->CreateVertexShader(vsHandle, s_vertexShaderDir + "SimpleClothVS.hlsl", defaultVS_inputLayout, false);
 	m_resources[(int)ObjectType::VERTEX_SHADER]["SimpleClothVS"] = vsHandle;
+
+	vsHandle = ObjectHandle::Null();
+	m_dx11Renderer->CreateVertexShader(vsHandle, s_vertexShaderDir + "SimpleCCD_VS.hlsl", defaultVS_inputLayout, false);
+	m_resources[(int)ObjectType::VERTEX_SHADER]["SimpleCCD_VS"] = vsHandle;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Default Pixel Shader

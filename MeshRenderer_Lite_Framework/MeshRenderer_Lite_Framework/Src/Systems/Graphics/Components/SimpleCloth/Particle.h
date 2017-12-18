@@ -28,9 +28,10 @@ public:
 
 	void resetNormal();
 
+	static float s_PARTICLE_MASS;
+
 private:
 	bool m_movable;
-	float m_mass;
 	XMVECTOR m_position;
 	XMVECTOR m_oldPosition;
 	XMVECTOR m_acceleration;

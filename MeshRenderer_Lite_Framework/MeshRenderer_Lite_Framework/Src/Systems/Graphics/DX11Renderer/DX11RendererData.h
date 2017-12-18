@@ -68,6 +68,9 @@ public:
 	SimpleCloth_ConstBuffer testSimpleClothBuffer;
 	ID3D11Buffer* testSimpleClothConstBuffer = nullptr;
 
+	SimpleCCD_ConstBuffer testSimpleCCDBuffer;
+	ID3D11Buffer* testSimpleCCD_ConstBuffer = nullptr;
+
 private:
 	template<typename Container>
 	int NextAvailableIndex(const Container& container)
