@@ -4,9 +4,8 @@
 #include <Systems/Input/Mouse.h>
 #include <Systems/Input/Keyboard.h>
 
-InputSystem::InputSystem(Engine* eng):ISystem(eng), m_mouse(nullptr), m_keyboard(nullptr)
+InputSystem::InputSystem(IEngine* const eng):ISystem(SystemType::ST_INPUT, eng), m_mouse(nullptr), m_keyboard(nullptr)
 {
-	m_systemName = "Input";
 }
 
 InputSystem::~InputSystem(void)

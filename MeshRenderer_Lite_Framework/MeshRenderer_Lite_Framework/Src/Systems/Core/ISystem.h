@@ -34,23 +34,42 @@ protected:
 };
 
 class IComponent;
-class Engine;
+class IEngine;
+
+enum class SystemType : char
+{
+	ST_WINDOW,
+	ST_GRAPHICS,
+	ST_INPUT,
+
+	//Implement these later on
+	//ST_PHYSICS,
+	//ST_SCRIPTING, 
+
+	COUNT
+};
 
 class ISystem
 {
 public:
-	ISystem(Engine* const eng) :m_isInitialized(false), m_engineOwner(eng) {}
+	ISystem(const SystemType type, IEngine* const eng) 
+		: m_systemType(type)
+		, m_engineOwner(eng)
+		, m_isInitialized(false)
+		{}
 	virtual ~ISystem() {}
+
 	virtual bool Initialize() = 0;
 	virtual void Update(const float dt) = 0;
 	virtual void Shutdown() = 0;
-	const string& GetName()const { return m_systemName; }
+	
+	const SystemType GetType()const { return m_systemType; }
 	bool IsInitialized()const { return m_isInitialized; }
 	virtual void ReceiveMessage(const IMessage& msg) = 0;
 	virtual void AddComponent(IComponent* component) {}
 
 protected:
-	string m_systemName;
+	const SystemType m_systemType;
 	bool m_isInitialized;
-	Engine* const m_engineOwner;
+	IEngine* const m_engineOwner;
 };

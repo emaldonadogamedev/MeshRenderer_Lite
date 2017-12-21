@@ -8,7 +8,7 @@ class MouseEvent;
 class InputSystem : public ISystem
 {
 public:
-	InputSystem(Engine* eng);
+	InputSystem(IEngine* const eng);
 	virtual ~InputSystem(void);
 
 	virtual bool Initialize(void) override;

@@ -1,13 +1,13 @@
 #include<Utilities/precompiled.h>
 #include<Systems/Window/WindowSystem.h>
-#include<Engine/Engine.h>
+#include<IEngine/IEngine.h>
 
 LRESULT CALLBACK MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	return Engine::s_engineApp->MessageHandler(hwnd, msg, wParam, lParam);
+	return IEngine::s_engineApp->MessageHandler(hwnd, msg, wParam, lParam);
 }
 
-WindowSystem::WindowSystem(Engine* eng, HINSTANCE hInstance) : ISystem(eng),
+WindowSystem::WindowSystem(IEngine* const eng, HINSTANCE hInstance) : ISystem(SystemType::ST_WINDOW, eng),
 m_hInstance(hInstance),
 m_isFullScreen(false),
 m_hwnd(nullptr),
@@ -15,8 +15,6 @@ m_windowWidth(1024),
 m_windowHeight(700),
 m_windowCaption(L" Framework CS 541 / CS 562")
 {
-	m_systemName = "Windows";
-
 	//The size passed to CreateWindow is the full size including the windows border and caption 
 	//AdjustWindowRect will adjust the provided rect so that the client size of the window is the desired size
 	RECT fullWinRect = { 0, 0, m_windowWidth, m_windowHeight };

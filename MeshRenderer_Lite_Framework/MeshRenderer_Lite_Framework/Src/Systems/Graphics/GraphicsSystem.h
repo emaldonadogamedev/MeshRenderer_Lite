@@ -22,7 +22,7 @@ typedef std::vector<std::vector<IComponent*>> RenderCompVec;
 class GraphicsSystem : public ISystem
 {
 public:
-	GraphicsSystem(Engine* const eng);
+	GraphicsSystem(IEngine* const eng);
 	virtual ~GraphicsSystem();
 
 	virtual bool Initialize() override;
@@ -75,5 +75,5 @@ protected:
 	static const string s_pixelShaderDir;
 	static const string s_textureDir;
 
-	friend Engine;
+	friend IEngine;
 };

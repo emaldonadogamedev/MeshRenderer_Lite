@@ -1,7 +1,7 @@
 #include <Utilities/precompiled.h>
 #include <Systems/Input/Mouse.h>
 
-#include <Engine/Engine.h>
+#include <IEngine/IEngine.h>
 #include <Systems/Input/InputSystem.h>
 #include <Systems/Window/WindowSystem.h>
 
@@ -114,7 +114,7 @@ void MouseEvent::SetMousePosition(int x, int y)
 
 XMFLOAT2 MouseEvent::GetMousePosition()
 {
-	const WindowSystem* windowSystem = reinterpret_cast<WindowSystem*>(m_inputSystem->m_engineOwner->GetSystem("Windows"));
+	const WindowSystem* windowSystem = reinterpret_cast<WindowSystem*>(m_inputSystem->m_engineOwner->GetSystem(SystemType::ST_WINDOW));
 	POINT p;
 	GetCursorPos(&p);
 	ScreenToClient(windowSystem->GetWindowsHandler(), &p);

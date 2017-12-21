@@ -21,6 +21,27 @@
 #include <unordered_map>
 #include <vector>
 
+//Assimp
+#include <assimp/scene.h>
+#include <assimp/Importer.hpp>
+#include <assimp/vector3.h>
+#include <assimp/matrix3x3.h>
+#include <assimp/matrix4x4.h>
+#include <assimp/quaternion.h>
+
+static const float aiLengthSquaredBetween2Points_Assimp(const aiVector3D& a, const aiVector3D& b)
+{
+	const float dx = a.x - b.x;
+	const float dy = a.y - b.y;
+	const float dz = a.z - b.z;
+
+	return (dx*dx) + (dy*dy) + (dz*dz);
+}
+static const float aiLengthBetween2Points(const aiVector3D& a, const aiVector3D& b)
+{
+	sqrt(aiLengthSquaredBetween2Points_Assimp(a, b));
+}
+
 //DirectX 11
 __pragma(warning(push))
 __pragma(warning(disable:4005))
@@ -60,6 +81,20 @@ __pragma(warning(pop))
 #include <math.h>
 #include <DirectXMath.h>
 
+static const float XMLengthSquaredBetween2Points(const DirectX::XMVECTOR& a, const DirectX::XMVECTOR& b)
+{
+	const float dx = a.m128_f32[0] - b.m128_f32[0];
+	const float dy = a.m128_f32[1] - b.m128_f32[1];
+	const float dz = a.m128_f32[2] - b.m128_f32[2];
+
+	return (dx*dx) + (dy*dy) + (dz*dz);
+}
+static const float XMLengthBetween2Points(const DirectX::XMVECTOR& a, const DirectX::XMVECTOR& b)
+{
+	sqrt(XMLengthSquaredBetween2Points(a,b));
+}
+
+//Memory delete/release
 #ifndef SafeRelease
 #define SafeRelease(x) if(x) {x->Release(); x = 0;}
 #endif

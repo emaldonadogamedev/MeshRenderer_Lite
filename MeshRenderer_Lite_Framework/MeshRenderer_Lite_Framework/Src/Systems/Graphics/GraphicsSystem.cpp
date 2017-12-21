@@ -7,7 +7,7 @@
 #include <assimp/scene.h>
 #include <assimp/matrix4x4.h>
 
-#include <Engine/Engine.h>
+#include <IEngine/IEngine.h>
 #include <Imgui/imgui.h>
 #include <Imgui/imgui_impl_dx11.h>
 #include <Systems/Core/Components/Transform/Transform.h>
@@ -32,8 +32,8 @@
 
 using namespace DirectX;
 
-GraphicsSystem::GraphicsSystem(Engine* const eng) 
-	:ISystem(eng)
+GraphicsSystem::GraphicsSystem(IEngine* const eng) 
+	:ISystem(SystemType::ST_GRAPHICS, eng)
 	,m_dx11Renderer(std::make_unique<DX11Renderer>())
 	,testCamera(std::make_unique<Camera>())
 	,m_modelManager(std::make_unique<ModelManager>(m_dx11Renderer.get()))
@@ -49,7 +49,7 @@ GraphicsSystem::~GraphicsSystem()
 
 bool GraphicsSystem::Initialize()
 {
-	const WindowSystem* const window = (WindowSystem*)m_engineOwner->GetSystem("Windows");
+	const WindowSystem* const window = (WindowSystem*)m_engineOwner->GetSystem(SystemType::ST_WINDOW);
 
 	bool result = m_dx11Renderer->InitializeRenderer(window->GetWindowWidth(), window->GetWindowHeight(), window->GetWindowsHandler());
 
@@ -400,7 +400,7 @@ void GraphicsSystem::AddComponent(IComponent* component)
 
 void GraphicsSystem::InitializeImGui()
 {
-	const WindowSystem* const window = reinterpret_cast<WindowSystem*>(m_engineOwner->GetSystem("Windows"));
+	const WindowSystem* const window = reinterpret_cast<WindowSystem*>(m_engineOwner->GetSystem(SystemType::ST_WINDOW));
 
 	// Setup ImGui binding
 	ImGui_ImplDX11_Init(window->GetWindowsHandler(), m_dx11Renderer->GetRendererData().m_pDevice,
@@ -508,7 +508,7 @@ void GraphicsSystem::LoadBasicShaders()
 
 void GraphicsSystem::TestUpdateCamera(const float dt)
 {
-	const InputSystem* const input = reinterpret_cast<InputSystem*>(m_engineOwner->GetSystem("Input"));
+	const InputSystem* const input = reinterpret_cast<InputSystem*>(m_engineOwner->GetSystem(SystemType::ST_INPUT));
 
 	if (input->m_keyboard->IsKeyHeld(KeyboardEvent::VirtualKey::KEY_W))
 	{
