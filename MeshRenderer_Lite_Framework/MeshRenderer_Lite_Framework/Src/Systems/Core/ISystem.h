@@ -34,7 +34,7 @@ protected:
 };
 
 class IComponent;
-class IEngine;
+class IApplication;
 
 enum class SystemType : char
 {
@@ -52,7 +52,7 @@ enum class SystemType : char
 class ISystem
 {
 public:
-	ISystem(const SystemType type, IEngine* const eng) 
+	ISystem(const SystemType type, IApplication* const eng) 
 		: m_systemType(type)
 		, m_engineOwner(eng)
 		, m_isInitialized(false)
@@ -71,5 +71,5 @@ public:
 protected:
 	const SystemType m_systemType;
 	bool m_isInitialized;
-	IEngine* const m_engineOwner;
+	IApplication* const m_engineOwner;
 };

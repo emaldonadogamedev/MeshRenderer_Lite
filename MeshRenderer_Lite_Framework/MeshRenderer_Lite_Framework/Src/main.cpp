@@ -1,10 +1,10 @@
 #include <Utilities/precompiled.h>
 
-#include <IEngine/IEngine.h>
+#include <Engine/IApplication/IApplication.h>
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)
 {
-  IEngine engine;
+  IApplication engine;
   
   if (engine.Initialize(hInstance))
     engine.Run();

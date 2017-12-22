@@ -7,7 +7,7 @@
 #include <assimp/scene.h>
 #include <assimp/matrix4x4.h>
 
-#include <IEngine/IEngine.h>
+#include <Engine/IApplication/IApplication.h>
 #include <Imgui/imgui.h>
 #include <Imgui/imgui_impl_dx11.h>
 #include <Systems/Core/Components/Transform/Transform.h>
@@ -32,7 +32,7 @@
 
 using namespace DirectX;
 
-GraphicsSystem::GraphicsSystem(IEngine* const eng) 
+GraphicsSystem::GraphicsSystem(IApplication* const eng) 
 	:ISystem(SystemType::ST_GRAPHICS, eng)
 	,m_dx11Renderer(std::make_unique<DX11Renderer>())
 	,testCamera(std::make_unique<Camera>())

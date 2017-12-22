@@ -114,10 +114,10 @@
     <ClCompile Include="Src\Systems\Graphics\Components\SimpleCloth\SimpleClothComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Src\IEngine\GameClock.cpp">
+    <ClCompile Include="Src\Engine\GameClock\GameClock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Src\IEngine\IEngine.cpp">
+    <ClCompile Include="Src\Engine\IApplication\IApplication.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -248,13 +248,16 @@
     <ClInclude Include="Src\Systems\Graphics\Components\SimpleCloth\SimpleClothComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Systems\Core\IScene\IScene.h">
+    <ClInclude Include="Src\Engine\GameClock\GameClock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Src\IEngine\GameClock.h">
+    <ClInclude Include="Src\Engine\IApplication\IApplication.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Src\IEngine\IEngine.h">
+    <ClInclude Include="Src\Systems\Core\Layer\Layer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Systems\Core\IScene\Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

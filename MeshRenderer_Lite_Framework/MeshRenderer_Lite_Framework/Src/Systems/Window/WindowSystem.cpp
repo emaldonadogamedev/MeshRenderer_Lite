@@ -1,13 +1,13 @@
 #include<Utilities/precompiled.h>
 #include<Systems/Window/WindowSystem.h>
-#include<IEngine/IEngine.h>
+#include <Engine/IApplication/IApplication.h>
 
 LRESULT CALLBACK MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	return IEngine::s_engineApp->MessageHandler(hwnd, msg, wParam, lParam);
+	return IApplication::s_engineApp->MessageHandler(hwnd, msg, wParam, lParam);
 }
 
-WindowSystem::WindowSystem(IEngine* const eng, HINSTANCE hInstance) : ISystem(SystemType::ST_WINDOW, eng),
+WindowSystem::WindowSystem(IApplication* const eng, HINSTANCE hInstance) : ISystem(SystemType::ST_WINDOW, eng),
 m_hInstance(hInstance),
 m_isFullScreen(false),
 m_hwnd(nullptr),

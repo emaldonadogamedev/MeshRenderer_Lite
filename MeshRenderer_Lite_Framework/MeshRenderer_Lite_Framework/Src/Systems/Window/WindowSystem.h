@@ -5,14 +5,14 @@
 
 #include <Systems/Core/ISystem.h>
 
-class IEngine;
+class IApplication;
 
 using std::wstring;
 
 class WindowSystem : public ISystem
 {
 public:
-	WindowSystem(IEngine* const eng, HINSTANCE hInstance = nullptr);
+	WindowSystem(IApplication* const eng, HINSTANCE hInstance = nullptr);
 	virtual ~WindowSystem();
 
 	//Inherited methods
@@ -38,5 +38,5 @@ protected:
 	int m_windowHeight;
 	wstring m_windowCaption;
 
-	friend IEngine;
+	friend IApplication;
 };

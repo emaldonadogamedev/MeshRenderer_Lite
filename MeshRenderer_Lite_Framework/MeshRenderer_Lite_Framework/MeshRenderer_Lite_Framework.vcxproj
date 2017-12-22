@@ -43,8 +43,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Src\IEngine\IEngine.cpp" />
-    <ClCompile Include="Src\IEngine\GameClock.cpp" />
+    <ClCompile Include="Src\Engine\IApplication\IApplication.cpp" />
+    <ClCompile Include="Src\Engine\GameClock\GameClock.cpp" />
     <ClCompile Include="Src\main.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
@@ -111,12 +111,13 @@
     <ClInclude Include="Includes\ImGui\imgui.h" />
     <ClInclude Include="Includes\ImGui\imgui_impl_dx11.h" />
     <ClInclude Include="Includes\ImGui\imgui_internal.h" />
-    <ClInclude Include="Src\IEngine\IEngine.h" />
-    <ClInclude Include="Src\IEngine\GameClock.h" />
+    <ClInclude Include="Src\Engine\IApplication\IApplication.h" />
+    <ClInclude Include="Src\Engine\GameClock\GameClock.h" />
     <ClInclude Include="Src\Systems\Core\GameObject\GameObject.h" />
     <ClInclude Include="Src\Systems\Core\Components\IComponent.h" />
     <ClInclude Include="Src\Systems\Core\Components\Transform\Transform.h" />
-    <ClInclude Include="Src\Systems\Core\IScene\IScene.h" />
+    <ClInclude Include="Src\Systems\Core\Layer\Layer.h" />
+    <ClInclude Include="Src\Systems\Core\IScene\Scene.h" />
     <ClInclude Include="Src\Systems\Core\ISystem.h" />
     <ClInclude Include="Src\Systems\Graphics\BufferClasses\ConstantBuffers.h" />
     <ClInclude Include="Src\Systems\Graphics\CameraClasses\Camera.h" />

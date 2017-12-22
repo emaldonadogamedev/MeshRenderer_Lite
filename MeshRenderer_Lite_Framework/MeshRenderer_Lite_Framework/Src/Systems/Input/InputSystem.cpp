@@ -4,7 +4,7 @@
 #include <Systems/Input/Mouse.h>
 #include <Systems/Input/Keyboard.h>
 
-InputSystem::InputSystem(IEngine* const eng):ISystem(SystemType::ST_INPUT, eng), m_mouse(nullptr), m_keyboard(nullptr)
+InputSystem::InputSystem(IApplication* const eng):ISystem(SystemType::ST_INPUT, eng), m_mouse(nullptr), m_keyboard(nullptr)
 {
 }
 
