@@ -1,8 +1,10 @@
 #include <Utilities/precompiled.h>
 
-#include <Systems/Core/Components/Transform/Transform.h>
 
-Transform::Transform(GameObject* owner) : IComponent(ComponentType::TRANSFORM, owner)
+#include <Systems/Core/Components/Transform/Transform.h>
+#include<Systems/Core/GameObject/GameObject.h>
+
+Transform::Transform(GameObject* const owner) : IComponent(ComponentType::TRANSFORM, owner)
 	, m_position()
 	, m_rotation()
 	, m_scale(XMVectorSet(1.f, 1.f, 1.f, 0))
@@ -107,13 +109,22 @@ const XMMATRIX& Transform::GetWorldTransform() const
 
 void Transform::UpdateWorldMatrix()
 {
+	auto parentPtr = m_owner->GetParent();
+	auto parentTransform = DirectX::XMMatrixIdentity();
+	while (parentPtr)
+	{
+		const auto t = (Transform*)parentPtr->GetComponent(ComponentType::TRANSFORM);
+		parentTransform *= t->GetWorldTransform();
+		parentPtr = parentPtr->GetParent();
+	}
+
 	m_orientationQuat = XMQuaternionRotationMatrix(
 		XMMatrixRotationX(m_rotation.m128_f32[0]) *
 		XMMatrixRotationY(m_rotation.m128_f32[1]) *
 		XMMatrixRotationZ(m_rotation.m128_f32[2])
 	);
 
-	m_worldTransform = XMMatrixTranspose (
+	m_worldTransform = parentTransform * XMMatrixTranspose (
 		XMMatrixRotationX(XM_PIDIV2) *
 		XMMatrixScalingFromVector(m_scale) *
 		XMMatrixRotationQuaternion(m_orientationQuat) *

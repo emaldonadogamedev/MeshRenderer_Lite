@@ -7,12 +7,13 @@
 class GameObject
 {
 public:
-	GameObject(bool active = true, const std::string& name = "", const std::string& tag = "");
+	GameObject(bool active = true, const std::string& name = "", const std::string& tag = "", GameObject* const parent = nullptr);
 	~GameObject();
 
 	//public methods
 	IComponent * GetComponent(ComponentType mType) const;
 	const std::vector<IComponent*>& GetComponents(ComponentType mType) const;
+	const GameObject* const GetParent()const;
 
 	void AddComponent(IComponent* component);
 
@@ -28,4 +29,6 @@ private:
 	std::vector<IComponent*> m_components[(int)ComponentType::COUNT];
 
 	std::vector<GameObject*> m_children;
+
+	GameObject* m_parent;
 };

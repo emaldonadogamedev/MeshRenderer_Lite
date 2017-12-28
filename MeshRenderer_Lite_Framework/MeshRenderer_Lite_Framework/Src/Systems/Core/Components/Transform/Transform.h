@@ -8,7 +8,7 @@ using namespace DirectX;
 class Transform : public IComponent
 {
 public:
-	Transform(GameObject* owner);
+	Transform(GameObject* const owner);
 	virtual ~Transform();
 
 	XMVECTOR& GetPosition();

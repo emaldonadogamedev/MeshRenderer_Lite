@@ -100,7 +100,7 @@ void IApplication::Run(void)
 	m_clock->ResetClock();
 
 	//main game loop
-	while (m_isRunning)
+	while (m_isRunning) 
 	{
 		// If there are Window messages then process them.
 		while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
@@ -121,18 +121,19 @@ void IApplication::Run(void)
 			CalculateFrameTime();
 			const float dt = m_clock->GetDeltaTime();
 
-			for (const auto& it : m_systems)
+			for (const auto& it : m_systems) 
 			{
 				it->Update(dt);
 			}
 #ifdef _DEBUG
+			const int multiplier = (int)(dt < s_fps60);
 			const int waitTimeMS = (int)((s_fps60 - dt) * 1000.0f);
-			Sleep(waitTimeMS * (dt < s_fps60));
+			Sleep(waitTimeMS * multiplier);
 #endif
 		}
 		else
 		{
-			Sleep(100);
+			Sleep(10);
 		}
 
 	} // end while(IsRunning())
