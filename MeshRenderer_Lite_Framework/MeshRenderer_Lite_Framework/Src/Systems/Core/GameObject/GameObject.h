@@ -11,8 +11,7 @@ public:
 	~GameObject();
 
 	//public methods
-	IComponent * GetComponent(ComponentType mType) const;
-	const std::vector<IComponent*>& GetComponents(ComponentType mType) const;
+	IComponent * GetComponent(const ComponentType type) const;
 	const GameObject* const GetParent()const;
 
 	void AddComponent(IComponent* component);
@@ -26,8 +25,7 @@ public:
 	std::string m_tag;
 
 private:
-	std::vector<IComponent*> m_components[(int)ComponentType::COUNT];
-
+	IComponent* m_components[(int)ComponentType::COUNT] = { nullptr };
 	std::vector<GameObject*> m_children;
 
 	GameObject* m_parent;

@@ -260,5 +260,8 @@
     <ClInclude Include="Src\Systems\Core\IScene\Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Systems\Graphics\Components\LightComponent\LightComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

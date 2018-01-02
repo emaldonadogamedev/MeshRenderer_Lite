@@ -111,10 +111,13 @@ void Transform::UpdateWorldMatrix()
 {
 	auto parentPtr = m_owner->GetParent();
 	auto parentTransform = DirectX::XMMatrixIdentity();
+
 	while (parentPtr)
 	{
 		const auto t = (Transform*)parentPtr->GetComponent(ComponentType::TRANSFORM);
 		parentTransform *= t->GetWorldTransform();
+
+		//move the pointer down the chain
 		parentPtr = parentPtr->GetParent();
 	}
 

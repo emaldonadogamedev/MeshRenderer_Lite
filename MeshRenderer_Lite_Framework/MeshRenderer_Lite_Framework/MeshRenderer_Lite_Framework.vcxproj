@@ -123,6 +123,7 @@
     <ClInclude Include="Src\Systems\Graphics\CameraClasses\Camera.h" />
     <ClInclude Include="Src\Systems\Graphics\CameraClasses\CameraManager.h" />
     <ClInclude Include="Src\Systems\Graphics\CameraClasses\Viewport.h" />
+    <ClInclude Include="Src\Systems\Graphics\Components\LightComponent\LightComponent.h" />
     <ClInclude Include="Src\Systems\Graphics\Components\ModelComponent\ModelComponent.h" />
     <ClInclude Include="Src\Systems\Graphics\Components\CurvePathComponent\CurvePathComponent.h" />
     <ClInclude Include="Src\Systems\Graphics\Components\PathComponent\PathComponent.h" />
