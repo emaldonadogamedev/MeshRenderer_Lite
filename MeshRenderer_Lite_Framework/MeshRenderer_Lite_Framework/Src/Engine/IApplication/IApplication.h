@@ -35,10 +35,10 @@ public:
 	virtual void Shutdown(void);
 
 	ISystem* GetSystem(const SystemType systemType) const;
-	virtual void SendMessageToSystems(const IMessage* const msg);
+	void SendMessageToSystems(const IMessage* const msg);
 
 	bool IsRunning() const;
-	virtual LRESULT MessageHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	LRESULT MessageHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 	void OnMouseDown(WPARAM buttonState, int x, int y);
 	void OnMouseUp(WPARAM buttonState, int x, int y);
@@ -65,10 +65,6 @@ protected:
 
 	std::unique_ptr<GameClock> m_clock;
 	//POINT m_MousePosition;
-
-	//////////////////////////////////////////////////////////////////////////
-	// FOR TEST!
-	std::unique_ptr<GameObject> testObj;
 
 	//Engine system pointers
 	std::vector<ISystem*> m_systems;;

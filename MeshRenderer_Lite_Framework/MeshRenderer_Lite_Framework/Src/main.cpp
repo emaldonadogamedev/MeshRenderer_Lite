@@ -1,15 +1,15 @@
 #include <Utilities/precompiled.h>
 
-#include <Engine/IApplication/IApplication.h>
+#include <Engine/Applications/TestApp/TestApp.h>
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)
 {
-  IApplication engine;
+  TestApp testApp;
   
-  if (engine.Initialize(hInstance))
-    engine.Run();
+  if (testApp.Initialize(hInstance))
+	  testApp.Run();
   
-  engine.Shutdown();
+  testApp.Shutdown();
 
   return 0;
 }

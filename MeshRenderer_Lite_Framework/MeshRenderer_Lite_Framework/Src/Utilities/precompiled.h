@@ -91,7 +91,7 @@ static const float XMLengthSquaredBetween2Points(const DirectX::XMVECTOR& a, con
 }
 static const float XMLengthBetween2Points(const DirectX::XMVECTOR& a, const DirectX::XMVECTOR& b)
 {
-	sqrt(XMLengthSquaredBetween2Points(a,b));
+	sqrtf(XMLengthSquaredBetween2Points(a,b));
 }
 
 //Memory delete/release

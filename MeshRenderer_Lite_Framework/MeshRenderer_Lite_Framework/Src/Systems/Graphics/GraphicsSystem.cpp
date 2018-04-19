@@ -398,6 +398,11 @@ void GraphicsSystem::AddComponent(IComponent* component)
 	}
 }
 
+DX11Renderer* GraphicsSystem::GetRenderer() const
+{
+	return m_dx11Renderer.get();
+}
+
 void GraphicsSystem::InitializeImGui()
 {
 	const WindowSystem* const window = reinterpret_cast<WindowSystem*>(m_engineOwner->GetSystem(SystemType::ST_WINDOW));

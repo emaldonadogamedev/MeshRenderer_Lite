@@ -43,6 +43,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Src\Engine\Applications\TestApp\TestApp.cpp" />
     <ClCompile Include="Src\Engine\IApplication\IApplication.cpp" />
     <ClCompile Include="Src\Engine\GameClock\GameClock.cpp" />
     <ClCompile Include="Src\main.cpp">
@@ -111,6 +112,7 @@
     <ClInclude Include="Includes\ImGui\imgui.h" />
     <ClInclude Include="Includes\ImGui\imgui_impl_dx11.h" />
     <ClInclude Include="Includes\ImGui\imgui_internal.h" />
+    <ClInclude Include="Src\Engine\Applications\TestApp\TestApp.h" />
     <ClInclude Include="Src\Engine\IApplication\IApplication.h" />
     <ClInclude Include="Src\Engine\GameClock\GameClock.h" />
     <ClInclude Include="Src\Systems\Core\GameObject\GameObject.h" />

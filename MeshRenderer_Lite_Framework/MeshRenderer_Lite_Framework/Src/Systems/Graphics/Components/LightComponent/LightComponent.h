@@ -4,12 +4,15 @@
 #include <DirectXMath.h>
 
 using DirectX::XMVECTOR;
+using DirectX::XMFLOAT3;
 
 enum class LightType : int
 {
 	LT_DIRECTIONAL,
 	LT_POINT,
-	LT_SPOT
+	LT_SPOT,
+
+	COUNT
 };
 
 class LightComponent : public IComponent
@@ -21,9 +24,8 @@ public:
 	const LightType GetLightType()const;
 	void SetLightType(const LightType type);
 
-protected:
-
-	XMVECTOR m_position;
+	XMFLOAT3 m_position;
+	LightType m_lightType;
 
 	XMVECTOR m_Iambient;
 	XMVECTOR m_Idiffuse;
@@ -31,7 +33,8 @@ protected:
 
 	XMVECTOR m_spotDirection;
 
-	LightType m_lightType;
+	float m_spotInnerAngle;
+	float m_spotOutterAngle;
 
 	friend class GraphicsSystem;
 	friend class GameObject;

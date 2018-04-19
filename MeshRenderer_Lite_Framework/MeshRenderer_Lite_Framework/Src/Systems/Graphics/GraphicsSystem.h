@@ -38,6 +38,8 @@ public:
 
 	virtual void AddComponent(IComponent* component) override;
 
+	DX11Renderer* GetRenderer() const;
+
 protected:
 	//Initialize helpers
 	void InitializeImGui();
