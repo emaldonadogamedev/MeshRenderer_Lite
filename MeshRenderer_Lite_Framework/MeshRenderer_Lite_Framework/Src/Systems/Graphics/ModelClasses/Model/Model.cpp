@@ -60,6 +60,12 @@ bool Model::IsAnimationActive() const
 	return m_animationEnabled;
 }
 
+void Model::SetDiffTextureFileName(const std::string& fileName, const unsigned int meshIdx /*= 0*/)
+{
+	if (meshIdx < m_meshEntryList.size())
+		m_meshEntryList[meshIdx].diffTextureName = fileName;
+}
+
 const std::string& Model::GetFileName() const
 {
 	return m_modelFileName;

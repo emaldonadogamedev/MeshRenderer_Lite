@@ -311,6 +311,18 @@ void DX11Renderer::CreateConstantBuffer(ObjectHandle& constantBuffer, unsigned s
 	}
 }
 
+Texture2D* DX11Renderer::GetTexture2D(const std::string& fileName)
+{
+	ObjectHandle texture2DHandle;
+	CreateTexture2D(texture2DHandle, fileName);
+
+	if (texture2DHandle) {
+		return &m_renderData->textures2D[*texture2DHandle];
+	}
+
+	return nullptr;
+}
+
 void DX11Renderer::BindNullVertexBuffer()
 {
 	//Bind NULL buffer - this is used for the particles

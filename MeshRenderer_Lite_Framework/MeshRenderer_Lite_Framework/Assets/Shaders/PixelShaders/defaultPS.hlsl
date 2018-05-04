@@ -8,7 +8,8 @@ float4 main(PixelInputType pixel) : SV_TARGET
 
 	if (textWidth > 0 && textHeight > 0)
 	{	
-		return diffTexture.Sample(textureSamplerClamp, pixel.uv);
+		return diffTexture.Sample(textureSamplerWrap, pixel.uv);
 	}
+
 	return pixel.color;
 }

@@ -43,6 +43,7 @@ struct BoneStructureNode
 struct MeshEntry
 {
 	std::string diffTextureName = "";
+	std::string normalMapName = "";
 	int assImpMaterialIndex = 0;
 	int numIndices = 0;
 	int baseVertex = 0;
@@ -68,6 +69,8 @@ public:
 
 	bool IsAnimationActive() const;
 
+	void SetDiffTextureFileName(const std::string& fileName, const unsigned int meshIdx = 0);
+
 	const std::string& GetFileName() const;
 	void SetFileName(const std::string& fileName);
 
@@ -77,7 +80,6 @@ public:
 	std::vector<const char*> m_animationNameCharPtrs;
 	std::vector<aiAnimation*> m_animations;
 
-//protected:
 	//Generic model info.
 	ModelType m_modelType;
 	std::string m_modelFileName;

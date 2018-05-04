@@ -8,6 +8,7 @@
 #include <Systems/Graphics/Components/CurvePathComponent/CurvePathComponent.h>
 #include <Systems/Graphics/Components/SimpleCCD/SuperSimpleCCD.h>
 #include <Systems/Graphics/Components/SimpleCloth/SimpleClothComponent.h>
+#include <Systems/Graphics/ModelClasses/Model/Model.h>
 
 TestApp::TestApp()
 	:IApplication()
@@ -31,8 +32,10 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//test3DComp->SetModel(loadedModels.at("dragon.obj").get());
 		//test3DComp->SetModel(loadedModels.at("bunny.obj").get());
 		//test3DComp->SetModel(loadedModels.at("tiny_4anim.x").get());
-		//test3DComp->SetModel(loadedModels.at("gh_sample_animation.fbx").get());
-		test3DComp->SetModel(graphicsSystem->GetModel("boblampclean.md5mesh"));
+		//test3DComp->SetModel(graphicsSystem->GetModel("gh_sample_animation.fbx"));
+		auto model = graphicsSystem->GetModel("Tower.fbx");
+		model->SetDiffTextureFileName("iron_grill.tga", 0);
+		test3DComp->SetModel(model);
 
 		testObj->AddComponent(test3DComp);
 		graphicsSystem->AddComponent(test3DComp);

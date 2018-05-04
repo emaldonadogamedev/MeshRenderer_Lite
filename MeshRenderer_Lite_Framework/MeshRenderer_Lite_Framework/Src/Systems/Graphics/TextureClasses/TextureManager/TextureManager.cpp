@@ -24,7 +24,7 @@ Texture2D* TextureManager::GetTexture2D(const std::string& fileName)
 		return &m_renderer->GetRendererData().textures2D[ it->second];
 	}
 
-	return nullptr;
+	return LoadTexture2D(fileName);
 }
 
 Texture2D* TextureManager::ReLoadTexture2D(const std::string& fileName)

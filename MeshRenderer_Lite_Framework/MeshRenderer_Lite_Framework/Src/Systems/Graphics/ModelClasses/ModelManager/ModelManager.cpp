@@ -58,7 +58,7 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 {
 	auto newUniqModel = std::make_unique<Model>();
 
-	const unsigned int loadFlags = aiProcess_Triangulate
+	static const unsigned int loadFlags = aiProcess_Triangulate
 		| aiProcess_GenNormals
 		| aiProcess_GenUVCoords
 		| aiProcessPreset_TargetRealtime_Fast
@@ -87,7 +87,7 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 		unsigned int indicesCount = 0;
 
 		newModel->m_meshEntryList.resize(numberOfMeshes);
-		for (int i = 0; i < newModel->m_meshEntryList.size(); i++) 
+		for (int i = 0; i < numberOfMeshes; i++)
 		{
 			newModel->m_meshEntryList[i].assImpMaterialIndex = loadedScene->mMeshes[i]->mMaterialIndex;
 			if(!newModel->m_diffTextures.empty())
@@ -120,7 +120,7 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 
 		const size_t boneAmount = newModel->m_boneOffsetMtxVec.size();
 		newModel->m_boneFinalTransformMtxVec.resize(boneAmount, DirectX::XMMatrixIdentity());
-		newModel->m_boneLocations.resize(boneAmount);
+		newModel->m_boneLocations.resize(boneAmount, DirectX::XMVectorSet(0,0,0,1.0f));
 		
 		//Prepare the index buffer for debug info.
 		newModel->m_boneLocIndBuff.resize(boneAmount * 6, 0);

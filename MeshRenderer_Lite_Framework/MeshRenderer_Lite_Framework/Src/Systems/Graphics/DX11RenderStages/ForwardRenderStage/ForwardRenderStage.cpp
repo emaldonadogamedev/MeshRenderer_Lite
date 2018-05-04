@@ -11,8 +11,7 @@
 
 #include <d3d11.h>
 
-ForwardRenderStage::ForwardRenderStage(DX11Renderer* const renderData, RenderCompVec* const gfxComponents)
-	:IRenderStage(renderData, gfxComponents)
+ForwardRenderStage::ForwardRenderStage(DX11Renderer* const renderer, RenderCompVec* const gfxComponents) :IRenderStage(renderer, gfxComponents)
 {
 
 }
@@ -96,11 +95,16 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources, co
 			for (auto& meshEntry : model->m_meshEntryList)
 			{
 				const auto& textures2D = graphicsResources.at((int)ObjectType::TEXTURE_2D);
+
 				const auto it = textures2D.find(meshEntry.diffTextureName);
-				if (it != textures2D.end())
-				{
+				if (it != textures2D.end()) {
 					const auto& diffTextSRV = renderData.textures2D[*it->second].srv;
 					renderData.m_pImmediateContext->PSSetShaderResources(0, 1, &diffTextSRV);
+				}
+				else {
+					if (const auto newTexture2D = m_renderer->GetTexture2D("../MeshRenderer_Lite_Framework/Assets/Textures/" + meshEntry.diffTextureName)) {
+						renderData.m_pImmediateContext->PSSetShaderResources(0, 1, &newTexture2D->srv);
+					}
 				}
 
 				m_renderer->DrawIndexed(meshEntry.numIndices, meshEntry.baseIndex, meshEntry.baseVertex);

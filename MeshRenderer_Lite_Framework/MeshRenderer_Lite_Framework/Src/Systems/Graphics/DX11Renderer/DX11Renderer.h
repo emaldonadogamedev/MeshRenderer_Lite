@@ -10,6 +10,8 @@ using DirectX::XMMATRIX;
 
 class GraphicsSystem;
 class DX11RendererData;
+class Texture2D;
+
 enum class ObjectType : char;
 
 class DX11Renderer
@@ -41,6 +43,7 @@ public:
 	void CreateVertexBuffer(ObjectHandle& vertexBuffer, const BufferUsage bufferUsage, unsigned size, const void* initialData = nullptr);
 	void CreateIndexBuffer(ObjectHandle& indexBuffer, const BufferUsage bufferUsage, unsigned size, const void* initialData = nullptr);
 	void CreateConstantBuffer(ObjectHandle& constantBuffer, unsigned size);
+
 	//Bind
 	void BindNullVertexBuffer();
 	void BindVertexBuffer(const ObjectHandle& vertexBuffer, unsigned stride);
@@ -64,7 +67,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	//Texture functions
 	void CreateTexture2D(ObjectHandle& texture, const std::string& fileName, bool generateMipChain = true);
-	
+	Texture2D* GetTexture2D(const std::string& fileName);
 	void BindTexture2D(unsigned slot, const ObjectHandle& texture);
 
 	//////////////////////////////////////////////////////////////////////////
