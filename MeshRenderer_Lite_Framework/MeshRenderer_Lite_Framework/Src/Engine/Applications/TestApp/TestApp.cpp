@@ -27,13 +27,12 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		testObj->AddComponent(new Transform(testObj.get()));
 		ModelComponent* test3DComp = new ModelComponent(testObj.get());
 		auto graphicsSystem = static_cast<GraphicsSystem*>(GetSystem(SystemType::ST_GRAPHICS));
-		const auto& loadedModels = graphicsSystem->GetLoadedModels();
 
 		//test3DComp->SetModel(loadedModels.at("dragon.obj").get());
 		//test3DComp->SetModel(loadedModels.at("bunny.obj").get());
 		//test3DComp->SetModel(loadedModels.at("tiny_4anim.x").get());
 		//test3DComp->SetModel(loadedModels.at("gh_sample_animation.fbx").get());
-		test3DComp->SetModel(loadedModels.at("boblampclean.md5mesh").get());
+		test3DComp->SetModel(graphicsSystem->GetModel("boblampclean.md5mesh"));
 
 		testObj->AddComponent(test3DComp);
 		graphicsSystem->AddComponent(test3DComp);

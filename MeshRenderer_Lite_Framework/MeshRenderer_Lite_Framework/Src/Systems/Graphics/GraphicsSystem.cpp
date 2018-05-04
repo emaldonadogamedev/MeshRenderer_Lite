@@ -55,10 +55,7 @@ bool GraphicsSystem::Initialize()
 
 	//Load resources
 	LoadBasicShaders();
-	LoadBasicModels();
-
 	AddRenderStages();
-
 	InitializeImGui();
 
 	return result;
@@ -385,11 +382,6 @@ void GraphicsSystem::Resize(const int w, const int h)
 	testCamera->Resize(DirectX::XM_PIDIV4, fov, 0.01f, 1000.0f);
 }
 
-const std::unordered_map<std::string, std::unique_ptr<Model>>& GraphicsSystem::GetLoadedModels() const
-{
-	return m_modelManager->m_loadedModels;
-}
-
 void GraphicsSystem::AddComponent(IComponent* component)
 {
 	if (component)
@@ -401,6 +393,11 @@ void GraphicsSystem::AddComponent(IComponent* component)
 DX11Renderer* GraphicsSystem::GetRenderer() const
 {
 	return m_dx11Renderer.get();
+}
+
+Model* GraphicsSystem::GetModel(const std::string& modelName)
+{
+	return LoadModelHelper(modelName);
 }
 
 void GraphicsSystem::InitializeImGui()
@@ -430,12 +427,12 @@ void GraphicsSystem::AddRenderStageHelper(IRenderStage* const renderStage)
 	}
 }
 
-void GraphicsSystem::LoadModelHelper(const std::string& fileName)
+Model* GraphicsSystem::LoadModelHelper(const std::string& fileName)
 {
 	const auto newModel = m_modelManager->LoadModel(fileName);
 
 	if (!newModel)
-		return;
+		return nullptr;
 
 	for (auto& meshEntry : newModel->m_meshEntryList)
 	{
@@ -447,18 +444,8 @@ void GraphicsSystem::LoadModelHelper(const std::string& fileName)
 				m_resources[(int)ObjectType::TEXTURE_2D][meshEntry.diffTextureName] = textHandle;
 		}
 	}
-}
 
-void GraphicsSystem::LoadBasicModels()
-{
-	LoadModelHelper("boblampclean.md5mesh");
-	LoadModelHelper("bunny.obj");
-	LoadModelHelper("sphere.obj");
-	LoadModelHelper("dragon.obj");
-	LoadModelHelper("garrosh.fbx");
-	LoadModelHelper("tiny_4anim.x");
-	LoadModelHelper("gh_sample_animation.fbx");
-	LoadModelHelper("cylinder_skellmesh.fbx");
+	return newModel;
 }
 
 void GraphicsSystem::LoadBasicShaders()

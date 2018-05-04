@@ -29,24 +29,20 @@ public:
 	virtual void Update(const float dt) override;
 	virtual void Shutdown() override;
 	virtual void ReceiveMessage(const IMessage& msg) override;
+	virtual void AddComponent(IComponent* component) override;
 
 	void Resize(const int w, const int h);
 
-#pragma region
-	const std::unordered_map<std::string, std::unique_ptr<Model>>& GetLoadedModels() const;
-#pragma endregion
-
-	virtual void AddComponent(IComponent* component) override;
-
+	//Getters
 	DX11Renderer* GetRenderer() const;
+	Model* GetModel(const std::string& modelName);
 
 protected:
 	//Initialize helpers
 	void InitializeImGui();
 	void AddRenderStages();
 	void AddRenderStageHelper(IRenderStage* const renderStage);
-	void LoadBasicModels();
-	void LoadModelHelper(const std::string& fileName);
+	Model* LoadModelHelper(const std::string& fileName);
 	void LoadBasicShaders();
 
 	//Update helpers
