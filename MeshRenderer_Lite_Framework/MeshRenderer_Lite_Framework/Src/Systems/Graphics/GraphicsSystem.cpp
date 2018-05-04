@@ -280,7 +280,7 @@ void ReadNodeHeirarchy(Model& model, const float AnimationTime, const aiNode* pN
 		final.r[2] = XMVectorSet(assFinal.c1, assFinal.c2, assFinal.c3, assFinal.c4);
 		final.r[3] = XMVectorSet(assFinal.d1, assFinal.d2, assFinal.d3, assFinal.d4);
 
-		model.m_boneFinalTransformMtxVec[BoneIndex] = std::move(final);
+		model.m_boneFinalTransformMtxVec[BoneIndex] = final;
 	}
 
 	for (int i = 0; i < pNode->mNumChildren; i++) 
@@ -437,11 +437,11 @@ void GraphicsSystem::LoadModelHelper(const std::string& fileName)
 	if (!newModel)
 		return;
 
-	ObjectHandle textHandle;
 	for (auto& meshEntry : newModel->m_meshEntryList)
 	{
 		if (!meshEntry.diffTextureName.empty())
 		{
+			ObjectHandle textHandle;
 			m_dx11Renderer->CreateTexture2D(textHandle, m_textureManager->s_textureDir + meshEntry.diffTextureName);
 			if (textHandle)
 				m_resources[(int)ObjectType::TEXTURE_2D][meshEntry.diffTextureName] = textHandle;
@@ -451,16 +451,14 @@ void GraphicsSystem::LoadModelHelper(const std::string& fileName)
 
 void GraphicsSystem::LoadBasicModels()
 {
-	LoadModelHelper("box.obj");
+	LoadModelHelper("boblampclean.md5mesh");
 	LoadModelHelper("bunny.obj");
 	LoadModelHelper("sphere.obj");
 	LoadModelHelper("dragon.obj");
-	LoadModelHelper("Fan.fbx");
+	LoadModelHelper("garrosh.fbx");
 	LoadModelHelper("tiny_4anim.x");
 	LoadModelHelper("gh_sample_animation.fbx");
-	//LoadModelHelper("FiveJointCylinder.fbx"); //doesn't work, creates a scene pointer but does not read mesh data
 	LoadModelHelper("cylinder_skellmesh.fbx");
-	LoadModelHelper("boblampclean.md5mesh");
 }
 
 void GraphicsSystem::LoadBasicShaders()

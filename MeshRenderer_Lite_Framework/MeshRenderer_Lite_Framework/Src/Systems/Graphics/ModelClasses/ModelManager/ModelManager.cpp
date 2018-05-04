@@ -59,14 +59,11 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 	auto newUniqModel = std::make_unique<Model>();
 
 	const unsigned int loadFlags = aiProcess_Triangulate
-		| aiProcess_GenSmoothNormals
+		| aiProcess_GenNormals
 		| aiProcess_GenUVCoords
 		| aiProcessPreset_TargetRealtime_Fast
-		| aiProcess_MakeLeftHanded //Make left-hand side loading, since I'm using DirectX
-		| aiProcess_FlipUVs
-		| aiProcess_FlipWindingOrder
+		| aiProcess_ConvertToLeftHanded //Make left-hand side loading, since I'm using DirectX
 	    | aiProcessPreset_TargetRealtime_MaxQuality
-		| aiProcess_JoinIdenticalVertices
 		;
 
 	auto const loadedScene = newUniqModel->m_modelImporter.ReadFile((s_modelDir + fileName).c_str(), loadFlags);

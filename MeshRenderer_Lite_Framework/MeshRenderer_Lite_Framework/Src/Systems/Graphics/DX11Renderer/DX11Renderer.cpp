@@ -594,7 +594,7 @@ void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const std::strin
 
 
 	ID3D11ShaderResourceView* srv;
-	const HRESULT hResult = DirectX::CreateShaderResourceView(m_renderData->m_pDevice, image.GetImages(), image.GetImageCount(), image.GetMetadata(), &srv);
+	const HRESULT hResult = DirectX::CreateShaderResourceView(m_renderData->m_pDevice, image.GetImages(), image.GetImageCount(), metaData, &srv);
 
 	if (FAILED(hResult))
 		return;
@@ -704,7 +704,7 @@ bool DX11Renderer::InitializeD3D(const int width, const int height, HWND hwnd)
 
 	const D3D_FEATURE_LEVEL featureLevels[] =
 	{
-		//D3D_FEATURE_LEVEL_11_1,
+		D3D_FEATURE_LEVEL_11_1,
 		D3D_FEATURE_LEVEL_11_0,
 		D3D_FEATURE_LEVEL_10_1,
 		D3D_FEATURE_LEVEL_10_0,
@@ -927,13 +927,13 @@ bool DX11Renderer::InitializeTextureSamplers()
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.MipLODBias = 0.0f;
 	samplerDesc.MaxAnisotropy = 1;
-	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	samplerDesc.BorderColor[0] = 0;
 	samplerDesc.BorderColor[1] = 0;
 	samplerDesc.BorderColor[2] = 0;
 	samplerDesc.BorderColor[3] = 0;
 	samplerDesc.MinLOD = 0;
-	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	samplerDesc.MaxLOD = 0;// D3D11_FLOAT32_MAX;
 
 	// Create the texture sampler state.
 	HR(m_renderData->m_pDevice->CreateSamplerState(&samplerDesc, &m_renderData->m_pWrapSamplerState));

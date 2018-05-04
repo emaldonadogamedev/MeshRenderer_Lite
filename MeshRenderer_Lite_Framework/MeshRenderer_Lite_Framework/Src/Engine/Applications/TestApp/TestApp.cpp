@@ -31,9 +31,9 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 
 		//test3DComp->SetModel(loadedModels.at("dragon.obj").get());
 		//test3DComp->SetModel(loadedModels.at("bunny.obj").get());
-		test3DComp->SetModel(loadedModels.at("cylinder_skellmesh.fbx").get());
 		//test3DComp->SetModel(loadedModels.at("tiny_4anim.x").get());
-		//test3DComp->SetModel(loadedModels.at("boblampclean.md5mesh").get());
+		//test3DComp->SetModel(loadedModels.at("gh_sample_animation.fbx").get());
+		test3DComp->SetModel(loadedModels.at("boblampclean.md5mesh").get());
 
 		testObj->AddComponent(test3DComp);
 		graphicsSystem->AddComponent(test3DComp);
@@ -43,10 +43,10 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//testObj->AddComponent(testPathComp);
 		//m_graphicsSystem->AddComponent(testPathComp);
 
-		auto* testSimpleCloth = new SimpleClothComponent(testObj.get(), 12, 12, 33, 33);
-		testObj->AddComponent(testSimpleCloth);
-		GetSystem(SystemType::ST_GRAPHICS)->AddComponent(testSimpleCloth);
-		testSimpleCloth->generateVertexBuffers(graphicsSystem->GetRenderer());
+		//auto* testSimpleCloth = new SimpleClothComponent(testObj.get(), 12, 12, 33, 33);
+		//testObj->AddComponent(testSimpleCloth);
+		//GetSystem(SystemType::ST_GRAPHICS)->AddComponent(testSimpleCloth);
+		//testSimpleCloth->generateVertexBuffers(graphicsSystem->GetRenderer());
 
 		return true;
 	}

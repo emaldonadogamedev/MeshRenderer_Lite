@@ -57,9 +57,9 @@ struct VertexAnimation
 {
 	XMFLOAT3 position;
 	XMFLOAT3 normal;
-	XMFLOAT2 uv;
 	XMFLOAT3 tangent;
 	XMFLOAT3 biTangent;
+	XMFLOAT2 uv;
 	XMFLOAT4 color;
 
 	//Animation bone information

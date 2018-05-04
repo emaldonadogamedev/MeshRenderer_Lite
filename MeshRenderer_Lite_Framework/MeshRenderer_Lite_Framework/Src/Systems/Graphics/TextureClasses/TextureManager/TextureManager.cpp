@@ -49,12 +49,12 @@ void TextureManager::EraseAllTextures()
 
 Texture2D* TextureManager::LoadTexture2D(const std::string& fileName)
 {
-	ObjectHandle t;
-	m_renderer->CreateTexture2D(t, s_textureDir + fileName);
+	ObjectHandle handle;
+	m_renderer->CreateTexture2D(handle, s_textureDir + fileName);
 
-	if (t)
+	if (handle)
 	{
-		return &m_renderer->m_renderData->textures2D[*t];
+		return &m_renderer->m_renderData->textures2D[*handle];
 	}
 
 	return nullptr;

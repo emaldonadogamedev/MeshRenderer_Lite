@@ -42,7 +42,7 @@ struct BoneStructureNode
 //Example: a humanoid model can have entries such as: HEAD, LEG1, LEG2, ARM1, ARM2, etc.
 struct MeshEntry
 {
-	std::string diffTextureName;
+	std::string diffTextureName = "";
 	int assImpMaterialIndex = 0;
 	int numIndices = 0;
 	int baseVertex = 0;

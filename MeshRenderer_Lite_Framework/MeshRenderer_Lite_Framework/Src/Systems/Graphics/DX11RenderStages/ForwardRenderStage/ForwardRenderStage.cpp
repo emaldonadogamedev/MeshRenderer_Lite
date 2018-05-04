@@ -62,6 +62,9 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources, co
 		{
 			const auto model = (static_cast<const ModelComponent*>(component))->GetModel();
 
+			if (!model->m_drawSkin)
+				continue;
+
 			m_renderer->BindVertexBuffer(model->GetVBufferHandle(), sizeof(VertexAnimation));
 			m_renderer->BindIndexBuffer(model->GetIBufferHandle());
 
@@ -89,9 +92,6 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources, co
 				0, NULL, &renderData.testAnimationBuffer, 0, 0);
 			renderData.m_pImmediateContext->VSSetConstantBuffers(2, 1, &renderData.testAnimationConstBuffer);
 
-			if (!model->m_drawSkin)
-				break;
-
 			//Draw each mesh entry, it's all one big VBuffer and IBufer though
 			for (auto& meshEntry : model->m_meshEntryList)
 			{
@@ -99,8 +99,8 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources, co
 				const auto it = textures2D.find(meshEntry.diffTextureName);
 				if (it != textures2D.end())
 				{
-					const Texture2D& diffText = renderData.textures2D[*it->second];
-					renderData.m_pImmediateContext->PSSetShaderResources(0, 1, &diffText.srv);
+					const auto& diffTextSRV = renderData.textures2D[*it->second].srv;
+					renderData.m_pImmediateContext->PSSetShaderResources(0, 1, &diffTextSRV);
 				}
 
 				m_renderer->DrawIndexed(meshEntry.numIndices, meshEntry.baseIndex, meshEntry.baseVertex);
@@ -123,7 +123,7 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources, co
 
 	renderData.m_pImmediateContext->VSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
 	renderData.m_pImmediateContext->PSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
-	renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	//renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	const auto& clothComponents = (*m_gfxSystemComponents)[(int)ComponentType::PHYSICS_SIMPLE_CLOTH];
 	for (auto component : clothComponents)
