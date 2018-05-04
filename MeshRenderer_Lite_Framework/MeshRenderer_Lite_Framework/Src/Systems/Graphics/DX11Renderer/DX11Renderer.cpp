@@ -35,6 +35,13 @@ void DX11Renderer::ReleaseData()
 	SafeRelease(m_renderData->m_d3dRasterStateWireframe);
 	SafeRelease(m_renderData->m_d3dRasterStateImgui);
 
+	//cleanup const buffers
+	SafeRelease(m_renderData->testPerObjectConstBuffer);
+	SafeRelease(m_renderData->testViewProjConstBuffer);
+	SafeRelease(m_renderData->testAnimationConstBuffer);
+	SafeRelease(m_renderData->testSimpleClothConstBuffer);
+	SafeRelease(m_renderData->testLightConstBuffer);
+
 	//cleanup texture samplers
 	SafeRelease(m_renderData->m_pWrapSamplerState);
 	SafeRelease(m_renderData->m_pMirrorSamplerState);
@@ -904,6 +911,9 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 
 	bd.ByteWidth = sizeof(SimpleCloth_ConstBuffer);
 	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testSimpleClothConstBuffer));
+
+	bd.ByteWidth = sizeof(Lights_ConstBuffer);
+	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testLightConstBuffer));
 
 	// Initialize the world matrices
 	//m_renderData->testPerObjectBuffer.worldMtx = XMMatrixScaling(1,1,1) * DirectX::XMMatrixRotationX(XM_PIDIV2) * XMMatrixTranslation(-1, 1, 0);

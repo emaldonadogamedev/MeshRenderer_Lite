@@ -3,7 +3,7 @@
 //--------------------------------------------------------------------------------------
 static const float PI = 3.14159265f;
 static const float TWO_PI = 6.2831853f;
-static const float EPSILION = 0.001f;
+static const float EPSILION = 0.00001f;
 
 struct VertexInputType
 {

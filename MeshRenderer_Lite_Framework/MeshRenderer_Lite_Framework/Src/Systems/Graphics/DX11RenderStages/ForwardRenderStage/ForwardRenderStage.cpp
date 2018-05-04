@@ -50,8 +50,14 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources, co
 	handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("defaultPS");
 	m_renderer->BindPixelShader(handle);
 
+	//Update / Set const buffers
 	renderData.m_pImmediateContext->VSSetConstantBuffers(1, 1, &renderData.testViewProjConstBuffer);
 	renderData.m_pImmediateContext->PSSetConstantBuffers(1, 1, &renderData.testViewProjConstBuffer);
+
+		//update lights const buffer
+	renderData.m_pImmediateContext->UpdateSubresource(renderData.testLightConstBuffer, 0, nullptr, 
+		&renderData.testLightBuffer, 0, 0);
+	renderData.m_pImmediateContext->PSSetConstantBuffers(5, 1, &renderData.testLightConstBuffer);
 
 	//forward render all of the objects
 	const auto& modelComponents = (*m_gfxSystemComponents)[(int)ComponentType::RENDERABLE_3D];

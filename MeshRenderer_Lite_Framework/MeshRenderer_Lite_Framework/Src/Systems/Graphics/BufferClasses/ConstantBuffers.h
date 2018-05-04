@@ -2,6 +2,7 @@
 
 #include <DirectXMath.h>
 
+using DirectX::XMFLOAT3;
 using DirectX::XMVECTOR;
 using DirectX::XMMATRIX;
 using DirectX::XMVectorSet;
@@ -45,4 +46,36 @@ struct ClothParticleGPU
 struct SimpleCloth_ConstBuffer
 {
 	ClothParticleGPU particleData[s_maxParticleData];
+};
+
+//////////////////////////////////////////////////////////////////////////
+//Lights
+enum class LightType : int
+{
+	LT_DIRECTIONAL,
+	LT_POINT,
+	LT_SPOT,
+
+	COUNT
+};
+
+struct Light {
+	LightType m_lightType;
+	XMFLOAT3 m_position;
+
+	XMVECTOR m_Iambient;
+	XMVECTOR m_Idiffuse;
+	XMVECTOR m_Ispecular;
+	XMVECTOR m_spotDirection;
+
+	float m_spotInnerAngle;
+	float m_spotOutterAngle;
+	int isActive = 0;
+	int isTaken = 0;
+};
+
+static const unsigned int s_maxLights = 10;
+struct Lights_ConstBuffer
+{
+	Light sceneLights[s_maxLights];
 };
