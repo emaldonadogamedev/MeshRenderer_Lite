@@ -68,7 +68,6 @@ public:
 	SimpleCloth_ConstBuffer testSimpleClothBuffer;
 	ID3D11Buffer* testSimpleClothConstBuffer = nullptr;
 
-	Lights_ConstBuffer testLightBuffer;
 	ID3D11Buffer* testLightConstBuffer = nullptr;
 
 private:

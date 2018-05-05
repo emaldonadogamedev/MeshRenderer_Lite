@@ -1,6 +1,7 @@
 #include <Utilities/precompiled.h>
 #include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
 
+#include <Systems/Graphics/Components/LightComponent/LightComponent.h>
 #include <Systems/Graphics/DX11Renderer/DX11RendererData.h>
 #include <Systems/Graphics/GraphicsUtilities/ObjectHandle.h>
 #include <Systems/Graphics/GraphicsUtilities/VertexTypes.h>
@@ -912,7 +913,7 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 	bd.ByteWidth = sizeof(SimpleCloth_ConstBuffer);
 	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testSimpleClothConstBuffer));
 
-	bd.ByteWidth = sizeof(Lights_ConstBuffer);
+	bd.ByteWidth = sizeof(Light) * LightComponent::s_maxLights;
 	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testLightConstBuffer));
 
 	// Initialize the world matrices

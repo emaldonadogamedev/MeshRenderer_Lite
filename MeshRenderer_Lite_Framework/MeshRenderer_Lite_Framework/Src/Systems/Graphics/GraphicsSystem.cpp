@@ -15,6 +15,7 @@
 #include <Systems/Graphics/CameraClasses/Camera.h>
 #include <Systems/Graphics/Components/ModelComponent/ModelComponent.h>
 #include <Systems/Graphics/Components/CurvePathComponent/CurvePathComponent.h>
+#include <Systems/Graphics/Components/LightComponent/LightComponent.h>
 #include <Systems/Graphics/Components/SimpleCCD/SuperSimpleCCD.h>
 #include <Systems/Graphics/Components/SimpleCloth/SimpleClothComponent.h>
 #include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
@@ -103,6 +104,20 @@ void GraphicsSystem::UpdateModelComponents(const float dt)
 		{
 			UpdateAnimation(*model, dt);
 		}
+	}
+}
+
+void GraphicsSystem::UpdateLightComponents(const float dt)
+{
+	auto& lightComponents = m_renderComponents[(int)ComponentType::RENDERABLE_LIGHT];
+
+	for (auto& component : lightComponents)
+	{
+		auto light = (static_cast<const LightComponent*>(component))->GetLight();
+		auto& lightPos = (static_cast<Transform* const>(component->GetOwner()->GetComponent(ComponentType::TRANSFORM)))->GetPosition();
+		light->m_position.x = lightPos.m128_f32[0];
+		light->m_position.y = lightPos.m128_f32[1];
+		light->m_position.z = lightPos.m128_f32[2];
 	}
 }
 
@@ -491,6 +506,11 @@ void GraphicsSystem::LoadBasicShaders()
 	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "defaultPS.hlsl", false);
 	m_resources[(int)ObjectType::PIXEL_SHADER]["defaultPS"] = psHandle;
 	
+	psHandle = ObjectHandle::Null();
+	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "phongLighting.hlsl", false);
+	m_resources[(int)ObjectType::PIXEL_SHADER]["phongLighting"] = psHandle;
+
+
 	psHandle = ObjectHandle::Null();
 	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "AnimationDebugPS.hlsl", false);
 	m_resources[(int)ObjectType::PIXEL_SHADER]["AnimationDebugPS"] = psHandle;

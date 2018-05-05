@@ -20,15 +20,17 @@ struct Light {
 	float4 m_Iambient;
 	float4 m_Idiffuse;
 	float4 m_Ispecular;
-	float4 m_spotDirection;
 
+	float3 m_spotDirection;
 	float m_spotInnerAngle;
+
+	float roughness;
 	float m_spotOutterAngle;
 	int isActive;
 	int isTaken;
 };
 
-static const unsigned int s_maxLights = 10;
+static const unsigned int s_maxLights = 15;
 
 cbuffer SceneLights : register(b5)
 {

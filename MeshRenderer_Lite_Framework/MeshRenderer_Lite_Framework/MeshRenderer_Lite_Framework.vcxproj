@@ -68,6 +68,7 @@
     <ClCompile Include="Src\Systems\Core\Components\Transform\Transform.cpp" />
     <ClCompile Include="Src\Systems\Graphics\CameraClasses\CamaeraManager.cpp" />
     <ClCompile Include="Src\Systems\Graphics\CameraClasses\Camera.cpp" />
+    <ClCompile Include="Src\Systems\Graphics\Components\LightComponent\LightComponent.cpp" />
     <ClCompile Include="Src\Systems\Graphics\Components\ModelComponent\ModelComponent.cpp" />
     <ClCompile Include="Src\Systems\Graphics\Components\CurvePathComponent\CurvePathComponent.cpp" />
     <ClCompile Include="Src\Systems\Graphics\Components\PathComponent\PathComponent.cpp" />

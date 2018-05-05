@@ -29,3 +29,17 @@ struct PixelInputType
 	float3 bitangent    : BITANGENT;
 	float4 color		: COLOR;
 };
+
+//--------------------------------------------------------------------------------------
+// Per Camera - Constant Buffer Variables
+//--------------------------------------------------------------------------------------
+cbuffer ViewProjBuffer : register(b1)
+{
+	matrix viewMtx;
+	matrix invViewMtx;
+	matrix projectionMtx;
+	matrix invProjectionMtx;
+	matrix viewProjection;
+
+	float4 cameraPosition;
+};

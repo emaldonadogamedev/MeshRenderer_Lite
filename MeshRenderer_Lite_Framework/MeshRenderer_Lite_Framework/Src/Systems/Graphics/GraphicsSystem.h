@@ -48,6 +48,7 @@ protected:
 	//Update helpers
 	void TestUpdateCamera(const float dt);
 	void UpdateModelComponents(const float dt);
+	void UpdateLightComponents(const float dt);
 	void UpdateAnimation(Model& model, const float dt);
 	void UpdateCurvePathComponents(const float dt);
 	void UpdateSimpleCCDComponents(const float dt);

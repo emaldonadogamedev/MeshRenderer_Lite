@@ -5,7 +5,7 @@
 #include<Systems/Core/GameObject/GameObject.h>
 
 Transform::Transform(GameObject* const owner) : IComponent(ComponentType::TRANSFORM, owner)
-	, m_position()
+	, m_position(XMVectorSet(0.f, 0.f, 0.f, 0.f))
 	, m_rotation()
 	, m_scale(XMVectorSet(1.f, 1.f, 1.f, 0))
 	, m_right(XMVectorSet(1.f, 0.f, 0.f, 0))

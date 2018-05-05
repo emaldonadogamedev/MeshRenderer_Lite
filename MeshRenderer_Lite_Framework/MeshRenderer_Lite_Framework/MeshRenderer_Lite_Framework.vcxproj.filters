@@ -123,6 +123,9 @@
     <ClCompile Include="Src\Engine\Applications\TestApp\TestApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Systems\Graphics\Components\LightComponent\LightComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Utilities\precompiled.h">

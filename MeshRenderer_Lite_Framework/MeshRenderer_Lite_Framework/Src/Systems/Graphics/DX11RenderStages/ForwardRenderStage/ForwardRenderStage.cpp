@@ -3,6 +3,7 @@
 
 #include <Systems/Core/Components/Transform/Transform.h>
 #include <Systems/Core/GameObject/GameObject.h>
+#include<Systems/Graphics/Components/LightComponent/LightComponent.h>
 #include<Systems/Graphics/Components/ModelComponent/ModelComponent.h>
 #include<Systems/Graphics/Components/SimpleCloth/SimpleClothComponent.h>
 #include<Systems/Graphics/DX11Renderer/DX11Renderer.h>
@@ -47,7 +48,7 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources, co
 	//Set shaders
 	ObjectHandle handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("defaultVS");
 	m_renderer->BindVertexShader(handle);
-	handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("defaultPS");
+	handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("phongLighting");
 	m_renderer->BindPixelShader(handle);
 
 	//Update / Set const buffers
@@ -55,8 +56,9 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources, co
 	renderData.m_pImmediateContext->PSSetConstantBuffers(1, 1, &renderData.testViewProjConstBuffer);
 
 		//update lights const buffer
+	static Light* const sceneLights = LightComponent::GetSceneLightsPtr();
 	renderData.m_pImmediateContext->UpdateSubresource(renderData.testLightConstBuffer, 0, nullptr, 
-		&renderData.testLightBuffer, 0, 0);
+		sceneLights, 0, 0);
 	renderData.m_pImmediateContext->PSSetConstantBuffers(5, 1, &renderData.testLightConstBuffer);
 
 	//forward render all of the objects

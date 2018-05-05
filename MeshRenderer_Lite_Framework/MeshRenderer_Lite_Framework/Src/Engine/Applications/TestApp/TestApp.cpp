@@ -6,6 +6,7 @@
 #include <Systems/Graphics/GraphicsSystem.h>
 #include <Systems/Graphics/Components/ModelComponent/ModelComponent.h>
 #include <Systems/Graphics/Components/CurvePathComponent/CurvePathComponent.h>
+#include <Systems/Graphics/Components/LightComponent/LightComponent.h>
 #include <Systems/Graphics/Components/SimpleCCD/SuperSimpleCCD.h>
 #include <Systems/Graphics/Components/SimpleCloth/SimpleClothComponent.h>
 #include <Systems/Graphics/ModelClasses/Model/Model.h>
@@ -13,12 +14,10 @@
 TestApp::TestApp()
 	:IApplication()
 {
-
 }
 
 TestApp::~TestApp()
 {
-
 }
 
 bool TestApp::Initialize(HINSTANCE hInstance)
@@ -49,6 +48,15 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//testObj->AddComponent(testSimpleCloth);
 		//GetSystem(SystemType::ST_GRAPHICS)->AddComponent(testSimpleCloth);
 		//testSimpleCloth->generateVertexBuffers(graphicsSystem->GetRenderer());
+
+		testLight = std::make_unique<GameObject>();
+		auto transform = new Transform(testLight.get());
+		transform->SetPositionn(DirectX::XMVectorSet(0.f, 3.f, 0.f, 1.f));
+		testLight->AddComponent(transform);
+
+		auto lightComp = new LightComponent(testLight.get());
+		testLight->AddComponent(lightComp);
+		graphicsSystem->AddComponent(lightComp);
 
 		return true;
 	}
