@@ -400,8 +400,8 @@ void GraphicsSystem::ReceiveMessage(const IMessage& msg)
 
 void GraphicsSystem::Resize(const int w, const int h)
 {
-	const float fov = (float)w / (float)h;
-	testCamera->Resize(DirectX::XM_PIDIV4, fov, 0.01f, 1000.0f);
+	m_dx11Renderer->ResizeBuffers(w, h);
+	testCamera->Resize(DirectX::XM_PIDIV4, (float)w / (float)h, 0.01f, 1000.0f);
 }
 
 void GraphicsSystem::AddComponent(IComponent* component)

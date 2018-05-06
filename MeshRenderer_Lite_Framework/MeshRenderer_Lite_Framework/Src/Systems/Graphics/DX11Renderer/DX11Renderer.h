@@ -88,8 +88,11 @@ public:
 
 protected:
 	bool InitializeD3D(const int width, const int height, HWND hwnd);
+	bool InitializeSwapChain(const int width, const int height, HWND hwnd);
 	bool InitializeConstBuffers();
+	bool InitializeRasterizerStates();
 	bool InitializeTextureSamplers();
+	bool ResizeBuffers(const int width, const int height);
 
 	//////////////////////////////////////////////////////////////////////////
 	//FOR TESTING

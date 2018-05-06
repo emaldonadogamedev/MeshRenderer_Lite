@@ -934,6 +934,17 @@ void DX11Renderer::SetLightingEnabled(const bool v)
 
 bool DX11Renderer::InitializeD3D(const int width, const int height, HWND hwnd)
 {
+	InitializeSwapChain(width, height, hwnd);
+
+	InitializeRasterizerStates();
+
+	ResizeBuffers(width, height);
+
+	return true;
+}
+
+bool DX11Renderer::InitializeSwapChain(const int width, const int height, HWND hwnd)
+{
 	UINT createDeviceFlags = 0;
 
 #ifdef _DEBUG
@@ -980,7 +991,7 @@ bool DX11Renderer::InitializeD3D(const int width, const int height, HWND hwnd)
 	swapDesc.SampleDesc.Quality = 0;
 	swapDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH; //alt-enter fullscreen
 
-	//Loop through the driver types to find the best supported one.
+															 //Loop through the driver types to find the best supported one.
 	HRESULT result;
 	for (UINT i = 0; i < numDriverTypes; ++i)
 	{
@@ -988,55 +999,33 @@ bool DX11Renderer::InitializeD3D(const int width, const int height, HWND hwnd)
 			featureLevels, numFeatureLevels, D3D11_SDK_VERSION, &swapDesc, &m_renderData->m_pSwapChain,
 			&m_renderData->m_pDevice, &m_renderData->m_FeatureLevel, &m_renderData->m_pImmediateContext);
 
-		if (SUCCEEDED(result))
-		{
+		if (SUCCEEDED(result)) {
 			m_renderData->m_DriverType = driverTypes[i];
-
-			//OH SNAP! AN ACTUAL REASON TO USE A GOTO!!!
-			goto continue_Init;
+			return true;
 		}
 	}
 
 	OutputDebugString("FAILED TO CREATE DEVICE AND SWAP CHAIN");
 	HR(result);//<-- By this point it'll fail for sure
 	return false;
+}
 
-continue_Init:
+bool DX11Renderer::InitializeConstBuffers()
+{
+	//Prepare the view buffer
+	D3D11_BUFFER_DESC bd;
+	ZeroMemory(&bd, sizeof(bd));
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(PerObectBuffer);
+	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	bd.CPUAccessFlags = 0;
+	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testViewProjConstBuffer));
 
-	//CREATE RENDER TARGET VIEW
-	ID3D11Texture2D* pBackBufferTex = 0;
-	HR(m_renderData->m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pBackBufferTex)));
+	return true;
+}
 
-	HR(m_renderData->m_pDevice->CreateRenderTargetView(pBackBufferTex, NULL, &m_renderData->m_pMainRenderTargetView));
-	SafeRelease(pBackBufferTex);
-
-	//CREATE DEPTH STENCIL BUFFER
-	D3D11_TEXTURE2D_DESC depthStencilDesc;
-	depthStencilDesc.Width = width;
-	depthStencilDesc.Height = height;
-	depthStencilDesc.MipLevels = 1;
-	depthStencilDesc.ArraySize = 1;
-	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilDesc.SampleDesc.Count = 1;
-	depthStencilDesc.SampleDesc.Quality = 0;
-	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	depthStencilDesc.CPUAccessFlags = 0;
-	depthStencilDesc.MiscFlags = 0;
-
-	HR(result = m_renderData->m_pDevice->CreateTexture2D(&depthStencilDesc, 0, &m_renderData->m_DepthStencilBuffer));
-
-	D3D11_DEPTH_STENCIL_VIEW_DESC dsvd;
-	ZeroMemory(&dsvd, sizeof(dsvd));
-
-	dsvd.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	dsvd.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-
-	HR(result = m_renderData->m_pDevice->CreateDepthStencilView(m_renderData->m_DepthStencilBuffer, &dsvd, &m_renderData->m_DepthStencilView));
-
-	//BIND RENDER TARGET VIEW
-	m_renderData->m_pImmediateContext->OMSetRenderTargets(1, &m_renderData->m_pMainRenderTargetView, m_renderData->m_DepthStencilView);
-
+bool DX11Renderer::InitializeRasterizerStates()
+{
 	// Setup rasterizer states
 	D3D11_RASTERIZER_DESC rasterizerDesc;
 	ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
@@ -1081,34 +1070,10 @@ continue_Init:
 	RSDesc.DepthClipEnable = TRUE;
 	RSDesc.ScissorEnable = TRUE;
 	RSDesc.AntialiasedLineEnable = FALSE;
-	RSDesc.MultisampleEnable = swapDesc.SampleDesc.Count > 1 ? TRUE : FALSE;
+	RSDesc.MultisampleEnable = FALSE;
 	m_renderData->m_pDevice->CreateRasterizerState(&RSDesc, &m_renderData->m_d3dRasterStateImgui);
 
 	m_renderData->m_pImmediateContext->RSSetState(m_renderData->m_currentRasterState = m_renderData->m_d3dRasterStateDefault);
-
-	//VIEWPORT CREATION
-	m_renderData->m_mainViewport.Width = static_cast<float>(width);
-	m_renderData->m_mainViewport.Height = static_cast<float>(height);
-	m_renderData->m_mainViewport.TopLeftX = m_renderData->m_mainViewport.TopLeftY = 0;
-	m_renderData->m_mainViewport.MinDepth = 0.0f;
-	m_renderData->m_mainViewport.MaxDepth = 1.0f;
-
-	//Bind viewport
-	m_renderData->m_pImmediateContext->RSSetViewports(1, &m_renderData->m_mainViewport);
-
-	return true;
-}
-
-bool DX11Renderer::InitializeConstBuffers()
-{
-	//Prepare the view buffer
-	D3D11_BUFFER_DESC bd;
-	ZeroMemory(&bd, sizeof(bd));
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(PerObectBuffer);
-	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bd.CPUAccessFlags = 0;
-	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testViewProjConstBuffer));
 
 	return true;
 }
@@ -1203,6 +1168,68 @@ bool DX11Renderer::InitializeTextureSamplers()
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
 	HR(m_renderData->m_pDevice->CreateSamplerState(&samplerDesc, &m_renderData->m_pBorderSamplerState));
+
+	return true;
+}
+
+bool DX11Renderer::ResizeBuffers(const int width, const int height)
+{
+	if (!m_renderData->m_pImmediateContext)
+		return false;
+
+	m_renderData->m_pImmediateContext->OMSetRenderTargets(0, nullptr, nullptr);
+	m_renderData->m_pImmediateContext->OMSetDepthStencilState(nullptr, 0);
+
+	SafeRelease(m_renderData->m_pMainRenderTargetView);
+	HR(m_renderData->m_pSwapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0));
+
+	// Get buffer and create a render-target-view.
+	ID3D11Texture2D* pBuffer;
+	HR(m_renderData->m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),(void**)&pBuffer));
+	// Perform error handling here!
+
+	HR(m_renderData->m_pDevice->CreateRenderTargetView(pBuffer, nullptr, &(m_renderData->m_pMainRenderTargetView)));
+	// Perform error handling here!
+	pBuffer->Release();
+
+
+	//CREATE DEPTH STENCIL BUFFER
+	D3D11_TEXTURE2D_DESC depthStencilDesc;
+	depthStencilDesc.Width = width;
+	depthStencilDesc.Height = height;
+	depthStencilDesc.MipLevels = 1;
+	depthStencilDesc.ArraySize = 1;
+	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilDesc.SampleDesc.Count = 1;
+	depthStencilDesc.SampleDesc.Quality = 0;
+	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthStencilDesc.CPUAccessFlags = 0;
+	depthStencilDesc.MiscFlags = 0;
+
+	SafeRelease(m_renderData->m_DepthStencilBuffer);
+	HR(m_renderData->m_pDevice->CreateTexture2D(&depthStencilDesc, 0, &m_renderData->m_DepthStencilBuffer));
+
+	SafeRelease(m_renderData->m_DepthStencilView);
+	D3D11_DEPTH_STENCIL_VIEW_DESC dsvd;
+	ZeroMemory(&dsvd, sizeof(dsvd));
+
+	dsvd.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	dsvd.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+
+	HR(m_renderData->m_pDevice->CreateDepthStencilView(m_renderData->m_DepthStencilBuffer, &dsvd, &m_renderData->m_DepthStencilView));
+
+	//BIND RENDER TARGET VIEW
+	m_renderData->m_pImmediateContext->OMSetRenderTargets(1, &m_renderData->m_pMainRenderTargetView, m_renderData->m_DepthStencilView);
+
+	// Set up the viewport.
+	m_renderData->m_mainViewport.Width = width;
+	m_renderData->m_mainViewport.Height = height;
+	m_renderData->m_mainViewport.TopLeftX = m_renderData->m_mainViewport.TopLeftY = 0.f;
+	m_renderData->m_mainViewport.MinDepth = 0.0f;
+	m_renderData->m_mainViewport.MaxDepth = 1.0f;
+
+	m_renderData->m_pImmediateContext->RSSetViewports(1, &m_renderData->m_mainViewport);
 
 	return true;
 }
