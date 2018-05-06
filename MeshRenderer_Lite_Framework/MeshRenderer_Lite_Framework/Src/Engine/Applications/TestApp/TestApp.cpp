@@ -32,8 +32,8 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//test3DComp->SetModel(loadedModels.at("bunny.obj").get());
 		//test3DComp->SetModel(loadedModels.at("tiny_4anim.x").get());
 		//test3DComp->SetModel(graphicsSystem->GetModel("gh_sample_animation.fbx"));
-		auto model = graphicsSystem->GetModel("Tower.fbx");
-		model->SetDiffTextureFileName("iron_grill.tga", 0);
+		auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
+		//model->SetDiffTextureFileName("iron_grill.tga", 0);
 		test3DComp->SetModel(model);
 
 		testObj->AddComponent(test3DComp);
@@ -55,6 +55,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		testLight->AddComponent(transform);
 
 		auto lightComp = new LightComponent(testLight.get());
+		//lightComp->GetLight()->m_lightType = LightType::LT_DIRECTIONAL;
 		testLight->AddComponent(lightComp);
 		graphicsSystem->AddComponent(lightComp);
 

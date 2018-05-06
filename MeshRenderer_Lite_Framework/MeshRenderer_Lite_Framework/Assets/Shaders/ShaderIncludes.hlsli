@@ -24,9 +24,9 @@ struct PixelInputType
 	float4 worldPos     : WORLDPOS;
 	float4 position     : SV_POSITION;
 	float3 normal       : NORMAL;
-	float2 uv           : UV;
 	float3 tangent      : TANGENT;
 	float3 bitangent    : BITANGENT;
+	float2 uv           : UV;
 	float4 color		: COLOR;
 };
 

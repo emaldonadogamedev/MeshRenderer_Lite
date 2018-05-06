@@ -1,11 +1,24 @@
 #include "../ShaderIncludes.hlsli"
 #include "PixelShaderIncludes.hlsli"
 
+float CalculateAttenuation(int lightType, float d, float C, float L, float Q) {
+	if (lightType == LT_DIRECTIONAL) {
+		return 1.0f;
+	}
+
+	return min(
+		1.0f/(C + (L * d) + (Q * d * d)),
+		1.0f
+	);
+}
+
 float4 CaculatePhongLighting(float3 vertexPos, float3 vertexNormal, float3 vertexTangent, float3 vertexBiTangent, float2 UVCoords) {
 	float4 finalColor = (float4)0;
 	
 	const float3 viewVec = normalize(cameraPosition.xyz - vertexPos);
 	float3 lightVec;
+
+	float4 diffuse, specular;
 
 	for (unsigned int i = 0; i < s_maxLights; ++i)
 	{
@@ -13,7 +26,10 @@ float4 CaculatePhongLighting(float3 vertexPos, float3 vertexNormal, float3 verte
 			float4 tempColor = (float4)0;
 			if (sceneLights[i].isActive)
 			{
-				lightVec = normalize(sceneLights[i].m_position - vertexPos);
+				lightVec = (sceneLights[i].m_position - vertexPos);
+				float lightVecLength = length(lightVec);
+				
+				lightVec /= lightVecLength;
 
 				//KD term
 				//Get the diff texture's color
@@ -23,13 +39,23 @@ float4 CaculatePhongLighting(float3 vertexPos, float3 vertexNormal, float3 verte
 				if (textWidth > 0 && textHeight > 0)
 					diffTextureColor = diffTexture.Sample(textureSamplerWrap, UVCoords);
 				else
-					diffTextureColor = float4(1,1,1,1);
+					diffTextureColor = float4(1,0,0,1);
 
-				tempColor += (sceneLights[i].m_Idiffuse * diffTextureColor) * max(dot(vertexNormal, lightVec), 0.f);
+				diffuse = (sceneLights[i].m_Idiffuse * diffTextureColor) * max(dot(vertexNormal, lightVec), 0.f);
 
 				//KS term
-				float3 reflectionVec = normalize( (2.f * dot(viewVec, vertexNormal) * vertexNormal) - viewVec);
-				tempColor += sceneLights[i].m_Ispecular * pow(max(dot(reflectionVec, viewVec), 0.f), sceneLights[i].roughness);
+				float3 H = normalize(lightVec + viewVec);
+				const float NdotH = max(dot(vertexNormal, H), 0.f);
+
+				specular = sceneLights[i].m_Ispecular * pow(NdotH, sceneLights[i].roughness);
+
+				float attenuation = CalculateAttenuation(sceneLights[i].m_lightType, lightVecLength, sceneLights[i].m_ConstantAttenuation,
+					sceneLights[i].m_LinearAttenuation, sceneLights[i].m_QuadraticAttenuation);
+
+				tempColor += (
+					attenuation *
+					(diffuse + specular)
+				);
 
 				finalColor += tempColor;
 			}

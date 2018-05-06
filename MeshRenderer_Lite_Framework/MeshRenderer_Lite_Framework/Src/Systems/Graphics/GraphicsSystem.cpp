@@ -72,10 +72,11 @@ void GraphicsSystem::Update(const float dt)
 	//TEST - Current camera update
 	TestUpdateCamera(dt);
 	testCamera->Update();
+	m_dx11Renderer->m_renderData->testViewProjBuffer.cameraPosition = testCamera->m_Position;
 	m_dx11Renderer->m_renderData->testViewProjBuffer.viewMtx = testCamera->GetView();
 	m_dx11Renderer->m_renderData->testViewProjBuffer.invViewMtx = 
 		DirectX::XMMatrixInverse(nullptr, m_dx11Renderer->m_renderData->testViewProjBuffer.viewMtx);
-	//m_dx11Renderer->testViewProjBuffer.projectionMtx = testCamera->GetProjection();
+	//m_dx11Renderer->m_renderData->testViewProjBuffer.projectionMtx = testCamera->GetProjection();
 	m_dx11Renderer->m_renderData->m_pImmediateContext->UpdateSubresource(m_dx11Renderer->m_renderData->testViewProjConstBuffer, 
 		0, NULL, &m_dx11Renderer->m_renderData->testViewProjBuffer, 0, 0);
 

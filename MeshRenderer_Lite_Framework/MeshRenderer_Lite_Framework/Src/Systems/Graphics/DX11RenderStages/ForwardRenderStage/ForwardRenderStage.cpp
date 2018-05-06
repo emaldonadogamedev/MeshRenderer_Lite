@@ -48,6 +48,7 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources, co
 	//Set shaders
 	ObjectHandle handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("defaultVS");
 	m_renderer->BindVertexShader(handle);
+	//handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("defaultPS");
 	handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("phongLighting");
 	m_renderer->BindPixelShader(handle);
 

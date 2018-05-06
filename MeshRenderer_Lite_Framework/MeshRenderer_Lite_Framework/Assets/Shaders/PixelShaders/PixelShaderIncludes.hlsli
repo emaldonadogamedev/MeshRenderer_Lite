@@ -13,6 +13,11 @@ TextureCube dynCubeMapTextures : register(t4);
 
 //Scene Lights
 
+ //-- light types
+static const int LT_DIRECTIONAL = 0;
+static const int LT_POINT = 1;
+static const int LT_SPOT = 2;
+
 struct Light {
 	int m_lightType;
 	float3 m_position;
@@ -24,10 +29,15 @@ struct Light {
 	float3 m_spotDirection;
 	float m_spotInnerAngle;
 
-	float roughness;
 	float m_spotOutterAngle;
+	float m_ConstantAttenuation;
+	float m_LinearAttenuation;
+	float m_QuadraticAttenuation;
+
+	float roughness;
 	int isActive;
 	int isTaken;
+	int padding;
 };
 
 static const unsigned int s_maxLights = 15;
