@@ -1,17 +1,3 @@
-//--------------------------------------------------------------------------------------
-// Per Object - Constant Buffer Variables
-//--------------------------------------------------------------------------------------
-cbuffer ConstantBuffer : register(b0)
-{
-	matrix worldMtx;
-	float4 objectColor;
-
-	int useTexture;
-	int useNormalMap;
-	int isSkydome;
-	int isAnimated;
-}
-
 static const unsigned int s_maxBoneCount = 120;
 static const unsigned int s_maxBoneLocCount = 120 * 6;
 //--------------------------------------------------------------------------------------

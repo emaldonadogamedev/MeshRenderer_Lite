@@ -57,6 +57,15 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const floa
 				}
 				ImGui::EndMenu();
 			}
+
+			ImGui::Separator();
+			if (ImGui::MenuItem("Lit")) {
+				m_renderer->SetLightingEnabled(true);
+			}
+			if (ImGui::MenuItem("Unlit")) {
+				m_renderer->SetLightingEnabled(false);
+			}
+
 			ImGui::EndMenu();
 		}
 	

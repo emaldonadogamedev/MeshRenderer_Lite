@@ -31,6 +31,20 @@ struct PixelInputType
 };
 
 //--------------------------------------------------------------------------------------
+// Per Object - Constant Buffer Variables
+//--------------------------------------------------------------------------------------
+cbuffer ConstantBuffer : register(b0)
+{
+	matrix worldMtx;
+	float4 objectColor;
+
+	int useTexture;
+	int useNormalMap;
+	int isSkydome;
+	int isAnimated;
+}
+
+//--------------------------------------------------------------------------------------
 // Per Camera - Constant Buffer Variables
 //--------------------------------------------------------------------------------------
 cbuffer ViewProjBuffer : register(b1)

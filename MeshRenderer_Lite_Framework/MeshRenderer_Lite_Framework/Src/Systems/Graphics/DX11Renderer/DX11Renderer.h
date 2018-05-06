@@ -81,6 +81,11 @@ public:
 	//Release
 	void ReleaseObject(const ObjectHandle& object);
 
+	//////////////////////////////////////////////////////////////////////////
+	//Misc.
+	bool IsLightingEnabled() const;
+	void SetLightingEnabled(const bool v);
+
 protected:
 	bool InitializeD3D(const int width, const int height, HWND hwnd);
 	bool InitializeConstBuffers();
@@ -94,6 +99,7 @@ protected:
 	ObjectHandle CreateHandle(const ObjectType type, const int handle) const;
 
 	bool m_isInitialized = false;
+	bool m_lightingEnabled = true;
 
 	friend GraphicsSystem;
 	friend class TextureManager;

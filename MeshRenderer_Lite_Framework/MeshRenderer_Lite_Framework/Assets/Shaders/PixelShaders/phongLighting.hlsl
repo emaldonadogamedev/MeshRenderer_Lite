@@ -13,7 +13,7 @@ float CalculateAttenuation(int lightType, float d, float C, float L, float Q) {
 }
 
 float4 CaculatePhongLighting(float3 vertexPos, float3 vertexNormal, float3 vertexTangent, 
-	float3 vertexBiTangent, float2 UVCoords, float4 objColor) {
+	float3 vertexBiTangent, float2 UVCoords) {
 	float4 finalColor = (float4)0;
 	
 	const float3 viewVec = normalize(cameraPosition.xyz - vertexPos);
@@ -40,7 +40,7 @@ float4 CaculatePhongLighting(float3 vertexPos, float3 vertexNormal, float3 verte
 				if (textWidth > 0 && textHeight > 0)
 					diffTextureColor = diffTexture.Sample(textureSamplerWrap, UVCoords);
 				else
-					diffTextureColor = objColor;
+					diffTextureColor = objectColor;
 
 				diffuse = (sceneLights[i].m_Idiffuse * diffTextureColor) * max(dot(vertexNormal, lightVec), 0.f);
 
@@ -70,5 +70,5 @@ float4 CaculatePhongLighting(float3 vertexPos, float3 vertexNormal, float3 verte
 
 float4 main(PixelInputType pixel) : SV_TARGET
 {
-	return CaculatePhongLighting(pixel.worldPos, pixel.normal, pixel.tangent, pixel.bitangent, pixel.uv, pixel.color);
+	return CaculatePhongLighting(pixel.worldPos, pixel.normal, pixel.tangent, pixel.bitangent, pixel.uv);
 }

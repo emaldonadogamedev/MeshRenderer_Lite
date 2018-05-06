@@ -922,6 +922,16 @@ void DX11Renderer::ReleaseObject(const ObjectHandle& object)
 	}
 }
 
+bool DX11Renderer::IsLightingEnabled() const
+{
+	return m_lightingEnabled;
+}
+
+void DX11Renderer::SetLightingEnabled(const bool v)
+{
+	m_lightingEnabled = v;
+}
+
 bool DX11Renderer::InitializeD3D(const int width, const int height, HWND hwnd)
 {
 	UINT createDeviceFlags = 0;
@@ -1137,6 +1147,7 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 	//m_renderData->testPerObjectBuffer.worldMtx = XMMatrixScaling(1,1,1) * DirectX::XMMatrixRotationX(XM_PIDIV2) * XMMatrixTranslation(-1, 1, 0);
 	//m_renderData->testPerObjectBuffer.worldMtx = XMMatrixTranspose(m_renderData->testPerObjectBuffer.worldMtx);
 	m_renderData->testPerObjectBuffer.worldMtx = XMMatrixTranspose(XMMatrixTranslation(0, 0, 0) *  DirectX::XMMatrixRotationX(XM_PIDIV2) * XMMatrixScaling(1,1,1));
+	m_renderData->testPerObjectBuffer.color = XMVectorSet(.1, .45, 0.f, 1.0f);
 	m_renderData->m_pImmediateContext->UpdateSubresource(m_renderData->testPerObjectConstBuffer, 0, NULL, &m_renderData->testPerObjectBuffer, 0, 0);
 
 	// Initialize the view matrix
