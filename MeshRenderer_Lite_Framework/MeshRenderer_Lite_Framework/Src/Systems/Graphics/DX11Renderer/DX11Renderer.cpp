@@ -735,6 +735,7 @@ void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const std::strin
 	DirectX::TexMetadata metaData;
 	metaData.format = DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT;
 	metaData.dimension = DirectX::TEX_DIMENSION::TEX_DIMENSION_TEXTURE2D;
+	metaData.mipLevels = generateMipChain ? 4 : 1;
 	metaData.depth = 1;
 
 	//in case the file is tga / NOTE: DO NOT USE .TIFF TEXTURES!!!
@@ -779,6 +780,81 @@ void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const std::strin
 		Texture2D texture;
 		//texture.size = Area(texDesc.Width, texDesc.Height);
 		texture.srv = srv;
+
+		int index = m_renderData->NextAvailableIndex(m_renderData->textures2D);
+
+		//No free space in the texture container
+		if (index == -1)
+		{
+			m_renderData->textures2D.emplace_back(texture);
+			textureHandle = CreateHandle(ObjectType::TEXTURE_2D, m_renderData->textures2D.size() - 1);
+		}
+
+		//Insert into available slot
+		else
+		{
+			m_renderData->textures2D[index] = texture;
+			textureHandle = CreateHandle(ObjectType::TEXTURE_2D, index);
+		}
+	}
+}
+
+void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const int W, const int H, const DataFormat dataFormat, bool generateMipChain /*= true*/)
+{
+	D3D11_TEXTURE2D_DESC textureDesc;
+	HRESULT result;
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+
+	// Initialize the render target texture description.
+	ZeroMemory(&textureDesc, sizeof(textureDesc));
+
+	// Setup the render target texture description.
+	textureDesc.Width = W;
+	textureDesc.Height = H;
+	textureDesc.MipLevels = generateMipChain ? 4 : 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = m_renderData->dxgiFormatArrHelper[(int)dataFormat];
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	textureDesc.CPUAccessFlags = 0;
+	textureDesc.MiscFlags = 0;
+
+	ID3D11Texture2D* tempTargetTexture = nullptr;
+
+	// Create the render target texture.
+	HR(m_renderData->m_pDevice->CreateTexture2D(&textureDesc, nullptr, &tempTargetTexture));
+
+	// Setup the description of the shader resource view.
+	shaderResourceViewDesc.Format = textureDesc.Format;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+	ID3D11ShaderResourceView* shaderResourceView;
+
+	HR(m_renderData->m_pDevice->CreateShaderResourceView(tempTargetTexture, &shaderResourceViewDesc, &shaderResourceView));
+
+	//Assign newly created texture to the object handle
+	if (textureHandle && textureHandle.GetType() == ObjectType::TEXTURE_2D)
+	{
+		//If the handle already exists, update the data
+		Texture2D& texture = m_renderData->textures2D[*textureHandle];
+		//texture.size = Area(image.Width, texDesc.Height);
+
+		if (texture.srv)
+			texture.srv->Release();
+
+		texture.srv = shaderResourceView;
+	}
+
+	else
+	{
+		//Create the handle and assign the data
+		Texture2D texture;
+		texture.size.width = W; 
+		texture.size.height = H;
+		texture.srv = shaderResourceView;
 
 		int index = m_renderData->NextAvailableIndex(m_renderData->textures2D);
 
@@ -980,7 +1056,7 @@ continue_Init:
 	//Create the wireframe rasterizer state object
 	rasterizerDesc.CullMode = D3D11_CULL_NONE;
 	rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
-	rasterizerDesc.AntialiasedLineEnable = TRUE;
+	//rasterizerDesc.AntialiasedLineEnable = TRUE;
 	m_renderData->m_pDevice->CreateRasterizerState(&rasterizerDesc, &m_renderData->m_d3dRasterStateWireframe);
 
 	D3D11_RASTERIZER_DESC RSDesc;
@@ -998,7 +1074,7 @@ continue_Init:
 	RSDesc.MultisampleEnable = swapDesc.SampleDesc.Count > 1 ? TRUE : FALSE;
 	m_renderData->m_pDevice->CreateRasterizerState(&RSDesc, &m_renderData->m_d3dRasterStateImgui);
 
-	m_renderData->m_pImmediateContext->RSSetState(m_renderData->m_d3dRasterStateDefault);
+	m_renderData->m_pImmediateContext->RSSetState(m_renderData->m_currentRasterState = m_renderData->m_d3dRasterStateDefault);
 
 	//VIEWPORT CREATION
 	m_renderData->m_mainViewport.Width = static_cast<float>(width);

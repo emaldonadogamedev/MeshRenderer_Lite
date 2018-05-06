@@ -25,6 +25,7 @@ public:
 	D3D11_VIEWPORT m_mainViewport;
 
 	//rasterizer states
+	ID3D11RasterizerState* m_currentRasterState = nullptr;
 	ID3D11RasterizerState* m_d3dRasterStateDefault = nullptr;
 	ID3D11RasterizerState* m_d3dRasterStateSolCullBack = nullptr;
 	ID3D11RasterizerState* m_d3dRasterStateSolCullFront = nullptr;

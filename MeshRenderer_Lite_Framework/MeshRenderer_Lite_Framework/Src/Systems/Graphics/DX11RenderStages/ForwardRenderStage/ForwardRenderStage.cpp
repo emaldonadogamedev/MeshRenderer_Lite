@@ -29,7 +29,7 @@ void ForwardRenderStage::PreRender()
 	renderData.m_pImmediateContext->OMSetRenderTargets(1, &renderData.m_pMainRenderTargetView, renderData.m_DepthStencilView);
 	renderData.m_pImmediateContext->ClearRenderTargetView(renderData.m_pMainRenderTargetView, renderData.m_clearColor.m128_f32);
 	renderData.m_pImmediateContext->ClearDepthStencilView(renderData.m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
-	renderData.m_pImmediateContext->RSSetState(renderData.m_d3dRasterStateDefault);
+	renderData.m_pImmediateContext->RSSetState(renderData.m_currentRasterState);
 	renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	static ID3D11SamplerState* const samplerStates[4] = {

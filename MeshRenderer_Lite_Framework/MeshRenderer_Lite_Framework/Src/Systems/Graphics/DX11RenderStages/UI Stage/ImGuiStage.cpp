@@ -34,9 +34,35 @@ void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const floa
 	auto& renderData = m_renderer->GetRendererData();
 	renderData.m_pImmediateContext->RSSetState(renderData.m_d3dRasterStateImgui);
 
-	bool drawit = true;
+	//static bool drawit = true;
 	//ImGui::ShowTestWindow(&drawit);
 
+	if (ImGui::BeginMainMenuBar())
+	{
+		if (ImGui::BeginMenu("Graphics Settings")) 
+		{
+			if (ImGui::BeginMenu("Render States"))
+			{
+				if (ImGui::MenuItem("Solid, No Culling")) {
+					renderData.m_currentRasterState = renderData.m_d3dRasterStateDefault;
+				}
+				if (ImGui::MenuItem("Solid, Front Culling")) {
+					renderData.m_currentRasterState = renderData.m_d3dRasterStateSolCullFront;
+				}
+				if (ImGui::MenuItem("Solid, Back Culling")) {
+					renderData.m_currentRasterState = renderData.m_d3dRasterStateSolCullBack;
+				}
+				if (ImGui::MenuItem("Wire-frame")) {
+					renderData.m_currentRasterState = renderData.m_d3dRasterStateWireframe;
+				}
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenu();
+		}
+	
+		ImGui::EndMainMenuBar(); //End main Menu Bar
+	}
+	
 	const auto& modelComponent = (ModelComponent*)GetComponentHelper(ComponentType::RENDERABLE_3D, 0);
 	const auto& curvePathComponent = (CurvePathComponent*) GetComponentHelper(ComponentType::RENDERABLE_CURVE_PATH, 0);
 
