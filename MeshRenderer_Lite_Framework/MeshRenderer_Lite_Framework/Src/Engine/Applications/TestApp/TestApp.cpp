@@ -60,6 +60,22 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		testLight->AddComponent(lightComp);
 		graphicsSystem->AddComponent(lightComp);
 
+
+		//////////////////////////////////////////////////////////////////////////
+		//floor game object
+		testFloor = std::make_unique<GameObject>();
+		transform = new Transform(testFloor.get());
+		transform->SetPositionn(DirectX::XMVectorSet(0.f, -2.6f, 0.f, 1.f));
+		transform->SetScale(DirectX::XMVectorSet(14.f, 1.f, 14.f, 1.f));
+		testFloor->AddComponent(transform);
+		test3DComp = new ModelComponent(testFloor.get());
+		testFloor->AddComponent(test3DComp);
+		m_graphicsSystem->AddComponent(test3DComp);
+		model = graphicsSystem->GetModel("box.obj");
+		model->SetDiffTextureFileName("iron_grill.tga", 0);
+		test3DComp->SetModel(model);
+
+
 		return true;
 	}
 

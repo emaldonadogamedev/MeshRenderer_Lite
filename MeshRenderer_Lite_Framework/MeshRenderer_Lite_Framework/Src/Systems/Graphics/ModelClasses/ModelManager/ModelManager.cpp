@@ -60,6 +60,7 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 
 	static const unsigned int loadFlags = aiProcess_Triangulate
 		| aiProcess_GenSmoothNormals
+		| aiProcess_CalcTangentSpace
 		| aiProcess_GenUVCoords
 		//| aiProcessPreset_TargetRealtime_Fast
 		| aiProcess_ConvertToLeftHanded //Make left-hand side loading, since I'm using DirectX

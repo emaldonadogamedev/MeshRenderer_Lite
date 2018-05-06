@@ -126,6 +126,9 @@
     <ClCompile Include="Src\Systems\Graphics\Components\LightComponent\LightComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\ShadowMapStage\ShadowMapStage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Utilities\precompiled.h">
@@ -270,6 +273,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Src\Systems\Graphics\Components\LightComponent\LightComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\ShadowMapStage\ShadowMapStage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

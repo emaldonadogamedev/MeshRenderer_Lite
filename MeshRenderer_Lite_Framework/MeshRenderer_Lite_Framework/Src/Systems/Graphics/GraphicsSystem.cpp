@@ -68,6 +68,7 @@ void GraphicsSystem::Update(const float dt)
 	UpdateModelComponents(dt);
 	UpdateCurvePathComponents(dt);
 	UpdateSimpleClothComponents(dt);
+	UpdateLightComponents(dt);
 
 	//TEST - Current camera update
 	TestUpdateCamera(dt);

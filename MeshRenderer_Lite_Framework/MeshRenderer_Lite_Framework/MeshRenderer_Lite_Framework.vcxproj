@@ -79,6 +79,7 @@
     <ClCompile Include="Src\Systems\Graphics\DX11Renderer\DX11Renderer.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\ForwardDebugStage\PathWalkDebugStage.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\ForwardRenderStage\ForwardRenderStage.cpp" />
+    <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\ShadowMapStage\ShadowMapStage.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\UI Stage\ImGuiStage.cpp" />
     <ClCompile Include="Src\Systems\Graphics\GraphicsSystem.cpp" />
     <ClCompile Include="Src\Systems\Graphics\GraphicsUtilities\InputData.cpp" />
@@ -139,6 +140,7 @@
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\ForwardDebugStage\PathWalkDebugStage.h" />
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\ForwardRenderStage\ForwardRenderStage.h" />
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\IRenderStage.h" />
+    <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\ShadowMapStage\ShadowMapStage.h" />
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\UI Stage\ImGuiStage.h" />
     <ClInclude Include="Src\Systems\Graphics\GraphicsSystem.h" />
     <ClInclude Include="Src\Systems\Graphics\GraphicsUtilities\D3DObjects.h" />

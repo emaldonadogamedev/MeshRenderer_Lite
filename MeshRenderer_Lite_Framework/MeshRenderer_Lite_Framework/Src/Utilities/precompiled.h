@@ -9,15 +9,16 @@
 #include <chrono>
 #include <fstream>
 #include <iostream>
-#include <map>
 #include <memory>
 #include <random>
+#include <unordered_set>
 #include <set>
 #include <stack>
 #include <string>
 #include <thread>
 #include <time.h>
 #include <tuple>
+#include <map>
 #include <unordered_map>
 #include <vector>
 
@@ -96,13 +97,13 @@ static const float XMLengthBetween2Points(const DirectX::XMVECTOR& a, const Dire
 
 //Memory delete/release
 #ifndef SafeRelease
-#define SafeRelease(x) if(x) {x->Release(); x = 0;}
+#define SafeRelease(x) if(x) { x->Release(); x = nullptr;}
 #endif
 
 #ifndef SafeDelete
-#define SafeDelete(x) if(x) { delete x; x = 0; }
+#define SafeDelete(x) if(x) { delete x; x = nullptr; }
 #endif
 
 #ifndef SafeDeleteArr
-#define SafeDeleteArr(x) if(x){ delete [] x; x = 0; }
+#define SafeDeleteArr(x) if(x){ delete [] x; x = nullptr; }
 #endif
