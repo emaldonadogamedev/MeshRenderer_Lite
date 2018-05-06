@@ -56,6 +56,7 @@ typedef Texture3D CubeMap;
 
 struct RenderTarget : D3DObject
 {
+	ID3D11Texture2D* texture;
 	ID3D11RenderTargetView* rtv;
 	ID3D11ShaderResourceView* srv;
 	DataFormat format;

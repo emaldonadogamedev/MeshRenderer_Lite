@@ -32,7 +32,8 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//test3DComp->SetModel(loadedModels.at("bunny.obj").get());
 		//test3DComp->SetModel(loadedModels.at("tiny_4anim.x").get());
 		//test3DComp->SetModel(graphicsSystem->GetModel("gh_sample_animation.fbx"));
-		auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
+		//auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
+		auto model = graphicsSystem->GetModel("dragon.obj");
 		//model->SetDiffTextureFileName("iron_grill.tga", 0);
 		test3DComp->SetModel(model);
 

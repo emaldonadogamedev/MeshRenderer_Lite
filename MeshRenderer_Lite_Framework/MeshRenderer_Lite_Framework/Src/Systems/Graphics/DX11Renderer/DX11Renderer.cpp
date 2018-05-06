@@ -29,6 +29,62 @@ bool DX11Renderer::InitializeRenderer(const int width, const int height, HWND hw
 
 void DX11Renderer::ReleaseData()
 {
+	//////////////////////////////////////////////////////////////////////////
+	//cleanup objects
+
+	//render targets
+	for (auto& rt : m_renderData->renderTargets)
+	{
+		SafeRelease(rt.rtv);
+		SafeRelease(rt.srv);
+		SafeRelease(rt.texture);
+	}
+
+	//1D textures
+	for (auto& tex1D : m_renderData->textures1D)
+		SafeRelease(tex1D.srv);
+
+	//2D textures
+	for (auto& tex2D : m_renderData->textures2D)
+		SafeRelease(tex2D.srv);
+
+	//3D textures
+	for (auto& tex3D : m_renderData->textures3D)
+		SafeRelease(tex3D.srv);
+
+	//vertex shaders
+	for (auto& vs : m_renderData->vertexShaders) {
+		SafeRelease(vs.vertexShader);
+		SafeRelease(vs.shaderBlob);
+	}
+
+	//pixel shaders
+	for (auto& ps : m_renderData->pixelShaders) {
+		SafeRelease(ps.pixelShader);
+		SafeRelease(ps.shaderBlob);
+	}
+
+	//geometry shaders
+	for (auto& gs : m_renderData->geometryShaders) {
+		SafeRelease(gs.geometryShader);
+		SafeRelease(gs.shaderBlob);
+	}
+
+	//vertex buffers
+	for (auto& vb : m_renderData->vertexBuffers)
+		SafeRelease(vb.buffer);
+
+	//index buffers
+	for (auto& ib : m_renderData->indexBuffers)
+		SafeRelease(ib.buffer);
+
+	//constant buffers
+	for (auto& cb : m_renderData->constantBuffers)
+		SafeRelease(cb.buffer);
+
+
+	//////////////////////////////////////////////////////////////////////////
+
 	//cleanup rasterizers
 	SafeRelease(m_renderData->m_d3dRasterStateDefault);
 	SafeRelease(m_renderData->m_d3dRasterStateSolCullBack);
@@ -48,7 +104,7 @@ void DX11Renderer::ReleaseData()
 	SafeRelease(m_renderData->m_pMirrorSamplerState);
 	SafeRelease(m_renderData->m_pClampSamplerState);
 	SafeRelease(m_renderData->m_pBorderSamplerState);
-	
+
 	//CLEANUP DIRECT3D
 	if (m_renderData->m_pImmediateContext)
 		m_renderData->m_pImmediateContext->ClearState();
@@ -329,6 +385,91 @@ Texture2D* DX11Renderer::GetTexture2D(const std::string& fileName)
 	}
 
 	return nullptr;
+}
+
+void DX11Renderer::CreateRenderTarget(ObjectHandle& rt, const int W, const int H, const DataFormat dataFormat)
+{
+	D3D11_TEXTURE2D_DESC textureDesc;
+	HRESULT result;
+	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+
+	// Initialize the render target texture description.
+	ZeroMemory(&textureDesc, sizeof(textureDesc));
+
+	// Setup the render target texture description.
+	textureDesc.Width = W;
+	textureDesc.Height = H;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = m_renderData->dxgiFormatArrHelper[(int)dataFormat];
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	textureDesc.CPUAccessFlags = 0;
+	textureDesc.MiscFlags = 0;
+
+	ID3D11Texture2D* tempTargetTexture = nullptr;
+
+	// Create the render target texture.
+	HR(m_renderData->m_pDevice->CreateTexture2D(&textureDesc, nullptr, &tempTargetTexture));
+
+	// Setup the description of the render target view.
+	renderTargetViewDesc.Format = textureDesc.Format;
+	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	renderTargetViewDesc.Texture2D.MipSlice = 0;
+
+	ID3D11RenderTargetView* renderTargetView;
+	HR(m_renderData->m_pDevice->CreateRenderTargetView(tempTargetTexture, &renderTargetViewDesc, &renderTargetView));
+
+	// Setup the description of the shader resource view.
+	shaderResourceViewDesc.Format = textureDesc.Format;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+	ID3D11ShaderResourceView* shaderResourceView;
+
+	HR(m_renderData->m_pDevice->CreateShaderResourceView(tempTargetTexture, &shaderResourceViewDesc, &shaderResourceView));
+
+	if (rt && rt.GetType() == ObjectType::RENDER_TARGET) {
+		auto& renderTargetObj = m_renderData->renderTargets[*rt];
+
+		SafeRelease(renderTargetObj.rtv);
+		SafeRelease(renderTargetObj.texture);
+		SafeRelease(renderTargetObj.srv);
+
+		renderTargetObj.format = dataFormat;
+		renderTargetObj.rtv = renderTargetView;
+		renderTargetObj.texture = tempTargetTexture;
+		renderTargetObj.srv = shaderResourceView;
+	}
+
+	else {
+		RenderTarget renderTargetObj;
+		
+		renderTargetObj.format = dataFormat;
+		renderTargetObj.rtv = renderTargetView;
+		renderTargetObj.texture = tempTargetTexture;
+		renderTargetObj.srv = shaderResourceView;
+
+		const int index = m_renderData->NextAvailableIndex(m_renderData->renderTargets);
+
+		//No free space in the texture container
+		if (index == -1)
+		{
+			m_renderData->renderTargets.emplace_back(renderTargetObj);
+			rt = CreateHandle(ObjectType::RENDER_TARGET, m_renderData->renderTargets.size() - 1);
+		}
+
+		//Insert into available slot
+		else
+		{
+			m_renderData->renderTargets[index] = renderTargetObj;
+			rt = CreateHandle(ObjectType::RENDER_TARGET, index);
+		}
+
+	}
 }
 
 void DX11Renderer::BindNullVertexBuffer()

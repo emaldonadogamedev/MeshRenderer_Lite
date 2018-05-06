@@ -37,6 +37,7 @@ public:
 	ID3D11InputLayout* m_pVSInputLayoutVertexAnimation = nullptr;
 
 	//Resource containers
+	std::vector<RenderTarget> renderTargets;
 	std::vector<Texture1D> textures1D;
 	std::vector<Texture2D> textures2D;
 	std::vector<Texture3D> textures3D;
@@ -87,7 +88,7 @@ private:
 		return -1;
 	}
 
-	DXGI_FORMAT dxgiFormatArrHelper[(int)DataFormat::COUNT] =
+	const DXGI_FORMAT dxgiFormatArrHelper[(int)DataFormat::COUNT] =
 	{
 		DXGI_FORMAT_R8_UNORM,
 		DXGI_FORMAT_R8G8_UNORM,

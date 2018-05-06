@@ -71,6 +71,11 @@ public:
 	void BindTexture2D(unsigned slot, const ObjectHandle& texture);
 
 	//////////////////////////////////////////////////////////////////////////
+	//Render Target functions
+	void CreateRenderTarget(ObjectHandle& rt, const int W, const int H, const DataFormat dataFormat);
+	void BindRenderTarget(ObjectHandle& rt, const unsigned slot);
+
+	//////////////////////////////////////////////////////////////////////////
 	//Release
 	void ReleaseObject(const ObjectHandle& object);
 

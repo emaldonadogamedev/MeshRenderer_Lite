@@ -4,7 +4,7 @@
 cbuffer ConstantBuffer : register(b0)
 {
 	matrix worldMtx;
-	float4 color;
+	float4 objectColor;
 
 	int useTexture;
 	int useNormalMap;
