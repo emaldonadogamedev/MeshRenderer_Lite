@@ -204,8 +204,8 @@ void CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime, const aiNode
 	//assert(Factor >= 0.0f && Factor <= 1.0f);
 	const aiVector3D& Start = pNodeAnim->mPositionKeys[PositionIndex].mValue;
 	const aiVector3D& End = pNodeAnim->mPositionKeys[NextPositionIndex].mValue;
-	aiVector3D Delta = End - Start;
-	Out = Start + Factor * Delta;
+
+	Out = Start + Factor * (End - Start);
 }
 
 int FindRotation(float AnimationTime, const aiNodeAnim* const pNodeAnim)
@@ -402,6 +402,10 @@ void GraphicsSystem::Resize(const int w, const int h)
 {
 	m_dx11Renderer->ResizeBuffers(w, h);
 	testCamera->Resize(DirectX::XM_PIDIV4, (float)w / (float)h, 0.01f, 1000.0f);
+
+	auto& projMtx = testCamera->GetProjection();
+	m_dx11Renderer->GetRendererData().testViewProjBuffer.projectionMtx = projMtx;
+	m_dx11Renderer->GetRendererData().testViewProjBuffer.invProjectionMtx = DirectX::XMMatrixInverse(nullptr, projMtx);
 }
 
 void GraphicsSystem::AddComponent(IComponent* component)

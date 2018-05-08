@@ -23,6 +23,7 @@ m_Near(0.01f),
 m_Far(1000.0f),
 m_FOV(DirectX::XM_PIDIV4),
 m_Speed(45.0f),
+m_rotSpeed(1.67f),
 m_moveLeftRight(0.f),
 m_moveBackForward(0.f)
 {
@@ -43,7 +44,7 @@ void Camera::Resize(const float fov, const float aspectratio, const float n, con
   m_NearWindowHeight = 2.0f * m_Near * tanf(0.5f * m_FOV);
   m_FarWindowHeight = 2.0f * m_Far * tanf(0.5f * m_FOV);
 
-  m_Projection = XMMatrixTranspose(XMMatrixPerspectiveLH(m_FOV, m_AspectRatio, m_Near, m_Far));
+  m_Projection = XMMatrixTranspose(XMMatrixPerspectiveFovLH(m_FOV, m_AspectRatio, m_Near, m_Far));
 }
 
 const XMMATRIX& Camera::GetView() const
@@ -75,12 +76,12 @@ void Camera::Elevate(const float dt)
 
 void Camera::RotateX(const float dt)
 {
-	m_camPitch += dt;
+	m_camPitch += dt * m_rotSpeed;
 }
 
 void Camera::RotateY(const float dt)
 {
-	m_camYaw += dt;
+	m_camYaw += dt * m_rotSpeed;
 }
 
 void Camera::Update()

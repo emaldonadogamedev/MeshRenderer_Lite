@@ -59,6 +59,7 @@ public:
   float m_Far;
   float m_FOV;
   float m_Speed;
+  float m_rotSpeed;
   float m_camYaw = 0.0f;
   float m_camPitch = 0.0f;
 

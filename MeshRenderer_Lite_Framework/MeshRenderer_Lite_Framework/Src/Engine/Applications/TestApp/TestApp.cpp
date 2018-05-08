@@ -33,9 +33,9 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//test3DComp->SetModel(loadedModels.at("tiny_4anim.x").get());
 		//test3DComp->SetModel(graphicsSystem->GetModel("gh_sample_animation.fbx"));
 		//auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
-		auto model = graphicsSystem->GetModel("bunny.obj");
-		//auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
-		model->SetDiffTextureFileName("iron_grill.tga", 0);
+		//auto model = graphicsSystem->GetModel("bunny.obj");
+		auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
+		//model->SetDiffTextureFileName("iron_grill.tga", 0);
 		test3DComp->SetModel(model);
 
 		testObj->AddComponent(test3DComp);
@@ -51,14 +51,29 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//GetSystem(SystemType::ST_GRAPHICS)->AddComponent(testSimpleCloth);
 		//testSimpleCloth->generateVertexBuffers(graphicsSystem->GetRenderer());
 
+
+		//test light 1
 		testLight = std::make_unique<GameObject>();
 		auto transform = new Transform(testLight.get());
-		transform->SetPositionn(DirectX::XMVectorSet(0.f, 3.f, 0.f, 1.f));
+		transform->SetPositionn(DirectX::XMVectorSet(1.f, 3.f, 0.f, 1.f));
 		testLight->AddComponent(transform);
 
 		auto lightComp = new LightComponent(testLight.get());
 		//lightComp->GetLight()->m_lightType = LightType::LT_DIRECTIONAL;
+		lightComp->GetLight()->m_Idiffuse = XMVectorSet(0.0, 0, 1.0f, 1.0f);
 		testLight->AddComponent(lightComp);
+		graphicsSystem->AddComponent(lightComp);
+
+		//test light 2
+		testLight2 = std::make_unique<GameObject>();
+		transform = new Transform(testLight2.get());
+		transform->SetPositionn(DirectX::XMVectorSet(-1.f, 3.f, 0.f, 1.f));
+		testLight2->AddComponent(transform);
+
+		lightComp = new LightComponent(testLight2.get());
+		//lightComp->GetLight()->m_lightType = LightType::LT_DIRECTIONAL;
+		lightComp->GetLight()->m_Idiffuse = XMVectorSet(1.0, 0, 0.0f, 1.0f);
+		testLight2->AddComponent(lightComp);
 		graphicsSystem->AddComponent(lightComp);
 
 
@@ -73,7 +88,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		testFloor->AddComponent(test3DComp);
 		m_graphicsSystem->AddComponent(test3DComp);
 		model = graphicsSystem->GetModel("box.obj");
-		model->SetDiffTextureFileName("iron_grill.tga", 0);
+		//model->SetDiffTextureFileName("iron_grill.tga", 0);
 		test3DComp->SetModel(model);
 
 

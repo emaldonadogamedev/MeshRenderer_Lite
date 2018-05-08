@@ -15,4 +15,5 @@ protected:
 	std::unique_ptr<GameObject> testObj;
 	std::unique_ptr<GameObject> testFloor;
 	std::unique_ptr<GameObject> testLight;
+	std::unique_ptr<GameObject> testLight2;
 };
