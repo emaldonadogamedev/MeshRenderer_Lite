@@ -40,13 +40,15 @@ public:
   void Walk(const float dt);
   void Elevate(const float dt);
   void Pitch(const float angle);
-  void RotateY(const float angle);
+  void RotateX(const float dt);
+  void RotateY(const float dt);
   void Update();
   void ResetAxis();
 
 
   XMVECTOR m_Position;
   XMVECTOR m_LookAt;
+  XMVECTOR m_Forward;
   XMVECTOR m_Up;
   XMVECTOR m_Right;
 
@@ -59,6 +61,9 @@ public:
   float m_Speed;
   float m_camYaw = 0.0f;
   float m_camPitch = 0.0f;
+
+  float m_moveLeftRight;
+ float  m_moveBackForward;
 
   XMMATRIX m_camRotationMatrix;
   XMMATRIX m_View;

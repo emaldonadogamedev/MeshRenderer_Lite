@@ -34,11 +34,13 @@ public:
 	void SetScollDelta(int delta);
 	void SetMousePosition(int x, int y);
 
-	XMFLOAT2 GetMousePosition();
+	const XMFLOAT2& GetPrevMousePosition() const;
+
+	const XMFLOAT2& GetMousePosition() const;
 	int GetMouseXPosition();
 	int GetMouseYPosition();
 
-	XMFLOAT2 GetMouseDelta();
+	const XMFLOAT2& GetMouseDelta() const;
 
 	void SetLeftMouseButton(bool val);
 	void SetMiddleMouseButton(bool val);
@@ -48,6 +50,7 @@ private:
 	bool m_CurrentKeyStates[3];
 	bool m_PreviousKeyStates[3];
 	int m_ScrollDelta;
+	XMFLOAT2 m_prevMousePos;
 	XMFLOAT2 m_MousePos;
 	XMFLOAT2 m_MouseDelta;
 

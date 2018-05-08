@@ -529,32 +529,43 @@ void GraphicsSystem::TestUpdateCamera(const float dt)
 
 	if (input->m_keyboard->IsKeyHeld(KeyboardEvent::VirtualKey::KEY_W))
 	{
-		testCamera->Walk(dt * 10);
+		testCamera->Walk(dt);
 	}
 
 	if (input->m_keyboard->IsKeyHeld(KeyboardEvent::VirtualKey::KEY_S))
 	{
-		testCamera->Walk(-dt * 10);
+		testCamera->Walk(-dt);
 	}
 
 	if (input->m_keyboard->IsKeyHeld(KeyboardEvent::VirtualKey::KEY_A))
 	{
-		testCamera->Strafe(-dt * 10);
+		testCamera->Strafe(-dt);
 	}
 
 	if (input->m_keyboard->IsKeyHeld(KeyboardEvent::VirtualKey::KEY_D))
 	{
-		testCamera->Strafe(dt * 10);
+		testCamera->Strafe(dt);
 	}
 
 	if (input->m_keyboard->IsKeyHeld(KeyboardEvent::VirtualKey::KEY_Q))
 	{
-		testCamera->Elevate(dt * 10);
+		testCamera->Elevate(dt);
 	}
 
 	if (input->m_keyboard->IsKeyHeld(KeyboardEvent::VirtualKey::KEY_E))
 	{
-		testCamera->Elevate(-dt * 10);
+		testCamera->Elevate(-dt);
+	}
+
+	if (input->m_mouse->IsLeftMouseButtonHeld()) {
+		auto& delta = input->m_mouse->GetMouseDelta();
+		if (std::fabsf(delta.y) > 0.00001f) {
+			testCamera->RotateX(dt * (delta.y < 0.f ? -1.0f : 1.0f));
+		}
+
+		if (std::fabsf(delta.x) > 0.00001f) {
+			testCamera->RotateY(dt * (delta.x < 0.f ? -1.0f : 1.0f));
+		}
 	}
 }
 

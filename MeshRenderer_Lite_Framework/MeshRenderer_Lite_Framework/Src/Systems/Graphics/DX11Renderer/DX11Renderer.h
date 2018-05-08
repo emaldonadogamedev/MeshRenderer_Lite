@@ -85,6 +85,8 @@ public:
 	//Misc.
 	bool IsLightingEnabled() const;
 	void SetLightingEnabled(const bool v);
+	void EnableAlphaBlending();
+	void DisableAlphaBlending();
 
 protected:
 	bool InitializeD3D(const int width, const int height, HWND hwnd);

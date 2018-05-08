@@ -932,6 +932,13 @@ void DX11Renderer::SetLightingEnabled(const bool v)
 	m_lightingEnabled = v;
 }
 
+
+void DX11Renderer::DisableAlphaBlending()
+{
+	//Set the default blend state (no blending) for opaque objects
+	m_renderData->m_pImmediateContext->OMSetBlendState(nullptr, 0, 0xffffffff);
+}
+
 bool DX11Renderer::InitializeD3D(const int width, const int height, HWND hwnd)
 {
 	InitializeSwapChain(width, height, hwnd);
@@ -1070,7 +1077,7 @@ bool DX11Renderer::InitializeRasterizerStates()
 	RSDesc.DepthClipEnable = TRUE;
 	RSDesc.ScissorEnable = TRUE;
 	RSDesc.AntialiasedLineEnable = FALSE;
-	RSDesc.MultisampleEnable = FALSE;
+	RSDesc.MultisampleEnable = FALSE; //swapDesc.SampleDesc.Count > 1 ? TRUE : FALSE;
 	m_renderData->m_pDevice->CreateRasterizerState(&RSDesc, &m_renderData->m_d3dRasterStateImgui);
 
 	m_renderData->m_pImmediateContext->RSSetState(m_renderData->m_currentRasterState = m_renderData->m_d3dRasterStateDefault);
@@ -1191,7 +1198,6 @@ bool DX11Renderer::ResizeBuffers(const int width, const int height)
 	HR(m_renderData->m_pDevice->CreateRenderTargetView(pBuffer, nullptr, &(m_renderData->m_pMainRenderTargetView)));
 	// Perform error handling here!
 	pBuffer->Release();
-
 
 	//CREATE DEPTH STENCIL BUFFER
 	D3D11_TEXTURE2D_DESC depthStencilDesc;

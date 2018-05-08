@@ -16,4 +16,6 @@ public:
 	virtual void PostRender() override;
 
 protected:
+
+	void ShowGraphicsSettings();
 };

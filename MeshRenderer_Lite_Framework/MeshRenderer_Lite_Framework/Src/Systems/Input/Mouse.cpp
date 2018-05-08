@@ -19,12 +19,8 @@ MouseEvent::~MouseEvent()
 void MouseEvent::Update(void)
 {
 	memcpy(m_PreviousKeyStates, m_CurrentKeyStates, sizeof(bool) * 3);
-	//m_MouseDelta = Vector2(0.f, 0.f);
-	//m_ScrollDelta = 0;
-	if (MouseEvent::IsLeftMouseButtonHeld())
-	{
-		int b = 10;
-	}
+	m_MouseDelta.x = m_MouseDelta.y = 0.f;
+	m_ScrollDelta = 0;
 }
 
 void MouseEvent::Clear(void)
@@ -108,19 +104,26 @@ void MouseEvent::SetMousePosition(int x, int y)
 	m_MouseDelta.x = float(x) - m_MousePos.x;
 	m_MouseDelta.y = float(y) - m_MousePos.y;
 
+	m_prevMousePos = m_MousePos;
+
 	m_MousePos.x = float(x);
 	m_MousePos.y = float(y);
 }
 
-XMFLOAT2 MouseEvent::GetMousePosition()
+const XMFLOAT2& MouseEvent::GetPrevMousePosition() const
 {
-	const WindowSystem* windowSystem = reinterpret_cast<WindowSystem*>(m_inputSystem->m_engineOwner->GetSystem(SystemType::ST_WINDOW));
-	POINT p;
-	GetCursorPos(&p);
-	ScreenToClient(windowSystem->GetWindowsHandler(), &p);
+	return m_prevMousePos;
+}
 
-	m_MousePos.x = p.x;
-	m_MousePos.y = p.y;
+const XMFLOAT2& MouseEvent::GetMousePosition() const
+{
+	//const WindowSystem* windowSystem = reinterpret_cast<WindowSystem*>(m_inputSystem->m_engineOwner->GetSystem(SystemType::ST_WINDOW));
+	//POINT p;
+	//GetCursorPos(&p);
+	//ScreenToClient(windowSystem->GetWindowsHandler(), &p);
+
+	//m_MousePos.x = p.x;
+	//m_MousePos.y = p.y;
 
 
 	return m_MousePos;
@@ -136,7 +139,7 @@ int MouseEvent::GetMouseYPosition()
 	return static_cast<int>(m_MousePos.y);
 }
 
-XMFLOAT2 MouseEvent::GetMouseDelta()
+const XMFLOAT2& MouseEvent::GetMouseDelta() const
 {
 	return m_MouseDelta;
 }
