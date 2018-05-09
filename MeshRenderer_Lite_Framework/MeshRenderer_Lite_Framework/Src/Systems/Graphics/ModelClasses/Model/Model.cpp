@@ -60,10 +60,17 @@ bool Model::IsAnimationActive() const
 	return m_animationEnabled;
 }
 
-void Model::SetDiffTextureFileName(const std::string& fileName, const unsigned int meshIdx /*= 0*/)
+void Model::SetDiffTextureFileName(const std::string& fileName, const unsigned int meshIdx)
 {
+#if _DEBUG
 	if (meshIdx < m_meshEntryList.size())
 		m_meshEntryList[meshIdx].diffTextureName = fileName;
+	else
+		throw std::exception("Error: meshIdx out of range!");
+#else
+	m_meshEntryList[meshIdx].diffTextureName = fileName;
+#endif
+
 }
 
 const std::string& Model::GetFileName() const

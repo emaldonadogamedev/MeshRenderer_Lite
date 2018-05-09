@@ -8,6 +8,7 @@ class GraphicsSystem;
 class Model;
 struct MeshEntry;
 class DX11Renderer;
+class PrimitiveGenerator;
 
 namespace DirectX {
 	struct XMFLOAT3;
@@ -30,6 +31,8 @@ public:
 	Model* ReLoadModel(const std::string& fileName);
 	void EraseModel(const std::string& fileName);
 	void EraseAllModels();
+	
+	void LoadPrimitiveShapes();
 
 private:
 	Model* LoadModel(const std::string& fileName);
@@ -41,6 +44,7 @@ private:
 
 	ModelUmap m_loadedModels;
 	DX11Renderer * const m_renderer;
+	std::unique_ptr<PrimitiveGenerator> m_primitiveGen;
 
 	static const std::string s_modelDir;
 

@@ -7,9 +7,12 @@
 
 #include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
 #include <Systems/Graphics/ModelClasses/Model/Model.h>
+#include <Systems/Graphics/ModelClasses/PrimitiveGenerator/PrimitiveGenerator.h>
+
 
 ModelManager::ModelManager(DX11Renderer * const renderer)
 	:m_renderer(renderer)
+	,m_primitiveGen(std::make_unique<PrimitiveGenerator>())
 {
 }
 
@@ -54,8 +57,30 @@ void ModelManager::EraseAllModels()
 	m_loadedModels.clear();
 }
 
+void ModelManager::LoadPrimitiveShapes()
+{
+	auto box = std::make_unique<Model>();
+	m_primitiveGen->CreateBox(1.0f, 1.0f, 1.0f, *box);
+	box->GenerateBuffers(m_renderer);
+	m_loadedModels["box"] = std::move(box);
+
+	auto quad = std::make_unique<Model>();
+	m_primitiveGen->CreateQuad(1.0f, 1.0f, 0.f, *quad);
+	quad->GenerateBuffers(m_renderer);
+	m_loadedModels["quad"] = std::move(quad);
+	
+	auto sphere = std::make_unique<Model>();
+	m_primitiveGen->CreateSphere(0.5f, 60, 60, *sphere);
+	sphere->GenerateBuffers(m_renderer);
+	m_loadedModels["sphere"] = std::move(sphere);
+}
+
 Model* ModelManager::LoadModel(const std::string& fileName)
 {
+	const auto it = m_loadedModels.find(fileName);
+	if (it != m_loadedModels.end())
+		return it->second.get();
+
 	auto newUniqModel = std::make_unique<Model>();
 
 	static const unsigned int loadFlags = aiProcess_Triangulate

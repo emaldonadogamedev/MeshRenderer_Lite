@@ -114,6 +114,12 @@ void PrimitiveGenerator::CreateBox(float width, float height, float depth, Model
 	i[33] = 20; i[34] = 22; i[35] = 23;
 
 	ModelData.m_indices.assign(&i[0], &i[sizeof(i)/sizeof(i[0])]);
+
+	MeshEntry me;
+	me.baseIndex = 0;
+	me.baseVertex = 0;
+	me.numIndices = ModelData.m_indices.size();
+	ModelData.m_meshEntryList.push_back(me);
 }
 
 void PrimitiveGenerator::CreateQuad(float width, float height, float zLevel, Model& ModelData)
@@ -141,10 +147,15 @@ void PrimitiveGenerator::CreateQuad(float width, float height, float zLevel, Mod
 	i[3] = 0; i[4] = 2; i[5] = 3;
 
 	ModelData.m_indices.assign(&i[0], &i[sizeof(i) / sizeof(i[0])]);
+
+	MeshEntry me;
+	me.baseIndex = 0;
+	me.baseVertex = 0;
+	me.numIndices = ModelData.m_indices.size();
+	ModelData.m_meshEntryList.push_back(me);
 }
 
-/*
-void PrimitiveGenerator::CreateSphere(float radius, unsigned sliceCount, unsigned stackCount, ModelData& ModelData)
+void PrimitiveGenerator::CreateSphere(float radius, unsigned sliceCount, unsigned stackCount, Model& ModelData)
 {
 	ModelData.m_vertices.clear();
 	ModelData.m_indices.clear();
@@ -156,31 +167,44 @@ void PrimitiveGenerator::CreateSphere(float radius, unsigned sliceCount, unsigne
 	// Poles: note that there will be texture coordinate distortion as there is
 	// not a unique point on the texture map to assign to the pole when mapping
 	// a rectangular texture onto a sphere.
-	VertexTexture topVertex(0.0f, +radius, 0.0f, 0.0f, +1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);   //WHITE
-	VertexTexture bottomVertex(0.0f, -radius, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);//BLACK
+	VertexAnimation topVertex(0.0f, +radius, 0.0f, 0.0f, +1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);   //WHITE
+	VertexAnimation bottomVertex(0.0f, -radius, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);//BLACK
 
-	ModelData.m_vertices.push_back(topVertex);
+	ModelData.m_vertices.emplace_back(topVertex);
 
 	float phiStep = DirectX::XM_PI / static_cast<float>(stackCount);
 	float thetaStep = 2.0f * DirectX::XM_PI / static_cast<float>(sliceCount);
 
-	XMFLOAT4 colorIncrement = (bottomVertex.color - topVertex.color) / static_cast<float>(sliceCount);
+	XMFLOAT4 colorIncrement(
+		(bottomVertex.color.x - topVertex.color.x) / static_cast<float>(sliceCount),
+		(bottomVertex.color.y - topVertex.color.y) / static_cast<float>(sliceCount),
+		(bottomVertex.color.z - topVertex.color.z) / static_cast<float>(sliceCount),
+		(bottomVertex.color.w - topVertex.color.w) / static_cast<float>(sliceCount)
+	);
 
-	XMFLOAT4 ringcolor = topVertex.color + colorIncrement;
+	XMFLOAT4 ringcolor( 
+		topVertex.color.x + colorIncrement.x,
+		topVertex.color.y + colorIncrement.y,
+		topVertex.color.z + colorIncrement.z,
+		topVertex.color.w + colorIncrement.w
+	);
 
 	// Compute vertices for each stack ring (do not count the poles as rings).
 	for (unsigned i = 1; i <= stackCount - 1; ++i)
 	{
 		float phi = i*phiStep;
 
-		ringcolor += colorIncrement;
+		ringcolor.x += colorIncrement.x;
+		ringcolor.y += colorIncrement.y;
+		ringcolor.z += colorIncrement.z;
+		ringcolor.w += colorIncrement.w;
 
 		// Vertices of ring.
 		for (unsigned j = 0; j <= sliceCount; ++j)
 		{
 			float theta = j*thetaStep;
 
-			VertexTexture v;
+			VertexAnimation v;
 
 			v.color = ringcolor;
 
@@ -194,16 +218,16 @@ void PrimitiveGenerator::CreateSphere(float radius, unsigned sliceCount, unsigne
 			v.tangent.y = 0.0f;
 			v.tangent.z = +radius*sinf(phi)*cosf(theta);
 
-			v.tangent.Normalize(); DirectX::XMVector3Normalize();
-
+			XMFloat3Normalize(v.tangent);
 			//DirectX::XMVECTOR T = XMLoadVector3(&v.tangent);
 			//DirectX::XMStoreVector3(&v.tangent, Vector3normalize(T));
 
 			//DirectX::XMVECTOR p = XMLoadVector3(&v.position);
 			//DirectX::XMStoreVector3(&v.normal, Vector3normalize(p));
 
-			Vector3 p = v.position;
-			p.Normalize();
+			XMFLOAT3 p = v.position;
+			
+			XMFloat3Normalize(p);
 			v.normal = p;
 
 			v.uv.x = theta / DirectX::XM_2PI;
@@ -266,9 +290,39 @@ void PrimitiveGenerator::CreateSphere(float radius, unsigned sliceCount, unsigne
 		ModelData.m_indices.emplace_back(baseIndex + i);
 		ModelData.m_indices.emplace_back(baseIndex + i + 1);
 	}
+
+	MeshEntry me;
+	me.baseIndex = 0;
+	me.baseVertex = 0;
+	me.numIndices = ModelData.m_indices.size();
+	ModelData.m_meshEntryList.emplace_back(me);
 }
 
+XMFLOAT3 PrimitiveGenerator::XMFloat3GetNormalized(const XMFLOAT3& v) const
+{
+	float l = (v.x*v.x) + (v.y*v.y) + (v.z*v.z);
+	if (std::fabsf(l) <= 0.00001f) {
+		return XMFLOAT3(0, 0, 0);
+	}
 
+	l = sqrt(l);
+	return XMFLOAT3(v.x / l, v.y/l, v.z/l);
+}
+
+void PrimitiveGenerator::XMFloat3Normalize(XMFLOAT3& v) const
+{
+	float l = (v.x*v.x) + (v.y*v.y) + (v.z*v.z);
+	if (std::fabsf(l) > 0.00001f) {
+		l = sqrt(l);
+		v.x /= l; 
+		v.y /= l;
+		v.z /= l;
+		return;
+	}
+	v.x = v.y = v.z = 0.f;
+}
+
+/*
 void PrimitiveGenerator::Subdivide(ModelData& modelData)
 {
 	// Save a copy of the input geometry.

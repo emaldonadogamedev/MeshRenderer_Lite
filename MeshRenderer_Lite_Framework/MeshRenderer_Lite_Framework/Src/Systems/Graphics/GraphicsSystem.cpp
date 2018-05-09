@@ -54,10 +54,13 @@ bool GraphicsSystem::Initialize()
 
 	bool result = m_dx11Renderer->InitializeRenderer(window->GetWindowWidth(), window->GetWindowHeight(), window->GetWindowsHandler());
 
-	//Load resources
-	LoadBasicShaders();
-	AddRenderStages();
-	InitializeImGui();
+	if (result) {
+		//Load resources
+		LoadPrimitiveShapes();
+		LoadBasicShaders();
+		AddRenderStages();
+		InitializeImGui();
+	}
 
 	return result;
 }
@@ -518,13 +521,18 @@ void GraphicsSystem::LoadBasicShaders()
 
 
 	psHandle = ObjectHandle::Null();
-	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "AnimationDebugPS.hlsl", false);
-	m_resources[(int)ObjectType::PIXEL_SHADER]["AnimationDebugPS"] = psHandle;
+	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "ShowNormalsPS.hlsl", false);
+	m_resources[(int)ObjectType::PIXEL_SHADER]["ShowNormalsPS"] = psHandle;
 
 	psHandle = ObjectHandle::Null();
 	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "SimplePS.hlsl", false);
 	m_resources[(int)ObjectType::PIXEL_SHADER]["SimplePS"] = psHandle;
 
+}
+
+void GraphicsSystem::LoadPrimitiveShapes()
+{
+	m_modelManager->LoadPrimitiveShapes();
 }
 
 void GraphicsSystem::TestUpdateCamera(const float dt)

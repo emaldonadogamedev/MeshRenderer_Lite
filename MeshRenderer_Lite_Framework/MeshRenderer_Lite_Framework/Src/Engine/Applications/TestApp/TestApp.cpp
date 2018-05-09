@@ -33,8 +33,8 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//test3DComp->SetModel(loadedModels.at("tiny_4anim.x").get());
 		//test3DComp->SetModel(graphicsSystem->GetModel("gh_sample_animation.fbx"));
 		//auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
-		//auto model = graphicsSystem->GetModel("bunny.obj");
-		auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
+		auto model = graphicsSystem->GetModel("sphere");
+		//auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
 		//model->SetDiffTextureFileName("iron_grill.tga", 0);
 		test3DComp->SetModel(model);
 
@@ -49,7 +49,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//auto* testSimpleCloth = new SimpleClothComponent(testObj.get(), 12, 12, 33, 33);
 		//testObj->AddComponent(testSimpleCloth);
 		//GetSystem(SystemType::ST_GRAPHICS)->AddComponent(testSimpleCloth);
-		//testSimpleCloth->generateVertexBuffers(graphicsSystem->GetRenderer());
+		//testSimpleCloth->generatesVertexBuffers(graphicsSystem->GetRenderer());
 
 
 		//test light 1
@@ -87,8 +87,8 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		test3DComp = new ModelComponent(testFloor.get());
 		testFloor->AddComponent(test3DComp);
 		m_graphicsSystem->AddComponent(test3DComp);
-		model = graphicsSystem->GetModel("box.obj");
-		//model->SetDiffTextureFileName("iron_grill.tga", 0);
+		model = graphicsSystem->GetModel("box");
+		model->SetDiffTextureFileName("iron_grill.tga", 0);
 		test3DComp->SetModel(model);
 
 

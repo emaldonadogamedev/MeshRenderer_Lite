@@ -136,6 +136,22 @@ void ImGuiStage::ShowGraphicsSettings()
 				m_renderer->SetLightingEnabled(false);
 			}
 
+			if (ImGui::BeginMenu("Show Debug Info..."))
+			{
+				if (ImGui::MenuItem("Normals")) {
+
+				}
+				if (ImGui::MenuItem("Position")) {
+
+				}
+				if (ImGui::MenuItem("UV coords")) {
+
+				}
+
+
+				ImGui::EndMenu();
+			}
+
 			ImGui::EndMenu();
 		}
 

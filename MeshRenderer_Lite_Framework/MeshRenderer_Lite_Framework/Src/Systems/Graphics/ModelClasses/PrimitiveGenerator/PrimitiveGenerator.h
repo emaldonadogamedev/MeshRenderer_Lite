@@ -64,6 +64,9 @@ public:
 	//void CreateSamplingPlane(std::vector<float3>& vertexPositions, float4x4 view, ModelData& ModelData);
 
 private:
+	XMFLOAT3 XMFloat3GetNormalized(const XMFLOAT3& v) const;
+	void XMFloat3Normalize(XMFLOAT3& v) const;
+
 	//std::vector<float2> FindConvexHull(const std::vector<float3>& vertexPositions);
 
 	//void Subdivide(ModelData& ModelData);

@@ -2,5 +2,5 @@
 
 float4 main(PixelInputType pixel) : SV_TARGET
 {
-	return pixel.color;
+	return float4(abs(pixel.normal), 1.0f);
 }
