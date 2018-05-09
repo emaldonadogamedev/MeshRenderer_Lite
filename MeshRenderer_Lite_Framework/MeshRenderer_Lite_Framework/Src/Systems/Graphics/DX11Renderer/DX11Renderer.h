@@ -85,6 +85,8 @@ public:
 	//Misc.
 	bool IsLightingEnabled() const;
 	void SetLightingEnabled(const bool v);
+	bool IsDebugInfoEnabled() const;
+	void SetDebugInfoEnabled(const bool v);
 	void EnableAlphaBlending();
 	void DisableAlphaBlending();
 
@@ -104,7 +106,6 @@ protected:
 	ObjectHandle CreateHandle(const ObjectType type, const int handle) const;
 
 	bool m_isInitialized = false;
-	bool m_lightingEnabled = true;
 
 	friend GraphicsSystem;
 	friend class TextureManager;

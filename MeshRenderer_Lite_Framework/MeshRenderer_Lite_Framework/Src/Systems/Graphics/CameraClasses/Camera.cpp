@@ -110,7 +110,14 @@ void Camera::Update()
 
 void Camera::ResetAxis()
 {
-	m_Right = XMVectorSet(1.0f, 0.0f, 0.0f, 0);
-	m_Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0);
-	m_LookAt = XMVectorSet(0.0f, 0.0f, 0.0f, 0);
+	m_Position = XMVectorSet(0.0f, 0.0f, -156.0f, 1.0f);
+	m_Right = s_defaultRight;
+	m_Up = s_defaultUp;
+	m_Forward = s_defaultForward;
+	m_LookAt = s_ZERO;
+
+	m_moveLeftRight = 0.0f;
+	m_moveBackForward = 0.0f;
+	m_camYaw = 0.f;
+	m_camPitch = 0.f;
 }

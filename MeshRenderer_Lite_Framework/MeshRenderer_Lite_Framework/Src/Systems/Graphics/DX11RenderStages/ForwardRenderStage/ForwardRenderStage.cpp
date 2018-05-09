@@ -49,7 +49,11 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources, co
 	ObjectHandle handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("defaultVS");
 	m_renderer->BindVertexShader(handle);
 
-	if (m_renderer->IsLightingEnabled()) {
+
+	if (m_renderer->IsDebugInfoEnabled()) {
+		handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("ShowDebugInfoPS");
+	}
+	else if (m_renderer->IsLightingEnabled()) {
 		handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("phongLighting");
 	}
 	else

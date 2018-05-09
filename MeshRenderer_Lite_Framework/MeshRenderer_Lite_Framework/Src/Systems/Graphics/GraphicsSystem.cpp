@@ -76,7 +76,11 @@ void GraphicsSystem::Update(const float dt)
 	//TEST - Current camera update
 	TestUpdateCamera(dt);
 	testCamera->Update();
-	m_dx11Renderer->m_renderData->testViewProjBuffer.cameraPosition = testCamera->m_Position;
+	m_dx11Renderer->m_renderData->testViewProjBuffer.cameraPosition.m128_f32[0] = testCamera->m_Position.m128_f32[0];
+	m_dx11Renderer->m_renderData->testViewProjBuffer.cameraPosition.m128_f32[1] = testCamera->m_Position.m128_f32[1];
+	m_dx11Renderer->m_renderData->testViewProjBuffer.cameraPosition.m128_f32[2] = testCamera->m_Position.m128_f32[2];
+	m_dx11Renderer->m_renderData->testViewProjBuffer.cameraPosition.m128_f32[3] = m_dx11Renderer->m_renderData->m_debugIdx;
+
 	m_dx11Renderer->m_renderData->testViewProjBuffer.viewMtx = testCamera->GetView();
 	m_dx11Renderer->m_renderData->testViewProjBuffer.invViewMtx = 
 		DirectX::XMMatrixInverse(nullptr, m_dx11Renderer->m_renderData->testViewProjBuffer.viewMtx);
@@ -521,8 +525,8 @@ void GraphicsSystem::LoadBasicShaders()
 
 
 	psHandle = ObjectHandle::Null();
-	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "ShowNormalsPS.hlsl", false);
-	m_resources[(int)ObjectType::PIXEL_SHADER]["ShowNormalsPS"] = psHandle;
+	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "ShowDebugInfoPS.hlsl", false);
+	m_resources[(int)ObjectType::PIXEL_SHADER]["ShowDebugInfoPS"] = psHandle;
 
 	psHandle = ObjectHandle::Null();
 	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "SimplePS.hlsl", false);
@@ -569,7 +573,7 @@ void GraphicsSystem::TestUpdateCamera(const float dt)
 		testCamera->Elevate(-dt);
 	}
 
-	if (input->m_mouse->IsLeftMouseButtonHeld()) {
+	if (input->m_mouse->IsLeftMouseButtonHeld()  && !ImGui::IsAnyItemActive()) {
 		auto& delta = input->m_mouse->GetMouseDelta();
 		if (std::fabsf(delta.y) > 0.00001f) {
 			testCamera->RotateX(dt * (delta.y < 0.f ? -1.0f : 1.0f));
@@ -578,6 +582,11 @@ void GraphicsSystem::TestUpdateCamera(const float dt)
 		if (std::fabsf(delta.x) > 0.00001f) {
 			testCamera->RotateY(dt * (delta.x < 0.f ? -1.0f : 1.0f));
 		}
+	}
+
+	if (input->m_keyboard->IsKeyPressed(KeyboardEvent::VirtualKey::KEY_R))
+	{
+		testCamera->ResetAxis();
 	}
 }
 

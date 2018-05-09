@@ -135,20 +135,25 @@ void ImGuiStage::ShowGraphicsSettings()
 			if (ImGui::MenuItem("Unlit")) {
 				m_renderer->SetLightingEnabled(false);
 			}
-
-			if (ImGui::BeginMenu("Show Debug Info..."))
+			ImGui::Separator();
+			if (ImGui::BeginMenu("Debug Menu..."))
 			{
-				if (ImGui::MenuItem("Normals")) {
-
-				}
+				ImGui::Checkbox("Show Debug Info...", &renderData.m_showDebugInfo);
 				if (ImGui::MenuItem("Position")) {
-
+					renderData.m_debugIdx = 0.f;
+				}
+				if (ImGui::MenuItem("Normals")) {
+					renderData.m_debugIdx = 1.f;
+				}
+				if (ImGui::MenuItem("Tangent")) {
+					renderData.m_debugIdx = 2.f;
+				}
+				if (ImGui::MenuItem("Bitangent")) {
+					renderData.m_debugIdx = 3.f;
 				}
 				if (ImGui::MenuItem("UV coords")) {
-
+					renderData.m_debugIdx = 4.f;
 				}
-
-
 				ImGui::EndMenu();
 			}
 

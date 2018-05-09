@@ -75,6 +75,11 @@ public:
 
 	ID3D11Buffer* testLightConstBuffer = nullptr;
 
+	//Misc.
+	bool m_showDebugInfo = false;
+	float m_debugIdx = 0.f;
+	bool m_lightingEnabled = true;
+
 private:
 	template<typename Container>
 	int NextAvailableIndex(const Container& container)

@@ -924,14 +924,23 @@ void DX11Renderer::ReleaseObject(const ObjectHandle& object)
 
 bool DX11Renderer::IsLightingEnabled() const
 {
-	return m_lightingEnabled;
+	return m_renderData->m_lightingEnabled;
 }
 
 void DX11Renderer::SetLightingEnabled(const bool v)
 {
-	m_lightingEnabled = v;
+	m_renderData->m_lightingEnabled = v;
 }
 
+bool DX11Renderer::IsDebugInfoEnabled() const
+{
+	return m_renderData->m_showDebugInfo;
+}
+
+void DX11Renderer::SetDebugInfoEnabled(const bool v)
+{
+	m_renderData->m_showDebugInfo = v;
+}
 
 void DX11Renderer::DisableAlphaBlending()
 {
