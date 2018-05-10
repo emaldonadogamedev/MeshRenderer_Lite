@@ -96,6 +96,7 @@ protected:
 	bool InitializeConstBuffers();
 	bool InitializeRasterizerStates();
 	bool InitializeTextureSamplers();
+	bool InitializeBlendStates();
 	bool ResizeBuffers(const int width, const int height);
 
 	//////////////////////////////////////////////////////////////////////////

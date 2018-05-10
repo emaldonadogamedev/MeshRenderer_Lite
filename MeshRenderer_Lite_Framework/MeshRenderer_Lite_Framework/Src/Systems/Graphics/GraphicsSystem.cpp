@@ -133,15 +133,16 @@ void GraphicsSystem::UpdateLightComponents(const float dt)
 #pragma  region ANIMATION HELPERS
 const aiNodeAnim* FindNodeAnim(const aiAnimation* const pAnimation, const string& NodeName)
 {
+	const aiNodeAnim* pNodeAnim;
 	for (int i = 0; i < pAnimation->mNumChannels; i++) {
-		const aiNodeAnim* pNodeAnim = pAnimation->mChannels[i];
+		pNodeAnim = pAnimation->mChannels[i];
 
 		if (string(pNodeAnim->mNodeName.data) == NodeName) {
 			return pNodeAnim;
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 int FindScaling(float AnimationTime, const aiNodeAnim* const pNodeAnim)

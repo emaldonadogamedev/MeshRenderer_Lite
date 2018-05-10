@@ -942,6 +942,12 @@ void DX11Renderer::SetDebugInfoEnabled(const bool v)
 	m_renderData->m_showDebugInfo = v;
 }
 
+void DX11Renderer::EnableAlphaBlending()
+{
+	float blendFactor[] = { 0.75f, 0.75f, 0.75f, 1.0f };
+	m_renderData->m_pImmediateContext->OMSetBlendState(m_renderData->m_transparency, blendFactor, 0xffffffff);
+}
+
 void DX11Renderer::DisableAlphaBlending()
 {
 	//Set the default blend state (no blending) for opaque objects
@@ -951,8 +957,8 @@ void DX11Renderer::DisableAlphaBlending()
 bool DX11Renderer::InitializeD3D(const int width, const int height, HWND hwnd)
 {
 	InitializeSwapChain(width, height, hwnd);
-
 	InitializeRasterizerStates();
+	InitializeBlendStates();
 
 	ResizeBuffers(width, height);
 
@@ -1184,6 +1190,31 @@ bool DX11Renderer::InitializeTextureSamplers()
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
 	HR(m_renderData->m_pDevice->CreateSamplerState(&samplerDesc, &m_renderData->m_pBorderSamplerState));
+
+	return true;
+}
+
+bool DX11Renderer::InitializeBlendStates()
+{
+	D3D11_BLEND_DESC blendDesc;
+	ZeroMemory(&blendDesc, sizeof(blendDesc));
+
+	D3D11_RENDER_TARGET_BLEND_DESC rtbd;
+	ZeroMemory(&rtbd, sizeof(rtbd));
+
+	rtbd.BlendEnable = true;
+	rtbd.SrcBlend = D3D11_BLEND_SRC_COLOR;
+	rtbd.DestBlend = D3D11_BLEND_BLEND_FACTOR;
+	rtbd.BlendOp = D3D11_BLEND_OP_ADD;
+	rtbd.SrcBlendAlpha = D3D11_BLEND_ONE;
+	rtbd.DestBlendAlpha = D3D11_BLEND_ZERO;
+	rtbd.BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	rtbd.RenderTargetWriteMask = D3D10_COLOR_WRITE_ENABLE_ALL;
+
+	blendDesc.AlphaToCoverageEnable = false;
+	blendDesc.RenderTarget[0] = rtbd;
+
+	HR(m_renderData->m_pDevice->CreateBlendState(&blendDesc, &m_renderData->m_transparency));
 
 	return true;
 }

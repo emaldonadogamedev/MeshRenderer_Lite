@@ -35,7 +35,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
 		auto model = graphicsSystem->GetModel("sphere");
 		//auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
-		//model->SetDiffTextureFileName("iron_grill.tga", 0);
+		model->SetDiffTextureFileName("AlphaBlendTest.png", 0);
 		test3DComp->SetModel(model);
 
 		testObj->AddComponent(test3DComp);
@@ -55,7 +55,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//test light 1
 		testLight = std::make_unique<GameObject>();
 		auto transform = new Transform(testLight.get());
-		transform->SetPositionn(DirectX::XMVectorSet(1.f, 3.f, 0.f, 1.f));
+		transform->SetPositionn(DirectX::XMVectorSet(2.f, 3.f, 0.f, 1.f));
 		testLight->AddComponent(transform);
 
 		auto lightComp = new LightComponent(testLight.get());
@@ -67,7 +67,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//test light 2
 		testLight2 = std::make_unique<GameObject>();
 		transform = new Transform(testLight2.get());
-		transform->SetPositionn(DirectX::XMVectorSet(-1.f, 3.f, 0.f, 1.f));
+		transform->SetPositionn(DirectX::XMVectorSet(-2.f, 3.f, 0.f, 1.f));
 		testLight2->AddComponent(transform);
 
 		lightComp = new LightComponent(testLight2.get());
@@ -87,9 +87,9 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		test3DComp = new ModelComponent(testFloor.get());
 		testFloor->AddComponent(test3DComp);
 		m_graphicsSystem->AddComponent(test3DComp);
-		model = graphicsSystem->GetModel("box");
-		model->SetDiffTextureFileName("iron_grill.tga", 0);
-		test3DComp->SetModel(model);
+		auto model2 = graphicsSystem->GetModel("box");
+		model2->SetDiffTextureFileName("AlphaBlendTest.png", 0);
+		test3DComp->SetModel(model2);
 
 
 		return true;

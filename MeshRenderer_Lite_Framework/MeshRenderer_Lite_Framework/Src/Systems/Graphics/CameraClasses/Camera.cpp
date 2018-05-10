@@ -23,7 +23,7 @@ m_Near(0.01f),
 m_Far(1000.0f),
 m_FOV(DirectX::XM_PIDIV4),
 m_Speed(45.0f),
-m_rotSpeed(1.67f),
+m_rotSpeed(10.0f),
 m_moveLeftRight(0.f),
 m_moveBackForward(0.f)
 {

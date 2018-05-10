@@ -27,6 +27,7 @@ void ImGuiStage::PreRender()
 {
 	auto& renderData = m_renderer->GetRendererData();
 	renderData.m_pImmediateContext->RSSetState(renderData.m_d3dRasterStateImgui);
+	m_renderer->DisableAlphaBlending();
 }
 
 void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const float dt)

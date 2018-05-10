@@ -31,6 +31,7 @@ void ForwardRenderStage::PreRender()
 	renderData.m_pImmediateContext->ClearDepthStencilView(renderData.m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 	renderData.m_pImmediateContext->RSSetState(renderData.m_currentRasterState);
 	renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_renderer->EnableAlphaBlending();
 
 	static ID3D11SamplerState* const samplerStates[4] = {
 		renderData.m_pWrapSamplerState,
@@ -52,6 +53,7 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources, co
 
 	if (m_renderer->IsDebugInfoEnabled()) {
 		handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("ShowDebugInfoPS");
+		m_renderer->DisableAlphaBlending();
 	}
 	else if (m_renderer->IsLightingEnabled()) {
 		handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("phongLighting");
