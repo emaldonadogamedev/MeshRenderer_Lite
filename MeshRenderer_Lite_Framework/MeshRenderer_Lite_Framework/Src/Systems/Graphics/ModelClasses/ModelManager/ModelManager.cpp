@@ -87,9 +87,12 @@ Model* ModelManager::LoadModel(const std::string& fileName)
 		| aiProcess_GenSmoothNormals
 		| aiProcess_CalcTangentSpace
 		| aiProcess_GenUVCoords
-		//| aiProcessPreset_TargetRealtime_Fast
 		| aiProcess_ConvertToLeftHanded //Make left-hand side loading, since I'm using DirectX
-	    //| aiProcessPreset_TargetRealtime_MaxQuality
+#ifdef _DEBUG
+		| aiProcessPreset_TargetRealtime_Fast
+#else
+		| aiProcessPreset_TargetRealtime_MaxQuality
+#endif
 		;
 
 	auto const loadedScene = newUniqModel->m_modelImporter.ReadFile((s_modelDir + fileName).c_str(), loadFlags);

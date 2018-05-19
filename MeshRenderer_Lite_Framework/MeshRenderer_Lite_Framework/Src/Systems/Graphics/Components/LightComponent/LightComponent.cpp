@@ -1,8 +1,10 @@
 #include<Utilities/precompiled.h>
 #include<Systems/Graphics/Components/LightComponent/LightComponent.h>
 
-LightComponent::LightComponent(const GameObject* owner, bool isActive /*= true*/, bool useShadows /*= false*/) : IComponent(ComponentType::RENDERABLE_LIGHT, owner, isActive)
+LightComponent::LightComponent(const GameObject* owner, bool isActive, bool useShadows) : IComponent(ComponentType::RENDERABLE_LIGHT, owner, isActive)
 	, m_light(nullptr)
+	, m_useShadows(useShadows)
+	, m_shadowRenderTarget()
 {
 	for (unsigned int i = 0; i < s_maxLights; ++i) 
 	{
@@ -33,9 +35,19 @@ bool LightComponent::IsUsingShadows() const
 	return m_useShadows;
 }
 
+ObjectHandle LightComponent::GetShadowRThandle() const
+{
+	return m_shadowRenderTarget;
+}
+
 void LightComponent::SetUseShadows(const bool v)
 {
 	m_useShadows = v;
+}
+
+void LightComponent::SetShadowRThandle(const ObjectHandle& shadowRT)
+{
+	m_useShadows = shadowRT;
 }
 
 const unsigned int LightComponent::s_maxLights = 15;

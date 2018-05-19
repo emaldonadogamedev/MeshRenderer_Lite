@@ -17,6 +17,7 @@ public:
 
   //Operator overloads
   const int operator*(void) const;
+  ObjectHandle& operator=(const ObjectHandle& rhs);
   bool operator==(const ObjectHandle& rhs) const;
   bool operator!=(const ObjectHandle& rhs) const;
 
@@ -26,6 +27,7 @@ public:
   //Setters
   void SetType(ObjectType type);
   void SetHandleID(int handle);
+  void MakeNull();
 
 private:
   ObjectType m_objType;

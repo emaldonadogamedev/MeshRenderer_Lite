@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Systems/Core/Components/IComponent.h>
+#include <Systems/Graphics/GraphicsUtilities/ObjectHandle.h>
 
 #include <DirectXMath.h>
 
@@ -46,8 +47,10 @@ public:
 
 	Light* GetLight() const;
 	bool IsUsingShadows() const;
+	ObjectHandle GetShadowRThandle() const;
 
 	void SetUseShadows(const bool v);
+	void SetShadowRThandle(const ObjectHandle& shadowRT);
 
 	static const unsigned int s_maxLights;
 	static Light* const GetSceneLightsPtr();
@@ -55,6 +58,7 @@ public:
 private:
 	Light* m_light;
 	bool m_useShadows;
+	ObjectHandle m_shadowRenderTarget;
 
 	static Light sceneLights[];
 

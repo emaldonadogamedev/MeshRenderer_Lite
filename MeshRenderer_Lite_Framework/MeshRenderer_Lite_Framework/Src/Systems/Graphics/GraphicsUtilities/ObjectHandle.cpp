@@ -4,7 +4,7 @@
 //leave the null handle with the default data from the default constructor
 const ObjectHandle ObjectHandle::s_nullHandle;
 
-ObjectHandle::ObjectHandle(void) : m_objType(ObjectType::NONE), m_handleId(-1)
+ObjectHandle::ObjectHandle() : m_objType(ObjectType::NONE), m_handleId(-1)
 {
 
 }
@@ -41,6 +41,14 @@ const int ObjectHandle::operator*(void) const
   return m_handleId;
 }
 
+ObjectHandle& ObjectHandle::operator=(const ObjectHandle& rhs)
+{
+	m_handleId = rhs.m_handleId;
+	m_objType = rhs.m_objType;
+
+	return *this;
+}
+
 bool ObjectHandle::operator==(const ObjectHandle& rhs) const
 {
   return (m_objType == rhs.m_objType && m_handleId == rhs.m_handleId);
@@ -64,4 +72,10 @@ void ObjectHandle::SetType(ObjectType type)
 void ObjectHandle::SetHandleID(int handle)
 {
   m_handleId = handle;
+}
+
+void ObjectHandle::MakeNull()
+{
+	m_objType = ObjectType::NONE;
+	m_handleId = -1;
 }
