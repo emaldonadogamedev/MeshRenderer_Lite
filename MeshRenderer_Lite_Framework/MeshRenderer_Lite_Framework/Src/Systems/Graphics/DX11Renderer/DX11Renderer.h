@@ -10,7 +10,6 @@ using DirectX::XMMATRIX;
 
 class GraphicsSystem;
 class DX11RendererData;
-class Texture2D;
 
 enum class ObjectType : char;
 
@@ -23,7 +22,7 @@ public:
 	bool InitializeRenderer(const int width, const int height, HWND hwnd);
 	void ReleaseData();
 
-	void ClearBuffer(void) const;
+	void ClearMainBuffer() const;
 	void SwapBuffers(void) const;
 
 	DX11RendererData& GetRendererData() const;
@@ -69,13 +68,13 @@ public:
 	void CreateTexture2D(ObjectHandle& textureHandle, const std::string& fileName, bool generateMipChain = true);
 	void CreateTexture2D(ObjectHandle& textureHandle, const int W, const int H, const DataFormat dataFormat,
 		bool generateMipChain = true);
-	Texture2D* GetTexture2D(const std::string& fileName);
-	void BindTexture2D(unsigned slot, const ObjectHandle& texture);
+	ObjectHandle GetTexture2D(const std::string& fileName);
+	void BindTexture2D(const unsigned slot, const ObjectHandle& texture);
 
 	//////////////////////////////////////////////////////////////////////////
 	//Render Target functions
-	void CreateRenderTarget(ObjectHandle& rt, const int W, const int H, const DataFormat dataFormat);
-	void BindRenderTarget(ObjectHandle& rt, const unsigned slot);
+	void CreateRenderTarget(ObjectHandle& rt, const int W, const int H, const DataFormat dataFormat, bool useDepthBuffer = true);
+	void BindRenderTarget(ObjectHandle& rt);
 
 	//////////////////////////////////////////////////////////////////////////
 	//Release

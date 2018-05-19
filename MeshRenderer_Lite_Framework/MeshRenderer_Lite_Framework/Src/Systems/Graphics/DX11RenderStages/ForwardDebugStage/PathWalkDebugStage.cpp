@@ -24,7 +24,7 @@ void PathWalkDebugStage::PreRender()
 	
 }
 
-void PathWalkDebugStage::Render(const HandleDictionaryVec& graphicsResources, const float dt)
+void PathWalkDebugStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 {
 	auto& renderData = m_renderer->GetRendererData();
 	renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);

@@ -56,10 +56,15 @@ typedef Texture3D CubeMap;
 
 struct RenderTarget : D3DObject
 {
-	ID3D11Texture2D* texture;
-	ID3D11RenderTargetView* rtv;
-	ID3D11ShaderResourceView* srv;
+	ID3D11Texture2D* texture = nullptr;
+	ID3D11RenderTargetView* rtv = nullptr;
+	ID3D11ShaderResourceView* srv = nullptr;
 	DataFormat format;
+
+	//Associated depth stencil
+	ID3D11DepthStencilView* depthStencilView = nullptr;
+	ID3D11Texture2D* depthBuffer = nullptr;
+
 	//float downSamplePercentage;
 	//Viewport viewport;
 };

@@ -30,7 +30,7 @@ void ImGuiStage::PreRender()
 	m_renderer->DisableAlphaBlending();
 }
 
-void ImGuiStage::Render(const HandleDictionaryVec& graphicsResources, const float dt)
+void ImGuiStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 {
 	ImGui_ImplDX11_NewFrame();
 

@@ -38,6 +38,8 @@ void DX11Renderer::ReleaseData()
 		SafeRelease(rt.rtv);
 		SafeRelease(rt.srv);
 		SafeRelease(rt.texture);
+		SafeRelease(rt.depthBuffer);
+		SafeRelease(rt.depthStencilView);
 	}
 
 	//1D textures
@@ -115,7 +117,7 @@ void DX11Renderer::ReleaseData()
 	SafeRelease(m_renderData->m_pDevice);
 }
 
-void DX11Renderer::ClearBuffer(void) const
+void DX11Renderer::ClearMainBuffer() const
 {
 	m_renderData->m_pImmediateContext->ClearRenderTargetView(m_renderData->m_pMainRenderTargetView, m_renderData->m_clearColor.m128_f32);
 	m_renderData->m_pImmediateContext->ClearDepthStencilView(m_renderData->m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
@@ -375,19 +377,15 @@ void DX11Renderer::CreateConstantBuffer(ObjectHandle& constantBuffer, unsigned s
 	}
 }
 
-Texture2D* DX11Renderer::GetTexture2D(const std::string& fileName)
+ObjectHandle DX11Renderer::GetTexture2D(const std::string& fileName)
 {
 	ObjectHandle texture2DHandle;
 	CreateTexture2D(texture2DHandle, fileName);
 
-	if (texture2DHandle) {
-		return &m_renderData->textures2D[*texture2DHandle];
-	}
-
-	return nullptr;
+	return texture2DHandle;
 }
 
-void DX11Renderer::CreateRenderTarget(ObjectHandle& rt, const int W, const int H, const DataFormat dataFormat)
+void DX11Renderer::CreateRenderTarget(ObjectHandle& rt, const int W, const int H, const DataFormat dataFormat, bool useDepthBuffer)
 {
 	D3D11_TEXTURE2D_DESC textureDesc;
 	HRESULT result;
@@ -419,7 +417,7 @@ void DX11Renderer::CreateRenderTarget(ObjectHandle& rt, const int W, const int H
 	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	renderTargetViewDesc.Texture2D.MipSlice = 0;
 
-	ID3D11RenderTargetView* renderTargetView;
+	ID3D11RenderTargetView* renderTargetView = nullptr;
 	HR(m_renderData->m_pDevice->CreateRenderTargetView(tempTargetTexture, &renderTargetViewDesc, &renderTargetView));
 
 	// Setup the description of the shader resource view.
@@ -428,21 +426,55 @@ void DX11Renderer::CreateRenderTarget(ObjectHandle& rt, const int W, const int H
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
-	ID3D11ShaderResourceView* shaderResourceView;
+	ID3D11ShaderResourceView* shaderResourceView = nullptr;
 
 	HR(m_renderData->m_pDevice->CreateShaderResourceView(tempTargetTexture, &shaderResourceViewDesc, &shaderResourceView));
 
+
+	ID3D11Texture2D* depthBuffer = nullptr;
+	ID3D11DepthStencilView* stencilView = nullptr;
+
+	if (useDepthBuffer) {
+		//CREATE DEPTH STENCIL BUFFER
+		D3D11_TEXTURE2D_DESC depthStencilDesc;
+		depthStencilDesc.Width = W;
+		depthStencilDesc.Height = H;
+		depthStencilDesc.MipLevels = 1;
+		depthStencilDesc.ArraySize = 1;
+		depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		depthStencilDesc.SampleDesc.Count = 1;
+		depthStencilDesc.SampleDesc.Quality = 0;
+		depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
+		depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+		depthStencilDesc.CPUAccessFlags = 0;
+		depthStencilDesc.MiscFlags = 0;
+
+		HR(m_renderData->m_pDevice->CreateTexture2D(&depthStencilDesc, 0, &depthBuffer));
+
+		D3D11_DEPTH_STENCIL_VIEW_DESC dsvd;
+		ZeroMemory(&dsvd, sizeof(dsvd));
+
+		dsvd.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		dsvd.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+
+		HR(m_renderData->m_pDevice->CreateDepthStencilView(m_renderData->m_DepthStencilBuffer, &dsvd, &stencilView));
+	}
+	
 	if (rt && rt.GetType() == ObjectType::RENDER_TARGET) {
 		auto& renderTargetObj = m_renderData->renderTargets[*rt];
 
 		SafeRelease(renderTargetObj.rtv);
 		SafeRelease(renderTargetObj.texture);
 		SafeRelease(renderTargetObj.srv);
+		SafeRelease(renderTargetObj.depthStencilView);
+		SafeRelease(renderTargetObj.depthBuffer);
 
 		renderTargetObj.format = dataFormat;
 		renderTargetObj.rtv = renderTargetView;
 		renderTargetObj.texture = tempTargetTexture;
 		renderTargetObj.srv = shaderResourceView;
+		renderTargetObj.depthBuffer = depthBuffer;
+		renderTargetObj.depthStencilView = stencilView;
 	}
 
 	else {
@@ -452,6 +484,8 @@ void DX11Renderer::CreateRenderTarget(ObjectHandle& rt, const int W, const int H
 		renderTargetObj.rtv = renderTargetView;
 		renderTargetObj.texture = tempTargetTexture;
 		renderTargetObj.srv = shaderResourceView;
+		renderTargetObj.depthBuffer = depthBuffer;
+		renderTargetObj.depthStencilView = stencilView;
 
 		const int index = m_renderData->NextAvailableIndex(m_renderData->renderTargets);
 
@@ -469,6 +503,14 @@ void DX11Renderer::CreateRenderTarget(ObjectHandle& rt, const int W, const int H
 			rt = CreateHandle(ObjectType::RENDER_TARGET, index);
 		}
 
+	}
+}
+
+void DX11Renderer::BindRenderTarget(ObjectHandle& rt)
+{
+	if (rt && rt.GetType() == ObjectType::RENDER_TARGET) {
+		const auto renderTarget = m_renderData->renderTargets[*rt];
+		m_renderData->m_pImmediateContext->OMSetRenderTargets(1, &renderTarget.rtv, renderTarget.depthStencilView);
 	}
 }
 
@@ -659,10 +701,10 @@ void DX11Renderer::CreatePixelShader(ObjectHandle& pixelShader, const std::strin
 	ID3DBlob* blob;
 	const std::string target = "ps_5_0";
 
-	unsigned compileFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+	//unsigned compileFlags = D3DCOMPILE_ENABLE_STRICTNESS;
 
 #ifdef _DEBUG
-	compileFlags |= D3DCOMPILE_DEBUG;
+	//compileFlags |= D3DCOMPILE_DEBUG;
 #endif
 
 	CompileShaderHelper(result, &blob, fileName, target, entryPoint);
@@ -731,34 +773,44 @@ void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const std::strin
 	const char l = tolower(fileName[r]);
 	const auto wFileName = std::wstring(fileName.begin(), fileName.end());
 	DirectX::ScratchImage image;
-
+	
 	DirectX::TexMetadata metaData;
 	metaData.format = DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT;
 	metaData.dimension = DirectX::TEX_DIMENSION::TEX_DIMENSION_TEXTURE2D;
 	metaData.mipLevels = generateMipChain ? 4 : 1;
 	metaData.depth = 1;
 
+	HRESULT result;
+
 	//in case the file is tga / NOTE: DO NOT USE .TIFF TEXTURES!!!
 	if (l == 't')
 	{
-		DirectX::LoadFromTGAFile(wFileName.c_str(), &metaData, image);
+		result = DirectX::LoadFromTGAFile(wFileName.c_str(), &metaData, image);
 	}
 	//in case the file is dds
 	else if (l == 'd')
 	{
-		DirectX::LoadFromDDSFile(wFileName.c_str(), 0, &metaData, image);
+		result = DirectX::LoadFromDDSFile(wFileName.c_str(), 0, &metaData, image);
 	}
+	//in case the file is hdr
+	else if (l == 'h') 
+	{
+		result = DirectX::LoadFromHDRFile(wFileName.c_str(), &metaData, image);
+	}
+
 	//else use wic
 	else
 	{
-		DirectX::LoadFromWICFile(wFileName.c_str(), 0, &metaData, image);
+		result = DirectX::LoadFromWICFile(wFileName.c_str(), 0, &metaData, image);
 	}
 
+	if (FAILED(result))
+		return;
 
 	ID3D11ShaderResourceView* srv;
-	const HRESULT hResult = DirectX::CreateShaderResourceView(m_renderData->m_pDevice, image.GetImages(), image.GetImageCount(), metaData, &srv);
+	result = DirectX::CreateShaderResourceView(m_renderData->m_pDevice, image.GetImages(), image.GetImageCount(), metaData, &srv);
 
-	if (FAILED(hResult))
+	if (FAILED(result))
 		return;
 
 	//Assign newly created texture to the object handle
@@ -768,8 +820,7 @@ void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const std::strin
 		Texture2D& texture = m_renderData->textures2D[*textureHandle];
 		//texture.size = Area(image.Width, texDesc.Height);
 
-		if (texture.srv)
-			texture.srv->Release();
+		SafeRelease(texture.srv);
 
 		texture.srv = srv;
 	}
@@ -842,8 +893,7 @@ void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const int W, con
 		Texture2D& texture = m_renderData->textures2D[*textureHandle];
 		//texture.size = Area(image.Width, texDesc.Height);
 
-		if (texture.srv)
-			texture.srv->Release();
+		SafeRelease(texture.srv);
 
 		texture.srv = shaderResourceView;
 	}
@@ -1292,16 +1342,19 @@ ObjectHandle DX11Renderer::CreateHandle(const ObjectType type, const int handle)
 void DX11Renderer::CompileShaderHelper(int& HResult, ID3D10Blob** blobPtrOut, const std::string& fileName,
 	const std::string& target, const std::string& szEntryPoint) const
 {
-	DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
 #ifdef _DEBUG
 	// Set the D3DCOMPILE_DEBUG flag to embed debug information in the shaders.
 	// Setting this flag improves the shader debugging experience, but still allows 
 	// the shaders to be optimized and to run exactly the way they will run in 
 	// the release configuration of this program.
-	dwShaderFlags |= D3DCOMPILE_DEBUG;
+	//dwShaderFlags |= D3DCOMPILE_DEBUG;
 
 	// Disable optimizations to further improve shader debugging
-	dwShaderFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+	//dwShaderFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+
+	static const DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+#else
+	static const DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
 #endif
 
 	ID3D10Blob* pErrorBlob = nullptr;

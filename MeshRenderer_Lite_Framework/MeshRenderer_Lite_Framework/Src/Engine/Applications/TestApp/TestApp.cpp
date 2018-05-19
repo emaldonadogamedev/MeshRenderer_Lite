@@ -88,7 +88,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		testFloor->AddComponent(test3DComp);
 		m_graphicsSystem->AddComponent(test3DComp);
 		auto model2 = graphicsSystem->GetModel("box");
-		model2->SetDiffTextureFileName("AlphaBlendTest.png", 0);
+		model2->SetDiffTextureFileName("crate_1.jpg", 0);
 		test3DComp->SetModel(model2);
 
 

@@ -23,7 +23,7 @@ public:
 	virtual ~IRenderStage() {};
 
 	virtual void PreRender() = 0;
-	virtual void Render(const HandleDictionaryVec& graphicsResources, const float dt) = 0;
+	virtual void Render(HandleDictionaryVec& graphicsResources, const float dt) = 0;
 	virtual void PostRender() = 0;
 
 protected:

@@ -31,7 +31,7 @@ void ForwardRenderStage::PreRender()
 	renderData.m_pImmediateContext->ClearDepthStencilView(renderData.m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 	renderData.m_pImmediateContext->RSSetState(renderData.m_currentRasterState);
 	renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	m_renderer->EnableAlphaBlending();
+	//m_renderer->EnableAlphaBlending();
 
 	static ID3D11SamplerState* const samplerStates[4] = {
 		renderData.m_pWrapSamplerState,
@@ -42,14 +42,13 @@ void ForwardRenderStage::PreRender()
 	renderData.m_pImmediateContext->PSSetSamplers(0, 4, samplerStates);
 }
 
-void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources, const float dt)
+void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 {
 	auto& renderData = m_renderer->GetRendererData();
 
 	//Set shaders
 	ObjectHandle handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("defaultVS");
 	m_renderer->BindVertexShader(handle);
-
 
 	if (m_renderer->IsDebugInfoEnabled()) {
 		handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("ShowDebugInfoPS");
@@ -114,8 +113,9 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources, co
 			//Draw each mesh entry, it's all one big VBuffer and IBufer though
 			for (auto& meshEntry : model->m_meshEntryList)
 			{
-				const auto& textures2D = graphicsResources.at((int)ObjectType::TEXTURE_2D);
+				auto& textures2D = graphicsResources.at((int)ObjectType::TEXTURE_2D);
 
+				//Set the diffuse texture
 				const auto it = textures2D.find(meshEntry.diffTextureName);
 				if (it != textures2D.end()) {
 					const auto& diffTextSRV = renderData.textures2D[*it->second].srv;
@@ -123,7 +123,23 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources, co
 				}
 				else {
 					if (const auto newTexture2D = m_renderer->GetTexture2D("../MeshRenderer_Lite_Framework/Assets/Textures/" + meshEntry.diffTextureName)) {
-						renderData.m_pImmediateContext->PSSetShaderResources(0, 1, &newTexture2D->srv);
+						renderData.m_pImmediateContext->PSSetShaderResources(0, 1, &renderData.textures2D[*newTexture2D].srv);
+
+						textures2D[meshEntry.diffTextureName] = newTexture2D;
+					}
+				}
+
+				//Set the normal map
+				const auto it_np = textures2D.find(meshEntry.normalMapName);
+				if (it_np != textures2D.end()) {
+					const auto& diffTextSRV = renderData.textures2D[*it_np->second].srv;
+					renderData.m_pImmediateContext->PSSetShaderResources(2, 1, &diffTextSRV);
+				}
+				else {
+					if (const auto newNormalMap = m_renderer->GetTexture2D("../MeshRenderer_Lite_Framework/Assets/Textures/" + meshEntry.normalMapName)) {
+						renderData.m_pImmediateContext->PSSetShaderResources(2, 1, &renderData.textures2D[*newNormalMap].srv);
+
+						textures2D[meshEntry.normalMapName] = newNormalMap;
 					}
 				}
 
@@ -147,7 +163,6 @@ void ForwardRenderStage::Render(const HandleDictionaryVec& graphicsResources, co
 
 	renderData.m_pImmediateContext->VSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
 	renderData.m_pImmediateContext->PSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
-	//renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	const auto& clothComponents = (*m_gfxSystemComponents)[(int)ComponentType::PHYSICS_SIMPLE_CLOTH];
 	for (auto component : clothComponents)

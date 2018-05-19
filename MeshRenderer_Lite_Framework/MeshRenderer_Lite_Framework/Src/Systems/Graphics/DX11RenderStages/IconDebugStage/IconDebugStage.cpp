@@ -16,7 +16,7 @@ void IconDebugStage::PreRender()
 {
 }
 
-void IconDebugStage::Render(const HandleDictionaryVec& graphicsResources, const float dt)
+void IconDebugStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 {
 }
 

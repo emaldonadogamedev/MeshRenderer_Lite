@@ -41,16 +41,20 @@ struct Light {
 class LightComponent : public IComponent
 {
 public:
-	LightComponent(const GameObject* owner, bool isActive = true);
+	LightComponent(const GameObject* owner, bool isActive = true, bool useShadows = false);
 	virtual ~LightComponent();
 
 	Light* GetLight() const;
+	bool IsUsingShadows() const;
+
+	void SetUseShadows(const bool v);
 
 	static const unsigned int s_maxLights;
 	static Light* const GetSceneLightsPtr();
 
 private:
 	Light* m_light;
+	bool m_useShadows;
 
 	static Light sceneLights[];
 
