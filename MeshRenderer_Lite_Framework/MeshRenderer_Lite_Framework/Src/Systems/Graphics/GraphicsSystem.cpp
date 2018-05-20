@@ -502,15 +502,15 @@ void GraphicsSystem::LoadBasicShaders()
 	m_dx11Renderer->CreateVertexShader(vsHandle, s_vertexShaderDir + "defaultVS.hlsl", defaultVS_inputLayout, false);
 	m_resources[(int)ObjectType::VERTEX_SHADER]["defaultVS"] = vsHandle;
 
-	vsHandle = ObjectHandle::Null();
+	vsHandle.MakeNull();
 	m_dx11Renderer->CreateVertexShader(vsHandle, s_vertexShaderDir + "AnimationDebugVS.hlsl", defaultVS_inputLayout, false);
 	m_resources[(int)ObjectType::VERTEX_SHADER]["AnimationDebugVS"] = vsHandle;
 
-	vsHandle = ObjectHandle::Null();
+	vsHandle.MakeNull();
 	m_dx11Renderer->CreateVertexShader(vsHandle, s_vertexShaderDir + "SimpleVS.hlsl", defaultVS_inputLayout, false);
 	m_resources[(int)ObjectType::VERTEX_SHADER]["SimpleVS"] = vsHandle;
 
-	vsHandle = ObjectHandle::Null();
+	vsHandle.MakeNull();
 	m_dx11Renderer->CreateVertexShader(vsHandle, s_vertexShaderDir + "SimpleClothVS.hlsl", defaultVS_inputLayout, false);
 	m_resources[(int)ObjectType::VERTEX_SHADER]["SimpleClothVS"] = vsHandle;
 
@@ -520,21 +520,25 @@ void GraphicsSystem::LoadBasicShaders()
 	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "defaultPS.hlsl", false);
 	m_resources[(int)ObjectType::PIXEL_SHADER]["defaultPS"] = psHandle;
 	
-	psHandle = ObjectHandle::Null();
+	psHandle.MakeNull();
 	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "phongLighting.hlsl", false);
 	m_resources[(int)ObjectType::PIXEL_SHADER]["phongLighting"] = psHandle;
 
-	psHandle = ObjectHandle::Null();
+	psHandle.MakeNull();
 	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "BRDFLighting.hlsl", false);
 	m_resources[(int)ObjectType::PIXEL_SHADER]["BRDFLighting"] = psHandle;
 
-	psHandle = ObjectHandle::Null();
+	psHandle.MakeNull();
 	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "ShowDebugInfoPS.hlsl", false);
 	m_resources[(int)ObjectType::PIXEL_SHADER]["ShowDebugInfoPS"] = psHandle;
 
-	psHandle = ObjectHandle::Null();
+	psHandle.MakeNull();
 	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "SimplePS.hlsl", false);
 	m_resources[(int)ObjectType::PIXEL_SHADER]["SimplePS"] = psHandle;
+
+	psHandle.MakeNull();
+	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "DepthPS.hlsl", false);
+	m_resources[(int)ObjectType::PIXEL_SHADER]["DepthPS"] = psHandle;
 
 }
 

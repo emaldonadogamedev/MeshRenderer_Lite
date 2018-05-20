@@ -29,10 +29,10 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		auto graphicsSystem = static_cast<GraphicsSystem*>(GetSystem(SystemType::ST_GRAPHICS));
 
 		//test3DComp->SetModel(loadedModels.at("dragon.obj").get());
-		//test3DComp->SetModel(loadedModels.at("bunny.obj").get());
 		//test3DComp->SetModel(loadedModels.at("tiny_4anim.x").get());
 		//test3DComp->SetModel(graphicsSystem->GetModel("gh_sample_animation.fbx"));
-		auto model = graphicsSystem->GetModel("gh_sample_animation.fbx");
+		//auto model = graphicsSystem->GetModel("gh_sample_animation.fbx");
+		auto model = graphicsSystem->GetModel("walk.fbx");
 		//auto model = graphicsSystem->GetModel("sphere");
 		//auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
 		//model->SetDiffTextureFileName("AlphaBlendTest.png", 0);

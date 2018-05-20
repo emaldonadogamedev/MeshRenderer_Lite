@@ -2,14 +2,12 @@
 #include "PixelShaderIncludes.hlsli"
 
 float CalculateAttenuation(int lightType, float d, float C, float L, float Q) {
-	if (lightType == LT_DIRECTIONAL) {
-		return 1.0f;
-	}
 
-	return min(
-		1.0f/(C + (L * d) + (Q * d * d)),
-		1.0f
-	);
+	return lightType == LT_DIRECTIONAL ? 1.0f :
+		min(
+			1.0f / (C + (L * d) + (Q * d * d)),
+			1.0f
+		);
 }
 
 float4 Fterm(float4 Ks, float3 L, float3 H) {
@@ -31,7 +29,7 @@ static const float4 Ia = float4(0.1, 0.1, 0.1, 1.0);
 
 float4 CaculateBRDFLighting(float3 vertexPos, float3 vertexNormal, float3 vertexTangent, 
 	float3 vertexBiTangent, float2 UVCoords) {
-	float4 finalColor = (float4)0;
+	float4 finalColor = float4(0, 0, 0, 1.0);
 	
 	const float3 viewVec = normalize(cameraPosition.xyz - vertexPos);
 	float3 lightVec;
@@ -43,7 +41,7 @@ float4 CaculateBRDFLighting(float3 vertexPos, float3 vertexNormal, float3 vertex
 		if (sceneLights[i].isTaken) {
 			if (sceneLights[i].isActive)
 			{
-				float4 tempColor = (float4)0;
+				float4 tempColor = float4(0, 0, 0, 1.0);
 
 				lightVec = (sceneLights[i].m_position - vertexPos);
 				float lightVecLength = length(lightVec);

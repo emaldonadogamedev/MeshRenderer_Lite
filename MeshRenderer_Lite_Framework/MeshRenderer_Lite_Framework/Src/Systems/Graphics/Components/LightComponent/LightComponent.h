@@ -61,6 +61,7 @@ private:
 	ObjectHandle m_shadowRenderTarget;
 
 	static Light sceneLights[];
+	static const int ShadowMapIndices[];
 
 	friend class GraphicsSystem;
 	friend class GameObject;

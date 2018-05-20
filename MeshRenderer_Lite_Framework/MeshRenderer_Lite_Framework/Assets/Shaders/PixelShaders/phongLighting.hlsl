@@ -2,14 +2,12 @@
 #include "PixelShaderIncludes.hlsli"
 
 float CalculateAttenuation(int lightType, float d, float C, float L, float Q) {
-	if (lightType == LT_DIRECTIONAL) {
-		return 1.0f;
-	}
 
-	return min(
-		1.0f/(C + (L * d) + (Q * d * d)),
-		1.0f
-	);
+	return lightType == LT_DIRECTIONAL ? 1.0f : 
+		min(
+			1.0f / (C + (L * d) + (Q * d * d)),
+			1.0f
+		);
 }
 
 float4 CaculatePhongLighting(float3 vertexPos, float3 vertexNormal, float3 vertexTangent, 

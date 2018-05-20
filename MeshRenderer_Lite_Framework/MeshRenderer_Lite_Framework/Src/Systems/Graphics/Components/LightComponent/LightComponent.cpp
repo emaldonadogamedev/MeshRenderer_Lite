@@ -57,4 +57,7 @@ Light* const LightComponent::GetSceneLightsPtr()
 	return sceneLights;
 }
 
+const int LightComponent::ShadowMapIndices[s_maxLights] = {
+};
+
 Light LightComponent::sceneLights[s_maxLights];

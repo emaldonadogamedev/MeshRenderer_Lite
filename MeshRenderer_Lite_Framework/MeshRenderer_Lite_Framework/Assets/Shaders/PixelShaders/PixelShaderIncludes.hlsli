@@ -11,6 +11,26 @@ Texture2D normalTexture : register(t2);
 TextureCube skyBoxTextures : register(t3);
 TextureCube dynCubeMapTextures : register(t4);
 
+//Shadow map textures(15)
+#define SHADOW_MAP(x) shadowMap_##x
+
+Texture2D shadowMap_0 : register(t5);
+Texture2D shadowMap_1 : register(t6);
+Texture2D shadowMap_2 : register(t7);
+Texture2D shadowMap_3 : register(t8);
+Texture2D shadowMap_4 : register(t9);
+Texture2D shadowMap_5 : register(t10);
+Texture2D shadowMap_6 : register(t11);
+Texture2D shadowMap_7 : register(t12);
+Texture2D shadowMap_8 : register(t13);
+Texture2D shadowMap_9 : register(t14);
+Texture2D shadowMap_10 : register(t15);
+Texture2D shadowMap_11 : register(t16);
+Texture2D shadowMap_12 : register(t17);
+Texture2D shadowMap_13 : register(t18);
+Texture2D shadowMap_14 : register(t19);
+
+
 //Scene Lights
 
  //-- light types

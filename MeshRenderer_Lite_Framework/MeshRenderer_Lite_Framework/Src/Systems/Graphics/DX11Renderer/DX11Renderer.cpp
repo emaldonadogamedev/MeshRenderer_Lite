@@ -701,12 +701,6 @@ void DX11Renderer::CreatePixelShader(ObjectHandle& pixelShader, const std::strin
 	ID3DBlob* blob;
 	const std::string target = "ps_5_0";
 
-	//unsigned compileFlags = D3DCOMPILE_ENABLE_STRICTNESS;
-
-#ifdef _DEBUG
-	//compileFlags |= D3DCOMPILE_DEBUG;
-#endif
-
 	CompileShaderHelper(result, &blob, fileName, target, entryPoint);
 
 	HR(m_renderData->m_pDevice->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &pixelShaderPtr));
