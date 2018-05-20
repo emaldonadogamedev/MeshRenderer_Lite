@@ -55,7 +55,7 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 		m_renderer->DisableAlphaBlending();
 	}
 	else if (m_renderer->IsLightingEnabled()) {
-		handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("phongLighting");
+		handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("BRDFLighting");
 	}
 	else
 		handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("defaultPS");

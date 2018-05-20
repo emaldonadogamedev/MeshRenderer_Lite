@@ -485,7 +485,7 @@ Model* GraphicsSystem::LoadModelHelper(const std::string& fileName)
 void GraphicsSystem::LoadBasicShaders()
 {
 	//////////////////////////////////////////////////////////////////////////
-	// Default Vertex Shader
+	// Default Vertex Shaders
 	ObjectHandle vsHandle;
 	static const InputLayout defaultVS_inputLayout = 
 	{
@@ -515,7 +515,7 @@ void GraphicsSystem::LoadBasicShaders()
 	m_resources[(int)ObjectType::VERTEX_SHADER]["SimpleClothVS"] = vsHandle;
 
 	//////////////////////////////////////////////////////////////////////////
-	// Default Pixel Shader
+	// Default Pixel Shaders
 	ObjectHandle psHandle;
 	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "defaultPS.hlsl", false);
 	m_resources[(int)ObjectType::PIXEL_SHADER]["defaultPS"] = psHandle;
@@ -524,6 +524,9 @@ void GraphicsSystem::LoadBasicShaders()
 	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "phongLighting.hlsl", false);
 	m_resources[(int)ObjectType::PIXEL_SHADER]["phongLighting"] = psHandle;
 
+	psHandle = ObjectHandle::Null();
+	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "BRDFLighting.hlsl", false);
+	m_resources[(int)ObjectType::PIXEL_SHADER]["BRDFLighting"] = psHandle;
 
 	psHandle = ObjectHandle::Null();
 	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "ShowDebugInfoPS.hlsl", false);

@@ -32,10 +32,10 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//test3DComp->SetModel(loadedModels.at("bunny.obj").get());
 		//test3DComp->SetModel(loadedModels.at("tiny_4anim.x").get());
 		//test3DComp->SetModel(graphicsSystem->GetModel("gh_sample_animation.fbx"));
+		auto model = graphicsSystem->GetModel("gh_sample_animation.fbx");
+		//auto model = graphicsSystem->GetModel("sphere");
 		//auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
-		auto model = graphicsSystem->GetModel("sphere");
-		//auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
-		model->SetDiffTextureFileName("AlphaBlendTest.png", 0);
+		//model->SetDiffTextureFileName("AlphaBlendTest.png", 0);
 		test3DComp->SetModel(model);
 
 		testObj->AddComponent(test3DComp);
@@ -60,7 +60,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 
 		auto lightComp = new LightComponent(testLight.get());
 		//lightComp->GetLight()->m_lightType = LightType::LT_DIRECTIONAL;
-		lightComp->GetLight()->m_Idiffuse = XMVectorSet(0.0, 0, 1.0f, 1.0f);
+		lightComp->GetLight()->m_Idiffuse = XMVectorSet(1.0, 1, 1.0f, 1.0f);
 		testLight->AddComponent(lightComp);
 		graphicsSystem->AddComponent(lightComp);
 
@@ -72,7 +72,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 
 		lightComp = new LightComponent(testLight2.get());
 		//lightComp->GetLight()->m_lightType = LightType::LT_DIRECTIONAL;
-		lightComp->GetLight()->m_Idiffuse = XMVectorSet(1.0, 0, 0.0f, 1.0f);
+		lightComp->GetLight()->m_Idiffuse = XMVectorSet(1.0, 1, 1.0f, 1.0f);
 		testLight2->AddComponent(lightComp);
 		graphicsSystem->AddComponent(lightComp);
 
