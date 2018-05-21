@@ -12,7 +12,7 @@ float CalculateAttenuation(int lightType, float d, float C, float L, float Q) {
 
 float4 Fterm(float4 Ks, float3 L, float3 H) {
 	//(1?L?H)^5
-	float temp = 1.0f - dot(L, H);
+	float temp = 1.0f - max(dot(L, H), 0.f);
 	temp = temp * temp * temp * temp * temp;
 
 	return Ks + ((float4(1, 1, 1, 1) - Ks) * temp);
@@ -20,7 +20,7 @@ float4 Fterm(float4 Ks, float3 L, float3 H) {
 
 float Dterm(float3 N, float3 H, float roughness) {
 	float term1 = (roughness + 2.0f) / TWO_PI;
-	float term2 = pow(dot(N, H), roughness);
+	float term2 = pow(max(dot(H, N), 0.f), roughness);
 
 	return term1 * term2;
 }
