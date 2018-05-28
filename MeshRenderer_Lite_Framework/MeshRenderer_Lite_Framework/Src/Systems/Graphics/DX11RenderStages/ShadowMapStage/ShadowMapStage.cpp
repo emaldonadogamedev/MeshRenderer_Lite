@@ -14,15 +14,12 @@ ShadowMapStage::~ShadowMapStage()
 
 void ShadowMapStage::PreRender()
 {
-	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 {
-	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void ShadowMapStage::PostRender()
 {
-	throw std::logic_error("The method or operation is not implemented.");
 }

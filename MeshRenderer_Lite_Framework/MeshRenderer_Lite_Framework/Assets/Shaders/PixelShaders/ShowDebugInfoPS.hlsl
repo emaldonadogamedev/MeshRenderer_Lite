@@ -2,12 +2,13 @@
 
 float4 main(PixelInputType pixel) : SV_TARGET
 {
-	//Don't know 
+	float depthValue = pixel.position.z / pixel.position.w;
+
 	float3 valueArr[5] = {
-		pixel.position.xyz,
+		pixel.worldPos.xyz,
 		pixel.normal,
 		pixel.tangent,
-		pixel.bitangent,
+		float3(depthValue,depthValue,depthValue),
 		float3(pixel.uv, 0.f)
 	};
 	

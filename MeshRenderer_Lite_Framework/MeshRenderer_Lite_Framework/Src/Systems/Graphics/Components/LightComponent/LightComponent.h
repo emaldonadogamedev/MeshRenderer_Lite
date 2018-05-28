@@ -47,21 +47,23 @@ public:
 
 	Light* GetLight() const;
 	bool IsUsingShadows() const;
-	ObjectHandle GetShadowRThandle() const;
+	const ObjectHandle& GetShadowRThandle() const;
 
 	void SetUseShadows(const bool v);
 	void SetShadowRThandle(const ObjectHandle& shadowRT);
 
 	static const unsigned int s_maxLights;
 	static Light* const GetSceneLightsPtr();
+	static int GetTakenLightsCount();
 
 private:
 	Light* m_light;
 	bool m_useShadows;
-	ObjectHandle m_shadowRenderTarget;
+	ObjectHandle m_shadowRThandle;
 
 	static Light sceneLights[];
 	static const int ShadowMapIndices[];
+	static int s_takenLightCount;
 
 	friend class GraphicsSystem;
 	friend class GameObject;

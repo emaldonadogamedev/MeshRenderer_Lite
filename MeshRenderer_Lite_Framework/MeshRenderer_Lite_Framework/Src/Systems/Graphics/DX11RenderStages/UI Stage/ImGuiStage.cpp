@@ -149,7 +149,7 @@ void ImGuiStage::ShowGraphicsSettings()
 				if (ImGui::MenuItem("Tangent")) {
 					renderData.m_debugIdx = 2.f;
 				}
-				if (ImGui::MenuItem("Bitangent")) {
+				if (ImGui::MenuItem("Depth Buffer")) {
 					renderData.m_debugIdx = 3.f;
 				}
 				if (ImGui::MenuItem("UV coords")) {

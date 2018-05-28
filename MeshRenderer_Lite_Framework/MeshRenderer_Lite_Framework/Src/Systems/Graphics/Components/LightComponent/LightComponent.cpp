@@ -4,14 +4,13 @@
 LightComponent::LightComponent(const GameObject* owner, bool isActive, bool useShadows) : IComponent(ComponentType::RENDERABLE_LIGHT, owner, isActive)
 	, m_light(nullptr)
 	, m_useShadows(useShadows)
-	, m_shadowRenderTarget()
+	, m_shadowRThandle()
 {
 	for (unsigned int i = 0; i < s_maxLights; ++i) 
 	{
 		if (!sceneLights[i].isTaken) 
 		{
 			sceneLights[i].isTaken = 1;
-
 			m_light = &sceneLights[i];
 			return;
 		}
@@ -35,9 +34,9 @@ bool LightComponent::IsUsingShadows() const
 	return m_useShadows;
 }
 
-ObjectHandle LightComponent::GetShadowRThandle() const
+const ObjectHandle& LightComponent::GetShadowRThandle() const
 {
-	return m_shadowRenderTarget;
+	return m_shadowRThandle;
 }
 
 void LightComponent::SetUseShadows(const bool v)
@@ -47,7 +46,7 @@ void LightComponent::SetUseShadows(const bool v)
 
 void LightComponent::SetShadowRThandle(const ObjectHandle& shadowRT)
 {
-	m_useShadows = shadowRT;
+	m_shadowRThandle = shadowRT;
 }
 
 const unsigned int LightComponent::s_maxLights = 15;
@@ -57,7 +56,13 @@ Light* const LightComponent::GetSceneLightsPtr()
 	return sceneLights;
 }
 
-const int LightComponent::ShadowMapIndices[s_maxLights] = {
-};
+int LightComponent::GetTakenLightsCount()
+{
+	return s_takenLightCount;
+}
+
+int LightComponent::s_takenLightCount = 0;
+
+const int LightComponent::ShadowMapIndices[s_maxLights] = {0};
 
 Light LightComponent::sceneLights[s_maxLights];
