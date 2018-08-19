@@ -1,7 +1,8 @@
 #include<Utilities/precompiled.h>
 #include<Systems/Graphics/Components/LightComponent/LightComponent.h>
 
-LightComponent::LightComponent(const GameObject* owner, bool isActive, bool useShadows) : IComponent(ComponentType::RENDERABLE_LIGHT, owner, isActive)
+LightComponent::LightComponent(const GameObject* owner, bool isActive, bool useShadows) : 
+	IComponent(ComponentType::RENDERABLE_LIGHT, owner, isActive)
 	, m_light(nullptr)
 	, m_useShadows(useShadows)
 	, m_shadowRThandle()

@@ -28,7 +28,7 @@ struct Light {
 	XMFLOAT3 m_spotDirection = XMFLOAT3(0, -1, 0);
 	float m_spotInnerAngle = 0.2f;
 
-	float m_spotOutterAngle = 0.5;
+	float m_spotOutterAngle = 0.5f;
 	float m_ConstantAttenuation = 1.0f;
 	float m_LinearAttenuation = 0.1f;
 	float m_QuadraticAttenuation = 0.f;

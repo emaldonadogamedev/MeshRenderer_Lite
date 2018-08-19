@@ -31,10 +31,11 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//test3DComp->SetModel(loadedModels.at("dragon.obj").get());
 		//test3DComp->SetModel(loadedModels.at("tiny_4anim.x").get());
 		//test3DComp->SetModel(graphicsSystem->GetModel("gh_sample_animation.fbx"));
-		auto model = graphicsSystem->GetModel("gh_sample_animation.fbx");
+		//auto model = graphicsSystem->GetModel("bottle.obj");
+		//auto model = graphicsSystem->GetModel("gh_sample_animation.fbx");
 		//auto model = graphicsSystem->GetModel("walk.fbx");
 		//auto model = graphicsSystem->GetModel("sphere");
-		//auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
+		auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
 		//model->SetDiffTextureFileName("AlphaBlendTest.png", 0);
 		test3DComp->SetModel(model);
 
@@ -81,7 +82,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//floor game object
 		testFloor = std::make_unique<GameObject>();
 		transform = new Transform(testFloor.get());
-		transform->SetPositionn(DirectX::XMVectorSet(0.f, -2.6f, 0.f, 1.f));
+		transform->SetPositionn(DirectX::XMVectorSet(0.f, -4.6f, 0.f, 1.f));
 		transform->SetScale(DirectX::XMVectorSet(14.f, 1.f, 14.f, 1.f));
 		testFloor->AddComponent(transform);
 		test3DComp = new ModelComponent(testFloor.get());
@@ -90,7 +91,6 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		auto model2 = graphicsSystem->GetModel("box");
 		model2->SetDiffTextureFileName("crate_1.jpg", 0);
 		test3DComp->SetModel(model2);
-
 
 		return true;
 	}
