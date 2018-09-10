@@ -7,7 +7,7 @@ class GraphicsSystem;
 class ShadowMapStage : public IRenderStage {
 
 public:
-	ShadowMapStage(DX11Renderer* const renderer, RenderCompVec* const gfxComponents);
+	ShadowMapStage(DX11Renderer* const renderer, RenderCompUmap* const gfxComponents);
 	virtual ~ShadowMapStage() override;
 
 	virtual void PreRender() override;

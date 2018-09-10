@@ -8,7 +8,7 @@
 #include<Systems/Graphics/DX11Renderer/DX11Renderer.h>
 #include<Systems/Graphics/DX11Renderer/DX11RendererData.h>
 
-PathWalkDebugStage::PathWalkDebugStage(DX11Renderer* const renderData, RenderCompVec* const gfxComponents)
+PathWalkDebugStage::PathWalkDebugStage(DX11Renderer* const renderData, RenderCompUmap* const gfxComponents)
 	:IRenderStage(renderData, gfxComponents)
 {
 
@@ -36,7 +36,7 @@ void PathWalkDebugStage::Render(HandleDictionaryVec& graphicsResources, const fl
 	m_renderer->BindPixelShader(handle);
 
 	//forward render all of the objects
-	const auto& pathComponents = (*m_gfxSystemComponents)[(int)ComponentType::RENDERABLE_CURVE_PATH];
+	const auto& pathComponents = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_CURVE_PATH];
 	for (const auto* component : pathComponents)
 	{
 		if (component->GetIsActive())

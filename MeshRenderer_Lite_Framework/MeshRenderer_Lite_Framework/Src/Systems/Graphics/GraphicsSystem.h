@@ -18,6 +18,7 @@ class TextureManager;
 typedef std::unordered_map<string, ObjectHandle> HandleDictionary;
 typedef std::vector<HandleDictionary>  HandleDictionaryVec;
 typedef std::vector<std::vector<IComponent*>> RenderCompVec;
+typedef std::unordered_map<ComponentType, std::vector<IComponent*>> RenderCompUmap;
 
 class GraphicsSystem : public ISystem
 {
@@ -44,6 +45,8 @@ protected:
 	void AddRenderStageHelper(IRenderStage* const renderStage);
 	Model* LoadModelHelper(const std::string& fileName);
 	void LoadBasicShaders();
+	void LoadBasicShaderHelper(ObjectHandle& shaderHandle, const ObjectType shaderType, const std::string& fileName, 
+			const std::string& fileExtension = ".hlsl");
 	void LoadPrimitiveShapes();
 
 	//Update helpers
@@ -55,11 +58,8 @@ protected:
 	void UpdateSimpleCCDComponents(const float dt);
 	void UpdateSimpleClothComponents(const float dt);
 
-	//Cameras
-	std::unique_ptr<Camera> testCamera;
-
 	std::unique_ptr<DX11Renderer> m_dx11Renderer;
-	RenderCompVec m_renderComponents;
+	RenderCompUmap m_renderComponents;
 	std::vector<IRenderStage*> m_renderStages;
 
 	std::unique_ptr<ModelManager> m_modelManager;

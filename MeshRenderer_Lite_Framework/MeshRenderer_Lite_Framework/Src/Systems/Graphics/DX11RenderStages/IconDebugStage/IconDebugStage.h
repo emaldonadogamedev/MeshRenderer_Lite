@@ -5,7 +5,7 @@
 class IconDebugStage : public IRenderStage 
 {
 public:
-	IconDebugStage(DX11Renderer* const rendererData, RenderCompVec* const gfxComponents);
+	IconDebugStage(DX11Renderer* const rendererData, RenderCompUmap* const gfxComponents);
 	virtual ~IconDebugStage();
 
 	virtual void PreRender() override;

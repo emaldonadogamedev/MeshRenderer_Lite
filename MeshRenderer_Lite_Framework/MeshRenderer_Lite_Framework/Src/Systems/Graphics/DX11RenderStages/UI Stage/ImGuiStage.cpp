@@ -12,7 +12,7 @@
 #include <Systems/Graphics/ModelClasses/Model/Model.h>
 #include <Systems/Window/WindowSystem.h>
 
-ImGuiStage::ImGuiStage(DX11Renderer* const rendererData, RenderCompVec* const gfxComponents)
+ImGuiStage::ImGuiStage(DX11Renderer* const rendererData, RenderCompUmap* const gfxComponents)
 	:IRenderStage(rendererData, gfxComponents)
 {
 

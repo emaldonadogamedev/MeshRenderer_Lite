@@ -35,7 +35,8 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//auto model = graphicsSystem->GetModel("gh_sample_animation.fbx");
 		//auto model = graphicsSystem->GetModel("walk.fbx");
 		//auto model = graphicsSystem->GetModel("sphere");
-		auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
+		auto model = graphicsSystem->GetModel("dragon.obj");
+		//auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
 		//model->SetDiffTextureFileName("AlphaBlendTest.png", 0);
 		test3DComp->SetModel(model);
 
@@ -59,7 +60,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		transform->SetPositionn(DirectX::XMVectorSet(2.f, 3.f, 0.f, 1.f));
 		testLight->AddComponent(transform);
 
-		auto lightComp = new LightComponent(testLight.get());
+		auto lightComp = new LightComponent(testLight.get(), true, true);
 		//lightComp->GetLight()->m_lightType = LightType::LT_DIRECTIONAL;
 		lightComp->GetLight()->m_Idiffuse = XMVectorSet(1.0, 1, 1.0f, 1.0f);
 		testLight->AddComponent(lightComp);
@@ -71,7 +72,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		transform->SetPositionn(DirectX::XMVectorSet(-2.f, 3.f, 0.f, 1.f));
 		testLight2->AddComponent(transform);
 
-		lightComp = new LightComponent(testLight2.get());
+		lightComp = new LightComponent(testLight2.get(), true, true);
 		//lightComp->GetLight()->m_lightType = LightType::LT_DIRECTIONAL;
 		lightComp->GetLight()->m_Idiffuse = XMVectorSet(1.0, 1, 1.0f, 1.0f);
 		testLight2->AddComponent(lightComp);

@@ -7,7 +7,7 @@ class GraphicsSystem;
 class ImGuiStage : public IRenderStage
 {
 public:
-	ImGuiStage(DX11Renderer* const rendererData, RenderCompVec* const gfxComponents);
+	ImGuiStage(DX11Renderer* const rendererData, RenderCompUmap* const gfxComponents);
 	~ImGuiStage();
 
 

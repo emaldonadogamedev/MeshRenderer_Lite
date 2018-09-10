@@ -7,7 +7,7 @@ class GraphicsSystem;
 class PathWalkDebugStage : IRenderStage
 {
 public:
-	PathWalkDebugStage(DX11Renderer* const renderData, RenderCompVec* const gfxComponents);
+	PathWalkDebugStage(DX11Renderer* const renderData, RenderCompUmap* const gfxComponents);
 	virtual ~PathWalkDebugStage();
 
 	virtual void PreRender() override;

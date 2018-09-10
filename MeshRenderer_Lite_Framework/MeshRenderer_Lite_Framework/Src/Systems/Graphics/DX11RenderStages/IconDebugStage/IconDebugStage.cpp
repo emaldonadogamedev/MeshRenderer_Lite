@@ -1,7 +1,7 @@
 #include<Utilities/precompiled.h>
 #include <Systems/Graphics/DX11RenderStages/IconDebugStage/IconDebugStage.h>
 
-IconDebugStage::IconDebugStage(DX11Renderer* const rendererData, RenderCompVec* const gfxComponents)
+IconDebugStage::IconDebugStage(DX11Renderer* const rendererData, RenderCompUmap* const gfxComponents)
 	:IRenderStage(rendererData, gfxComponents)
 {
 

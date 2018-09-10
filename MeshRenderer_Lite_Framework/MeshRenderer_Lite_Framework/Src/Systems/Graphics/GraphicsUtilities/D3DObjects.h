@@ -65,6 +65,13 @@ struct RenderTarget : D3DObject
 	ID3D11DepthStencilView* depthStencilView = nullptr;
 	ID3D11Texture2D* depthBuffer = nullptr;
 
+	int width = 0, height = 0;
+
+	float GetAspectRatio() const 
+	{
+			return float(width) / float(height);
+	}
+
 	//float downSamplePercentage;
 	//Viewport viewport;
 };

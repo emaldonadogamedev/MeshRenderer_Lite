@@ -12,7 +12,7 @@
 
 #include <d3d11.h>
 
-ForwardRenderStage::ForwardRenderStage(DX11Renderer* const renderer, RenderCompVec* const gfxComponents) :IRenderStage(renderer, gfxComponents)
+ForwardRenderStage::ForwardRenderStage(DX11Renderer* const renderer, RenderCompUmap* const gfxComponents) :IRenderStage(renderer, gfxComponents)
 {
 
 }
@@ -40,6 +40,19 @@ void ForwardRenderStage::PreRender()
 		renderData.m_pBorderSamplerState
 	};
 	renderData.m_pImmediateContext->PSSetSamplers(0, 4, samplerStates);
+
+	renderData.testCamera->Update();
+	renderData.testViewProjBuffer.cameraPosition.m128_f32[0] = renderData.testCamera->m_Position.m128_f32[0];
+	renderData.testViewProjBuffer.cameraPosition.m128_f32[1] = renderData.testCamera->m_Position.m128_f32[1];
+	renderData.testViewProjBuffer.cameraPosition.m128_f32[2] = renderData.testCamera->m_Position.m128_f32[2];
+	renderData.testViewProjBuffer.cameraPosition.m128_f32[3] = renderData.m_debugIdx;
+
+	renderData.testViewProjBuffer.viewMtx = renderData.testCamera->GetView();
+	renderData.testViewProjBuffer.invViewMtx =
+			DirectX::XMMatrixInverse(nullptr, renderData.testViewProjBuffer.viewMtx);
+	//m_dx11Renderer->m_renderData->testViewProjBuffer.projectionMtx = testCamera->GetProjection();
+	renderData.m_pImmediateContext->UpdateSubresource(renderData.testViewProjConstBuffer,
+			0, NULL, &renderData.testViewProjBuffer, 0, 0);
 }
 
 void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
@@ -73,7 +86,7 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 	renderData.m_pImmediateContext->PSSetConstantBuffers(5, 1, &renderData.testLightConstBuffer);
 
 	//forward render all of the objects
-	const auto& modelComponents = (*m_gfxSystemComponents)[(int)ComponentType::RENDERABLE_3D];
+	const auto& modelComponents = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_3D];
 	for (auto component : modelComponents)
 	{
 		if (component->GetIsActive())
@@ -117,11 +130,13 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 
 				//Set the diffuse texture
 				const auto it = textures2D.find(meshEntry.diffTextureName);
-				if (it != textures2D.end()) {
+				if (it != textures2D.end()) 
+				{
 					const auto& diffTextSRV = renderData.textures2D[*it->second].srv;
 					renderData.m_pImmediateContext->PSSetShaderResources(0, 1, &diffTextSRV);
 				}
-				else {
+				else 
+				{
 					if (const auto newTexture2D = m_renderer->GetTexture2D("../MeshRenderer_Lite_Framework/Assets/Textures/" + meshEntry.diffTextureName)) {
 						renderData.m_pImmediateContext->PSSetShaderResources(0, 1, &renderData.textures2D[*newTexture2D].srv);
 
@@ -164,7 +179,7 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 	renderData.m_pImmediateContext->VSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
 	renderData.m_pImmediateContext->PSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
 
-	const auto& clothComponents = (*m_gfxSystemComponents)[(int)ComponentType::PHYSICS_SIMPLE_CLOTH];
+	const auto& clothComponents = (*m_gfxSystemComponents)[ComponentType::PHYSICS_SIMPLE_CLOTH];
 	for (auto component : clothComponents)
 	{
 		if (component->GetIsActive())

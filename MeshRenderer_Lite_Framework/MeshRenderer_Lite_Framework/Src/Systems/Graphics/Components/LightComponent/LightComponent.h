@@ -42,7 +42,8 @@ struct Light {
 class LightComponent : public IComponent
 {
 public:
-	LightComponent(const GameObject* owner, bool isActive = true, bool useShadows = false);
+	LightComponent(const GameObject* owner, bool isActive = true, bool useShadows = false, 
+			const int shadowWidth = 256, const int shadowHeight = 256);
 	virtual ~LightComponent();
 
 	Light* GetLight() const;
@@ -60,6 +61,7 @@ private:
 	Light* m_light;
 	bool m_useShadows;
 	ObjectHandle m_shadowRThandle;
+	int m_shadowMapWidth, m_shadowMapHeight;
 
 	static Light sceneLights[];
 	static const int ShadowMapIndices[];

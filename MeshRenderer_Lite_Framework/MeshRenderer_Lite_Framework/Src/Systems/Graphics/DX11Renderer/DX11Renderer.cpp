@@ -475,6 +475,8 @@ void DX11Renderer::CreateRenderTarget(ObjectHandle& rt, const int W, const int H
 		renderTargetObj.srv = shaderResourceView;
 		renderTargetObj.depthBuffer = depthBuffer;
 		renderTargetObj.depthStencilView = stencilView;
+		renderTargetObj.width = W;
+		renderTargetObj.height = H;
 	}
 
 	else {
@@ -486,6 +488,8 @@ void DX11Renderer::CreateRenderTarget(ObjectHandle& rt, const int W, const int H
 		renderTargetObj.srv = shaderResourceView;
 		renderTargetObj.depthBuffer = depthBuffer;
 		renderTargetObj.depthStencilView = stencilView;
+		renderTargetObj.width = W;
+		renderTargetObj.height = H;
 
 		const int index = m_renderData->NextAvailableIndex(m_renderData->renderTargets);
 
@@ -506,12 +510,30 @@ void DX11Renderer::CreateRenderTarget(ObjectHandle& rt, const int W, const int H
 	}
 }
 
-void DX11Renderer::BindRenderTarget(ObjectHandle& rt)
+void DX11Renderer::BindRenderTarget(const ObjectHandle& rt)
 {
 	if (rt && rt.GetType() == ObjectType::RENDER_TARGET) {
 		const auto renderTarget = m_renderData->renderTargets[*rt];
 		m_renderData->m_pImmediateContext->OMSetRenderTargets(1, &renderTarget.rtv, renderTarget.depthStencilView);
 	}
+}
+
+void DX11Renderer::ClearRenderTarget(const ObjectHandle& rt, const XMVECTOR& clearColor)
+{
+		m_renderData->m_pImmediateContext->ClearRenderTargetView(m_renderData->m_pMainRenderTargetView, m_renderData->m_clearColor.m128_f32);
+		m_renderData->m_pImmediateContext->ClearDepthStencilView(m_renderData->m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+
+		if (rt && rt.GetType() == ObjectType::RENDER_TARGET) {
+				const auto& rtObj = m_renderData->renderTargets[*rt];
+				if (rtObj.rtv) 
+				{
+						m_renderData->m_pImmediateContext->ClearRenderTargetView(rtObj.rtv, clearColor.m128_f32);
+				}
+				if (rtObj.depthStencilView)
+				{
+						m_renderData->m_pImmediateContext->ClearDepthStencilView(rtObj.depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+				}
+		}
 }
 
 void DX11Renderer::BindNullVertexBuffer()

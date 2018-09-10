@@ -11,13 +11,14 @@
 typedef std::unordered_map<std::string, ObjectHandle> HandleDictionary;
 typedef std::vector<HandleDictionary>  HandleDictionaryVec;
 typedef std::vector<std::vector<IComponent*>> RenderCompVec;
+typedef std::unordered_map<ComponentType, std::vector<IComponent*>> RenderCompUmap;
 
 class DX11Renderer;
 
 class IRenderStage
 {
 public:
-	IRenderStage(DX11Renderer* const rendererData, RenderCompVec* const gfxComponents)
+	IRenderStage(DX11Renderer* const rendererData, RenderCompUmap* const gfxComponents)
 		:m_renderer(rendererData)
 		,m_gfxSystemComponents(gfxComponents) {}
 	virtual ~IRenderStage() {};
@@ -29,7 +30,7 @@ public:
 protected:
 	IComponent* GetComponentHelper(const ComponentType compType, const int index)
 	{
-		const auto& compVec = (*m_gfxSystemComponents)[(int)compType];
+		const auto& compVec = (*m_gfxSystemComponents)[compType];
 		const int size = compVec.size();
 		if (size > 0 && index >= 0 && index < size)
 		{
@@ -40,5 +41,5 @@ protected:
 	}
 
 	DX11Renderer* const m_renderer;
-	RenderCompVec* const m_gfxSystemComponents;
+	RenderCompUmap* const m_gfxSystemComponents;
 };

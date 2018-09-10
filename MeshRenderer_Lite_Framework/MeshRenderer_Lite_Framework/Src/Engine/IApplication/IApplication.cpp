@@ -102,7 +102,7 @@ void IApplication::Run(void)
 		}
 		else
 		{
-			Sleep(10);
+			Sleep(1);
 		}
 
 	} // end while(IsRunning())

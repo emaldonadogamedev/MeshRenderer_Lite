@@ -7,6 +7,7 @@
 #include <Systems/Graphics/GraphicsUtilities/InputData.h>
 
 using DirectX::XMMATRIX;
+using DirectX::XMVECTOR;
 
 class GraphicsSystem;
 class DX11RendererData;
@@ -74,7 +75,8 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	//Render Target functions
 	void CreateRenderTarget(ObjectHandle& rt, const int W, const int H, const DataFormat dataFormat, bool useDepthBuffer = true);
-	void BindRenderTarget(ObjectHandle& rt);
+	void BindRenderTarget(const ObjectHandle& rt);
+	void ClearRenderTarget(const ObjectHandle& rt, const XMVECTOR& clearColor = XMVECTOR());
 
 	//////////////////////////////////////////////////////////////////////////
 	//Release

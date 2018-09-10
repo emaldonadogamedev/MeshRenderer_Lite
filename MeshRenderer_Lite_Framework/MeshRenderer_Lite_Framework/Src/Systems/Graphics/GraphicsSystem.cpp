@@ -22,6 +22,7 @@
 #include <Systems/Graphics/DX11Renderer/DX11RendererData.h>
 #include <Systems/Graphics/DX11RenderStages/ForwardDebugStage/PathWalkDebugStage.h>
 #include <Systems/Graphics/DX11RenderStages/ForwardRenderStage/ForwardRenderStage.h>
+#include <Systems/Graphics/DX11RenderStages/ShadowMapStage/ShadowMapStage.h>
 #include <Systems/Graphics/DX11RenderStages/UI Stage/ImGuiStage.h>
 #include <Systems/Graphics/ModelClasses/Model/Model.h>
 #include <Systems/Graphics/ModelClasses/ModelManager/ModelManager.h>
@@ -36,11 +37,10 @@ using namespace DirectX;
 GraphicsSystem::GraphicsSystem(IApplication* const eng) 
 	:ISystem(SystemType::ST_GRAPHICS, eng)
 	,m_dx11Renderer(std::make_unique<DX11Renderer>())
-	,testCamera(std::make_unique<Camera>())
 	,m_modelManager(std::make_unique<ModelManager>(m_dx11Renderer.get()))
 	,m_textureManager(std::make_unique<TextureManager>(m_dx11Renderer.get()))
 {
-	m_renderComponents.resize((size_t)ComponentType::COUNT);
+	//m_renderComponents.resize((size_t)ComponentType::COUNT);
 	m_resources.resize((size_t)ObjectType::COUNT);
 }
 
@@ -75,18 +75,6 @@ void GraphicsSystem::Update(const float dt)
 
 	//TEST - Current camera update
 	TestUpdateCamera(dt);
-	testCamera->Update();
-	m_dx11Renderer->m_renderData->testViewProjBuffer.cameraPosition.m128_f32[0] = testCamera->m_Position.m128_f32[0];
-	m_dx11Renderer->m_renderData->testViewProjBuffer.cameraPosition.m128_f32[1] = testCamera->m_Position.m128_f32[1];
-	m_dx11Renderer->m_renderData->testViewProjBuffer.cameraPosition.m128_f32[2] = testCamera->m_Position.m128_f32[2];
-	m_dx11Renderer->m_renderData->testViewProjBuffer.cameraPosition.m128_f32[3] = m_dx11Renderer->m_renderData->m_debugIdx;
-
-	m_dx11Renderer->m_renderData->testViewProjBuffer.viewMtx = testCamera->GetView();
-	m_dx11Renderer->m_renderData->testViewProjBuffer.invViewMtx = 
-		DirectX::XMMatrixInverse(nullptr, m_dx11Renderer->m_renderData->testViewProjBuffer.viewMtx);
-	//m_dx11Renderer->m_renderData->testViewProjBuffer.projectionMtx = testCamera->GetProjection();
-	m_dx11Renderer->m_renderData->m_pImmediateContext->UpdateSubresource(m_dx11Renderer->m_renderData->testViewProjConstBuffer, 
-		0, NULL, &m_dx11Renderer->m_renderData->testViewProjBuffer, 0, 0);
 
 	//iterate through all render stages(Including UI)
 	for (const auto renderStage : m_renderStages)
@@ -102,7 +90,7 @@ void GraphicsSystem::Update(const float dt)
 
 void GraphicsSystem::UpdateModelComponents(const float dt)
 {
-	auto& modelComponents = m_renderComponents[(int)ComponentType::RENDERABLE_3D];
+	auto& modelComponents = m_renderComponents[ComponentType::RENDERABLE_3D];
 
 	for (auto& component : modelComponents)
 	{
@@ -118,7 +106,7 @@ void GraphicsSystem::UpdateModelComponents(const float dt)
 
 void GraphicsSystem::UpdateLightComponents(const float dt)
 {
-	auto& lightComponents = m_renderComponents[(int)ComponentType::RENDERABLE_LIGHT];
+	auto& lightComponents = m_renderComponents[ComponentType::RENDERABLE_LIGHT];
 
 	for (auto& component : lightComponents)
 	{
@@ -156,10 +144,6 @@ int FindScaling(float AnimationTime, const aiNodeAnim* const pNodeAnim)
 	}
 
 	return pNodeAnim->mNumScalingKeys - 1;
-
-	//assert(0);
-	//
-	//return 0;
 }
 void CalcInterpolatedScaling(aiVector3D& Out, float AnimationTime, const aiNodeAnim* const pNodeAnim)
 {
@@ -191,9 +175,6 @@ int FindPosition(float AnimationTime, const aiNodeAnim* const pNodeAnim)
 
 	return pNodeAnim->mNumPositionKeys - 1;
 
-	//assert(0);
-	//
-	//return 0;
 }
 void CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime, const aiNodeAnim* const pNodeAnim)
 {
@@ -328,7 +309,7 @@ void GraphicsSystem::UpdateAnimation(Model& model, const float dt)
 
 void GraphicsSystem::UpdateCurvePathComponents(const float dt)
 {
-	auto& pathComponents = m_renderComponents[(int)ComponentType::RENDERABLE_CURVE_PATH];
+	auto& pathComponents = m_renderComponents[ComponentType::RENDERABLE_CURVE_PATH];
 
 	for (auto& component : pathComponents)
 	{
@@ -349,7 +330,7 @@ void GraphicsSystem::UpdateCurvePathComponents(const float dt)
 
 void GraphicsSystem::UpdateSimpleCCDComponents(const float dt)
 {
-	auto& simpleCcdComponents = m_renderComponents[(int)ComponentType::PHYSICS_IK_CCD];
+	auto& simpleCcdComponents = m_renderComponents[ComponentType::PHYSICS_IK_CCD];
 
 	for (auto& component : simpleCcdComponents)
 	{
@@ -363,7 +344,7 @@ void GraphicsSystem::UpdateSimpleCCDComponents(const float dt)
 
 void GraphicsSystem::UpdateSimpleClothComponents(const float dt)
 {
-	auto& simpleCcdComponents = m_renderComponents[(int)ComponentType::PHYSICS_SIMPLE_CLOTH];
+	auto& simpleCcdComponents = m_renderComponents[ComponentType::PHYSICS_SIMPLE_CLOTH];
 
 	for (auto& component : simpleCcdComponents)
 	{
@@ -383,11 +364,11 @@ void GraphicsSystem::Shutdown()
 	//Delete all render components
 	for (auto& compVec : m_renderComponents)
 	{
-		for (auto component : compVec)
+		for (auto component : compVec.second)
 		{
 			SafeDelete(component);
 		}
-		compVec.clear();
+		compVec.second.clear();
 	}
 	m_renderComponents.clear();
 
@@ -409,9 +390,9 @@ void GraphicsSystem::ReceiveMessage(const IMessage& msg)
 void GraphicsSystem::Resize(const int w, const int h)
 {
 	m_dx11Renderer->ResizeBuffers(w, h);
-	testCamera->Resize(DirectX::XM_PIDIV4, (float)w / (float)h, 0.01f, 1000.0f);
+	m_dx11Renderer->m_renderData->testCamera->Resize(DirectX::XM_PIDIV4, (float)w / (float)h, 0.01f, 1000.0f);
 
-	auto& projMtx = testCamera->GetProjection();
+	auto& projMtx = m_dx11Renderer->m_renderData->testCamera->GetProjection();
 	m_dx11Renderer->GetRendererData().testViewProjBuffer.projectionMtx = projMtx;
 	m_dx11Renderer->GetRendererData().testViewProjBuffer.invProjectionMtx = DirectX::XMMatrixInverse(nullptr, projMtx);
 }
@@ -420,7 +401,17 @@ void GraphicsSystem::AddComponent(IComponent* component)
 {
 	if (component)
 	{
-		m_renderComponents[(int)component->GetComponentType()].emplace_back(component);
+		m_renderComponents[component->GetComponentType()].emplace_back(component);
+
+		//If it's a light component, create the shadow map
+		if (component->GetComponentType() == ComponentType::RENDERABLE_LIGHT)
+		{
+				ObjectHandle newShadowTextureHandle;
+				LightComponent* lightComp = (LightComponent*)component;
+				m_dx11Renderer->CreateRenderTarget(newShadowTextureHandle, lightComp->m_shadowMapWidth, 
+						lightComp->m_shadowMapHeight, DataFormat::FLOAT4);
+				lightComp->SetShadowRThandle(newShadowTextureHandle);
+		}
 	}
 }
 
@@ -446,8 +437,8 @@ void GraphicsSystem::InitializeImGui()
 void GraphicsSystem::AddRenderStages()
 {
 	//TODO: FINISH THESE
-	//Add shadow map stage
 	//Add reflection map stage
+	AddRenderStageHelper(new ShadowMapStage(m_dx11Renderer.get(), &m_renderComponents));
 	AddRenderStageHelper(new ForwardRenderStage(m_dx11Renderer.get(), &m_renderComponents));
 	AddRenderStageHelper(new PathWalkDebugStage(m_dx11Renderer.get(), &m_renderComponents));
 	AddRenderStageHelper(new ImGuiStage(m_dx11Renderer.get(), &m_renderComponents));
@@ -484,62 +475,51 @@ Model* GraphicsSystem::LoadModelHelper(const std::string& fileName)
 
 void GraphicsSystem::LoadBasicShaders()
 {
+	ObjectHandle shaderHandle;
 	//////////////////////////////////////////////////////////////////////////
 	// Default Vertex Shaders
-	ObjectHandle vsHandle;
-	static const InputLayout defaultVS_inputLayout = 
-	{
-		InputData("POSITION", DataFormat::FLOAT3, false),
-		InputData("NORMAL", DataFormat::FLOAT3, false),
-		InputData("TANGENT", DataFormat::FLOAT3, false),
-		InputData("BITANGENT", DataFormat::FLOAT3, false),
-		InputData("UV", DataFormat::FLOAT2, false),
-		InputData("COLOR", DataFormat::FLOAT4, false),
-		InputData("BONES", DataFormat::INT4, false),
-		InputData("WEIGHTS", DataFormat::FLOAT4, false)
-	};
-
-	m_dx11Renderer->CreateVertexShader(vsHandle, s_vertexShaderDir + "defaultVS.hlsl", defaultVS_inputLayout, false);
-	m_resources[(int)ObjectType::VERTEX_SHADER]["defaultVS"] = vsHandle;
-
-	vsHandle.MakeNull();
-	m_dx11Renderer->CreateVertexShader(vsHandle, s_vertexShaderDir + "AnimationDebugVS.hlsl", defaultVS_inputLayout, false);
-	m_resources[(int)ObjectType::VERTEX_SHADER]["AnimationDebugVS"] = vsHandle;
-
-	vsHandle.MakeNull();
-	m_dx11Renderer->CreateVertexShader(vsHandle, s_vertexShaderDir + "SimpleVS.hlsl", defaultVS_inputLayout, false);
-	m_resources[(int)ObjectType::VERTEX_SHADER]["SimpleVS"] = vsHandle;
-
-	vsHandle.MakeNull();
-	m_dx11Renderer->CreateVertexShader(vsHandle, s_vertexShaderDir + "SimpleClothVS.hlsl", defaultVS_inputLayout, false);
-	m_resources[(int)ObjectType::VERTEX_SHADER]["SimpleClothVS"] = vsHandle;
+	LoadBasicShaderHelper(shaderHandle, ObjectType::VERTEX_SHADER, "defaultVS");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::VERTEX_SHADER, "AnimationDebugVS");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::VERTEX_SHADER, "SimpleVS");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::VERTEX_SHADER, "SimpleClothVS");
 
 	//////////////////////////////////////////////////////////////////////////
 	// Default Pixel Shaders
-	ObjectHandle psHandle;
-	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "defaultPS.hlsl", false);
-	m_resources[(int)ObjectType::PIXEL_SHADER]["defaultPS"] = psHandle;
-	
-	psHandle.MakeNull();
-	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "phongLighting.hlsl", false);
-	m_resources[(int)ObjectType::PIXEL_SHADER]["phongLighting"] = psHandle;
+	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "defaultPS");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "phongLighting");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "BRDFLighting");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "ShowDebugInfoPS");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "SimplePS");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "DepthPS");
+}
 
-	psHandle.MakeNull();
-	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "BRDFLighting.hlsl", false);
-	m_resources[(int)ObjectType::PIXEL_SHADER]["BRDFLighting"] = psHandle;
+void GraphicsSystem::LoadBasicShaderHelper(ObjectHandle& shaderHandle, const ObjectType shaderType, const std::string & fileName, const std::string & fileExtension)
+{
+		if (shaderType == ObjectType::VERTEX_SHADER)
+		{
+				static const InputLayout defaultVS_inputLayout =
+				{
+					InputData("POSITION", DataFormat::FLOAT3, false),
+					InputData("NORMAL", DataFormat::FLOAT3, false),
+					InputData("TANGENT", DataFormat::FLOAT3, false),
+					InputData("BITANGENT", DataFormat::FLOAT3, false),
+					InputData("UV", DataFormat::FLOAT2, false),
+					InputData("COLOR", DataFormat::FLOAT4, false),
+					InputData("BONES", DataFormat::INT4, false),
+					InputData("WEIGHTS", DataFormat::FLOAT4, false)
+				};
 
-	psHandle.MakeNull();
-	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "ShowDebugInfoPS.hlsl", false);
-	m_resources[(int)ObjectType::PIXEL_SHADER]["ShowDebugInfoPS"] = psHandle;
+				shaderHandle.MakeNull();
+				m_dx11Renderer->CreateVertexShader(shaderHandle, s_vertexShaderDir + fileName + fileExtension, defaultVS_inputLayout, false);
+				m_resources[(int)ObjectType::VERTEX_SHADER][fileName] = shaderHandle;
+		}
 
-	psHandle.MakeNull();
-	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "SimplePS.hlsl", false);
-	m_resources[(int)ObjectType::PIXEL_SHADER]["SimplePS"] = psHandle;
-
-	psHandle.MakeNull();
-	m_dx11Renderer->CreatePixelShader(psHandle, s_pixelShaderDir + "DepthPS.hlsl", false);
-	m_resources[(int)ObjectType::PIXEL_SHADER]["DepthPS"] = psHandle;
-
+		else if (shaderType == ObjectType::PIXEL_SHADER)
+		{
+				shaderHandle.MakeNull();
+				m_dx11Renderer->CreatePixelShader(shaderHandle, s_pixelShaderDir + fileName + fileExtension, false);
+				m_resources[(int)ObjectType::PIXEL_SHADER][fileName] = shaderHandle;
+		}
 }
 
 void GraphicsSystem::LoadPrimitiveShapes()
@@ -553,48 +533,48 @@ void GraphicsSystem::TestUpdateCamera(const float dt)
 
 	if (input->m_keyboard->IsKeyHeld(KeyboardEvent::VirtualKey::KEY_W))
 	{
-		testCamera->Walk(dt);
+		m_dx11Renderer->m_renderData->testCamera->Walk(dt);
 	}
 
 	if (input->m_keyboard->IsKeyHeld(KeyboardEvent::VirtualKey::KEY_S))
 	{
-		testCamera->Walk(-dt);
+		m_dx11Renderer->m_renderData->testCamera->Walk(-dt);
 	}
 
 	if (input->m_keyboard->IsKeyHeld(KeyboardEvent::VirtualKey::KEY_A))
 	{
-		testCamera->Strafe(-dt);
+		m_dx11Renderer->m_renderData->testCamera->Strafe(-dt);
 	}
 
 	if (input->m_keyboard->IsKeyHeld(KeyboardEvent::VirtualKey::KEY_D))
 	{
-		testCamera->Strafe(dt);
+		m_dx11Renderer->m_renderData->testCamera->Strafe(dt);
 	}
 
 	if (input->m_keyboard->IsKeyHeld(KeyboardEvent::VirtualKey::KEY_Q))
 	{
-		testCamera->Elevate(dt);
+		m_dx11Renderer->m_renderData->testCamera->Elevate(dt);
 	}
 
 	if (input->m_keyboard->IsKeyHeld(KeyboardEvent::VirtualKey::KEY_E))
 	{
-		testCamera->Elevate(-dt);
+		m_dx11Renderer->m_renderData->testCamera->Elevate(-dt);
 	}
 
 	if (input->m_mouse->IsLeftMouseButtonHeld()  && !ImGui::IsAnyItemActive()) {
 		auto& delta = input->m_mouse->GetMouseDelta();
 		if (std::fabsf(delta.y) > 0.00001f) {
-			testCamera->RotateX(dt * (delta.y < 0.f ? -1.0f : 1.0f));
+			m_dx11Renderer->m_renderData->testCamera->RotateX(dt * (delta.y < 0.f ? -1.0f : 1.0f));
 		}
 
 		if (std::fabsf(delta.x) > 0.00001f) {
-			testCamera->RotateY(dt * (delta.x < 0.f ? -1.0f : 1.0f));
+			m_dx11Renderer->m_renderData->testCamera->RotateY(dt * (delta.x < 0.f ? -1.0f : 1.0f));
 		}
 	}
 
 	if (input->m_keyboard->IsKeyPressed(KeyboardEvent::VirtualKey::KEY_R))
 	{
-		testCamera->ResetAxis();
+		m_dx11Renderer->m_renderData->testCamera->ResetAxis();
 	}
 }
 

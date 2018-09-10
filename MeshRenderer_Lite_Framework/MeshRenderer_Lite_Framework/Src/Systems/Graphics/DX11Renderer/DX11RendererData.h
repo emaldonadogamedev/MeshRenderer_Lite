@@ -2,6 +2,7 @@
 
 #include <Systems/Graphics/GraphicsUtilities/D3DObjects.h>
 #include <Systems/Graphics/BufferClasses/ConstantBuffers.h>
+#include <Systems/Graphics/CameraClasses/Camera.h>
 
 class GraphicsSystem;
 
@@ -74,6 +75,9 @@ public:
 	ID3D11Buffer* testSimpleClothConstBuffer = nullptr;
 
 	ID3D11Buffer* testLightConstBuffer = nullptr;
+
+	//Cameras
+	std::unique_ptr<Camera> testCamera = std::make_unique<Camera>();
 
 	//Misc.
 	bool m_showDebugInfo = false;

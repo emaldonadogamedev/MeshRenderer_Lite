@@ -1,11 +1,14 @@
 #include<Utilities/precompiled.h>
 #include<Systems/Graphics/Components/LightComponent/LightComponent.h>
 
-LightComponent::LightComponent(const GameObject* owner, bool isActive, bool useShadows) : 
+LightComponent::LightComponent(const GameObject* owner, bool isActive, bool useShadows, 
+		const int shadowWidth, const int shadowHeight) :
 	IComponent(ComponentType::RENDERABLE_LIGHT, owner, isActive)
 	, m_light(nullptr)
 	, m_useShadows(useShadows)
 	, m_shadowRThandle()
+	, m_shadowMapWidth(shadowWidth)
+	, m_shadowMapHeight(shadowHeight)
 {
 	for (unsigned int i = 0; i < s_maxLights; ++i) 
 	{
@@ -16,7 +19,7 @@ LightComponent::LightComponent(const GameObject* owner, bool isActive, bool useS
 			return;
 		}
 	}
-	
+
 	throw std::exception("Allocated more lights than possible!");
 }
 
