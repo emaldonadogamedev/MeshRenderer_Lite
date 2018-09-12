@@ -89,5 +89,33 @@ float4 CaculateBRDFLighting(float3 vertexPos, float3 vertexNormal, float3 vertex
 
 float4 main(PixelInputType pixel) : SV_TARGET
 {
-	return CaculateBRDFLighting(pixel.worldPos, pixel.normal, pixel.tangent, pixel.bitangent, pixel.uv);
+	float4 brdfColor = CaculateBRDFLighting(pixel.worldPos, pixel.normal, pixel.tangent, pixel.bitangent, pixel.uv);
+	return brdfColor;
+
+	/*
+
+
+	float bias;
+	float2 projectTexCoord;
+
+	// Set the bias value for fixing the floating point precision issues.
+	bias = 0.001f;
+
+	for (unsigned int i = 0; i < s_maxLights; ++i)
+	{
+			if (sceneLights[i].isTaken)
+			{
+					if (sceneLights[i].isActive)
+					{
+							mul(sceneLights[i].m_position, 
+
+							// Calculate the projected texture coordinates.
+							projectTexCoord.x = input.lightViewPosition.x / input.lightViewPosition.w / 2.0f + 0.5f;
+							projectTexCoord.y = -input.lightViewPosition.y / input.lightViewPosition.w / 2.0f + 0.5f;
+					}
+			}
+	}
+
+	return
+	*/
 }

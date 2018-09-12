@@ -76,6 +76,9 @@ public:
 
 	ID3D11Buffer* testLightConstBuffer = nullptr;
 
+	LightViewProjBuffer testLightViewBuffer;
+	ID3D11Buffer* testLightViewConstBuffer = nullptr;
+
 	//Cameras
 	std::unique_ptr<Camera> testCamera = std::make_unique<Camera>();
 

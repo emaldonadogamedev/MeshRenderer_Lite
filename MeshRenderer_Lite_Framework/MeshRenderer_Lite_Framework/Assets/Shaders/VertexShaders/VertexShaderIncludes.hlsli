@@ -32,3 +32,12 @@ cbuffer SimpleCloth_ConstBuffer : register(b4)
 {
 	ClothParticleGPU particleData[s_maxParticleData];
 }
+
+//--------------------------------------------------------------------------------------
+// Per Light - Shadow Map variables
+//--------------------------------------------------------------------------------------
+cbuffer LightViewProjBuffer : register(b5)
+{
+		matrix lightViewMtx;
+		matrix lightProjectionMtx;
+};

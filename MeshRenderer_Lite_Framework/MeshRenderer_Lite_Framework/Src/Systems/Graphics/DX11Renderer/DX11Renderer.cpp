@@ -100,6 +100,7 @@ void DX11Renderer::ReleaseData()
 	SafeRelease(m_renderData->testAnimationConstBuffer);
 	SafeRelease(m_renderData->testSimpleClothConstBuffer);
 	SafeRelease(m_renderData->testLightConstBuffer);
+	SafeRelease(m_renderData->testLightViewConstBuffer)
 
 	//cleanup texture samplers
 	SafeRelease(m_renderData->m_pWrapSamplerState);
@@ -513,21 +514,23 @@ void DX11Renderer::CreateRenderTarget(ObjectHandle& rt, const int W, const int H
 void DX11Renderer::BindRenderTarget(const ObjectHandle& rt)
 {
 	if (rt && rt.GetType() == ObjectType::RENDER_TARGET) {
-		const auto renderTarget = m_renderData->renderTargets[*rt];
+		const auto& renderTarget = m_renderData->renderTargets[*rt];
 		m_renderData->m_pImmediateContext->OMSetRenderTargets(1, &renderTarget.rtv, renderTarget.depthStencilView);
 	}
 }
 
 void DX11Renderer::ClearRenderTarget(const ObjectHandle& rt, const XMVECTOR& clearColor)
 {
-		m_renderData->m_pImmediateContext->ClearRenderTargetView(m_renderData->m_pMainRenderTargetView, m_renderData->m_clearColor.m128_f32);
-		m_renderData->m_pImmediateContext->ClearDepthStencilView(m_renderData->m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+		ClearRenderTarget(rt, clearColor.m128_f32);
+}
 
+void DX11Renderer::ClearRenderTarget(const ObjectHandle& rt, const float colorArr[4])
+{
 		if (rt && rt.GetType() == ObjectType::RENDER_TARGET) {
 				const auto& rtObj = m_renderData->renderTargets[*rt];
-				if (rtObj.rtv) 
+				if (rtObj.rtv)
 				{
-						m_renderData->m_pImmediateContext->ClearRenderTargetView(rtObj.rtv, clearColor.m128_f32);
+						m_renderData->m_pImmediateContext->ClearRenderTargetView(rtObj.rtv, colorArr);
 				}
 				if (rtObj.depthStencilView)
 				{
@@ -1196,6 +1199,9 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 	bd.ByteWidth = sizeof(Light) * LightComponent::s_maxLights;
 	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testLightConstBuffer));
 
+	bd.ByteWidth = sizeof(LightViewProjBuffer);
+	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testLightViewConstBuffer));
+
 	// Initialize the world matrices
 	//m_renderData->testPerObjectBuffer.worldMtx = XMMatrixScaling(1,1,1) * DirectX::XMMatrixRotationX(XM_PIDIV2) * XMMatrixTranslation(-1, 1, 0);
 	//m_renderData->testPerObjectBuffer.worldMtx = XMMatrixTranspose(m_renderData->testPerObjectBuffer.worldMtx);
@@ -1212,6 +1218,10 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 	// Initialize the projection matrix
 	m_renderData->testViewProjBuffer.projectionMtx = XMMatrixTranspose(XMMatrixPerspectiveFovLH(XM_PIDIV4, width / (FLOAT)height, 0.01f, 1000.0f));
 	m_renderData->m_pImmediateContext->UpdateSubresource(m_renderData->testViewProjConstBuffer, 0, NULL, &m_renderData->testViewProjBuffer, 0, 0);
+
+	//Initialize light view buffer
+	m_renderData->testLightViewBuffer.lightViewMtx = XMMatrixIdentity();
+	m_renderData->testLightViewBuffer.lightProjectionMtx = XMMatrixIdentity();
 
 	// Set primitive topology
 	m_renderData->m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

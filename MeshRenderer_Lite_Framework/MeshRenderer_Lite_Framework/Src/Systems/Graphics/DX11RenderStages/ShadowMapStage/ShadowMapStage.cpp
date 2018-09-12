@@ -27,17 +27,17 @@ ShadowMapStage::~ShadowMapStage()
 void ShadowMapStage::PreRender()
 {
 		auto& renderData = m_renderer->GetRendererData();
-		renderData.m_pImmediateContext->RSSetState(renderData.m_currentRasterState);
+		renderData.m_pImmediateContext->RSSetState(renderData.m_d3dRasterStateDefault);
 		renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
 void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 {
 		//Set shaders
-		ObjectHandle handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("SimpleVS");
+		ObjectHandle handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("ShadowVS");
 		m_renderer->BindVertexShader(handle);
 
-		handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("DepthPS");
+		handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("ShadowPS");
 		m_renderer->BindPixelShader(handle);
 
 		auto& renderData = m_renderer->GetRendererData();
@@ -54,8 +54,17 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 				if (!shadowRThandle)
 						continue;
 
+				const auto& shadowRTObj = renderData.renderTargets[*shadowRThandle];
+
+				//Set the shadow texture as the render target, also clear it
+				m_renderer->BindRenderTarget(shadowRThandle);
+				m_renderer->ClearRenderTarget(shadowRThandle, XMVECTOR());
+
+				//D3D11_VIEWPORT shadowViewport { shadowRTObj.width, shadowRTObj.height, 0,0,0,1.0f };
+				//renderData.m_pImmediateContext->RSSetViewports(1, &shadowViewport);
+
 				//update the view matrix according to the light's position
-				renderData.testViewProjBuffer.viewMtx = XMMatrixTranspose(
+				renderData.testLightViewBuffer.lightViewMtx = XMMatrixTranspose(
 						XMMatrixLookAtLH(
 								(static_cast<Transform* const>(lightComp->GetOwner()->GetComponent(ComponentType::TRANSFORM)))->GetPosition(),
 								renderData.testCamera->m_LookAt,
@@ -63,21 +72,16 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 				);
 
 				//update the projection matrix according to the shadow's texture resolution
-				renderData.testViewProjBuffer.projectionMtx = XMMatrixTranspose(
-						XMMatrixPerspectiveFovLH(renderData.testCamera->m_FOV, renderData.renderTargets[*shadowRThandle].GetAspectRatio(),
-								renderData.testCamera->m_Near, renderData.testCamera->m_Far)
+				renderData.testLightViewBuffer.lightProjectionMtx = XMMatrixTranspose(
+						XMMatrixPerspectiveLH(shadowRTObj.width, shadowRTObj.height, renderData.testCamera->m_Near, 
+								renderData.testCamera->m_Far)
 				);
 
-				renderData.m_pImmediateContext->UpdateSubresource(renderData.testViewProjConstBuffer,
-						0, NULL, &renderData.testViewProjBuffer, 0, 0);
+				renderData.m_pImmediateContext->UpdateSubresource(renderData.testLightViewConstBuffer,
+						0, NULL, &renderData.testLightViewBuffer, 0, 0);
 
 				//Update / Set const buffers
-				renderData.m_pImmediateContext->VSSetConstantBuffers(1, 1, &renderData.testViewProjConstBuffer);
-				renderData.m_pImmediateContext->PSSetConstantBuffers(1, 1, &renderData.testViewProjConstBuffer);
-
-				//Set the shadow texture as the render target, also clear it
-				m_renderer->BindRenderTarget(shadowRThandle);
-				m_renderer->ClearRenderTarget(shadowRThandle);
+				renderData.m_pImmediateContext->VSSetConstantBuffers(5, 1, &renderData.testViewProjConstBuffer);
 
 				//forward render all of the objects
 				const auto& modelComponents = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_3D];
@@ -115,4 +119,6 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 
 void ShadowMapStage::PostRender()
 {
+		//auto& renderData = m_renderer->GetRendererData();
+		//renderData.m_pImmediateContext->RSSetViewports(1, &renderData.m_mainViewport);
 }

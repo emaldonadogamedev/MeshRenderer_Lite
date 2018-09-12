@@ -46,3 +46,9 @@ struct SimpleCloth_ConstBuffer
 {
 	ClothParticleGPU particleData[s_maxParticleData];
 };
+
+struct LightViewProjBuffer
+{
+		XMMATRIX lightViewMtx;
+		XMMATRIX lightProjectionMtx;
+};

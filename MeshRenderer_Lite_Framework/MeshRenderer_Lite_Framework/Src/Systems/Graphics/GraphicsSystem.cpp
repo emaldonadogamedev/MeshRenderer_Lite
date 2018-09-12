@@ -410,6 +410,7 @@ void GraphicsSystem::AddComponent(IComponent* component)
 				LightComponent* lightComp = (LightComponent*)component;
 				m_dx11Renderer->CreateRenderTarget(newShadowTextureHandle, lightComp->m_shadowMapWidth, 
 						lightComp->m_shadowMapHeight, DataFormat::FLOAT4);
+
 				lightComp->SetShadowRThandle(newShadowTextureHandle);
 		}
 	}
@@ -482,6 +483,7 @@ void GraphicsSystem::LoadBasicShaders()
 	LoadBasicShaderHelper(shaderHandle, ObjectType::VERTEX_SHADER, "AnimationDebugVS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::VERTEX_SHADER, "SimpleVS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::VERTEX_SHADER, "SimpleClothVS");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::VERTEX_SHADER, "ShadowVS");
 
 	//////////////////////////////////////////////////////////////////////////
 	// Default Pixel Shaders
@@ -491,6 +493,7 @@ void GraphicsSystem::LoadBasicShaders()
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "ShowDebugInfoPS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "SimplePS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "DepthPS");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "ShadowPS");
 }
 
 void GraphicsSystem::LoadBasicShaderHelper(ObjectHandle& shaderHandle, const ObjectType shaderType, const std::string & fileName, const std::string & fileExtension)
