@@ -27,10 +27,14 @@ struct D3DObject
 	bool deleted;
 };
 
-struct Texture1D : D3DObject
+struct TextureObject : D3DObject
+{
+		ID3D11ShaderResourceView* srv = nullptr;
+};
+
+struct Texture1D : TextureObject
 {
 	ID3D11Texture1D* texture1D;
-	ID3D11ShaderResourceView* srv;
 	int size;
 };
 
@@ -39,26 +43,23 @@ struct Area
 	unsigned int width, height;
 };
 
-struct Texture2D : D3DObject
+struct Texture2D : TextureObject
 {
 	ID3D11Texture2D* texture2D;
-	ID3D11ShaderResourceView* srv;
 	Area size;
 };
 
-struct Texture3D : D3DObject
+struct Texture3D : TextureObject
 {
 	ID3D11Texture3D* texture3D;
-	ID3D11ShaderResourceView* srv;
 	Area sizePerTexture;
 };
 typedef Texture3D CubeMap;
 
-struct RenderTarget : D3DObject
+struct RenderTarget : TextureObject
 {
 	ID3D11Texture2D* texture = nullptr;
 	ID3D11RenderTargetView* rtv = nullptr;
-	ID3D11ShaderResourceView* srv = nullptr;
 	DataFormat format;
 
 	//Associated depth stencil

@@ -786,6 +786,52 @@ void DX11Renderer::BindPixelShader(const ObjectHandle& pixelShader)
 	m_renderData->m_pImmediateContext->PSSetShader(shader.pixelShader, nullptr, 0);
 }
 
+void DX11Renderer::SetPixelShaderResource(const ObjectType shaderType, unsigned int startSlot, unsigned int numViews, const ObjectHandle& objectWithSRV)
+{
+		if (objectWithSRV)
+		{
+				const TextureObject* textureObj = nullptr;
+				switch (objectWithSRV.GetType())
+				{
+				case ObjectType::TEXTURE_1D:
+						textureObj = &m_renderData->textures1D[*objectWithSRV];
+						break;
+				case ObjectType::TEXTURE_2D:
+						textureObj = &m_renderData->textures2D[*objectWithSRV];
+						break;
+				case ObjectType::TEXTURE_3D:
+						textureObj = &m_renderData->textures3D[*objectWithSRV];
+						break;
+				case ObjectType::RENDER_TARGET:
+						textureObj = &m_renderData->renderTargets[*objectWithSRV];
+						break;
+				default: //Non-TextureObject object type supplied
+						return;
+				}
+
+				switch (shaderType)
+				{
+				case ObjectType::VERTEX_SHADER:
+						m_renderData->m_pImmediateContext->VSSetShaderResources(startSlot, numViews, &textureObj->srv);
+						break;
+				case ObjectType::PIXEL_SHADER:
+						m_renderData->m_pImmediateContext->PSSetShaderResources(startSlot, numViews, &textureObj->srv);
+						break;
+				case ObjectType::GEOMETRY_SHADER:
+						m_renderData->m_pImmediateContext->GSSetShaderResources(startSlot, numViews, &textureObj->srv);
+						break;
+				case ObjectType::COMPUTE_SHADER:
+						m_renderData->m_pImmediateContext->CSSetShaderResources(startSlot, numViews, &textureObj->srv);
+						break;
+				case ObjectType::HULL_SHADER:
+						m_renderData->m_pImmediateContext->HSSetShaderResources(startSlot, numViews, &textureObj->srv);
+						break;
+				default: //Non-Shader object type supplied
+						break;
+				}
+		}
+}
+
 void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const std::string& fileName, bool generateMipChain /*= true*/)
 {
 	const size_t r = fileName.find_last_of('.') + 1;

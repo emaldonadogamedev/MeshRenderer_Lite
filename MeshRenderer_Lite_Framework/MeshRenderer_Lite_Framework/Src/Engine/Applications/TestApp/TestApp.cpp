@@ -35,8 +35,9 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//auto model = graphicsSystem->GetModel("gh_sample_animation.fbx");
 		//auto model = graphicsSystem->GetModel("walk.fbx");
 		//auto model = graphicsSystem->GetModel("sphere");
-		auto model = graphicsSystem->GetModel("dragon.obj");
-		//auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
+		//auto model = graphicsSystem->GetModel("dragon.obj");
+		//auto model = graphicsSystem->GetModel("box");
+		auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
 		//model->SetDiffTextureFileName("AlphaBlendTest.png", 0);
 		test3DComp->SetModel(model);
 

@@ -10,14 +10,19 @@ LightComponent::LightComponent(const GameObject* owner, bool isActive, bool useS
 	, m_shadowMapWidth(shadowWidth)
 	, m_shadowMapHeight(shadowHeight)
 {
+	int textureIdx = 5;
 	for (unsigned int i = 0; i < s_maxLights; ++i) 
 	{
 		if (!sceneLights[i].isTaken) 
 		{
 			sceneLights[i].isTaken = 1;
 			m_light = &sceneLights[i];
+			m_shadowRThandle = &shadowMapHandles[i];
+			m_shadowTextureIdx = textureIdx;
 			return;
 		}
+
+		textureIdx++;
 	}
 
 	throw std::exception("Allocated more lights than possible!");
@@ -38,9 +43,19 @@ bool LightComponent::IsUsingShadows() const
 	return m_useShadows;
 }
 
+ObjectHandle& LightComponent::GetShadowRThandle()
+{
+		return *m_shadowRThandle;
+}
+
 const ObjectHandle& LightComponent::GetShadowRThandle() const
 {
-	return m_shadowRThandle;
+	return *m_shadowRThandle;
+}
+
+const int LightComponent::GetShadowTextureIdx() const
+{
+		return m_shadowTextureIdx;
 }
 
 void LightComponent::SetUseShadows(const bool v)
@@ -48,14 +63,9 @@ void LightComponent::SetUseShadows(const bool v)
 	m_useShadows = v;
 }
 
-void LightComponent::SetShadowRThandle(const ObjectHandle& shadowRT)
-{
-	m_shadowRThandle = shadowRT;
-}
-
 const unsigned int LightComponent::s_maxLights = 15;
 
-Light* const LightComponent::GetSceneLightsPtr()
+const Light* const LightComponent::GetSceneLightsPtr()
 {
 	return sceneLights;
 }
@@ -67,6 +77,7 @@ int LightComponent::GetTakenLightsCount()
 
 int LightComponent::s_takenLightCount = 0;
 
-const int LightComponent::ShadowMapIndices[s_maxLights] = {0};
+ObjectHandle LightComponent::shadowMapHandles[s_maxLights] = { ObjectHandle::Null()};
 
 Light LightComponent::sceneLights[s_maxLights];
+

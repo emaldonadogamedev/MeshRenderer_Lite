@@ -406,12 +406,14 @@ void GraphicsSystem::AddComponent(IComponent* component)
 		//If it's a light component, create the shadow map
 		if (component->GetComponentType() == ComponentType::RENDERABLE_LIGHT)
 		{
-				ObjectHandle newShadowTextureHandle;
 				LightComponent* lightComp = (LightComponent*)component;
-				m_dx11Renderer->CreateRenderTarget(newShadowTextureHandle, lightComp->m_shadowMapWidth, 
+				m_dx11Renderer->CreateRenderTarget(lightComp->GetShadowRThandle(), lightComp->m_shadowMapWidth,
 						lightComp->m_shadowMapHeight, DataFormat::FLOAT4);
 
-				lightComp->SetShadowRThandle(newShadowTextureHandle);
+				auto& renderData = m_dx11Renderer->GetRendererData();
+
+				auto srv = renderData.renderTargets[*lightComp->GetShadowRThandle()].srv;
+				renderData.m_pImmediateContext->PSSetShaderResources(lightComp->GetShadowTextureIdx(), 1, &srv);
 		}
 	}
 }

@@ -64,6 +64,8 @@ public:
 	void BindGeometryShader(const ObjectHandle& geometryShader);
 	void BindComputeShader(const ObjectHandle& computeShader);
 
+	void SetPixelShaderResource(const ObjectType shaderType, unsigned int startSlot, unsigned int numViews, const ObjectHandle& objectWithSRV);
+
 	//////////////////////////////////////////////////////////////////////////
 	//Texture functions
 	void CreateTexture2D(ObjectHandle& textureHandle, const std::string& fileName, bool generateMipChain = true);

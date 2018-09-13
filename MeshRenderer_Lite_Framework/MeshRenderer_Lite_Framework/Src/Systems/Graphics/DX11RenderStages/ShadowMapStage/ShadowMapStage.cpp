@@ -27,7 +27,7 @@ ShadowMapStage::~ShadowMapStage()
 void ShadowMapStage::PreRender()
 {
 		auto& renderData = m_renderer->GetRendererData();
-		renderData.m_pImmediateContext->RSSetState(renderData.m_d3dRasterStateDefault);
+		renderData.m_pImmediateContext->RSSetState(renderData.m_d3dRasterStateSolCullFront);
 		renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
@@ -60,8 +60,8 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 				m_renderer->BindRenderTarget(shadowRThandle);
 				m_renderer->ClearRenderTarget(shadowRThandle, XMVECTOR());
 
-				//D3D11_VIEWPORT shadowViewport { shadowRTObj.width, shadowRTObj.height, 0,0,0,1.0f };
-				//renderData.m_pImmediateContext->RSSetViewports(1, &shadowViewport);
+				D3D11_VIEWPORT shadowViewport { 0,0,shadowRTObj.width, shadowRTObj.height,0,1.0f };
+				renderData.m_pImmediateContext->RSSetViewports(1, &shadowViewport);
 
 				//update the view matrix according to the light's position
 				renderData.testLightViewBuffer.lightViewMtx = XMMatrixTranspose(
@@ -119,6 +119,7 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 
 void ShadowMapStage::PostRender()
 {
-		//auto& renderData = m_renderer->GetRendererData();
-		//renderData.m_pImmediateContext->RSSetViewports(1, &renderData.m_mainViewport);
+		//put back the viewport the way it was
+		auto& renderData = m_renderer->GetRendererData();
+		renderData.m_pImmediateContext->RSSetViewports(1, &renderData.m_mainViewport);
 }

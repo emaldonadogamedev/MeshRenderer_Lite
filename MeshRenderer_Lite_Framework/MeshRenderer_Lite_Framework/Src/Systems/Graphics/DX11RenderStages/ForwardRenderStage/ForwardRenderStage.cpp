@@ -53,6 +53,15 @@ void ForwardRenderStage::PreRender()
 	//m_dx11Renderer->m_renderData->testViewProjBuffer.projectionMtx = testCamera->GetProjection();
 	renderData.m_pImmediateContext->UpdateSubresource(renderData.testViewProjConstBuffer,
 			0, NULL, &renderData.testViewProjBuffer, 0, 0);
+
+	//Bind all of the shadow maps
+	const auto& lightComponents = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_LIGHT];
+	for (const auto& component : lightComponents)
+	{
+			LightComponent* lightComp = (LightComponent*)component;
+			m_renderer->SetPixelShaderResource(ObjectType::PIXEL_SHADER, lightComp->GetShadowTextureIdx(), 1,
+					lightComp->GetShadowRThandle());
+	}
 }
 
 void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
@@ -80,7 +89,7 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 	renderData.m_pImmediateContext->PSSetConstantBuffers(1, 1, &renderData.testViewProjConstBuffer);
 
 		//update lights const buffer
-	static Light* const sceneLights = LightComponent::GetSceneLightsPtr();
+	static const Light* const sceneLights = LightComponent::GetSceneLightsPtr();
 	renderData.m_pImmediateContext->UpdateSubresource(renderData.testLightConstBuffer, 0, nullptr, 
 		sceneLights, 0, 0);
 	renderData.m_pImmediateContext->PSSetConstantBuffers(5, 1, &renderData.testLightConstBuffer);
