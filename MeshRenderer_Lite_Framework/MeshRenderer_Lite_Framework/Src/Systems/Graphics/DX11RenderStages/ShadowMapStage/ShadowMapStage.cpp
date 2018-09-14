@@ -98,6 +98,21 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 								m_renderer->BindIndexBuffer(model->GetIBufferHandle());
 								
 
+								//Update bone anim. const buffer
+								const int copySize = model->m_boneFinalTransformMtxVec.size();
+								const int copyVecLocSize = model->m_boneLocations.size();
+								std::memcpy(renderData.testAnimationBuffer.boneMatrices, model->m_boneFinalTransformMtxVec.data(),
+										sizeof(XMMATRIX) * (copySize > Model::s_maxBoneCount ? Model::s_maxBoneCount : copySize));
+								std::memcpy(renderData.testAnimationBuffer.boneLocations, model->m_boneLocations.data(),
+										sizeof(XMVECTOR) * (copyVecLocSize > Model::s_maxBoneLocCount ? Model::s_maxBoneLocCount : copyVecLocSize)
+										* (unsigned char)model->m_debugDrawEnabled);
+
+								renderData.m_pImmediateContext->UpdateSubresource(renderData.testAnimationConstBuffer,
+										0, NULL, &renderData.testAnimationBuffer, 0, 0);
+								renderData.m_pImmediateContext->VSSetConstantBuffers(2, 1, &renderData.testAnimationConstBuffer);
+
+								//Get the normal world matrix and update the per object const buffer
+								renderData.testPerObjectBuffer.isAnimated = model->m_modelType == ModelType::MODEL_SKINNED;
 								auto* const transform = (Transform*)component->GetOwner()->GetComponent(ComponentType::TRANSFORM);
 								renderData.testPerObjectBuffer.worldMtx = transform->GetWorldTransform();
 
