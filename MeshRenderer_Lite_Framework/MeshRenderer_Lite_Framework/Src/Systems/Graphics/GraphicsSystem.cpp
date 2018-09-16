@@ -15,7 +15,8 @@
 #include <Systems/Graphics/CameraClasses/Camera.h>
 #include <Systems/Graphics/Components/ModelComponent/ModelComponent.h>
 #include <Systems/Graphics/Components/CurvePathComponent/CurvePathComponent.h>
-#include <Systems/Graphics/Components/LightComponent/LightComponent.h>
+#include <Systems/Graphics/Components/LightComponents/Light.h>
+#include <Systems/Graphics/Components/LightComponents/ShadowLightComponent/ShadowLightComponent.h>
 #include <Systems/Graphics/Components/SimpleCCD/SuperSimpleCCD.h>
 #include <Systems/Graphics/Components/SimpleCloth/SimpleClothComponent.h>
 #include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
@@ -110,7 +111,7 @@ void GraphicsSystem::UpdateLightComponents(const float dt)
 
 	for (auto& component : lightComponents)
 	{
-		auto light = (static_cast<const LightComponent*>(component))->GetLight();
+		auto light = (static_cast<const ShadowLightComponent*>(component))->GetLight();
 		auto& lightPos = (static_cast<Transform* const>(component->GetOwner()->GetComponent(ComponentType::TRANSFORM)))->GetPosition();
 		light->m_position.x = lightPos.m128_f32[0];
 		light->m_position.y = lightPos.m128_f32[1];
@@ -404,16 +405,16 @@ void GraphicsSystem::AddComponent(IComponent* component)
 		m_renderComponents[component->GetComponentType()].emplace_back(component);
 
 		//If it's a light component, create the shadow map
-		if (component->GetComponentType() == ComponentType::RENDERABLE_LIGHT)
+		if (component->GetComponentType() == ComponentType::RENDERABLE_LIGHT_WITH_SHADOW)
 		{
-				LightComponent* lightComp = (LightComponent*)component;
-				m_dx11Renderer->CreateRenderTarget(lightComp->GetShadowRThandle(), lightComp->m_shadowMapWidth,
-						lightComp->m_shadowMapHeight, DataFormat::FLOAT4);
+				ShadowLightComponent* shadowLightComp = (ShadowLightComponent*)component;
+				m_dx11Renderer->CreateRenderTarget(shadowLightComp->GetShadowRThandle(), shadowLightComp->m_shadowMapWidthHeight,
+						shadowLightComp->m_shadowMapWidthHeight, DataFormat::FLOAT4);
 
 				auto& renderData = m_dx11Renderer->GetRendererData();
 
-				auto srv = renderData.renderTargets[*lightComp->GetShadowRThandle()].srv;
-				renderData.m_pImmediateContext->PSSetShaderResources(lightComp->GetShadowTextureIdx(), 1, &srv);
+				auto srv = renderData.renderTargets[*shadowLightComp->GetShadowRThandle()].srv;
+				renderData.m_pImmediateContext->PSSetShaderResources(shadowLightComp->GetShadowTextureIdx(), 1, &srv);
 		}
 	}
 }

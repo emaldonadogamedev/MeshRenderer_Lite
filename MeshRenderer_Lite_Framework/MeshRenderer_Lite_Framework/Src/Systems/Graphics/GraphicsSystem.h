@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Systems/Core/ISystem.h>
+#include <Systems/ISystem.h>
 #include <Systems/Core/Components/IComponent.h>
 #include <Systems/Graphics/GraphicsUtilities/ObjectHandle.h>
 #include <memory>

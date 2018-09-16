@@ -3,7 +3,8 @@
 
 #include <Systems/Core/Components/Transform/Transform.h>
 #include <Systems/Core/GameObject/GameObject.h>
-#include<Systems/Graphics/Components/LightComponent/LightComponent.h>
+#include<Systems/Graphics/Components/LightComponents/Light.h>
+#include<Systems/Graphics/Components/LightComponents/ShadowLightComponent/ShadowLightComponent.h>
 #include<Systems/Graphics/Components/ModelComponent/ModelComponent.h>
 #include<Systems/Graphics/Components/SimpleCloth/SimpleClothComponent.h>
 #include<Systems/Graphics/DX11Renderer/DX11Renderer.h>
@@ -12,7 +13,8 @@
 
 #include <d3d11.h>
 
-ForwardRenderStage::ForwardRenderStage(DX11Renderer* const renderer, RenderCompUmap* const gfxComponents) :IRenderStage(renderer, gfxComponents)
+ForwardRenderStage::ForwardRenderStage(DX11Renderer* const renderer, RenderCompUmap* const gfxComponents) 
+		:IRenderStage(renderer, gfxComponents)
 {
 
 }
@@ -58,7 +60,7 @@ void ForwardRenderStage::PreRender()
 	const auto& lightComponents = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_LIGHT];
 	for (const auto& component : lightComponents)
 	{
-			LightComponent* lightComp = (LightComponent*)component;
+			ShadowLightComponent* lightComp = (ShadowLightComponent*)component;
 			m_renderer->SetPixelShaderResource(ObjectType::PIXEL_SHADER, lightComp->GetShadowTextureIdx(), 1,
 					lightComp->GetShadowRThandle());
 	}
@@ -89,7 +91,7 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 	renderData.m_pImmediateContext->PSSetConstantBuffers(1, 1, &renderData.testViewProjConstBuffer);
 
 		//update lights const buffer
-	static const Light* const sceneLights = LightComponent::GetSceneLightsPtr();
+	static const Light* const sceneLights = ShadowLightComponent::GetSceneLightsWithShadowPtr();
 	renderData.m_pImmediateContext->UpdateSubresource(renderData.testLightConstBuffer, 0, nullptr, 
 		sceneLights, 0, 0);
 	renderData.m_pImmediateContext->PSSetConstantBuffers(5, 1, &renderData.testLightConstBuffer);

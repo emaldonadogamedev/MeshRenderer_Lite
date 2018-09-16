@@ -3,7 +3,7 @@
 
 #include<Systems/Core/GameObject/GameObject.h>
 #include<Systems/Core/Components/Transform/Transform.h>
-#include<Systems/Graphics/Components/LightComponent/LightComponent.h>
+#include<Systems/Graphics/Components/LightComponents/ShadowLightComponent/ShadowLightComponent.h>
 #include <Systems/Graphics/Components/ModelComponent/ModelComponent.h>
 #include <Systems/Graphics/ModelClasses/Model/Model.h>
 #include<Systems/Graphics/DX11Renderer/DX11Renderer.h>
@@ -45,7 +45,7 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 		const auto& lightComps = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_LIGHT];
 		for (auto& light : lightComps)
 		{
-				LightComponent* lightComp = (LightComponent*)light;
+				ShadowLightComponent* lightComp = (ShadowLightComponent*)light;
 
 				if (!lightComp->IsUsingShadows())
 						continue;

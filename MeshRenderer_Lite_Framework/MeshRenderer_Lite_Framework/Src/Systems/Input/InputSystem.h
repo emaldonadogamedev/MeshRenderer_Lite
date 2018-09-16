@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Systems/Core/ISystem.h>
+#include <Systems/ISystem.h>
 
 class KeyboardEvent;
 class MouseEvent;

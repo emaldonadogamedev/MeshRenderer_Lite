@@ -43,6 +43,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Src\Systems\Core\GameObjectSystem.cpp" />
+    <ClCompile Include="Src\Systems\Graphics\Components\LightComponents\LightComponent\LightComponent.cpp" />
     <ClCompile Include="Src\Engine\Applications\TestApp\TestApp.cpp" />
     <ClCompile Include="Src\Engine\IApplication\IApplication.cpp" />
     <ClCompile Include="Src\Engine\GameClock\GameClock.cpp" />
@@ -68,7 +70,7 @@
     <ClCompile Include="Src\Systems\Core\Components\Transform\Transform.cpp" />
     <ClCompile Include="Src\Systems\Graphics\CameraClasses\CamaeraManager.cpp" />
     <ClCompile Include="Src\Systems\Graphics\CameraClasses\Camera.cpp" />
-    <ClCompile Include="Src\Systems\Graphics\Components\LightComponent\LightComponent.cpp" />
+    <ClCompile Include="Src\Systems\Graphics\Components\LightComponents\ShadowLightComponent\ShadowLightComponent.cpp" />
     <ClCompile Include="Src\Systems\Graphics\Components\ModelComponent\ModelComponent.cpp" />
     <ClCompile Include="Src\Systems\Graphics\Components\CurvePathComponent\CurvePathComponent.cpp" />
     <ClCompile Include="Src\Systems\Graphics\Components\PathComponent\PathComponent.cpp" />
@@ -115,6 +117,8 @@
     <ClInclude Include="Includes\ImGui\imgui.h" />
     <ClInclude Include="Includes\ImGui\imgui_impl_dx11.h" />
     <ClInclude Include="Includes\ImGui\imgui_internal.h" />
+    <ClInclude Include="Src\Systems\Core\GameObjectSystem.h" />
+    <ClInclude Include="Src\Systems\Graphics\Components\LightComponents\LightComponent\LightComponent.h" />
     <ClInclude Include="Src\Engine\Applications\TestApp\TestApp.h" />
     <ClInclude Include="Src\Engine\IApplication\IApplication.h" />
     <ClInclude Include="Src\Engine\GameClock\GameClock.h" />
@@ -123,12 +127,13 @@
     <ClInclude Include="Src\Systems\Core\Components\Transform\Transform.h" />
     <ClInclude Include="Src\Systems\Core\Layer\Layer.h" />
     <ClInclude Include="Src\Systems\Core\IScene\Scene.h" />
-    <ClInclude Include="Src\Systems\Core\ISystem.h" />
+    <ClInclude Include="Src\Systems\ISystem.h" />
     <ClInclude Include="Src\Systems\Graphics\BufferClasses\ConstantBuffers.h" />
     <ClInclude Include="Src\Systems\Graphics\CameraClasses\Camera.h" />
     <ClInclude Include="Src\Systems\Graphics\CameraClasses\CameraManager.h" />
     <ClInclude Include="Src\Systems\Graphics\CameraClasses\Viewport.h" />
-    <ClInclude Include="Src\Systems\Graphics\Components\LightComponent\LightComponent.h" />
+    <ClInclude Include="Src\Systems\Graphics\Components\LightComponents\Light.h" />
+    <ClInclude Include="Src\Systems\Graphics\Components\LightComponents\ShadowLightComponent\ShadowLightComponent.h" />
     <ClInclude Include="Src\Systems\Graphics\Components\ModelComponent\ModelComponent.h" />
     <ClInclude Include="Src\Systems\Graphics\Components\CurvePathComponent\CurvePathComponent.h" />
     <ClInclude Include="Src\Systems\Graphics\Components\PathComponent\PathComponent.h" />
@@ -148,7 +153,6 @@
     <ClInclude Include="Src\Systems\Graphics\GraphicsUtilities\D3DObjects.h" />
     <ClInclude Include="Src\Systems\Graphics\GraphicsUtilities\GraphicsTypes.h" />
     <ClInclude Include="Src\Systems\Graphics\GraphicsUtilities\InputData.h" />
-    <ClInclude Include="Src\Systems\Graphics\GraphicsUtilities\LightData.h" />
     <ClInclude Include="Src\Systems\Graphics\GraphicsUtilities\ObjectHandle.h" />
     <ClInclude Include="Src\Systems\Graphics\GraphicsUtilities\VertexTypes.h" />
     <ClInclude Include="Src\Systems\Graphics\ModelClasses\ModelManager\ModelManager.h" />

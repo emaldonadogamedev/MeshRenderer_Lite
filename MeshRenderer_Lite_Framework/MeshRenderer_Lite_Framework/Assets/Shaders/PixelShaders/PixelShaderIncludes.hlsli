@@ -30,7 +30,6 @@ Texture2D shadowMap_12 : register(t17);
 Texture2D shadowMap_13 : register(t18);
 Texture2D shadowMap_14 : register(t19);
 
-
 //Scene Lights
 
  //-- light types
@@ -42,7 +41,6 @@ struct Light {
 	int m_lightType;
 	float3 m_position;
 
-	float4 m_Iambient;
 	float4 m_Idiffuse;
 	float4 m_Ispecular;
 
@@ -57,7 +55,7 @@ struct Light {
 	float roughness;
 	int isActive;
 	int isTaken;
-	int padding;
+	int isUsingShadows;
 };
 
 static const unsigned int s_maxLights = 15;

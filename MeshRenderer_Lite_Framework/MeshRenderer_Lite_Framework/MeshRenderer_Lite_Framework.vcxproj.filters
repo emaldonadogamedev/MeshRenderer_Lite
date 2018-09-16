@@ -123,21 +123,24 @@
     <ClCompile Include="Src\Engine\Applications\TestApp\TestApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Systems\Graphics\Components\LightComponent\LightComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\ShadowMapStage\ShadowMapStage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\IconDebugStage\IconDebugStage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Systems\Graphics\Components\LightComponents\ShadowLightComponent\ShadowLightComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Systems\Graphics\Components\LightComponents\LightComponent\LightComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Systems\Core\GameObjectSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Utilities\precompiled.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Systems\Core\ISystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Includes\ImGui\imgui_internal.h">
@@ -180,9 +183,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\ForwardRenderStage\ForwardRenderStage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Systems\Graphics\GraphicsUtilities\LightData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Src\Systems\Graphics\GraphicsUtilities\GraphicsTypes.h">
@@ -275,13 +275,25 @@
     <ClInclude Include="Src\Engine\Applications\TestApp\TestApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Systems\Graphics\Components\LightComponent\LightComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\ShadowMapStage\ShadowMapStage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\IconDebugStage\IconDebugStage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Systems\Graphics\Components\LightComponents\Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Systems\Graphics\Components\LightComponents\ShadowLightComponent\ShadowLightComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Systems\Graphics\Components\LightComponents\LightComponent\LightComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Systems\ISystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Systems\Core\GameObjectSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
