@@ -41,7 +41,7 @@ cbuffer ConstantBuffer : register(b0)
 
 	int isSkydome;
 	int isAnimated;
-	int2 padding;
+	int2 padding_b0;
 }
 
 //--------------------------------------------------------------------------------------

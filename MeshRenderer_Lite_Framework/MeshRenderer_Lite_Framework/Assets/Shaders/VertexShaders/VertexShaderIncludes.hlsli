@@ -18,7 +18,7 @@ cbuffer CurvePath_ConstBuffer : register(b3)
 	float4 controlPointPositions[s_maxControlPointCount];
 
 	float scale;
-	float3 padding_CurvePath;
+	float3 padding_b3;
 }
 
 struct ClothParticleGPU
