@@ -23,13 +23,10 @@ PixelInputType main(VertexInputType vertex)
 	result.tangent = normalize(mul(float4(vertex.tangent, 0.f), worldMtx));
 	result.bitangent = normalize(mul(float4(vertex.bitangent, 0.f), worldMtx));
 	result.uv = vertex.uv;
-	result.color = objectColor;
+	result.color = vertex.color;
 	//JUST AS A TEST, look closely at the moving vertices
 	//pos = normalize(pos);
 	//result.color = pos;
-
-	//TODO: GO BACK TO THIS!
-	//result.color = vertex.color;
 
 	return result;
 }

@@ -11,8 +11,6 @@
 #include<Systems/Graphics/DX11Renderer/DX11RendererData.h>
 #include<Systems/Graphics/ModelClasses/Model/Model.h>
 
-#include <d3d11.h>
-
 ForwardRenderStage::ForwardRenderStage(DX11Renderer* const renderer, RenderCompUmap* const gfxComponents) 
 		:IRenderStage(renderer, gfxComponents)
 {
@@ -61,7 +59,7 @@ void ForwardRenderStage::PreRender()
 	for (const auto& component : lightComponents)
 	{
 			ShadowLightComponent* lightComp = (ShadowLightComponent*)component;
-			m_renderer->SetPixelShaderResource(ObjectType::PIXEL_SHADER, lightComp->GetShadowTextureIdx(), 1,
+			m_renderer->BindTextureShaderResource(ObjectType::PIXEL_SHADER, lightComp->GetShadowTextureIdx(), 1,
 					lightComp->GetShadowRThandle());
 	}
 }
@@ -121,7 +119,7 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 			renderData.m_pImmediateContext->VSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
 			renderData.m_pImmediateContext->PSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
 
-			//Update bone anim. const buffer
+			//Update bone animation const buffer
 			const int copySize = model->m_boneFinalTransformMtxVec.size();
 			const int copyVecLocSize = model->m_boneLocations.size();
 			std::memcpy(renderData.testAnimationBuffer.boneMatrices, model->m_boneFinalTransformMtxVec.data(),
@@ -138,6 +136,12 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 			for (auto& meshEntry : model->m_meshEntryList)
 			{
 				auto& textures2D = graphicsResources.at((int)ObjectType::TEXTURE_2D);
+
+				//Set the material information
+				renderData.testMeshMaterialBuffer = meshEntry.meshMaterial;
+				renderData.m_pImmediateContext->UpdateSubresource(renderData.testMeshMaterialConstBuffer,
+						0, NULL, &renderData.testMeshMaterialBuffer, 0, 0);
+				renderData.m_pImmediateContext->PSSetConstantBuffers(6, 1, &renderData.testMeshMaterialConstBuffer);
 
 				//Set the diffuse texture
 				const auto it = textures2D.find(meshEntry.diffTextureName);

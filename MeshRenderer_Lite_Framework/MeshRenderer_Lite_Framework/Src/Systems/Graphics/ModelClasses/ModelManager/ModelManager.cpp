@@ -196,7 +196,7 @@ void ModelManager::PopulateMaterialData(Model& model, const aiScene* const assim
 			aiString assPath;
 			static aiTextureMapping mapping = aiTextureMapping_UV;
 			const auto diffTexture = materialPtr[materialIndex]->GetTexture(aiTextureType_DIFFUSE,0, &assPath, &mapping);
-			
+
 			//0 means success
 			if (diffTexture == 0)
 				model.m_diffTextures[materialIndex] = ExtractFileName(assPath);

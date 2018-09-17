@@ -1,9 +1,11 @@
 //--------------------------------------------------------------------------------------
 // Constant Static variables
 //--------------------------------------------------------------------------------------
+static const float PI_DIV2 = 3.14159265f / 2.0f;
+static const float PI_DIV4 = 3.14159265f / 4.0f;
 static const float PI = 3.14159265f;
 static const float TWO_PI = 6.2831853f;
-static const float EPSILION = 0.00001f;
+static const float EPSILION = 0.0001f;
 
 struct VertexInputType
 {
@@ -27,21 +29,19 @@ struct PixelInputType
 	float3 tangent      : TANGENT;
 	float3 bitangent    : BITANGENT;
 	float2 uv           : UV;
-	float4 color		: COLOR;
+	float4 color				: COLOR;
 };
 
 //--------------------------------------------------------------------------------------
-// Per Object - Constant Buffer Variables
+// Per MeshEntry - Constant Buffer Variables
 //--------------------------------------------------------------------------------------
 cbuffer ConstantBuffer : register(b0)
 {
 	matrix worldMtx;
-	float4 objectColor;
 
-	int useTexture;
-	int useNormalMap;
 	int isSkydome;
 	int isAnimated;
+	int2 padding;
 }
 
 //--------------------------------------------------------------------------------------

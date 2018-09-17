@@ -19,13 +19,11 @@ struct ViewProjBuffer
 
 struct PerObectBuffer
 {
-	XMMATRIX worldMtx;
-	XMVECTOR color;
+		XMMATRIX worldMtx;
 
-	int useTexture;
-	int useNormalMap;
-	int isSkydome;
-	int isAnimated;
+		int isSkydome;
+		int isAnimated;
+		int padding[2];
 };
 
 static const unsigned char s_maxBoneCount = 100;

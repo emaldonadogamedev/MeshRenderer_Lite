@@ -10,8 +10,35 @@ float CalculateAttenuation(int lightType, float d, float C, float L, float Q) {
 		);
 }
 
+float CalculateSpotlightEffect(int lightType, in float3 lightVec, in float3 lightSpotDir, in float outerAngle, 
+		in float innerAngle, in float ns)
+{
+		if (lightType == LT_POINT)
+		{
+				return 1.0f;
+		}
+		const float D = normalize(lightSpotDir);
+		const float LdotD = dot(lightVec, D);
+
+		if (LdotD < cos(outerAngle))
+		{
+				return 0.0f;
+		}
+		else if (LdotD > cos(innerAngle))
+		{
+				return 1.0f;
+		}
+
+		const float spotMinAngle = cos(innerAngle);
+		const float spotMaxAngle = cos(outerAngle);
+		const float cosAlpha = LdotD;//dot( D, L);
+
+		return pow((cosAlpha - spotMaxAngle) / (spotMinAngle - spotMaxAngle), ns);
+}
+
 float4 CaculatePhongLighting(float3 vertexPos, float3 vertexNormal, float3 vertexTangent, 
-	float3 vertexBiTangent, float2 UVCoords) {
+	float3 vertexBiTangent, float2 UVCoords) 
+{
 	float4 finalColor = (float4)0;
 	
 	const float3 viewVec = normalize(cameraPosition.xyz - vertexPos);
@@ -69,8 +96,5 @@ float4 CaculatePhongLighting(float3 vertexPos, float3 vertexNormal, float3 verte
 
 float4 main(PixelInputType pixel) : SV_TARGET
 {
-	//float depth = pixel.position.z / pixel.position.w;
-	//return float4(depth, depth, depth, 1.0f);
-
 	return CaculatePhongLighting(pixel.worldPos, pixel.normal, pixel.tangent, pixel.bitangent, pixel.uv);
 }

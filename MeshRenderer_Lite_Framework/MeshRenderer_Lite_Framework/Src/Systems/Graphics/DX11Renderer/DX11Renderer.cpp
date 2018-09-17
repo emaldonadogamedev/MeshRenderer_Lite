@@ -95,13 +95,14 @@ void DX11Renderer::ReleaseData()
 	SafeRelease(m_renderData->m_d3dRasterStateWireframe);
 	SafeRelease(m_renderData->m_d3dRasterStateImgui);
 
-	//cleanup const buffers
+	//cleanup test const buffers
 	SafeRelease(m_renderData->testPerObjectConstBuffer);
 	SafeRelease(m_renderData->testViewProjConstBuffer);
 	SafeRelease(m_renderData->testAnimationConstBuffer);
 	SafeRelease(m_renderData->testSimpleClothConstBuffer);
 	SafeRelease(m_renderData->testLightConstBuffer);
-	SafeRelease(m_renderData->testLightViewConstBuffer)
+	SafeRelease(m_renderData->testLightViewConstBuffer);
+	SafeRelease(m_renderData->testMeshMaterialConstBuffer);
 
 	//cleanup texture samplers
 	SafeRelease(m_renderData->m_pWrapSamplerState);
@@ -787,7 +788,7 @@ void DX11Renderer::BindPixelShader(const ObjectHandle& pixelShader)
 	m_renderData->m_pImmediateContext->PSSetShader(shader.pixelShader, nullptr, 0);
 }
 
-void DX11Renderer::SetPixelShaderResource(const ObjectType shaderType, unsigned int startSlot, unsigned int numViews, const ObjectHandle& objectWithSRV)
+void DX11Renderer::BindTextureShaderResource(const ObjectType shaderType, unsigned int startSlot, unsigned int numViews, const ObjectHandle& objectWithSRV)
 {
 		if (objectWithSRV)
 		{
@@ -1249,11 +1250,13 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 	bd.ByteWidth = sizeof(LightViewProjBuffer);
 	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testLightViewConstBuffer));
 
+	bd.ByteWidth = sizeof(MeshEntryMaterial);
+	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testMeshMaterialConstBuffer));
+
 	// Initialize the world matrices
 	//m_renderData->testPerObjectBuffer.worldMtx = XMMatrixScaling(1,1,1) * DirectX::XMMatrixRotationX(XM_PIDIV2) * XMMatrixTranslation(-1, 1, 0);
 	//m_renderData->testPerObjectBuffer.worldMtx = XMMatrixTranspose(m_renderData->testPerObjectBuffer.worldMtx);
 	m_renderData->testPerObjectBuffer.worldMtx = XMMatrixTranspose(XMMatrixTranslation(0, 0, 0) *  DirectX::XMMatrixRotationX(XM_PIDIV2) * XMMatrixScaling(1,1,1));
-	m_renderData->testPerObjectBuffer.color = XMVectorSet(.1, .45, 0.f, 1.0f);
 	m_renderData->m_pImmediateContext->UpdateSubresource(m_renderData->testPerObjectConstBuffer, 0, NULL, &m_renderData->testPerObjectBuffer, 0, 0);
 
 	// Initialize the view matrix

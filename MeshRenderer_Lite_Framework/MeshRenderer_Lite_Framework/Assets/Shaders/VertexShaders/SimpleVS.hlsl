@@ -14,8 +14,6 @@ PixelInputType main(VertexInputType vertex)
 	result.tangent = normalize(mul(float4(vertex.tangent, 0.f), worldMtx));
 	result.bitangent = normalize(mul(float4(vertex.bitangent, 0.f), worldMtx));
 	result.uv = vertex.uv;
-	result.color = objectColor;
-
 	result.color = vertex.color;
 
 	return result;

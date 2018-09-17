@@ -6,7 +6,8 @@
 #include <Systems/Graphics/GraphicsSystem.h>
 #include <Systems/Graphics/Components/ModelComponent/ModelComponent.h>
 #include <Systems/Graphics/Components/CurvePathComponent/CurvePathComponent.h>
-#include <Systems/Graphics/Components/LightComponent/LightComponent.h>
+#include <Systems/Graphics/Components/LightComponents/Light.h>
+#include <Systems/Graphics/Components/LightComponents/ShadowLightComponent/ShadowLightComponent.h>
 #include <Systems/Graphics/Components/SimpleCCD/SuperSimpleCCD.h>
 #include <Systems/Graphics/Components/SimpleCloth/SimpleClothComponent.h>
 #include <Systems/Graphics/ModelClasses/Model/Model.h>
@@ -33,12 +34,13 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//test3DComp->SetModel(graphicsSystem->GetModel("gh_sample_animation.fbx"));
 		//auto model = graphicsSystem->GetModel("bottle.obj");
 		//auto model = graphicsSystem->GetModel("gh_sample_animation.fbx");
-		//auto model = graphicsSystem->GetModel("walk.fbx");
-		//auto model = graphicsSystem->GetModel("sphere");
+	  //auto model = graphicsSystem->GetModel("walk.fbx");
+		auto model = graphicsSystem->GetModel("sphere");
 		//auto model = graphicsSystem->GetModel("dragon.obj");
 		//auto model = graphicsSystem->GetModel("box");
-		auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
+		//auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
 		//model->SetDiffTextureFileName("AlphaBlendTest.png", 0);
+		model->m_meshEntryList[0].meshMaterial = MeshEntryMaterial::GetPresetMaterial(PredefinedMaterials::Emerald);
 		test3DComp->SetModel(model);
 
 		testObj->AddComponent(test3DComp);
@@ -58,24 +60,24 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//test light 1
 		testLight = std::make_unique<GameObject>();
 		auto transform = new Transform(testLight.get());
-		transform->SetPositionn(DirectX::XMVectorSet(2.f, 3.f, 0.f, 1.f));
+		transform->SetPositionn(DirectX::XMVectorSet(2.8f, 3.f, 0.f, 1.f));
 		testLight->AddComponent(transform);
 
-		auto lightComp = new LightComponent(testLight.get(), true, true);
+		auto lightComp = new ShadowLightComponent(testLight.get(), true, true);
 		//lightComp->GetLight()->m_lightType = LightType::LT_DIRECTIONAL;
-		lightComp->GetLight()->m_Idiffuse = XMVectorSet(1.0, 1, 1.0f, 1.0f);
+		lightComp->GetLight()->m_Idiffuse = XMVectorSet(.1, .1, .1, 1.0f);
 		testLight->AddComponent(lightComp);
 		graphicsSystem->AddComponent(lightComp);
 
 		//test light 2
 		testLight2 = std::make_unique<GameObject>();
 		transform = new Transform(testLight2.get());
-		transform->SetPositionn(DirectX::XMVectorSet(-2.f, 3.f, 0.f, 1.f));
+		transform->SetPositionn(DirectX::XMVectorSet(-2.8f, 20.f, 0.f, 1.f));
 		testLight2->AddComponent(transform);
 
-		lightComp = new LightComponent(testLight2.get(), true, true);
+		lightComp = new ShadowLightComponent(testLight2.get(), true, true);
 		//lightComp->GetLight()->m_lightType = LightType::LT_DIRECTIONAL;
-		lightComp->GetLight()->m_Idiffuse = XMVectorSet(1.0, 1, 1.0f, 1.0f);
+		lightComp->GetLight()->m_Idiffuse = XMVectorSet(.1, .1, .1, 1.0f);
 		testLight2->AddComponent(lightComp);
 		graphicsSystem->AddComponent(lightComp);
 
@@ -85,13 +87,14 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		testFloor = std::make_unique<GameObject>();
 		transform = new Transform(testFloor.get());
 		transform->SetPositionn(DirectX::XMVectorSet(0.f, -4.6f, 0.f, 1.f));
-		transform->SetScale(DirectX::XMVectorSet(14.f, 1.f, 14.f, 1.f));
+		transform->SetScale(DirectX::XMVectorSet(100.f, 1.f, 100.f, 1.f));
 		testFloor->AddComponent(transform);
 		test3DComp = new ModelComponent(testFloor.get());
 		testFloor->AddComponent(test3DComp);
 		m_graphicsSystem->AddComponent(test3DComp);
 		auto model2 = graphicsSystem->GetModel("box");
-		model2->SetDiffTextureFileName("crate_1.jpg", 0);
+		model->m_meshEntryList[0].meshMaterial.SetToPresetMaterial(PredefinedMaterials::Jade);
+		//model2->SetDiffTextureFileName("crate_1.jpg", 0);
 		test3DComp->SetModel(model2);
 
 		return true;

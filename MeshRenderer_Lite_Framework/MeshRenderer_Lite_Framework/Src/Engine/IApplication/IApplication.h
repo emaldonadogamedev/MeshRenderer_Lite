@@ -4,7 +4,7 @@
 #define WIN32_LEAN_AND_MEAN	
 #include <Windows.h>
 
-#include<Systems/Core/ISystem.h>
+#include<Systems/ISystem.h>
 
 #include<memory>
 #include<array>

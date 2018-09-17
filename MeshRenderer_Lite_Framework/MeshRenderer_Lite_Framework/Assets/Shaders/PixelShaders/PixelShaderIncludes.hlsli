@@ -64,3 +64,24 @@ cbuffer SceneLights : register(b5)
 {
 	Light sceneLights[s_maxLights];
 }
+
+// Object Material
+struct MeshEntryMaterial 
+{
+		float4 ambientKa;
+		float4 diffuseKd;
+
+		float3 specularKs;
+		float specularPowerNs;
+
+		float4 emissiveKe;
+
+		int useDiffuseTexture;
+		int useNormalMap;
+		int2 padding;
+};
+
+cbuffer ObjectMaterial : register(b6)
+{
+		MeshEntryMaterial meshMaterial;
+}

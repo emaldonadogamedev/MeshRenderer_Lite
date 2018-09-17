@@ -87,6 +87,7 @@
     <ClCompile Include="Src\Systems\Graphics\GraphicsSystem.cpp" />
     <ClCompile Include="Src\Systems\Graphics\GraphicsUtilities\InputData.cpp" />
     <ClCompile Include="Src\Systems\Graphics\GraphicsUtilities\ObjectHandle.cpp" />
+    <ClCompile Include="Src\Systems\Graphics\ModelClasses\MeshMaterial\MeshEntryMaterial.cpp" />
     <ClCompile Include="Src\Systems\Graphics\ModelClasses\ModelManager\ModelManager.cpp" />
     <ClCompile Include="Src\Systems\Graphics\ModelClasses\Model\Model.cpp" />
     <ClCompile Include="Src\Systems\Graphics\ModelClasses\PrimitiveGenerator\PrimitiveGenerator.cpp" />
@@ -127,6 +128,7 @@
     <ClInclude Include="Src\Systems\Core\Components\Transform\Transform.h" />
     <ClInclude Include="Src\Systems\Core\Layer\Layer.h" />
     <ClInclude Include="Src\Systems\Core\IScene\Scene.h" />
+    <ClInclude Include="Src\Systems\Graphics\ModelClasses\MeshMaterial\MeshEntryMaterial.h" />
     <ClInclude Include="Src\Systems\ISystem.h" />
     <ClInclude Include="Src\Systems\Graphics\BufferClasses\ConstantBuffers.h" />
     <ClInclude Include="Src\Systems\Graphics\CameraClasses\Camera.h" />

@@ -1,28 +1,34 @@
 #include <Utilities/precompiled.h>
 #include <Systems/Core/GameObjectSystem.h>
 
+#include <Systems/Core/Components/Transform/Transform.h>
+
 bool GameObjectSystem::Initialize()
 {
-		throw std::logic_error("The method or operation is not implemented.");
+		return true;
 }
 
 void GameObjectSystem::Update(const float dt)
 {
-		throw std::logic_error("The method or operation is not implemented.");
+		for (auto* component : m_transformComponents)
+		{
+				Transform* transform = (Transform*)component;
+				transform->UpdateWorldMatrix();
+		}
 }
 
 void GameObjectSystem::Shutdown()
 {
-		throw std::logic_error("The method or operation is not implemented.");
 }
 
 void GameObjectSystem::ReceiveMessage(const IMessage& msg)
 {
-		throw std::logic_error("The method or operation is not implemented.");
 }
 
 void GameObjectSystem::AddComponent(IComponent* component)
 {
-		throw std::logic_error("The method or operation is not implemented.");
+		if (component->GetComponentType() == ComponentType::TRANSFORM)
+		{
+				m_transformComponents.emplace_back(component);
+		}
 }
-

@@ -3,6 +3,7 @@
 #include <Systems/Graphics/GraphicsUtilities/D3DObjects.h>
 #include <Systems/Graphics/BufferClasses/ConstantBuffers.h>
 #include <Systems/Graphics/CameraClasses/Camera.h>
+#include <Systems/Graphics/ModelClasses/MeshMaterial/MeshEntryMaterial.h>
 
 class GraphicsSystem;
 
@@ -78,6 +79,9 @@ public:
 
 	LightViewProjBuffer testLightViewBuffer;
 	ID3D11Buffer* testLightViewConstBuffer = nullptr;
+
+	MeshEntryMaterial testMeshMaterialBuffer = MeshEntryMaterial::GetPresetMaterial(PredefinedMaterials::GreenPlastic);
+	ID3D11Buffer* testMeshMaterialConstBuffer = nullptr;
 
 	//Cameras
 	std::unique_ptr<Camera> testCamera = std::make_unique<Camera>();

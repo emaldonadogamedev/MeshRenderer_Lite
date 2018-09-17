@@ -3,12 +3,14 @@
 #include <vector>
 #include <Systems/Graphics/GraphicsUtilities/VertexTypes.h>
 #include <Systems/Graphics/GraphicsUtilities/ObjectHandle.h>
+#include <Systems/Graphics/ModelClasses/MeshMaterial/MeshEntryMaterial.h>
 #include <assimp/Importer.hpp>
 
 class GraphicsSystem;
 class DX11Renderer;
 class PrimitiveGenerator;
 
+//assimp forward declarations
 struct aiScene;
 struct aiAnimation;
 
@@ -42,6 +44,7 @@ struct BoneStructureNode
 //Example: a humanoid model can have entries such as: HEAD, LEG1, LEG2, ARM1, ARM2, etc.
 struct MeshEntry
 {
+	MeshEntryMaterial meshMaterial = MeshEntryMaterial::GetPresetMaterial(PredefinedMaterials::RedPlastic);
 	std::string diffTextureName = "";
 	std::string normalMapName = "";
 	int assImpMaterialIndex = 0;
@@ -73,6 +76,9 @@ public:
 
 	const std::string& GetFileName() const;
 	void SetFileName(const std::string& fileName);
+
+//For TESTING ONLY!!
+//private:
 
 	MeshEntryList m_meshEntryList;
 
@@ -114,7 +120,6 @@ public:
 	//Assimp data
 	const aiScene* m_assimpScene;
 	Importer m_modelImporter;
-
 
 	static const unsigned char s_maxBoneCount = 120;
 	static const unsigned short s_maxBoneLocCount = 120 * 6;

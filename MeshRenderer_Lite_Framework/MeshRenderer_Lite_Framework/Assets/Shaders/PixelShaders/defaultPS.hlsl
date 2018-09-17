@@ -11,5 +11,5 @@ float4 main(PixelInputType pixel) : SV_TARGET
 		return diffTexture.Sample(textureSamplerWrap, pixel.uv);
 	}
 
-	return objectColor;
+	return pixel.color;
 }

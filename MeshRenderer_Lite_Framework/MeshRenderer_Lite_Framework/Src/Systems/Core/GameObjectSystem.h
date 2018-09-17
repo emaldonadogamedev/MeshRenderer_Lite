@@ -13,5 +13,5 @@ public:
 		virtual void AddComponent(IComponent* component) override;
 
 protected:
-
+		std::vector<IComponent*> m_transformComponents;
 };
