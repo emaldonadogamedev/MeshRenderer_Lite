@@ -16,7 +16,7 @@ enum class LightType : int
 
 struct Light 
 {
-		LightType m_lightType = LightType::LT_POINT;
+		int m_lightType = (int)LightType::LT_POINT;
 		XMFLOAT3 m_position = XMFLOAT3(0, 0, 0);
 
 		XMVECTOR m_Idiffuse = DirectX::XMVectorSet(0.4, 0.4, 0.4, 1);
@@ -30,7 +30,7 @@ struct Light
 		float m_LinearAttenuation = 0.001f;
 		float m_QuadraticAttenuation = 0.f;
 
-		float roughness = 5.f;
+		float roughness = 50.0f;
 		int isActive = 1;
 		int isTaken = 0;
 		int isUsingShadows;

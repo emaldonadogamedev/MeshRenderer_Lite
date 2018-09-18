@@ -36,6 +36,13 @@ float CalculateSpotlightEffect(int lightType, in float3 lightVec, in float3 ligh
 		return pow((cosAlpha - spotMaxAngle) / (spotMinAngle - spotMaxAngle), ns);
 }
 
+float calculateFogS(float d)
+{
+		//1000.f is the far plane
+		//0.01f is the near plane
+		return (1000.0f - d) / (1000.0f - 0.01f);
+}
+
 float4 CaculatePhongLighting(float3 vertexPos, float3 vertexNormal, float3 vertexTangent, 
 	float3 vertexBiTangent, float2 UVCoords) 
 {
@@ -48,7 +55,8 @@ float4 CaculatePhongLighting(float3 vertexPos, float3 vertexNormal, float3 verte
 
 	for (unsigned int i = 0; i < s_maxLights; ++i)
 	{
-		if (sceneLights[i].isTaken) {
+		if (sceneLights[i].isTaken) 
+		{
 			if (sceneLights[i].isActive)
 			{
 				float4 tempColor = (float4)0;
@@ -66,7 +74,7 @@ float4 CaculatePhongLighting(float3 vertexPos, float3 vertexNormal, float3 verte
 				if (textWidth > 0 && textHeight > 0)
 					diffTextureColor = diffTexture.Sample(textureSamplerWrap, UVCoords);
 				else
-					diffTextureColor = objectColor;
+					diffTextureColor = meshMaterial.diffuseKd;
 
 				diffuse = (sceneLights[i].m_Idiffuse * diffTextureColor) * max(dot(vertexNormal, lightVec), 0.f);
 
@@ -74,13 +82,16 @@ float4 CaculatePhongLighting(float3 vertexPos, float3 vertexNormal, float3 verte
 				float3 H = normalize(lightVec + viewVec);
 				const float NdotH = max(dot(vertexNormal, H), 0.f);
 
-				specular = sceneLights[i].m_Ispecular * pow(NdotH, sceneLights[i].roughness);
+				specular = sceneLights[i].m_Ispecular * float4(meshMaterial.specularKs, 1.0f) * pow(NdotH, sceneLights[i].roughness);
 
 				float attenuation = CalculateAttenuation(sceneLights[i].m_lightType, lightVecLength, sceneLights[i].m_ConstantAttenuation,
 					sceneLights[i].m_LinearAttenuation, sceneLights[i].m_QuadraticAttenuation);
 
+				float spotlight = CalculateSpotlightEffect(sceneLights[i].m_lightType, lightVec, sceneLights[i].m_spotDirection,
+						sceneLights[i].m_spotOutterAngle, sceneLights[i].m_spotInnerAngle, sceneLights[i].roughness);
+
 				tempColor += (
-					attenuation *
+					attenuation *spotlight *
 					(diffuse + specular)
 				);
 
@@ -96,5 +107,17 @@ float4 CaculatePhongLighting(float3 vertexPos, float3 vertexNormal, float3 verte
 
 float4 main(PixelInputType pixel) : SV_TARGET
 {
-	return CaculatePhongLighting(pixel.worldPos, pixel.normal, pixel.tangent, pixel.bitangent, pixel.uv);
+	//return float4(meshMaterial.specularKs, 1.0f);
+		float4 lit = CaculatePhongLighting(pixel.worldPos, pixel.normal, pixel.tangent, pixel.bitangent, pixel.uv);
+
+		const float S = calculateFogS(length((pixel.worldPos - cameraPosition.xyz).xyz));
+
+		const float4 tempGlobalAmbient = float4(0.2f, 0.2f, 0.2f, 1.0f);
+		const float4 tempFogColor = float4(0.1f, 0.1f, 0.1f, 0.3f);
+
+		const float4 I_local = meshMaterial.emissiveKe + (tempGlobalAmbient * meshMaterial.ambientKa) + lit;
+
+		float4 I_final = (I_local * S) + ((1.0f - S) * tempFogColor);
+
+		return I_final;
 }

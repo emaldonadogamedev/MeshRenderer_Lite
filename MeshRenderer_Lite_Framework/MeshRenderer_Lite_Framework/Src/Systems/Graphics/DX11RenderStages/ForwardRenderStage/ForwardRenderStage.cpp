@@ -47,6 +47,7 @@ void ForwardRenderStage::PreRender()
 	renderData.testViewProjBuffer.cameraPosition.m128_f32[2] = renderData.testCamera->m_Position.m128_f32[2];
 	renderData.testViewProjBuffer.cameraPosition.m128_f32[3] = renderData.m_debugIdx;
 
+	renderData.testViewProjBuffer.cameraPosition = renderData.testCamera->m_Position;
 	renderData.testViewProjBuffer.viewMtx = renderData.testCamera->GetView();
 	renderData.testViewProjBuffer.invViewMtx =
 			DirectX::XMMatrixInverse(nullptr, renderData.testViewProjBuffer.viewMtx);
@@ -77,7 +78,7 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 		m_renderer->DisableAlphaBlending();
 	}
 	else if (m_renderer->IsLightingEnabled()) {
-		handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("BRDFLighting");
+		handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("phongLighting");
 	}
 	else
 		handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("defaultPS");
@@ -89,7 +90,7 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 	renderData.m_pImmediateContext->PSSetConstantBuffers(1, 1, &renderData.testViewProjConstBuffer);
 
 		//update lights const buffer
-	static const Light* const sceneLights = ShadowLightComponent::GetSceneLightsWithShadowPtr();
+	static const Light* sceneLights = ShadowLightComponent::GetSceneLightsWithShadowPtr();
 	renderData.m_pImmediateContext->UpdateSubresource(renderData.testLightConstBuffer, 0, nullptr, 
 		sceneLights, 0, 0);
 	renderData.m_pImmediateContext->PSSetConstantBuffers(5, 1, &renderData.testLightConstBuffer);

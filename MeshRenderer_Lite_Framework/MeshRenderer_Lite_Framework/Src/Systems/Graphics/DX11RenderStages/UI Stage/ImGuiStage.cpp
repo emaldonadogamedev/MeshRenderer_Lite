@@ -7,6 +7,8 @@
 #include <Systems/Core/GameObject/GameObject.h>
 #include <Systems/Graphics/Components/ModelComponent/ModelComponent.h>
 #include <Systems/Graphics/Components/CurvePathComponent/CurvePathComponent.h>
+#include <Systems/Graphics/Components/LightComponents/Light.h>
+#include <Systems/Graphics/Components/LightComponents/ShadowLightComponent/ShadowLightComponent.h>
 #include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
 #include <Systems/Graphics/DX11Renderer/DX11RendererData.h>
 #include <Systems/Graphics/ModelClasses/Model/Model.h>
@@ -94,6 +96,31 @@ void ImGuiStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 			ImGui::DragFloat3("Scale: ", transform->GetScale().m128_f32, 0.1f);
 
 			ImGui::End();
+		}
+
+		if (ImGui::Begin("Shadow Light Properties"))
+		{
+				const auto& shadowLights = m_gfxSystemComponents->at(ComponentType::RENDERABLE_LIGHT_WITH_SHADOW);
+				for (auto& component : shadowLights)
+				{
+						const ShadowLightComponent* const shadowLighComp = (ShadowLightComponent*)component;
+						const auto light = shadowLighComp->GetLight();
+
+						if (light->isTaken == 0)
+								break;
+
+						ImGui::SliderInt("Is Active", &light->isActive, 0,1);
+						ImGui::SliderInt("Light type", &light->m_lightType, 0, 2);
+						ImGui::DragFloat3("Position", &light->m_position.x, 0.001f);
+						ImGui::DragFloat3("Light Direction", &light->m_spotDirection.x, 0.001f, -1.f, 1.f, "%.3f");
+						ImGui::DragFloat3("Diffuse", light->m_Idiffuse.m128_f32, 0.001f, 0.f, 1.0f, "%.3f");
+						ImGui::DragFloat3("Specular", light->m_Ispecular.m128_f32, 0.001f, 0.f, 1.0f, "%.3f");
+						ImGui::DragFloat("NS", &light->roughness, 0.001f, 0.f, 2000.0f, "%.3f");
+
+						ImGui::Separator();
+				}
+
+				ImGui::End();
 		}
 	}
 
