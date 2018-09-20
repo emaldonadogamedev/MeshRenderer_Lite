@@ -19,24 +19,8 @@ enum class PredefinedMaterials : int
 		CyanRubber
 };
 
-class MeshEntryMaterial
+struct PhongMaterial
 {
-
-public:
-		MeshEntryMaterial(const XMFLOAT4& ka, const XMFLOAT4& kd, const XMFLOAT3& ks, const float ns, 
-				const XMFLOAT4& ke = XMFLOAT4(0, 0, 0, 0), const int useDiffText = 1, const int useNormMap = 1)
-				:ambientKa(ka)
-				,diffuseKd(kd)
-				,specularKs(ks)
-				,specularPowerNs(ns)
-				,emissiveKe(ke)
-				,useDiffuseTexture(useDiffText)
-				,useNormalMap(useNormMap)
-		{
-		}
-
-		MeshEntryMaterial& operator=(const MeshEntryMaterial& rhs);
-
 		//Just packing all of the variables like that in order to align them(4 32 bit elements at a time)
 		XMFLOAT4 ambientKa;
 		XMFLOAT4 diffuseKd;
@@ -45,10 +29,31 @@ public:
 		float specularPowerNs;
 
 		XMFLOAT4 emissiveKe;
-		
+
 		int useDiffuseTexture;
 		int useNormalMap;
 		int padding[2];
+};
+
+struct MeshEntryMaterial
+{
+
+public:
+		MeshEntryMaterial(const XMFLOAT4& ka, const XMFLOAT4& kd, const XMFLOAT3& ks, const float ns, 
+				const XMFLOAT4& ke = XMFLOAT4(0, 0, 0, 0), const int useDiffText = 1, const int useNormMap = 1)
+		{
+				m_phongMaterial.ambientKa = ka;
+				m_phongMaterial.diffuseKd = kd;
+				m_phongMaterial.specularKs = ks;
+				m_phongMaterial.specularPowerNs = ns;
+				m_phongMaterial.emissiveKe = ke;
+				m_phongMaterial.useDiffuseTexture = useDiffText;
+				m_phongMaterial.useNormalMap = useNormMap;
+		}
+
+		MeshEntryMaterial& operator=(const MeshEntryMaterial& rhs);
+
+		PhongMaterial m_phongMaterial;
 
 		void SetToPresetMaterial(const PredefinedMaterials preset);
 		static const MeshEntryMaterial& GetPresetMaterial(const PredefinedMaterials preset);

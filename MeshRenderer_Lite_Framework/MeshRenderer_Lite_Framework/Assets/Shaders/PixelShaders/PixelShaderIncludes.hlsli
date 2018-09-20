@@ -37,10 +37,12 @@ static const int LT_DIRECTIONAL = 0;
 static const int LT_POINT = 1;
 static const int LT_SPOT = 2;
 
-struct Light {
+struct Light 
+{
 	int m_lightType;
 	float3 m_position;
 
+	float4 m_Iambient;
 	float4 m_Idiffuse;
 	float4 m_Ispecular;
 
@@ -60,13 +62,13 @@ struct Light {
 
 static const unsigned int s_maxLights = 15;
 
-cbuffer SceneLights : register(b5)
+cbuffer SceneLights : register(b7)
 {
 	Light sceneLights[s_maxLights];
 }
 
 // Object Material
-struct MeshEntryMaterial 
+struct PhongMaterial
 {
 		float4 ambientKa;
 		float4 diffuseKd;
@@ -83,5 +85,5 @@ struct MeshEntryMaterial
 
 cbuffer ObjectMaterial : register(b6)
 {
-		MeshEntryMaterial meshMaterial;
+		PhongMaterial meshMaterial;
 }

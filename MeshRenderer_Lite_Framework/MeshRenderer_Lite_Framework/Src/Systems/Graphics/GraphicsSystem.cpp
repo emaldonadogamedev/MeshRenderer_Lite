@@ -108,14 +108,24 @@ void GraphicsSystem::UpdateModelComponents(const float dt)
 void GraphicsSystem::UpdateLightComponents(const float dt)
 {
 	auto& lightComponents = m_renderComponents[ComponentType::RENDERABLE_LIGHT];
+	auto& shadowLightComponents = m_renderComponents[ComponentType::RENDERABLE_LIGHT_WITH_SHADOW];
 
 	for (auto& component : lightComponents)
 	{
-		auto light = (static_cast<const ShadowLightComponent*>(component))->GetLight();
-		auto& lightPos = (static_cast<Transform* const>(component->GetOwner()->GetComponent(ComponentType::TRANSFORM)))->GetPosition();
-		light->m_position.x = lightPos.m128_f32[0];
-		light->m_position.y = lightPos.m128_f32[1];
-		light->m_position.z = lightPos.m128_f32[2];
+		auto light = (static_cast<const LightComponent*>(component))->GetLight();
+		auto& lightTransform = (static_cast<Transform* const>(component->GetOwner()->GetComponent(ComponentType::TRANSFORM)))->GetPosition();
+		light->m_position.x = lightTransform.m128_f32[0];
+		light->m_position.y = lightTransform.m128_f32[1];
+		light->m_position.z = lightTransform.m128_f32[2];
+	}
+
+	for (auto& component : shadowLightComponents)
+	{
+			auto light = (static_cast<const ShadowLightComponent*>(component))->GetLight();
+			auto& lightTransform = (static_cast<Transform* const>(component->GetOwner()->GetComponent(ComponentType::TRANSFORM)))->GetPosition();
+			light->m_position.x = lightTransform.m128_f32[0];
+			light->m_position.y = lightTransform.m128_f32[1];
+			light->m_position.z = lightTransform.m128_f32[2];
 	}
 }
 
@@ -123,10 +133,12 @@ void GraphicsSystem::UpdateLightComponents(const float dt)
 const aiNodeAnim* FindNodeAnim(const aiAnimation* const pAnimation, const string& NodeName)
 {
 	const aiNodeAnim* pNodeAnim;
-	for (int i = 0; i < pAnimation->mNumChannels; i++) {
+	for (int i = 0; i < pAnimation->mNumChannels; i++) 
+	{
 		pNodeAnim = pAnimation->mChannels[i];
 
-		if (string(pNodeAnim->mNodeName.data) == NodeName) {
+		if (string(pNodeAnim->mNodeName.data) == NodeName) 
+		{
 			return pNodeAnim;
 		}
 	}
@@ -166,7 +178,7 @@ void CalcInterpolatedScaling(aiVector3D& Out, float AnimationTime, const aiNodeA
 	Out = Start + Factor * Delta;
 }
 
-int FindPosition(float AnimationTime, const aiNodeAnim* const pNodeAnim)
+int FindPosition(const float AnimationTime, const aiNodeAnim* const pNodeAnim)
 {
 	for (int i = 0; i < pNodeAnim->mNumPositionKeys - 1; i++) 
 	{
@@ -177,7 +189,7 @@ int FindPosition(float AnimationTime, const aiNodeAnim* const pNodeAnim)
 	return pNodeAnim->mNumPositionKeys - 1;
 
 }
-void CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime, const aiNodeAnim* const pNodeAnim)
+void CalcInterpolatedPosition(aiVector3D& Out, const float AnimationTime, const aiNodeAnim* const pNodeAnim)
 {
 	if (pNodeAnim->mNumPositionKeys == 1) 
 	{
@@ -198,7 +210,7 @@ void CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime, const aiNode
 	Out = Start + Factor * (End - Start);
 }
 
-int FindRotation(float AnimationTime, const aiNodeAnim* const pNodeAnim)
+int FindRotation(const float AnimationTime, const aiNodeAnim* const pNodeAnim)
 {
 	//assert(pNodeAnim->mNumRotationKeys > 0);
 
@@ -210,7 +222,7 @@ int FindRotation(float AnimationTime, const aiNodeAnim* const pNodeAnim)
 
 	return pNodeAnim->mNumRotationKeys - 1;
 }
-void CalcInterpolatedRotation(aiQuaternion& Out, float AnimationTime, const aiNodeAnim* pNodeAnim)
+void CalcInterpolatedRotation(aiQuaternion& Out, const float AnimationTime, const aiNodeAnim* pNodeAnim)
 {
 	// we need at least two values to interpolate...
 	if (pNodeAnim->mNumRotationKeys == 1) 
@@ -232,7 +244,7 @@ void CalcInterpolatedRotation(aiQuaternion& Out, float AnimationTime, const aiNo
 	Out = Out.Normalize();
 }
 
-void ReadNodeHeirarchy(Model& model, const float AnimationTime, const aiNode* pNode, const aiAnimation* currentAnimation ,const aiMatrix4x4& ParentTransform)
+void ReadNodeHeirarchy(Model& model, const float AnimationTime, const aiNode* const pNode, const aiAnimation* const currentAnimation ,const aiMatrix4x4& ParentTransform)
 {
 	const string NodeName(pNode->mName.data);
 

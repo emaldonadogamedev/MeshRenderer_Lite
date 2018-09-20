@@ -13,11 +13,11 @@ float CalculateAttenuation(int lightType, float d, float C, float L, float Q) {
 float CalculateSpotlightEffect(int lightType, in float3 lightVec, in float3 lightSpotDir, in float outerAngle, 
 		in float innerAngle, in float ns)
 {
-		if (lightType == LT_POINT)
+		if (lightType != LT_SPOT || ns <= 0.0f)
 		{
 				return 1.0f;
 		}
-		const float D = normalize(lightSpotDir);
+		const float3 D = normalize(lightSpotDir);
 		const float LdotD = dot(lightVec, D);
 
 		if (LdotD < cos(outerAngle))
@@ -47,7 +47,8 @@ float4 CaculatePhongLighting(float3 vertexPos, float3 vertexNormal, float3 verte
 	float3 vertexBiTangent, float2 UVCoords) 
 {
 	float4 finalColor = (float4)0;
-	
+	float4 tempColor = (float4)0;
+
 	const float3 viewVec = normalize(cameraPosition.xyz - vertexPos);
 	float3 lightVec;
 
@@ -59,12 +60,13 @@ float4 CaculatePhongLighting(float3 vertexPos, float3 vertexNormal, float3 verte
 		{
 			if (sceneLights[i].isActive)
 			{
-				float4 tempColor = (float4)0;
-
 				lightVec = (sceneLights[i].m_position - vertexPos);
 				float lightVecLength = length(lightVec);
 				
 				lightVec /= lightVecLength;
+
+				//Ka term
+				tempColor = meshMaterial.ambientKa * sceneLights[i].m_Iambient;
 
 				//KD term
 				//Get the diff texture's color
@@ -81,8 +83,7 @@ float4 CaculatePhongLighting(float3 vertexPos, float3 vertexNormal, float3 verte
 				//KS term
 				float3 H = normalize(lightVec + viewVec);
 				const float NdotH = max(dot(vertexNormal, H), 0.f);
-
-				specular = sceneLights[i].m_Ispecular * float4(meshMaterial.specularKs, 1.0f) * pow(NdotH, sceneLights[i].roughness);
+				specular = sceneLights[i].m_Ispecular * float4(meshMaterial.specularKs, 1.0f) * pow(NdotH, meshMaterial.specularPowerNs);
 
 				float attenuation = CalculateAttenuation(sceneLights[i].m_lightType, lightVecLength, sceneLights[i].m_ConstantAttenuation,
 					sceneLights[i].m_LinearAttenuation, sceneLights[i].m_QuadraticAttenuation);
@@ -91,7 +92,7 @@ float4 CaculatePhongLighting(float3 vertexPos, float3 vertexNormal, float3 verte
 						sceneLights[i].m_spotOutterAngle, sceneLights[i].m_spotInnerAngle, sceneLights[i].roughness);
 
 				tempColor += (
-					attenuation *spotlight *
+					attenuation * spotlight *
 					(diffuse + specular)
 				);
 
@@ -107,7 +108,6 @@ float4 CaculatePhongLighting(float3 vertexPos, float3 vertexNormal, float3 verte
 
 float4 main(PixelInputType pixel) : SV_TARGET
 {
-	//return float4(meshMaterial.specularKs, 1.0f);
 		float4 lit = CaculatePhongLighting(pixel.worldPos, pixel.normal, pixel.tangent, pixel.bitangent, pixel.uv);
 
 		const float S = calculateFogS(length((pixel.worldPos - cameraPosition.xyz).xyz));
@@ -119,5 +119,5 @@ float4 main(PixelInputType pixel) : SV_TARGET
 
 		float4 I_final = (I_local * S) + ((1.0f - S) * tempFogColor);
 
-		return I_final;
+		return I_local;
 }

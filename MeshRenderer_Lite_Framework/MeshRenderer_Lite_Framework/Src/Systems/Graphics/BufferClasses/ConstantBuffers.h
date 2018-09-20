@@ -14,7 +14,7 @@ struct ViewProjBuffer
 	XMMATRIX projectionMtx = XMMatrixIdentity();;
 	XMMATRIX invProjectionMtx = XMMatrixIdentity();
 	XMMATRIX viewProjection = XMMatrixIdentity();
-	XMVECTOR cameraPosition = XMVectorSet(0,0,-17,0);
+	XMVECTOR cameraPosition = XMVectorSet(0,0,-17,1.0f);
 };
 
 struct PerObectBuffer
@@ -50,3 +50,4 @@ struct LightViewProjBuffer
 		XMMATRIX lightViewMtx;
 		XMMATRIX lightProjectionMtx;
 };
+

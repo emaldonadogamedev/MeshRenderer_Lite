@@ -93,7 +93,7 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 	static const Light* sceneLights = ShadowLightComponent::GetSceneLightsWithShadowPtr();
 	renderData.m_pImmediateContext->UpdateSubresource(renderData.testLightConstBuffer, 0, nullptr, 
 		sceneLights, 0, 0);
-	renderData.m_pImmediateContext->PSSetConstantBuffers(5, 1, &renderData.testLightConstBuffer);
+	renderData.m_pImmediateContext->PSSetConstantBuffers(7, 1, &renderData.testLightConstBuffer);
 
 	//forward render all of the objects
 	const auto& modelComponents = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_3D];
@@ -141,7 +141,7 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 				//Set the material information
 				renderData.testMeshMaterialBuffer = meshEntry.meshMaterial;
 				renderData.m_pImmediateContext->UpdateSubresource(renderData.testMeshMaterialConstBuffer,
-						0, NULL, &renderData.testMeshMaterialBuffer, 0, 0);
+						0, NULL, &renderData.testMeshMaterialBuffer.m_phongMaterial, 0, 0);
 				renderData.m_pImmediateContext->PSSetConstantBuffers(6, 1, &renderData.testMeshMaterialConstBuffer);
 
 				//Set the diffuse texture

@@ -34,8 +34,8 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//test3DComp->SetModel(graphicsSystem->GetModel("gh_sample_animation.fbx"));
 		//auto model = graphicsSystem->GetModel("bottle.obj");
 		//auto model = graphicsSystem->GetModel("gh_sample_animation.fbx");
-	  //auto model = graphicsSystem->GetModel("walk.fbx");
-		auto model = graphicsSystem->GetModel("sphere");
+		//auto model = graphicsSystem->GetModel("walk.fbx");
+		auto model = graphicsSystem->GetModel("dragon.obj");
 		//auto model = graphicsSystem->GetModel("dragon.obj");
 		//auto model = graphicsSystem->GetModel("box");
 		//auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
@@ -68,7 +68,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		lightComp->GetLight()->m_Idiffuse = XMVectorSet(.1, .1, .1, 1.0f);
 		testLight->AddComponent(lightComp);
 		graphicsSystem->AddComponent(lightComp);
-		lightComp->GetLight()->isActive = 0;
+		lightComp->GetLight()->isActive = 1;
 
 		//test light 2
 		testLight2 = std::make_unique<GameObject>();
@@ -94,7 +94,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		testFloor->AddComponent(test3DComp);
 		m_graphicsSystem->AddComponent(test3DComp);
 		auto model2 = graphicsSystem->GetModel("box");
-		model->m_meshEntryList[0].meshMaterial.SetToPresetMaterial(PredefinedMaterials::YellowRubber);
+		model2->m_meshEntryList[0].meshMaterial.SetToPresetMaterial(PredefinedMaterials::Emerald);
 		//model2->SetDiffTextureFileName("crate_1.jpg", 0);
 		test3DComp->SetModel(model2);
 
