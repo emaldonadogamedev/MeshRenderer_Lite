@@ -48,7 +48,7 @@ const std::unordered_map<PredefinedMaterials, MeshEntryMaterial> MeshEntryMateri
 				PredefinedMaterials::GreenPlastic,
 				MeshEntryMaterial(
 						XMFLOAT4(0.f, 0.f, 0.f, 1.0f),
-						XMFLOAT4(0.1f, 0.35f, 0.1f, 1.0f),
+						XMFLOAT4(0.1f, 0.99f, 0.1f, 1.0f),
 						XMFLOAT3(0.45f, 0.55f, 0.45f),
 						32.f
 				)

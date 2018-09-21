@@ -145,33 +145,39 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 				renderData.m_pImmediateContext->PSSetConstantBuffers(6, 1, &renderData.testMeshMaterialConstBuffer);
 
 				//Set the diffuse texture
-				const auto it = textures2D.find(meshEntry.diffTextureName);
-				if (it != textures2D.end()) 
+				if (meshEntry.meshMaterial.m_phongMaterial.useDiffuseTexture)
 				{
-					const auto& diffTextSRV = renderData.textures2D[*it->second].srv;
-					renderData.m_pImmediateContext->PSSetShaderResources(0, 1, &diffTextSRV);
-				}
-				else 
-				{
-					if (const auto newTexture2D = m_renderer->GetTexture2D("../MeshRenderer_Lite_Framework/Assets/Textures/" + meshEntry.diffTextureName)) {
-						renderData.m_pImmediateContext->PSSetShaderResources(0, 1, &renderData.textures2D[*newTexture2D].srv);
-
-						textures2D[meshEntry.diffTextureName] = newTexture2D;
-					}
+						const auto it = textures2D.find(meshEntry.diffTextureName);
+						if (it != textures2D.end())
+						{
+								const auto& diffTextSRV = renderData.textures2D[*it->second].srv;
+								renderData.m_pImmediateContext->PSSetShaderResources(0, 1, &diffTextSRV);
+						}
+						else
+						{
+								if (const auto newTexture2D = m_renderer->GetTexture2D("../MeshRenderer_Lite_Framework/Assets/Textures/" + meshEntry.diffTextureName))
+								{
+										renderData.m_pImmediateContext->PSSetShaderResources(0, 1, &renderData.textures2D[*newTexture2D].srv);
+										textures2D[meshEntry.diffTextureName] = newTexture2D;
+								}
+						}
 				}
 
 				//Set the normal map
-				const auto it_np = textures2D.find(meshEntry.normalMapName);
-				if (it_np != textures2D.end()) {
-					const auto& diffTextSRV = renderData.textures2D[*it_np->second].srv;
-					renderData.m_pImmediateContext->PSSetShaderResources(2, 1, &diffTextSRV);
-				}
-				else {
-					if (const auto newNormalMap = m_renderer->GetTexture2D("../MeshRenderer_Lite_Framework/Assets/Textures/" + meshEntry.normalMapName)) {
-						renderData.m_pImmediateContext->PSSetShaderResources(2, 1, &renderData.textures2D[*newNormalMap].srv);
+				if (meshEntry.meshMaterial.m_phongMaterial.useNormalMap)
+				{
+						const auto it_np = textures2D.find(meshEntry.normalMapName);
+						if (it_np != textures2D.end()) {
+								const auto& diffTextSRV = renderData.textures2D[*it_np->second].srv;
+								renderData.m_pImmediateContext->PSSetShaderResources(2, 1, &diffTextSRV);
+						}
+						else {
+								if (const auto newNormalMap = m_renderer->GetTexture2D("../MeshRenderer_Lite_Framework/Assets/Textures/" + meshEntry.normalMapName)) {
+										renderData.m_pImmediateContext->PSSetShaderResources(2, 1, &renderData.textures2D[*newNormalMap].srv);
 
-						textures2D[meshEntry.normalMapName] = newNormalMap;
-					}
+										textures2D[meshEntry.normalMapName] = newNormalMap;
+								}
+						}
 				}
 
 				m_renderer->DrawIndexed(meshEntry.numIndices, meshEntry.baseIndex, meshEntry.baseVertex);

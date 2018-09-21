@@ -64,11 +64,15 @@ void Model::SetDiffTextureFileName(const std::string& fileName, const unsigned i
 {
 #if _DEBUG
 	if (meshIdx < m_meshEntryList.size())
+	{
 		m_meshEntryList[meshIdx].diffTextureName = fileName;
+		m_meshEntryList[meshIdx].meshMaterial.m_phongMaterial.useDiffuseTexture = 1;
+	}
 	else
 		throw std::exception("Error: meshIdx out of range!");
 #else
 	m_meshEntryList[meshIdx].diffTextureName = fileName;
+	m_meshEntryList[meshIdx].meshMaterial.m_phongMaterial.useDiffuseTexture = 1;
 #endif
 
 }

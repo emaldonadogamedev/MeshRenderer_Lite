@@ -103,21 +103,25 @@ void ImGuiStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 				const auto& shadowLights = m_gfxSystemComponents->at(ComponentType::RENDERABLE_LIGHT_WITH_SHADOW);
 				for (auto& component : shadowLights)
 				{
-						const ShadowLightComponent* shadowLighComp = (const ShadowLightComponent*)component;
-						const auto light = shadowLighComp->GetLight();
-						
-						ImGui::SliderInt("Is Active", &light->isActive, 0,1);
-						ImGui::SliderInt("Light type", &light->m_lightType, 0, 2);
-						
-						auto* const transform = (Transform*)component->GetOwner()->GetComponent(ComponentType::TRANSFORM);
-						ImGui::DragFloat3("Position", transform->GetPosition().m128_f32, 0.001f);
+						if (ImGui::Begin("Light - "))
+						{
+								const ShadowLightComponent* shadowLighComp = (const ShadowLightComponent*)component;
+										const auto light = shadowLighComp->GetLight();
 
-						ImGui::DragFloat3("Light Direction", &light->m_spotDirection.x, 0.001f, -1.f, 1.f, "%.3f");
-						ImGui::DragFloat3("Diffuse", light->m_Idiffuse.m128_f32, 0.001f, 0.f, 1.0f, "%.3f");
-						ImGui::DragFloat3("Specular", light->m_Ispecular.m128_f32, 0.001f, 0.f, 1.0f, "%.3f");
-						ImGui::DragFloat("NS", &light->roughness, 0.001f, 0.f, 2000.0f, "%.3f");
+										ImGui::SliderInt("Is Active", &light->isActive, 0, 1);
+										ImGui::SliderInt("Light type", &light->m_lightType, 0, 2);
 
-						ImGui::Separator();
+										auto* const transform = (Transform*)component->GetOwner()->GetComponent(ComponentType::TRANSFORM);
+										ImGui::DragFloat3("Position", transform->GetPosition().m128_f32, 0.001f);
+
+										ImGui::DragFloat3("Light Direction", &light->m_spotDirection.x, 0.001f, -1.f, 1.f, "%.3f");
+								ImGui::DragFloat3("Diffuse", light->m_Idiffuse.m128_f32, 0.001f, 0.f, 1.0f, "%.3f");
+								ImGui::DragFloat3("Specular", light->m_Ispecular.m128_f32, 0.001f, 0.f, 1.0f, "%.3f");
+								ImGui::DragFloat("NS", &light->roughness, 0.001f, 0.f, 2000.0f, "%.3f");
+
+								ImGui::Separator();
+						}
+						ImGui::End();
 				}
 
 				ImGui::End();

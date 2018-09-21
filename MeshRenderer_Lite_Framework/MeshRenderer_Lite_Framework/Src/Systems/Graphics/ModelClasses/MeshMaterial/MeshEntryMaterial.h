@@ -30,8 +30,8 @@ struct PhongMaterial
 
 		XMFLOAT4 emissiveKe;
 
-		int useDiffuseTexture;
-		int useNormalMap;
+		int useDiffuseTexture = 0;
+		int useNormalMap = 0;
 		int padding[2];
 };
 

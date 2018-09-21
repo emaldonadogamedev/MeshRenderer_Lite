@@ -95,9 +95,9 @@ void IApplication::Run(void)
 				it->Update(dt);
 			}
 #ifdef _DEBUG
-			const int multiplier = (int)(dt < s_fps60);
-			const int waitTimeMS = (int)((s_fps60 - dt) * 1000.0f);
-			Sleep(waitTimeMS * multiplier);
+			//const int multiplier = (int)(dt < s_fps60);
+			//const int waitTimeMS = (int)((s_fps60 - dt) * 1000.0f);
+			//Sleep(waitTimeMS * multiplier);
 #endif
 		}
 		else
