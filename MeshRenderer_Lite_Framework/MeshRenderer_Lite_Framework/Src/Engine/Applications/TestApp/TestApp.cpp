@@ -33,14 +33,14 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//test3DComp->SetModel(loadedModels.at("tiny_4anim.x").get());
 		//test3DComp->SetModel(graphicsSystem->GetModel("gh_sample_animation.fbx"));
 		//auto model = graphicsSystem->GetModel("bottle.obj");
-		auto model = graphicsSystem->GetModel("gh_sample_animation.fbx");
+		//auto model = graphicsSystem->GetModel("gh_sample_animation.fbx");
 		//auto model = graphicsSystem->GetModel("walk.fbx");
-		//auto model = graphicsSystem->GetModel("dragon.obj");
 		//auto model = graphicsSystem->GetModel("dragon.obj");
 		//auto model = graphicsSystem->GetModel("box");
 		//auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
-		//model->SetDiffTextureFileName("AlphaBlendTest.png", 0);
-		//model->m_meshEntryList[0].meshMaterial = MeshEntryMaterial::GetPresetMaterial(PredefinedMaterials::GreenPlastic);
+		auto model = graphicsSystem->GetModel("sphere");
+		model->SetDiffTextureFileName("AlphaBlendTest.png", 0);
+		model->m_meshEntryList[0].meshMaterial = MeshEntryMaterial::GetPresetMaterial(PredefinedMaterials::GreenPlastic);
 		test3DComp->SetModel(model);
 
 		testObj->AddComponent(test3DComp);
@@ -65,7 +65,6 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 
 		ShadowLightComponent* lightComp = new ShadowLightComponent(testLight.get(), true, true);
 		//lightComp->GetLight()->m_lightType = LightType::LT_DIRECTIONAL;
-		lightComp->GetLight()->m_Idiffuse = XMVectorSet(.1, .1, .1, 1.0f);
 		testLight->AddComponent(lightComp);
 		graphicsSystem->AddComponent(lightComp);
 		lightComp->GetLight()->isActive = 1;
@@ -78,7 +77,6 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 
 		ShadowLightComponent* lightComp2 = new ShadowLightComponent(testLight2.get(), true, true);
 		//lightComp->GetLight()->m_lightType = LightType::LT_DIRECTIONAL;
-		lightComp2->GetLight()->m_Idiffuse = XMVectorSet(.1, .1, .1, 1.0f);
 		testLight2->AddComponent(lightComp2);
 		graphicsSystem->AddComponent(lightComp2);
 
@@ -95,7 +93,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		m_graphicsSystem->AddComponent(test3DComp);
 		auto model2 = graphicsSystem->GetModel("box");
 		model2->m_meshEntryList[0].meshMaterial.SetToPresetMaterial(PredefinedMaterials::Emerald);
-		//model2->SetDiffTextureFileName("crate_1.jpg", 0);
+		model2->SetDiffTextureFileName("Standard_red_pxr256.png", 0);
 		test3DComp->SetModel(model2);
 
 		return true;

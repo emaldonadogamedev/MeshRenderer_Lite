@@ -27,8 +27,9 @@ ShadowMapStage::~ShadowMapStage()
 void ShadowMapStage::PreRender()
 {
 		auto& renderData = m_renderer->GetRendererData();
-		renderData.m_pImmediateContext->RSSetState(renderData.m_d3dRasterStateSolCullFront);
+		renderData.m_pImmediateContext->RSSetState(renderData.m_d3dRasterStateSolCullBack);
 		renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		m_renderer->DisableAlphaBlending();
 }
 
 void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float dt)

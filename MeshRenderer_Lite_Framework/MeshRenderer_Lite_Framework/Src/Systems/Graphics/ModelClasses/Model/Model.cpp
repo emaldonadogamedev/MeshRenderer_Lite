@@ -60,21 +60,36 @@ bool Model::IsAnimationActive() const
 	return m_animationEnabled;
 }
 
-void Model::SetDiffTextureFileName(const std::string& fileName, const unsigned int meshIdx)
+void Model::SetDiffTextureFileName(const std::string& fileName, const unsigned int meshIdx, const bool useNow)
 {
 #if _DEBUG
 	if (meshIdx < m_meshEntryList.size())
 	{
 		m_meshEntryList[meshIdx].diffTextureName = fileName;
-		m_meshEntryList[meshIdx].meshMaterial.m_phongMaterial.useDiffuseTexture = 1;
+		m_meshEntryList[meshIdx].meshMaterial.m_phongMaterial.useDiffuseTexture = useNow;
 	}
 	else
 		throw std::exception("Error: meshIdx out of range!");
 #else
 	m_meshEntryList[meshIdx].diffTextureName = fileName;
-	m_meshEntryList[meshIdx].meshMaterial.m_phongMaterial.useDiffuseTexture = 1;
+	m_meshEntryList[meshIdx].meshMaterial.m_phongMaterial.useDiffuseTexture = useNow;
 #endif
+}
 
+void Model::SetNormalMapFileName(const std::string& fileName, const unsigned int meshIdx, const bool useNow)
+{
+#if _DEBUG
+		if (meshIdx < m_meshEntryList.size())
+		{
+				m_meshEntryList[meshIdx].diffTextureName = fileName;
+				m_meshEntryList[meshIdx].meshMaterial.m_phongMaterial.useNormalMap = useNow;
+		}
+		else
+				throw std::exception("Error: meshIdx out of range!");
+#else
+		m_meshEntryList[meshIdx].diffTextureName = fileName;
+		m_meshEntryList[meshIdx].meshMaterial.m_phongMaterial.useNormalMap = useNow;
+#endif
 }
 
 const std::string& Model::GetFileName() const

@@ -72,7 +72,8 @@ public:
 
 	bool IsAnimationActive() const;
 
-	void SetDiffTextureFileName(const std::string& fileName = "", const unsigned int meshIdx = 0);
+	void SetDiffTextureFileName(const std::string& fileName = "", const unsigned int meshIdx = 0, const bool useNow = true);
+	void SetNormalMapFileName(const std::string& fileName = "", const unsigned int meshIdx = 0, const bool useNow = true);
 
 	const std::string& GetFileName() const;
 	void SetFileName(const std::string& fileName);

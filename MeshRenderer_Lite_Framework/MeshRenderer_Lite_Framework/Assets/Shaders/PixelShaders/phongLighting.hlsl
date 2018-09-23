@@ -17,7 +17,7 @@ float CalculateSpotlightEffect(int lightType, in float3 lightVec, in float3 ligh
 		{
 				return 1.0f;
 		}
-		const float3 D = normalize(lightSpotDir);
+		const float3 D = normalize(-lightSpotDir);
 		const float LdotD = dot(lightVec, D);
 
 		if (LdotD < cos(outerAngle))
@@ -36,7 +36,7 @@ float CalculateSpotlightEffect(int lightType, in float3 lightVec, in float3 ligh
 		return pow((cosAlpha - spotMaxAngle) / (spotMinAngle - spotMaxAngle), ns);
 }
 
-float calculateFogS(float d)
+float calculateFogS(in float d)
 {
 		//1000.f is the far plane
 		//0.01f is the near plane
@@ -60,7 +60,9 @@ float4 CaculatePhongLighting(float3 vertexPos, float3 vertexNormal, float3 verte
 		{
 			if (sceneLights[i].isActive)
 			{
-				lightVec = (sceneLights[i].m_position - vertexPos);
+				lightVec = (sceneLights[i].m_lightType == LT_DIRECTIONAL ? normalize(-sceneLights[i].m_spotDirection) :
+						sceneLights[i].m_position - vertexPos);
+				
 				float lightVecLength = length(lightVec);
 				
 				lightVec /= lightVecLength;

@@ -23,6 +23,8 @@
 #include <Systems/Graphics/DX11Renderer/DX11RendererData.h>
 #include <Systems/Graphics/DX11RenderStages/ForwardDebugStage/PathWalkDebugStage.h>
 #include <Systems/Graphics/DX11RenderStages/ForwardRenderStage/ForwardRenderStage.h>
+#include <Systems/Graphics/DX11RenderStages/DeferredRenderingStages/AmbientLightStage.h>
+#include <Systems/Graphics/DX11RenderStages/DeferredRenderingStages/GBufferStage.h>
 #include <Systems/Graphics/DX11RenderStages/ShadowMapStage/ShadowMapStage.h>
 #include <Systems/Graphics/DX11RenderStages/UI Stage/ImGuiStage.h>
 #include <Systems/Graphics/ModelClasses/Model/Model.h>
@@ -452,9 +454,13 @@ void GraphicsSystem::InitializeImGui()
 
 void GraphicsSystem::AddRenderStages()
 {
-	//TODO: FINISH THESE
-	//Add reflection map stage
 	AddRenderStageHelper(new ShadowMapStage(m_dx11Renderer.get(), &m_renderComponents));
+	//TODO: Add reflection map stage
+	AddRenderStageHelper(new GBufferStage(m_dx11Renderer.get(), &m_renderComponents));
+
+	Model* quadModel = GetModel("quad");
+	AddRenderStageHelper(new AmbientLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
+	
 	AddRenderStageHelper(new ForwardRenderStage(m_dx11Renderer.get(), &m_renderComponents));
 	AddRenderStageHelper(new PathWalkDebugStage(m_dx11Renderer.get(), &m_renderComponents));
 	AddRenderStageHelper(new ImGuiStage(m_dx11Renderer.get(), &m_renderComponents));
@@ -499,6 +505,7 @@ void GraphicsSystem::LoadBasicShaders()
 	LoadBasicShaderHelper(shaderHandle, ObjectType::VERTEX_SHADER, "SimpleVS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::VERTEX_SHADER, "SimpleClothVS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::VERTEX_SHADER, "ShadowVS");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::VERTEX_SHADER, "FullScreenQuadVS");
 
 	//////////////////////////////////////////////////////////////////////////
 	// Default Pixel Shaders
@@ -509,6 +516,7 @@ void GraphicsSystem::LoadBasicShaders()
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "SimplePS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "DepthPS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "ShadowPS");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "GbufferPS");
 }
 
 void GraphicsSystem::LoadBasicShaderHelper(ObjectHandle& shaderHandle, const ObjectType shaderType, const std::string & fileName, const std::string & fileExtension)

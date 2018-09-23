@@ -31,7 +31,7 @@ void ForwardRenderStage::PreRender()
 	renderData.m_pImmediateContext->ClearDepthStencilView(renderData.m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 	renderData.m_pImmediateContext->RSSetState(renderData.m_currentRasterState);
 	renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//m_renderer->EnableAlphaBlending();
+	m_renderer->EnableAlphaBlending();
 
 	static ID3D11SamplerState* const samplerStates[4] = {
 		renderData.m_pWrapSamplerState,
@@ -136,6 +136,9 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 			//Draw each mesh entry, it's all one big VBuffer and IBufer though
 			for (auto& meshEntry : model->m_meshEntryList)
 			{
+				if (!meshEntry.meshMaterial.m_phongMaterial.useAlphaBlending)
+					continue;
+
 				auto& textures2D = graphicsResources.at((int)ObjectType::TEXTURE_2D);
 
 				//Set the material information

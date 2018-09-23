@@ -141,6 +141,12 @@
     <ClCompile Include="Src\Systems\Graphics\ModelClasses\MeshMaterial\MeshEntryMaterial.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\GBufferStage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\AmbientLightStage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Utilities\precompiled.h">
@@ -300,6 +306,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Src\Systems\Graphics\ModelClasses\MeshMaterial\MeshEntryMaterial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\GBufferStage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\AmbientLightStage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

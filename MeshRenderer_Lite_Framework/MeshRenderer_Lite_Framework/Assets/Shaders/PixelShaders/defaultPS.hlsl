@@ -6,7 +6,7 @@ float4 main(PixelInputType pixel) : SV_TARGET
 	uint textWidth, textHeight;
 	diffTexture.GetDimensions(textWidth, textHeight);
 
-	if (textWidth > 0 && textHeight > 0)
+	if (meshMaterial.useDiffuseTexture != 0 && textWidth > 0 && textHeight > 0)
 	{	
 		return diffTexture.Sample(textureSamplerWrap, pixel.uv);
 	}

@@ -1061,7 +1061,7 @@ void DX11Renderer::SetDebugInfoEnabled(const bool v)
 
 void DX11Renderer::EnableAlphaBlending()
 {
-	float blendFactor[] = { 0.75f, 0.75f, 0.75f, 1.0f };
+	float blendFactor[] = { 0.f, 0.f, 0.f, 0.f };
 	m_renderData->m_pImmediateContext->OMSetBlendState(m_renderData->m_transparency, blendFactor, 0xffffffff);
 }
 
@@ -1071,6 +1071,16 @@ void DX11Renderer::DisableAlphaBlending()
 	m_renderData->m_pImmediateContext->OMSetBlendState(nullptr, 0, 0xffffffff);
 }
 
+int DX11Renderer::GetRenderTargetWidth() const
+{
+		return m_renderTargetWidth;
+}
+
+int DX11Renderer::GetRenderTargetHeight() const
+{
+		return m_renderTargetHeight;
+}
+
 bool DX11Renderer::InitializeD3D(const int width, const int height, HWND hwnd)
 {
 	InitializeSwapChain(width, height, hwnd);
@@ -1078,6 +1088,9 @@ bool DX11Renderer::InitializeD3D(const int width, const int height, HWND hwnd)
 	InitializeBlendStates();
 
 	ResizeBuffers(width, height);
+
+	m_renderTargetWidth = width;
+	m_renderTargetHeight = height;
 
 	return true;
 }
@@ -1353,6 +1366,8 @@ bool DX11Renderer::ResizeBuffers(const int width, const int height)
 	m_renderData->m_pImmediateContext->OMSetRenderTargets(0, nullptr, nullptr);
 	m_renderData->m_pImmediateContext->OMSetDepthStencilState(nullptr, 0);
 
+	//////////////////////////////////////////////////////////////////////////
+	// Resize main back buffer
 	SafeRelease(m_renderData->m_pMainRenderTargetView);
 	HR(m_renderData->m_pSwapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0));
 
@@ -1390,6 +1405,18 @@ bool DX11Renderer::ResizeBuffers(const int width, const int height)
 	dsvd.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 
 	HR(m_renderData->m_pDevice->CreateDepthStencilView(m_renderData->m_DepthStencilBuffer, &dsvd, &m_renderData->m_DepthStencilView));
+
+	//////////////////////////////////////////////////////////////////////////
+	// Resize deferred render targets
+	
+	//Release all of the RTVs and re-create the render targets
+	for (unsigned char i = 0; i < (unsigned char)DX11RendererData::GBufferRTType::COUNT; ++i)
+	{
+			SafeRelease(m_renderData->m_pGbufferRTVs[i]);
+			auto& handle = m_renderData->m_GBufferObjHandles[i];
+			CreateRenderTarget(handle, width, height, DataFormat::FLOAT4, false);
+			m_renderData->m_pGbufferRTVs[i] = m_renderData->renderTargets[*(handle)].rtv;
+	}
 
 	//BIND RENDER TARGET VIEW
 	m_renderData->m_pImmediateContext->OMSetRenderTargets(1, &m_renderData->m_pMainRenderTargetView, m_renderData->m_DepthStencilView);

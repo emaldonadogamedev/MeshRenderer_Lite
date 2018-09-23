@@ -21,6 +21,20 @@ public:
 	ID3D11RenderTargetView* m_pMainRenderTargetView = nullptr;
 	XMVECTOR m_clearColor = { 0,0.3f,0,1 };
 
+	//deferred rendering render targets
+	enum class GBufferRTType : unsigned  char
+	{
+			POSITION,
+			NORMALS,
+			DIFFUSE,
+			SPECULAR_AND_NS,
+
+			COUNT
+	};
+
+	ObjectHandle m_GBufferObjHandles[(int)GBufferRTType::COUNT] = { };
+	ID3D11RenderTargetView* m_pGbufferRTVs[(int)GBufferRTType::COUNT] = { nullptr };
+
 	D3D_DRIVER_TYPE m_DriverType;
 	D3D_FEATURE_LEVEL m_FeatureLevel;
 	D3D_PRIMITIVE_TOPOLOGY m_currentPrimitiveTopology;

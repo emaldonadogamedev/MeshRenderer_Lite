@@ -80,7 +80,8 @@ struct PhongMaterial
 
 		int useDiffuseTexture;
 		int useNormalMap;
-		int2 padding;
+		int useAlphaBlending;
+		int padding;
 };
 
 cbuffer ObjectMaterial : register(b6)

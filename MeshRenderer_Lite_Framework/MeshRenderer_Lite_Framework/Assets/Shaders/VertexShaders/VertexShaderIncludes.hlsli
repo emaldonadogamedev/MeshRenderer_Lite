@@ -1,5 +1,24 @@
+//--------------------------------------------------------------------------------------
+// Vertex Shader specific constant data
+//--------------------------------------------------------------------------------------
 static const unsigned int s_maxBoneCount = 120;
 static const unsigned int s_maxBoneLocCount = 120 * 6;
+
+const float2 fsqUVs[4] =
+{
+		float2(0.0f, 1.0f),
+		float2(0.0f, 0.0f),
+		float2(1.0f, 0.0f),
+		float2(1.0f, 1.0f)
+};
+const float4 fqsPositions[4] = //View Space positions
+{
+		float4(-1.f, -1.f, 0.f, 1.f),
+		float4(-1.f,  1.f, 0.f, 1.f),
+		float4( 1.f,  1.f, 0.f, 1.f),
+		float4( 1.f, -1.f, 0.f, 1.f)
+};
+
 //--------------------------------------------------------------------------------------
 // Animation bones buffer per mesh entry
 //--------------------------------------------------------------------------------------

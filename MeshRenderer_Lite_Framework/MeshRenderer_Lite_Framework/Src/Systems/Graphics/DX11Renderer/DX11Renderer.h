@@ -86,12 +86,18 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	//Misc.
+	//Lighting
 	bool IsLightingEnabled() const;
 	void SetLightingEnabled(const bool v);
+	//Debug
 	bool IsDebugInfoEnabled() const;
 	void SetDebugInfoEnabled(const bool v);
+	//Alpha blending
 	void EnableAlphaBlending();
 	void DisableAlphaBlending();
+
+	int GetRenderTargetWidth() const;
+	int GetRenderTargetHeight() const;
 
 protected:
 	bool InitializeD3D(const int width, const int height, HWND hwnd);
@@ -114,7 +120,9 @@ protected:
 	friend GraphicsSystem;
 	friend class TextureManager;
 
-private:
+protected:
 	void CompileShaderHelper(int& HResult, ID3D10Blob** blobPtrOut, const std::string& fileName,
 		const std::string& target, const std::string& szEntryPoint) const;
+
+	int m_renderTargetWidth, m_renderTargetHeight;
 };

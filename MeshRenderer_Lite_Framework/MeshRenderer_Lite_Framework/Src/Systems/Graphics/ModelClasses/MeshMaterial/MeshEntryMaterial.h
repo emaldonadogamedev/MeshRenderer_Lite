@@ -32,7 +32,8 @@ struct PhongMaterial
 
 		int useDiffuseTexture = 0;
 		int useNormalMap = 0;
-		int padding[2];
+		int useAlphaBlending = 0;
+		int padding;
 };
 
 struct MeshEntryMaterial
