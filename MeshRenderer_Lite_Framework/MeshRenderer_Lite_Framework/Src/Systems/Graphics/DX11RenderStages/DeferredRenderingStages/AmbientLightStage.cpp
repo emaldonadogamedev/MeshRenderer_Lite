@@ -25,17 +25,22 @@ void AmbientLightStage::PreRender()
 		renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		m_renderer->DisableAlphaBlending();
 
-		D3D11_VIEWPORT viewport{ 0,0,m_renderer->GetRenderTargetWidth(), m_renderer->GetRenderTargetHeight(),0,1.0f };
+		D3D11_VIEWPORT viewport{ 0,0,m_renderer->GetRenderTargetWidth(), m_renderer->GetRenderTargetHeight(), 0, 1.0f };
 		renderData.m_pImmediateContext->RSSetViewports(1, &viewport);
 }
 
 void AmbientLightStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 {
-		m_renderer->BindNullVertexBuffer();
-		m_renderer->BindIndexBuffer(m_fsqIndexBuffer);
-
-		const ObjectHandle& handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("FullScreenQuadVS");
-		m_renderer->BindVertexShader(handle);
+		//m_renderer->BindNullVertexBuffer(); //we create the geometry on the Vertex Shader
+		//m_renderer->BindIndexBuffer(m_fsqIndexBuffer);
+		//
+		//ObjectHandle handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("FullScreenQuadVS");
+		//m_renderer->BindVertexShader(handle);
+		//
+		//handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("");
+		//m_renderer->BindPixelShader(handle);
+		//
+		//m_renderer->DrawIndexed(6);
 }
 
 void AmbientLightStage::PostRender()

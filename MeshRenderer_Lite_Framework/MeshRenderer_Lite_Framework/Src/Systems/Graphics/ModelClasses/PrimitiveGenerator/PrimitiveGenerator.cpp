@@ -301,7 +301,7 @@ void PrimitiveGenerator::CreateSphere(float radius, unsigned sliceCount, unsigne
 XMFLOAT3 PrimitiveGenerator::XMFloat3GetNormalized(const XMFLOAT3& v) const
 {
 	float l = (v.x*v.x) + (v.y*v.y) + (v.z*v.z);
-	if (std::fabsf(l) <= 0.00001f) {
+	if (std::fabsf(l) <= 0.0001f) {
 		return XMFLOAT3(0, 0, 0);
 	}
 
@@ -312,7 +312,7 @@ XMFLOAT3 PrimitiveGenerator::XMFloat3GetNormalized(const XMFLOAT3& v) const
 void PrimitiveGenerator::XMFloat3Normalize(XMFLOAT3& v) const
 {
 	float l = (v.x*v.x) + (v.y*v.y) + (v.z*v.z);
-	if (std::fabsf(l) > 0.00001f) {
+	if (std::fabsf(l) > 0.0001f) {
 		l = sqrt(l);
 		v.x /= l; 
 		v.y /= l;
