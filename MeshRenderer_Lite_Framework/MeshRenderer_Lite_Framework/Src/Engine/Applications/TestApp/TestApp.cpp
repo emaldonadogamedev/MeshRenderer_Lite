@@ -3,6 +3,7 @@
 
 #include <Systems/Core/Components/Transform/Transform.h>
 #include <Systems/Core/GameObject/GameObject.h>
+#include <Systems/Core/GameObjectSystem.h>
 #include <Systems/Graphics/GraphicsSystem.h>
 #include <Systems/Graphics/Components/ModelComponent/ModelComponent.h>
 #include <Systems/Graphics/Components/CurvePathComponent/CurvePathComponent.h>
@@ -28,6 +29,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		testObj->AddComponent(new Transform(testObj.get()));
 		ModelComponent* test3DComp = new ModelComponent(testObj.get());
 		auto graphicsSystem = static_cast<GraphicsSystem*>(GetSystem(SystemType::ST_GRAPHICS));
+		auto gameObjSystem = static_cast<GameObjectSystem*>(GetSystem(SystemType::ST_GAME_OBJECT_SYSTEM));
 
 		//test3DComp->SetModel(loadedModels.at("dragon.obj").get());
 		//test3DComp->SetModel(loadedModels.at("tiny_4anim.x").get());
@@ -62,6 +64,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		auto transform = new Transform(testLight.get());
 		transform->SetPositionn(DirectX::XMVectorSet(2.8f, 3.f, 0.f, 1.f));
 		testLight->AddComponent(transform);
+		gameObjSystem->AddComponent(transform);
 
 		ShadowLightComponent* lightComp = new ShadowLightComponent(testLight.get(), true, true);
 		//lightComp->GetLight()->m_lightType = LightType::LT_DIRECTIONAL;
@@ -74,6 +77,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		transform = new Transform(testLight2.get());
 		transform->SetPositionn(DirectX::XMVectorSet(-2.8f, 90.0f, 0.f, 1.f));
 		testLight2->AddComponent(transform);
+		gameObjSystem->AddComponent(transform);
 
 		ShadowLightComponent* lightComp2 = new ShadowLightComponent(testLight2.get(), true, true);
 		//lightComp->GetLight()->m_lightType = LightType::LT_DIRECTIONAL;
@@ -88,6 +92,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		transform->SetPositionn(DirectX::XMVectorSet(0.f, -4.6f, 0.f, 1.f));
 		transform->SetScale(DirectX::XMVectorSet(100.f, 1.f, 100.f, 1.f));
 		testFloor->AddComponent(transform);
+		gameObjSystem->AddComponent(transform);
 		test3DComp = new ModelComponent(testFloor.get());
 		testFloor->AddComponent(test3DComp);
 		m_graphicsSystem->AddComponent(test3DComp);

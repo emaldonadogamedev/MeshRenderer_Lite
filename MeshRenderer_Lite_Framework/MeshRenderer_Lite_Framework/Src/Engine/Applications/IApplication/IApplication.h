@@ -15,6 +15,7 @@
 class InputSystem;
 class WindowSystem;
 class GraphicsSystem;
+class GameObjectSystem;
 class GameObject;
 class GameClock;
 
@@ -71,5 +72,6 @@ protected:
 
 	InputSystem* m_inputSystem;
 	WindowSystem* m_windowSystem;
+	GameObjectSystem* m_gameObjSystem;
 	GraphicsSystem* m_graphicsSystem;
 };

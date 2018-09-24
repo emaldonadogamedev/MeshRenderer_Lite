@@ -1,7 +1,7 @@
 #include <Utilities/precompiled.h>
 #include <Systems/Input/Mouse.h>
 
-#include <Engine/IApplication/IApplication.h>
+#include <Engine/Applications/IApplication/IApplication.h>
 #include <Systems/Input/InputSystem.h>
 #include <Systems/Window/WindowSystem.h>
 

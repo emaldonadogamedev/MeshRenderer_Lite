@@ -39,6 +39,7 @@ class IApplication;
 enum class SystemType : char
 {
 	ST_WINDOW,
+	ST_GAME_OBJECT_SYSTEM,
 	ST_GRAPHICS,
 	ST_INPUT,
 

@@ -5,6 +5,9 @@
 class GameObjectSystem : public ISystem
 {
 public:
+		GameObjectSystem(IApplication* const eng);
+		virtual ~GameObjectSystem();
+
 		virtual bool Initialize() override;
 		virtual void Update(const float dt) override;
 		virtual void Shutdown() override;

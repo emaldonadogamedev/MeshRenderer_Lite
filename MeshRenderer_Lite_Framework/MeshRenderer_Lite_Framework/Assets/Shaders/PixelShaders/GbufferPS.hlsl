@@ -6,7 +6,8 @@ GBufferOutput main(PixelInputType pixel)
 	GBufferOutput output = (GBufferOutput)0;
 	output.Position.xyz = pixel.worldPos.xyz;
 	output.Position.w = pixel.position.z / pixel.position.w;
-	output.Normal = float4(pixel.normal, 0.f);
+
+	output.Normal = abs(float4(pixel.normal, 0.f));
 
 	//Get the diffuse from the 
 	uint textWidth, textHeight;

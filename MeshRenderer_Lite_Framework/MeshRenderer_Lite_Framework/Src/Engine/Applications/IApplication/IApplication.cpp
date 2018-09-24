@@ -1,6 +1,7 @@
 #include <Utilities/precompiled.h>
-#include <Engine/IApplication/IApplication.h>
+#include <Engine/Applications/IApplication/IApplication.h>
 
+#include <Systems/Core/GameObjectSystem.h>
 #include <Imgui/imgui.h>
 #include <Imgui/imgui_impl_dx11.h>
 
@@ -42,6 +43,10 @@ bool IApplication::Initialize(HINSTANCE hInstance)
 	//Prepare the Window system
 	if (!AddSystemHelper(m_windowSystem = new WindowSystem(this, hInstance)))
 		return false;
+	//////////////////////////////////////////////////////////////////////////
+	//Prepare the Game Object system
+	if (!AddSystemHelper(m_gameObjSystem = new GameObjectSystem(this)))
+			return false;
 	//////////////////////////////////////////////////////////////////////////
 	//Prepare the Graphics system
 	if (!AddSystemHelper(m_graphicsSystem = new GraphicsSystem(this)))

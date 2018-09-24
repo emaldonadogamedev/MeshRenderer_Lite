@@ -7,7 +7,7 @@
 #include <assimp/scene.h>
 #include <assimp/matrix4x4.h>
 
-#include <Engine/IApplication/IApplication.h>
+#include <Engine/Applications/IApplication/IApplication.h>
 #include <Imgui/imgui.h>
 #include <Imgui/imgui_impl_dx11.h>
 #include <Systems/Core/Components/Transform/Transform.h>
@@ -602,6 +602,21 @@ void GraphicsSystem::TestUpdateCamera(const float dt)
 	{
 		m_dx11Renderer->m_renderData->testCamera->ResetAxis();
 	}
+
+	//Update view buffer
+	m_dx11Renderer->m_renderData->testCamera->Update();
+	m_dx11Renderer->m_renderData->testViewProjBuffer.cameraPosition.m128_f32[0] = m_dx11Renderer->m_renderData->testCamera->m_Position.m128_f32[0];
+	m_dx11Renderer->m_renderData->testViewProjBuffer.cameraPosition.m128_f32[1] = m_dx11Renderer->m_renderData->testCamera->m_Position.m128_f32[1];
+	m_dx11Renderer->m_renderData->testViewProjBuffer.cameraPosition.m128_f32[2] = m_dx11Renderer->m_renderData->testCamera->m_Position.m128_f32[2];
+	m_dx11Renderer->m_renderData->testViewProjBuffer.cameraPosition.m128_f32[3] = m_dx11Renderer->m_renderData->m_debugIdx;
+
+	m_dx11Renderer->m_renderData->testViewProjBuffer.cameraPosition = m_dx11Renderer->m_renderData->testCamera->m_Position;
+	m_dx11Renderer->m_renderData->testViewProjBuffer.viewMtx = m_dx11Renderer->m_renderData->testCamera->GetView();
+	m_dx11Renderer->m_renderData->testViewProjBuffer.invViewMtx =
+			DirectX::XMMatrixInverse(nullptr, m_dx11Renderer->m_renderData->testViewProjBuffer.viewMtx);
+	//m_dx11Renderer->m_renderData->testViewProjBuffer.projectionMtx = testCamera->GetProjection();
+	m_dx11Renderer->m_renderData->m_pImmediateContext->UpdateSubresource(m_dx11Renderer->m_renderData->testViewProjConstBuffer,
+			0, NULL, &m_dx11Renderer->m_renderData->testViewProjBuffer, 0, 0);
 }
 
 const string GraphicsSystem::s_shaderDir = "../MeshRenderer_Lite_Framework/Assets/Shaders/";

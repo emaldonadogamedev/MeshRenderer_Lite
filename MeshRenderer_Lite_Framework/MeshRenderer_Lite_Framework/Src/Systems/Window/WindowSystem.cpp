@@ -1,6 +1,6 @@
 #include<Utilities/precompiled.h>
 #include<Systems/Window/WindowSystem.h>
-#include <Engine/IApplication/IApplication.h>
+#include <Engine/Applications/IApplication/IApplication.h>
 
 LRESULT CALLBACK MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {

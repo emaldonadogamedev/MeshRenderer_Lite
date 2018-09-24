@@ -41,20 +41,6 @@ void ForwardRenderStage::PreRender()
 	};
 	renderData.m_pImmediateContext->PSSetSamplers(0, 4, samplerStates);
 
-	renderData.testCamera->Update();
-	renderData.testViewProjBuffer.cameraPosition.m128_f32[0] = renderData.testCamera->m_Position.m128_f32[0];
-	renderData.testViewProjBuffer.cameraPosition.m128_f32[1] = renderData.testCamera->m_Position.m128_f32[1];
-	renderData.testViewProjBuffer.cameraPosition.m128_f32[2] = renderData.testCamera->m_Position.m128_f32[2];
-	renderData.testViewProjBuffer.cameraPosition.m128_f32[3] = renderData.m_debugIdx;
-
-	renderData.testViewProjBuffer.cameraPosition = renderData.testCamera->m_Position;
-	renderData.testViewProjBuffer.viewMtx = renderData.testCamera->GetView();
-	renderData.testViewProjBuffer.invViewMtx =
-			DirectX::XMMatrixInverse(nullptr, renderData.testViewProjBuffer.viewMtx);
-	//m_dx11Renderer->m_renderData->testViewProjBuffer.projectionMtx = testCamera->GetProjection();
-	renderData.m_pImmediateContext->UpdateSubresource(renderData.testViewProjConstBuffer,
-			0, NULL, &renderData.testViewProjBuffer, 0, 0);
-
 	//Bind all of the shadow maps
 	const auto& lightComponents = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_LIGHT];
 	for (const auto& component : lightComponents)
@@ -110,7 +96,6 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 			m_renderer->BindIndexBuffer(model->GetIBufferHandle());
 
 			auto* const transform = (Transform*)component->GetOwner()->GetComponent(ComponentType::TRANSFORM);
-			transform->UpdateWorldMatrix();
 			renderData.testPerObjectBuffer.worldMtx = transform->GetWorldTransform();
 
 			renderData.testPerObjectBuffer.isAnimated = model->m_modelType == ModelType::MODEL_SKINNED;
@@ -136,8 +121,8 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 			//Draw each mesh entry, it's all one big VBuffer and IBufer though
 			for (auto& meshEntry : model->m_meshEntryList)
 			{
-				if (!meshEntry.meshMaterial.m_phongMaterial.useAlphaBlending)
-					continue;
+				//if (!meshEntry.meshMaterial.m_phongMaterial.useAlphaBlending)
+				//	continue;
 
 				auto& textures2D = graphicsResources.at((int)ObjectType::TEXTURE_2D);
 

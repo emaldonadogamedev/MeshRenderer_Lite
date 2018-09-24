@@ -46,7 +46,7 @@
     <ClCompile Include="Src\Systems\Core\GameObjectSystem.cpp" />
     <ClCompile Include="Src\Systems\Graphics\Components\LightComponents\LightComponent\LightComponent.cpp" />
     <ClCompile Include="Src\Engine\Applications\TestApp\TestApp.cpp" />
-    <ClCompile Include="Src\Engine\IApplication\IApplication.cpp" />
+    <ClCompile Include="Src\Engine\Applications\IApplication\IApplication.cpp" />
     <ClCompile Include="Src\Engine\GameClock\GameClock.cpp" />
     <ClCompile Include="Src\main.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -123,7 +123,7 @@
     <ClInclude Include="Src\Systems\Core\GameObjectSystem.h" />
     <ClInclude Include="Src\Systems\Graphics\Components\LightComponents\LightComponent\LightComponent.h" />
     <ClInclude Include="Src\Engine\Applications\TestApp\TestApp.h" />
-    <ClInclude Include="Src\Engine\IApplication\IApplication.h" />
+    <ClInclude Include="Src\Engine\Applications\IApplication\IApplication.h" />
     <ClInclude Include="Src\Engine\GameClock\GameClock.h" />
     <ClInclude Include="Src\Systems\Core\GameObject\GameObject.h" />
     <ClInclude Include="Src\Systems\Core\Components\IComponent.h" />

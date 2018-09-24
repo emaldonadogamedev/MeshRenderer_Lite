@@ -3,6 +3,17 @@
 
 #include <Systems/Core/Components/Transform/Transform.h>
 
+GameObjectSystem::GameObjectSystem(IApplication* const eng)
+		:ISystem(SystemType::ST_GAME_OBJECT_SYSTEM, eng)
+{
+
+}
+
+GameObjectSystem::~GameObjectSystem()
+{
+
+}
+
 bool GameObjectSystem::Initialize()
 {
 		return true;

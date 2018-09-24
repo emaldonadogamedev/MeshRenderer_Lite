@@ -30,26 +30,24 @@ void GBufferStage::PreRender()
 		{
 				renderData.m_pImmediateContext->ClearRenderTargetView(renderData.m_pGbufferRTVs[i], blackClearColor.m128_f32);
 		}
-		renderData.m_pImmediateContext->ClearRenderTargetView(renderData.m_pMainRenderTargetView, blackClearColor.m128_f32);
 		renderData.m_pImmediateContext->ClearDepthStencilView(renderData.m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 		renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		renderData.m_pImmediateContext->RSSetState(renderData.m_d3dRasterStateSolCullBack);
+		renderData.m_pImmediateContext->RSSetState(renderData.m_d3dRasterStateDefault);
 		m_renderer->DisableAlphaBlending();
 }
 
 void GBufferStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 {
 		//Set shaders
-		ObjectHandle handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("GbufferPS");
-		m_renderer->BindPixelShader(handle);
-
-		handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("defaultVS");
+		ObjectHandle handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("defaultVS");
 		m_renderer->BindVertexShader(handle);
+
+		handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("GbufferPS");
+		m_renderer->BindPixelShader(handle);
 
 		//Update / Set const buffers
 		auto& renderData = m_renderer->GetRendererData();
 		renderData.m_pImmediateContext->VSSetConstantBuffers(1, 1, &renderData.testViewProjConstBuffer);
-		renderData.m_pImmediateContext->PSSetConstantBuffers(1, 1, &renderData.testViewProjConstBuffer);
 
 		//forward render all of the objects
 		const auto& modelComponents = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_3D];
@@ -66,7 +64,6 @@ void GBufferStage::Render(HandleDictionaryVec& graphicsResources, const float dt
 						m_renderer->BindIndexBuffer(model->GetIBufferHandle());
 
 						auto* const transform = (Transform*)component->GetOwner()->GetComponent(ComponentType::TRANSFORM);
-						transform->UpdateWorldMatrix();
 						renderData.testPerObjectBuffer.worldMtx = transform->GetWorldTransform();
 
 						renderData.testPerObjectBuffer.isAnimated = model->m_modelType == ModelType::MODEL_SKINNED;

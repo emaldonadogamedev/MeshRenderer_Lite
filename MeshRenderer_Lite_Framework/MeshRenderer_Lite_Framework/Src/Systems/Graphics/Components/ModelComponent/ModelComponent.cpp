@@ -22,7 +22,6 @@ const XMMATRIX& ModelComponent::GetWorldTransform() const
 
 	if (transform)
 	{
-		transform->UpdateWorldMatrix();
 		return transform->GetWorldTransform();
 	}
 

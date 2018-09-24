@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Engine/IApplication/IApplication.h>
+#include <Engine/Applications/IApplication/IApplication.h>
 
 class TestApp : public IApplication {
 
