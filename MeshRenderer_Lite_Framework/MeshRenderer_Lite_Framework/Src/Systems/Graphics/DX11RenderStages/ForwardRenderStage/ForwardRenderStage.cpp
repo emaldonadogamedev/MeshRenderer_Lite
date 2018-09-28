@@ -121,8 +121,8 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 			//Draw each mesh entry, it's all one big VBuffer and IBufer though
 			for (auto& meshEntry : model->m_meshEntryList)
 			{
-				if (!meshEntry.meshMaterial.m_phongMaterial.useAlphaBlending)
-					continue;
+				//if (!meshEntry.meshMaterial.m_phongMaterial.useAlphaBlending)
+				//	continue;
 
 				auto& textures2D = graphicsResources.at((int)ObjectType::TEXTURE_2D);
 

@@ -1100,7 +1100,7 @@ bool DX11Renderer::InitializeSwapChain(const int width, const int height, HWND h
 	UINT createDeviceFlags = 0;
 
 #ifdef _DEBUG
-	//createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif //_DEBUG
 
 	const D3D_DRIVER_TYPE driverTypes[] =
