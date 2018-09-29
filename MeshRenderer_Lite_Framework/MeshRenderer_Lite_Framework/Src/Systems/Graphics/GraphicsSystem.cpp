@@ -132,7 +132,7 @@ void GraphicsSystem::UpdateLightComponents(const float dt)
 	}
 
 	auto& renderData = m_dx11Renderer->GetRendererData();
-	renderData.m_pImmediateContext->UpdateSubresource(renderData.testLightConstBuffer,
+	renderData.m_pImmediateContext->UpdateSubresource(renderData.testLightWithShadowConstBuffer,
 			0, NULL, ShadowLightComponent::GetSceneLightsWithShadowPtr(), 0, 0);
 }
 

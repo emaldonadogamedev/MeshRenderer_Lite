@@ -66,11 +66,24 @@ struct Light
 	int isUsingShadows;
 };
 
-static const unsigned int s_maxLights = 15;
+struct SimpleLight
+{
+		float m_range;
+		float3 m_position;
 
+		float4 m_Idiffuse;
+		float4 m_Ispecular;
+};
+
+static const unsigned int s_maxLights = 15;
 cbuffer SceneLights : register(b7)
 {
 	Light sceneLights[s_maxLights];
+}
+
+cbuffer SceneLightsNoShadow : register(b8)
+{
+		SimpleLight sceneLightNoShadow;
 }
 
 // Object Material

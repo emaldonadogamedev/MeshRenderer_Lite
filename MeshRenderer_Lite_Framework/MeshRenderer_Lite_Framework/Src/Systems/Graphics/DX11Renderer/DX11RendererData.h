@@ -89,13 +89,15 @@ public:
 	SimpleCloth_ConstBuffer testSimpleClothBuffer;
 	ID3D11Buffer* testSimpleClothConstBuffer = nullptr;
 
-	ID3D11Buffer* testLightConstBuffer = nullptr;
+	ID3D11Buffer* testLightWithShadowConstBuffer = nullptr;
 
 	LightViewProjBuffer testLightViewBuffer;
 	ID3D11Buffer* testLightViewConstBuffer = nullptr;
 
 	MeshEntryMaterial testMeshMaterialBuffer = MeshEntryMaterial::GetPresetMaterial(PredefinedMaterials::GreenPlastic);
 	ID3D11Buffer* testMeshMaterialConstBuffer = nullptr;
+
+	ID3D11Buffer* testLightNoShadowConstBuffer = nullptr;
 
 	//Cameras
 	std::unique_ptr<Camera> testCamera = std::make_unique<Camera>();

@@ -12,8 +12,12 @@ public:
 
 		Light* GetLight() const;
 		static const unsigned int s_maxLights;
+
+		static const Light* const GetSceneLightsNoShadowPtr();
+		static int GetActiveLightsNoShadowCount();
 protected:		
 		Light* m_light;
 
+		static int s_takenLightCount;
 		static Light sceneLightsNoShadows[];
 };

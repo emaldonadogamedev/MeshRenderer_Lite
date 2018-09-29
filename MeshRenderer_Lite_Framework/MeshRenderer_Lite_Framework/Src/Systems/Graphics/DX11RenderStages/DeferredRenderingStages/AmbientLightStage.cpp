@@ -44,7 +44,7 @@ void AmbientLightStage::Render(HandleDictionaryVec& graphicsResources, const flo
 		//renderData.m_pImmediateContext->IASetInputLayout(nullptr);
 
 		//renderData.m_pImmediateContext->VSSetConstantBuffers(7, 1, &renderData.testLightConstBuffer);
-		renderData.m_pImmediateContext->PSSetConstantBuffers(7, 1, &renderData.testLightConstBuffer);
+		renderData.m_pImmediateContext->PSSetConstantBuffers(7, 1, &renderData.testLightWithShadowConstBuffer);
 
 		m_renderer->BindNullVertexBuffer(); //we create the geometry on the Vertex Shader
 		m_renderer->BindIndexBuffer(m_fsqIndexBuffer);

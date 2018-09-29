@@ -100,7 +100,7 @@ void DX11Renderer::ReleaseData()
 	SafeRelease(m_renderData->testViewProjConstBuffer);
 	SafeRelease(m_renderData->testAnimationConstBuffer);
 	SafeRelease(m_renderData->testSimpleClothConstBuffer);
-	SafeRelease(m_renderData->testLightConstBuffer);
+	SafeRelease(m_renderData->testLightWithShadowConstBuffer);
 	SafeRelease(m_renderData->testLightViewConstBuffer);
 	SafeRelease(m_renderData->testMeshMaterialConstBuffer);
 
@@ -1259,7 +1259,7 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testSimpleClothConstBuffer));
 
 	bd.ByteWidth = sizeof(Light) * ShadowLightComponent::s_maxLights;
-	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testLightConstBuffer));
+	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testLightWithShadowConstBuffer));
 
 	bd.ByteWidth = sizeof(LightViewProjBuffer);
 	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testLightViewConstBuffer));
@@ -1364,6 +1364,9 @@ bool DX11Renderer::ResizeBuffers(const int width, const int height)
 	if (!m_renderData->m_pImmediateContext)
 		return false;
 
+	m_renderTargetWidth = width;
+	m_renderTargetHeight = height;
+
 	m_renderData->m_pImmediateContext->OMSetRenderTargets(0, nullptr, nullptr);
 	m_renderData->m_pImmediateContext->OMSetDepthStencilState(nullptr, 0);
 
@@ -1413,7 +1416,6 @@ bool DX11Renderer::ResizeBuffers(const int width, const int height)
 	//Release all of the RTVs and re-create the render targets
 	for (unsigned char i = 0; i < (unsigned char)DX11RendererData::GBufferRTType::COUNT; ++i)
 	{
-			SafeRelease(m_renderData->m_pGbufferRTVs[i]);
 			auto& handle = m_renderData->m_GBufferObjHandles[i];
 			CreateRenderTarget(handle, width, height, DataFormat::FLOAT4, false);
 			m_renderData->m_pGbufferRTVs[i] = m_renderData->renderTargets[*(handle)].rtv;

@@ -77,9 +77,9 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 
 		//update lights const buffer
 	static const Light* sceneLights = ShadowLightComponent::GetSceneLightsWithShadowPtr();
-	renderData.m_pImmediateContext->UpdateSubresource(renderData.testLightConstBuffer, 0, nullptr, 
+	renderData.m_pImmediateContext->UpdateSubresource(renderData.testLightWithShadowConstBuffer, 0, nullptr, 
 		sceneLights, 0, 0);
-	renderData.m_pImmediateContext->PSSetConstantBuffers(7, 1, &renderData.testLightConstBuffer);
+	renderData.m_pImmediateContext->PSSetConstantBuffers(7, 1, &renderData.testLightWithShadowConstBuffer);
 
 	//forward render all of the objects
 	const auto& modelComponents = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_3D];
