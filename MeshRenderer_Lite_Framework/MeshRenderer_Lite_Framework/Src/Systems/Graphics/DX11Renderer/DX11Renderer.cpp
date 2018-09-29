@@ -460,7 +460,7 @@ void DX11Renderer::CreateRenderTarget(ObjectHandle& rt, const int W, const int H
 		dsvd.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 		dsvd.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 
-		HR(m_renderData->m_pDevice->CreateDepthStencilView(m_renderData->m_DepthStencilBuffer, &dsvd, &stencilView));
+		HR(m_renderData->m_pDevice->CreateDepthStencilView(depthBuffer, &dsvd, &stencilView));
 	}
 	
 	if (rt && rt.GetType() == ObjectType::RENDER_TARGET) {
@@ -528,7 +528,8 @@ void DX11Renderer::ClearRenderTarget(const ObjectHandle& rt, const XMVECTOR& cle
 
 void DX11Renderer::ClearRenderTarget(const ObjectHandle& rt, const float colorArr[4])
 {
-		if (rt && rt.GetType() == ObjectType::RENDER_TARGET) {
+		if (rt && rt.GetType() == ObjectType::RENDER_TARGET) 
+		{
 				const auto& rtObj = m_renderData->renderTargets[*rt];
 				if (rtObj.rtv)
 				{

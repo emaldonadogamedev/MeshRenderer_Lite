@@ -27,7 +27,7 @@ ShadowMapStage::~ShadowMapStage()
 void ShadowMapStage::PreRender()
 {
 		auto& renderData = m_renderer->GetRendererData();
-		renderData.m_pImmediateContext->RSSetState(renderData.m_d3dRasterStateSolCullBack);
+		renderData.m_pImmediateContext->RSSetState(renderData.m_d3dRasterStateSolCullFront);
 		renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		m_renderer->DisableAlphaBlending();
 }
@@ -43,7 +43,7 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 
 		auto& renderData = m_renderer->GetRendererData();
 
-		const auto& lightComps = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_LIGHT];
+		const auto& lightComps = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_LIGHT_WITH_SHADOW];
 		for (auto& light : lightComps)
 		{
 				ShadowLightComponent* lightComp = (ShadowLightComponent*)light;
@@ -55,7 +55,7 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 				if (!shadowRThandle)
 						continue;
 
-				const auto& shadowRTObj = renderData.renderTargets[*shadowRThandle];
+				auto& shadowRTObj = renderData.renderTargets[*shadowRThandle];
 
 				//Set the shadow texture as the render target, also clear it
 				m_renderer->BindRenderTarget(shadowRThandle);
@@ -68,21 +68,25 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 				renderData.testLightViewBuffer.lightViewMtx = XMMatrixTranspose(
 						XMMatrixLookAtLH(
 								(static_cast<Transform* const>(lightComp->GetOwner()->GetComponent(ComponentType::TRANSFORM)))->GetPosition(),
-								renderData.testCamera->m_LookAt,
+								//renderData.testCamera->m_LookAt,
+								XMVectorSet(0,0,0,1.0f),
 								renderData.testCamera->m_Up)
 				);
 
 				//update the projection matrix according to the shadow's texture resolution
 				renderData.testLightViewBuffer.lightProjectionMtx = XMMatrixTranspose(
-						XMMatrixPerspectiveLH(shadowRTObj.width, shadowRTObj.height, renderData.testCamera->m_Near, 
+						//XMMatrixPerspectiveLH(shadowRTObj.width, shadowRTObj.height, renderData.testCamera->m_Near, 
+						//		renderData.testCamera->m_Far)
+						XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV2, shadowRTObj.GetAspectRatio(), renderData.testCamera->m_Near,
 								renderData.testCamera->m_Far)
 				);
 
 				renderData.m_pImmediateContext->UpdateSubresource(renderData.testLightViewConstBuffer,
 						0, NULL, &renderData.testLightViewBuffer, 0, 0);
 
-				//Update / Set const buffers
+				// Set light POV buffers
 				renderData.m_pImmediateContext->VSSetConstantBuffers(5, 1, &renderData.testViewProjConstBuffer);
+				renderData.m_pImmediateContext->PSSetConstantBuffers(5, 1, &renderData.testViewProjConstBuffer);
 
 				//forward render all of the objects
 				const auto& modelComponents = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_3D];

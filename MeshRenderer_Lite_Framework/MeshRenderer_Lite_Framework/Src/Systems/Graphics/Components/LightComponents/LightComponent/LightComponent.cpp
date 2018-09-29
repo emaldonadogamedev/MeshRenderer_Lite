@@ -19,3 +19,7 @@ Light* LightComponent::GetLight() const
 {
 		return m_light;
 }
+
+const unsigned int LightComponent::s_maxLights = 100;
+
+Light LightComponent::sceneLightsNoShadows[s_maxLights] = {};

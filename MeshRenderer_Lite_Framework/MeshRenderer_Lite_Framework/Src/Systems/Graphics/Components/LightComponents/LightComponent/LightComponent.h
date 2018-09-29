@@ -11,7 +11,9 @@ public:
 		virtual ~LightComponent();
 
 		Light* GetLight() const;
-
+		static const unsigned int s_maxLights;
 protected:		
 		Light* m_light;
+
+		static Light sceneLightsNoShadows[];
 };

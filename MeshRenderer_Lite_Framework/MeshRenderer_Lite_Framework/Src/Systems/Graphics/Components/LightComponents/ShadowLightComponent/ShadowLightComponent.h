@@ -8,7 +8,7 @@ class Light;
 class ShadowLightComponent : public IComponent
 {
 public:
-	ShadowLightComponent(const GameObject* owner, bool isActive = true, bool useShadows = false, 
+	ShadowLightComponent(const GameObject* owner, bool isActive = true, bool useShadows = true, 
 			const int shadowWidthHeight = 512);
 	virtual ~ShadowLightComponent();
 

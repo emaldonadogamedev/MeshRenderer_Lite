@@ -24,6 +24,7 @@
 #include <Systems/Graphics/DX11RenderStages/ForwardDebugStage/PathWalkDebugStage.h>
 #include <Systems/Graphics/DX11RenderStages/ForwardRenderStage/ForwardRenderStage.h>
 #include <Systems/Graphics/DX11RenderStages/DeferredRenderingStages/AmbientLightStage.h>
+#include <Systems/Graphics/DX11RenderStages/DeferredRenderingStages/DeferredShadowLightStage.h>
 #include <Systems/Graphics/DX11RenderStages/DeferredRenderingStages/GBufferStage.h>
 #include <Systems/Graphics/DX11RenderStages/ShadowMapStage/ShadowMapStage.h>
 #include <Systems/Graphics/DX11RenderStages/UI Stage/ImGuiStage.h>
@@ -129,6 +130,10 @@ void GraphicsSystem::UpdateLightComponents(const float dt)
 			light->m_position.y = lightTransform.m128_f32[1];
 			light->m_position.z = lightTransform.m128_f32[2];
 	}
+
+	auto& renderData = m_dx11Renderer->GetRendererData();
+	renderData.m_pImmediateContext->UpdateSubresource(renderData.testLightConstBuffer,
+			0, NULL, ShadowLightComponent::GetSceneLightsWithShadowPtr(), 0, 0);
 }
 
 #pragma  region ANIMATION HELPERS
@@ -460,8 +465,9 @@ void GraphicsSystem::AddRenderStages()
 
 	Model* quadModel = GetModel("quad");
 	AddRenderStageHelper(new AmbientLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
-	
-	AddRenderStageHelper(new ForwardRenderStage(m_dx11Renderer.get(), &m_renderComponents));
+	//AddRenderStageHelper(new DeferredShadowLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
+
+	//AddRenderStageHelper(new ForwardRenderStage(m_dx11Renderer.get(), &m_renderComponents));
 	AddRenderStageHelper(new PathWalkDebugStage(m_dx11Renderer.get(), &m_renderComponents));
 	AddRenderStageHelper(new ImGuiStage(m_dx11Renderer.get(), &m_renderComponents));
 }
@@ -517,6 +523,8 @@ void GraphicsSystem::LoadBasicShaders()
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "DepthPS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "ShadowPS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "GbufferPS");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "DeferredAmbientStagePS");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "DeferredShadowLightStagePS");
 }
 
 void GraphicsSystem::LoadBasicShaderHelper(ObjectHandle& shaderHandle, const ObjectType shaderType, const std::string & fileName, const std::string & fileExtension)

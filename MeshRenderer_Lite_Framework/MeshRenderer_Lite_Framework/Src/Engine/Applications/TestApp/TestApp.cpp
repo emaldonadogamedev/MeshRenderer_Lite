@@ -30,7 +30,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		ModelComponent* test3DComp = new ModelComponent(testObj.get());
 		auto graphicsSystem = static_cast<GraphicsSystem*>(GetSystem(SystemType::ST_GRAPHICS));
 		auto gameObjSystem = static_cast<GameObjectSystem*>(GetSystem(SystemType::ST_GAME_OBJECT_SYSTEM));
-
+		
 		//test3DComp->SetModel(loadedModels.at("dragon.obj").get());
 		//test3DComp->SetModel(loadedModels.at("tiny_4anim.x").get());
 		//test3DComp->SetModel(graphicsSystem->GetModel("gh_sample_animation.fbx"));
@@ -40,13 +40,14 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//auto model = graphicsSystem->GetModel("dragon.obj");
 		//auto model = graphicsSystem->GetModel("box");
 		//auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
-		auto model = graphicsSystem->GetModel("sphere");
+		auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
 		model->SetDiffTextureFileName("AlphaBlendTest.png", 0);
 		model->m_meshEntryList[0].meshMaterial = MeshEntryMaterial::GetPresetMaterial(PredefinedMaterials::GreenPlastic);
 		test3DComp->SetModel(model);
 
 		testObj->AddComponent(test3DComp);
 		graphicsSystem->AddComponent(test3DComp);
+		gameObjSystem->AddComponent(testObj->GetComponent(ComponentType::TRANSFORM));
 
 		//auto* testPathComp = new CurvePathComponent(testObj.get());
 		//testPathComp->GenerateVertexBuffer(m_graphicsSystem->m_dx11Renderer.get());
@@ -89,8 +90,8 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//floor game object
 		testFloor = std::make_unique<GameObject>();
 		transform = new Transform(testFloor.get());
-		transform->SetPositionn(DirectX::XMVectorSet(0.f, -4.6f, 0.f, 1.f));
-		transform->SetScale(DirectX::XMVectorSet(100.f, 1.f, 100.f, 1.f));
+		transform->SetPositionn(DirectX::XMVectorSet(0.f, -15.6f, 0.f, 1.f));
+		transform->SetScale(DirectX::XMVectorSet(50.f, 1.f, 50.f, 1.f));
 		testFloor->AddComponent(transform);
 		gameObjSystem->AddComponent(transform);
 		test3DComp = new ModelComponent(testFloor.get());

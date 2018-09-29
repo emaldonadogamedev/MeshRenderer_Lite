@@ -30,6 +30,12 @@ Texture2D shadowMap_12 : register(t17);
 Texture2D shadowMap_13 : register(t18);
 Texture2D shadowMap_14 : register(t19);
 
+//Deferred Rendering Render Targets
+Texture2D positionRT : register(t20);
+Texture2D normalsRT : register(t21);
+Texture2D	diffuseRT : register(t22);
+Texture2D specularAndNsRT : register(t23);
+
 //Scene Lights
 
  //-- light types

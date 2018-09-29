@@ -110,6 +110,8 @@ float4 CaculatePhongLighting(float3 vertexPos, float3 vertexNormal, float3 verte
 
 float4 main(PixelInputType pixel) : SV_TARGET
 {
+		//return shadowMap_0.Sample(textureSamplerWrap, pixel.uv);
+
 		float4 lit = CaculatePhongLighting(pixel.worldPos, pixel.normal, pixel.tangent, pixel.bitangent, pixel.uv);
 
 		const float S = calculateFogS(length((pixel.worldPos - cameraPosition.xyz).xyz));

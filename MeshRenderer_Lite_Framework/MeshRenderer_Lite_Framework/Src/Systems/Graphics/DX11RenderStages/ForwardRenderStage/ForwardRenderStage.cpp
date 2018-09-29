@@ -42,7 +42,7 @@ void ForwardRenderStage::PreRender()
 	renderData.m_pImmediateContext->PSSetSamplers(0, 4, samplerStates);
 
 	//Bind all of the shadow maps
-	const auto& lightComponents = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_LIGHT];
+	const auto& lightComponents = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_LIGHT_WITH_SHADOW];
 	for (const auto& component : lightComponents)
 	{
 			ShadowLightComponent* lightComp = (ShadowLightComponent*)component;
@@ -121,8 +121,8 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 			//Draw each mesh entry, it's all one big VBuffer and IBufer though
 			for (auto& meshEntry : model->m_meshEntryList)
 			{
-				//if (!meshEntry.meshMaterial.m_phongMaterial.useAlphaBlending)
-				//	continue;
+				if (!meshEntry.meshMaterial.m_phongMaterial.useAlphaBlending)
+					continue;
 
 				auto& textures2D = graphicsResources.at((int)ObjectType::TEXTURE_2D);
 

@@ -19,7 +19,7 @@ struct Light
 		int m_lightType = (int)LightType::LT_POINT;
 		XMFLOAT3 m_position = XMFLOAT3(0, 0, 0);
 
-		XMVECTOR m_Iambient = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+		XMVECTOR m_Iambient = DirectX::XMVectorSet(0.4f, 0.4f, 0.4f, 1.0f);
 		XMVECTOR m_Idiffuse = DirectX::XMVectorSet(0.8f, 0.8f, 0.8f, 1.0f);
 		XMVECTOR m_Ispecular = DirectX::XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
 
