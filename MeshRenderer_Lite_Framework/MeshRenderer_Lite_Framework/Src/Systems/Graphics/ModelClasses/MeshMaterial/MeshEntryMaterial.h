@@ -26,7 +26,7 @@ struct PhongMaterial
 		XMFLOAT4 diffuseKd;
 
 		XMFLOAT3 specularKs;
-		float specularPowerNs;
+		float specularPowerNs = 200;
 
 		XMFLOAT4 emissiveKe;
 

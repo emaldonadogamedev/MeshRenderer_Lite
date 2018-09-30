@@ -470,7 +470,7 @@ void GraphicsSystem::AddRenderStages()
 	const Model* const quadModel = GetModel("quad");
 	const Model* const sphereModel = GetModel("sphere");
 	AddRenderStageHelper(new AmbientLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
-	AddRenderStageHelper(new DeferredShadowLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()), false);
+	AddRenderStageHelper(new DeferredShadowLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
 	AddRenderStageHelper(new DeferredSimpleLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle(), 
 			sphereModel));
 
