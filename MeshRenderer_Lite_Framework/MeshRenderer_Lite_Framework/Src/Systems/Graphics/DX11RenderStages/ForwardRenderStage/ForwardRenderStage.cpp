@@ -118,7 +118,7 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 			//Draw each mesh entry, it's all one big VBuffer and IBufer though
 			for (auto& meshEntry : model->m_meshEntryList)
 			{
-				if (!meshEntry.meshMaterial.m_phongMaterial.useAlphaBlending)
+				if (!meshEntry.meshMaterial.m_materialProperties.useAlphaBlending)
 					continue;
 
 				auto& textures2D = graphicsResources.at((int)ObjectType::TEXTURE_2D);
@@ -126,11 +126,11 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 				//Set the material information
 				m_renderData.testMeshMaterialBuffer = meshEntry.meshMaterial;
 				m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testMeshMaterialConstBuffer,
-						0, NULL, &m_renderData.testMeshMaterialBuffer.m_phongMaterial, 0, 0);
+						0, NULL, &m_renderData.testMeshMaterialBuffer.m_materialProperties, 0, 0);
 				m_renderData.m_pImmediateContext->PSSetConstantBuffers(6, 1, &m_renderData.testMeshMaterialConstBuffer);
 
 				//Set the diffuse texture
-				if (meshEntry.meshMaterial.m_phongMaterial.useDiffuseTexture)
+				if (meshEntry.meshMaterial.m_materialProperties.useDiffuseTexture)
 				{
 						const auto it = textures2D.find(meshEntry.diffTextureName);
 						if (it != textures2D.end())
@@ -149,7 +149,7 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 				}
 
 				//Set the normal map
-				if (meshEntry.meshMaterial.m_phongMaterial.useNormalMap)
+				if (meshEntry.meshMaterial.m_materialProperties.useNormalMap)
 				{
 						const auto it_np = textures2D.find(meshEntry.normalMapName);
 						if (it_np != textures2D.end()) {

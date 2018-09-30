@@ -100,6 +100,8 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		auto model2 = graphicsSystem->GetModel("box");
 		model2->m_meshEntryList[0].meshMaterial.SetToPresetMaterial(PredefinedMaterials::Emerald);
 		model2->SetDiffTextureFileName("Standard_red_pxr256.png", 0);
+		model2->SetNormalMapFileName("Standard_red_pxr256_normal.png", 0);
+		model2->m_meshEntryList[0].meshMaterial.m_materialProperties.specularPowerNs = 300.f;
 		test3DComp->SetModel(model2);
 
 		//Many mini lights!

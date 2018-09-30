@@ -3,13 +3,13 @@
 
 MeshEntryMaterial& MeshEntryMaterial::operator=(const MeshEntryMaterial& rhs)
 {
-		m_phongMaterial.ambientKa = rhs.m_phongMaterial.ambientKa;
-		m_phongMaterial.diffuseKd = rhs.m_phongMaterial.diffuseKd;
-		m_phongMaterial.specularKs = rhs.m_phongMaterial.specularKs;
-		m_phongMaterial.specularPowerNs = rhs.m_phongMaterial.specularPowerNs;
-		m_phongMaterial.emissiveKe = rhs.m_phongMaterial.emissiveKe;
-		m_phongMaterial.useDiffuseTexture = rhs.m_phongMaterial.useDiffuseTexture;
-		m_phongMaterial.useNormalMap = rhs.m_phongMaterial.useNormalMap;
+		m_materialProperties.ambientKa = rhs.m_materialProperties.ambientKa;
+		m_materialProperties.diffuseKd = rhs.m_materialProperties.diffuseKd;
+		m_materialProperties.specularKs = rhs.m_materialProperties.specularKs;
+		m_materialProperties.specularPowerNs = rhs.m_materialProperties.specularPowerNs;
+		m_materialProperties.emissiveKe = rhs.m_materialProperties.emissiveKe;
+		m_materialProperties.useDiffuseTexture = rhs.m_materialProperties.useDiffuseTexture;
+		m_materialProperties.useNormalMap = rhs.m_materialProperties.useNormalMap;
 
 		return *this;
 }

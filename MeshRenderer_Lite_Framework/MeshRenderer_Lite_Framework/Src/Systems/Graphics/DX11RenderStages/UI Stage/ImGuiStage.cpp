@@ -39,13 +39,13 @@ void ImGuiStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 	//ImGui::ShowTestWindow(&drawit);
 	ShowGraphicsSettings();
 
-	const auto& modelComponent = (ModelComponent*)GetComponentHelper(ComponentType::RENDERABLE_3D, 0);
-	const auto& curvePathComponent = (CurvePathComponent*) GetComponentHelper(ComponentType::RENDERABLE_CURVE_PATH, 0);
+	const auto& modelComponent = (ModelComponent*)GetComponentHelper(ComponentType::RENDERABLE_3D, 1);
+	const auto& curvePathComponent = (CurvePathComponent*) GetComponentHelper(ComponentType::RENDERABLE_CURVE_PATH, 1);
 
 	if (modelComponent)
 	{
 		auto* const transform = (Transform*)modelComponent->GetOwner()->GetComponent(ComponentType::TRANSFORM);
-		auto model = modelComponent->GetModel();
+		Model* model = modelComponent->GetModel();
 		if (ImGui::Begin("Animation Properties"))
 		{
 			ImGui::Text("FPS: %.3f", 1.0f/dt);
@@ -88,11 +88,24 @@ void ImGuiStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 			ImGui::End();
 		}
 
-		if (ImGui::Begin("Transform Properties"))
+		if (ImGui::Begin("Mesh properties"))
 		{
 			ImGui::DragFloat3("Position: ", transform->GetPosition().m128_f32, 0.1f);
 			ImGui::DragFloat3("Rotation: ", transform->GetOrientation().m128_f32, 0.1f, 0, XM_2PI);
 			ImGui::DragFloat3("Scale: ", transform->GetScale().m128_f32, 0.1f);
+			ImGui::Separator();
+
+			ImGui::LabelText("Material properties!", "");
+			for (auto& meshEntry : model->m_meshEntryList)
+			{
+					ImGui::DragFloat3("Ambient: ", &meshEntry.meshMaterial.m_materialProperties.ambientKa.x, 0.1f);
+					ImGui::DragFloat3("Diffuse: ", &meshEntry.meshMaterial.m_materialProperties.diffuseKd.x, 0.1f);
+					ImGui::DragFloat3("Specular: ", &meshEntry.meshMaterial.m_materialProperties.specularKs.x, 0.1f);
+					ImGui::DragFloat("NS: ", &meshEntry.meshMaterial.m_materialProperties.specularPowerNs, 0.1f);
+
+					ImGui::SliderInt("Use Diffuse Texture", &meshEntry.meshMaterial.m_materialProperties.useDiffuseTexture, 0, 1);
+					ImGui::SliderInt("Use Normal Map", &meshEntry.meshMaterial.m_materialProperties.useNormalMap, 0, 1);
+			}
 
 			ImGui::End();
 		}
@@ -113,7 +126,6 @@ void ImGuiStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 				ImGui::DragFloat3("Ambient", light->m_Iambient.m128_f32, 0.001f, 0.f, 1.0f, "%.3f");
 				ImGui::DragFloat3("Diffuse", light->m_Idiffuse.m128_f32, 0.001f, 0.f, 1.0f, "%.3f");
 				ImGui::DragFloat3("Specular", light->m_Ispecular.m128_f32, 0.001f, 0.f, 1.0f, "%.3f");
-				ImGui::DragFloat("NS", &light->roughness, 0.001f, 0.f, 2000.0f, "%.3f");
 
 				ImGui::Separator();
 				ImGui::End();

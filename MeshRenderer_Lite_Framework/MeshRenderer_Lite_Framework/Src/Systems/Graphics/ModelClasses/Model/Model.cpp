@@ -66,13 +66,13 @@ void Model::SetDiffTextureFileName(const std::string& fileName, const unsigned i
 	if (meshIdx < m_meshEntryList.size())
 	{
 		m_meshEntryList[meshIdx].diffTextureName = fileName;
-		m_meshEntryList[meshIdx].meshMaterial.m_phongMaterial.useDiffuseTexture = useNow;
+		m_meshEntryList[meshIdx].meshMaterial.m_materialProperties.useDiffuseTexture = useNow;
 	}
 	else
 		throw std::exception("Error: meshIdx out of range!");
 #else
 	m_meshEntryList[meshIdx].diffTextureName = fileName;
-	m_meshEntryList[meshIdx].meshMaterial.m_phongMaterial.useDiffuseTexture = useNow;
+	m_meshEntryList[meshIdx].meshMaterial.m_materialProperties.useDiffuseTexture = useNow;
 #endif
 }
 
@@ -81,14 +81,14 @@ void Model::SetNormalMapFileName(const std::string& fileName, const unsigned int
 #if _DEBUG
 		if (meshIdx < m_meshEntryList.size())
 		{
-				m_meshEntryList[meshIdx].diffTextureName = fileName;
-				m_meshEntryList[meshIdx].meshMaterial.m_phongMaterial.useNormalMap = useNow;
+				m_meshEntryList[meshIdx].normalMapName = fileName;
+				m_meshEntryList[meshIdx].meshMaterial.m_materialProperties.useNormalMap = useNow;
 		}
 		else
 				throw std::exception("Error: meshIdx out of range!");
 #else
-		m_meshEntryList[meshIdx].diffTextureName = fileName;
-		m_meshEntryList[meshIdx].meshMaterial.m_phongMaterial.useNormalMap = useNow;
+		m_meshEntryList[meshIdx].normalMapName = fileName;
+		m_meshEntryList[meshIdx].meshMaterial.m_materialProperties.useNormalMap = useNow;
 #endif
 }
 

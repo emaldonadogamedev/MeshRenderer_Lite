@@ -102,6 +102,9 @@ static float Clamp(const float value, const float minValue = 0.f, const float ma
 
 static float RandFloat(const float minValue = 0.f, const float maxValue = 1.f)
 {
+		if ((maxValue - minValue) <= 0.0001f)
+				return minValue;
+
 		return minValue + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (maxValue - minValue)));
 }
 
@@ -110,7 +113,7 @@ static int RandInt(const int minValue = 0, const int maxValue = 100)
 		if (minValue == maxValue)
 				return minValue;
 
-		return minValue + (rand() % maxValue) + 1;
+		return minValue + (rand() % (maxValue - minValue)) + 1;
 }
 
 static unsigned RandUnsignedInt(const unsigned minValue = 0, const unsigned maxValue = 100)
@@ -118,7 +121,7 @@ static unsigned RandUnsignedInt(const unsigned minValue = 0, const unsigned maxV
 		if (minValue == maxValue)
 				return minValue;
 
-		return minValue + (rand() % maxValue) + 1;
+		return minValue + (rand() % (maxValue - minValue)) + 1;
 }
 
 //Memory delete/release

@@ -27,7 +27,7 @@ void DeferredSimpleLightStage::PreRender()
 {
 		//bind main render target and clear it
 		m_renderData.m_pImmediateContext->OMSetRenderTargets(1, &m_renderData.m_pMainRenderTargetView, nullptr); //No depth testing required for now
-		//am_renderData.m_pImmediateContext->ClearRenderTargetView(m_renderData.m_pMainRenderTargetView, m_renderData.m_clearColor.m128_f32);
+		//m_renderData.m_pImmediateContext->ClearRenderTargetView(m_renderData.m_pMainRenderTargetView, m_renderData.m_clearColor.m128_f32);
 		m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateSolCullBack); //We're drawing spheres
 		m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		m_renderer->EnableAlphaBlending();

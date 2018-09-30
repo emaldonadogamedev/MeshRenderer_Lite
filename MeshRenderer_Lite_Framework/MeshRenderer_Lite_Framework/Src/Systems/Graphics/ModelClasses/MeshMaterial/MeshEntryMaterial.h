@@ -19,7 +19,7 @@ enum class PredefinedMaterials : int
 		CyanRubber
 };
 
-struct PhongMaterial
+struct MaterialProperties
 {
 		//Just packing all of the variables like that in order to align them(4 32 bit elements at a time)
 		XMFLOAT4 ambientKa;
@@ -43,18 +43,18 @@ public:
 		MeshEntryMaterial(const XMFLOAT4& ka, const XMFLOAT4& kd, const XMFLOAT3& ks, const float ns, 
 				const XMFLOAT4& ke = XMFLOAT4(0, 0, 0, 0), const int useDiffText = 1, const int useNormMap = 1)
 		{
-				m_phongMaterial.ambientKa = ka;
-				m_phongMaterial.diffuseKd = kd;
-				m_phongMaterial.specularKs = ks;
-				m_phongMaterial.specularPowerNs = ns;
-				m_phongMaterial.emissiveKe = ke;
-				m_phongMaterial.useDiffuseTexture = useDiffText;
-				m_phongMaterial.useNormalMap = useNormMap;
+				m_materialProperties.ambientKa = ka;
+				m_materialProperties.diffuseKd = kd;
+				m_materialProperties.specularKs = ks;
+				m_materialProperties.specularPowerNs = ns;
+				m_materialProperties.emissiveKe = ke;
+				m_materialProperties.useDiffuseTexture = useDiffText;
+				m_materialProperties.useNormalMap = useNormMap;
 		}
 
 		MeshEntryMaterial& operator=(const MeshEntryMaterial& rhs);
 
-		PhongMaterial m_phongMaterial;
+		MaterialProperties m_materialProperties;
 
 		void SetToPresetMaterial(const PredefinedMaterials preset);
 		static const MeshEntryMaterial& GetPresetMaterial(const PredefinedMaterials preset);
