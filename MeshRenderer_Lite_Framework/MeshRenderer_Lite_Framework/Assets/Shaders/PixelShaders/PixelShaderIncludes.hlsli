@@ -68,11 +68,14 @@ struct Light
 
 struct SimpleLight
 {
-		float m_range;
 		float3 m_position;
+		float m_range;
 
-		float4 m_Idiffuse;
-		float4 m_Ispecular;
+		float3 m_Iambient;
+		int isTaken;
+
+		float3 m_Idiffuse;
+		int isActive;
 };
 
 static const unsigned int s_maxLights = 15;

@@ -21,10 +21,9 @@ DeferredShadowLightStage::~DeferredShadowLightStage()
 void DeferredShadowLightStage::PreRender()
 {
 		//bind main render target and clear it
-		auto& renderData = m_renderer->GetRendererData();
-		renderData.m_pImmediateContext->OMSetRenderTargets(1, &renderData.m_pMainRenderTargetView, nullptr); //No depth testing required
-		renderData.m_pImmediateContext->RSSetState(renderData.m_d3dRasterStateDefault);
-		renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		m_renderData.m_pImmediateContext->OMSetRenderTargets(1, &m_renderData.m_pMainRenderTargetView, nullptr); //No depth testing required
+		m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateDefault);
+		m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		m_renderer->EnableAlphaBlending();
 
 		//Bind all of the shadow maps
@@ -39,11 +38,11 @@ void DeferredShadowLightStage::PreRender()
 		//Bind the G-buffer render targets
 		for (char rtHandle = 0, textureId = 20; rtHandle < (char)DX11RendererData::GBufferRTType::COUNT; ++rtHandle, ++textureId)
 		{
-				m_renderer->BindTextureShaderResource(ObjectType::PIXEL_SHADER, textureId, 1, renderData.m_GBufferObjHandles[rtHandle]);
+				m_renderer->BindTextureShaderResource(ObjectType::PIXEL_SHADER, textureId, 1, m_renderData.m_GBufferObjHandles[rtHandle]);
 		}
 
 		D3D11_VIEWPORT viewport{ 0, 0, m_renderer->GetRenderTargetWidth(), m_renderer->GetRenderTargetHeight(), 0, 1.0f };
-		renderData.m_pImmediateContext->RSSetViewports(1, &viewport);
+		m_renderData.m_pImmediateContext->RSSetViewports(1, &viewport);
 }
 
 void DeferredShadowLightStage::Render(HandleDictionaryVec& graphicsResources, const float dt)

@@ -27,6 +27,11 @@ public:
 	void CreateQuad(float width, float height, float zLevel, Model& ModelData);
 
 	///<summary>
+	/// Creates a box centered at the origin with the given dimensions.
+	///</summary>
+	void CreateCircle(float radius, int vertexCount, Model& ModelData);
+
+	///<summary>
 	/// Creates a sphere centered at the origin with the given radius.  The
 	/// slices and stacks parameters control the degree of tessellation.
 	///</summary>

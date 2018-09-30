@@ -131,7 +131,7 @@ void DX11Renderer::SwapBuffers(void) const
 	HR(m_renderData->m_pSwapChain->Present(0, 0));
 }
 
-DX11RendererData& DX11Renderer::GetRendererData() const
+DX11RendererData& DX11Renderer::GetRendererData()
 {
 	return *m_renderData;
 }
@@ -1266,6 +1266,9 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 
 	bd.ByteWidth = sizeof(MeshEntryMaterial);
 	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testMeshMaterialConstBuffer));
+
+	bd.ByteWidth = sizeof(SimpleLight);//  * LightComponent::s_maxLights;
+	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testLightNoShadowConstBuffer));
 
 	// Initialize the world matrices
 	//m_renderData->testPerObjectBuffer.worldMtx = XMMatrixScaling(1,1,1) * DirectX::XMMatrixRotationX(XM_PIDIV2) * XMMatrixTranslation(-1, 1, 0);

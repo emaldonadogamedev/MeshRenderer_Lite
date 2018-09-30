@@ -26,9 +26,8 @@ ShadowMapStage::~ShadowMapStage()
 
 void ShadowMapStage::PreRender()
 {
-		auto& renderData = m_renderer->GetRendererData();
-		renderData.m_pImmediateContext->RSSetState(renderData.m_d3dRasterStateSolCullFront);
-		renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateSolCullFront);
+		m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		m_renderer->DisableAlphaBlending();
 }
 
@@ -40,8 +39,6 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 
 		handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("ShadowPS");
 		m_renderer->BindPixelShader(handle);
-
-		auto& renderData = m_renderer->GetRendererData();
 
 		const auto& lightComps = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_LIGHT_WITH_SHADOW];
 		for (auto& light : lightComps)
@@ -55,38 +52,38 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 				if (!shadowRThandle)
 						continue;
 
-				auto& shadowRTObj = renderData.renderTargets[*shadowRThandle];
+				auto& shadowRTObj = m_renderData.renderTargets[*shadowRThandle];
 
 				//Set the shadow texture as the render target, also clear it
 				m_renderer->BindRenderTarget(shadowRThandle);
 				m_renderer->ClearRenderTarget(shadowRThandle, XMVECTOR());
 
 				D3D11_VIEWPORT shadowViewport { 0,0,shadowRTObj.width, shadowRTObj.height,0,1.0f };
-				renderData.m_pImmediateContext->RSSetViewports(1, &shadowViewport);
+				m_renderData.m_pImmediateContext->RSSetViewports(1, &shadowViewport);
 
 				//update the view matrix according to the light's position
-				renderData.testLightViewBuffer.lightViewMtx = XMMatrixTranspose(
+				m_renderData.testLightViewBuffer.lightViewMtx = XMMatrixTranspose(
 						XMMatrixLookAtLH(
 								(static_cast<Transform* const>(lightComp->GetOwner()->GetComponent(ComponentType::TRANSFORM)))->GetPosition(),
 								//renderData.testCamera->m_LookAt,
 								XMVectorSet(0,0,0,1.0f),
-								renderData.testCamera->m_Up)
+								m_renderData.testCamera->m_Up)
 				);
 
 				//update the projection matrix according to the shadow's texture resolution
-				renderData.testLightViewBuffer.lightProjectionMtx = XMMatrixTranspose(
+				m_renderData.testLightViewBuffer.lightProjectionMtx = XMMatrixTranspose(
 						//XMMatrixPerspectiveLH(shadowRTObj.width, shadowRTObj.height, renderData.testCamera->m_Near, 
 						//		renderData.testCamera->m_Far)
-						XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV2, shadowRTObj.GetAspectRatio(), renderData.testCamera->m_Near,
-								renderData.testCamera->m_Far)
+						XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV2, shadowRTObj.GetAspectRatio(), m_renderData.testCamera->m_Near,
+								m_renderData.testCamera->m_Far)
 				);
 
-				renderData.m_pImmediateContext->UpdateSubresource(renderData.testLightViewConstBuffer,
-						0, NULL, &renderData.testLightViewBuffer, 0, 0);
+				m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testLightViewConstBuffer,
+						0, NULL, &m_renderData.testLightViewBuffer, 0, 0);
 
 				// Set light POV buffers
-				renderData.m_pImmediateContext->VSSetConstantBuffers(5, 1, &renderData.testViewProjConstBuffer);
-				renderData.m_pImmediateContext->PSSetConstantBuffers(5, 1, &renderData.testViewProjConstBuffer);
+				m_renderData.m_pImmediateContext->VSSetConstantBuffers(5, 1, &m_renderData.testViewProjConstBuffer);
+				m_renderData.m_pImmediateContext->PSSetConstantBuffers(5, 1, &m_renderData.testViewProjConstBuffer);
 
 				//forward render all of the objects
 				const auto& modelComponents = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_3D];
@@ -106,26 +103,26 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 								//Update bone anim. const buffer
 								const int copySize = model->m_boneFinalTransformMtxVec.size();
 								const int copyVecLocSize = model->m_boneLocations.size();
-								std::memcpy(renderData.testAnimationBuffer.boneMatrices, model->m_boneFinalTransformMtxVec.data(),
+								std::memcpy(m_renderData.testAnimationBuffer.boneMatrices, model->m_boneFinalTransformMtxVec.data(),
 										sizeof(XMMATRIX) * (copySize > Model::s_maxBoneCount ? Model::s_maxBoneCount : copySize));
-								std::memcpy(renderData.testAnimationBuffer.boneLocations, model->m_boneLocations.data(),
+								std::memcpy(m_renderData.testAnimationBuffer.boneLocations, model->m_boneLocations.data(),
 										sizeof(XMVECTOR) * (copyVecLocSize > Model::s_maxBoneLocCount ? Model::s_maxBoneLocCount : copyVecLocSize)
 										* (unsigned char)model->m_debugDrawEnabled);
 
-								renderData.m_pImmediateContext->UpdateSubresource(renderData.testAnimationConstBuffer,
-										0, NULL, &renderData.testAnimationBuffer, 0, 0);
-								renderData.m_pImmediateContext->VSSetConstantBuffers(2, 1, &renderData.testAnimationConstBuffer);
+								m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testAnimationConstBuffer,
+										0, NULL, &m_renderData.testAnimationBuffer, 0, 0);
+								m_renderData.m_pImmediateContext->VSSetConstantBuffers(2, 1, &m_renderData.testAnimationConstBuffer);
 
 								//Get the normal world matrix and update the per object const buffer
-								renderData.testPerObjectBuffer.isAnimated = model->m_modelType == ModelType::MODEL_SKINNED;
+								m_renderData.testPerObjectBuffer.isAnimated = model->m_modelType == ModelType::MODEL_SKINNED;
 								auto* const transform = (Transform*)component->GetOwner()->GetComponent(ComponentType::TRANSFORM);
-								renderData.testPerObjectBuffer.worldMtx = transform->GetWorldTransform();
+								m_renderData.testPerObjectBuffer.worldMtx = transform->GetWorldTransform();
 
-								renderData.m_pImmediateContext->UpdateSubresource(renderData.testPerObjectConstBuffer,
-										0, NULL, &renderData.testPerObjectBuffer, 0, 0);
+								m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testPerObjectConstBuffer,
+										0, NULL, &m_renderData.testPerObjectBuffer, 0, 0);
 
-								renderData.m_pImmediateContext->VSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
-								renderData.m_pImmediateContext->PSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
+								m_renderData.m_pImmediateContext->VSSetConstantBuffers(0, 1, &m_renderData.testPerObjectConstBuffer);
+								m_renderData.m_pImmediateContext->PSSetConstantBuffers(0, 1, &m_renderData.testPerObjectConstBuffer);
 
 								//Draw each mesh entry, it's all one big VBuffer and IBufer though
 								for (auto& meshEntry : model->m_meshEntryList)
@@ -140,6 +137,5 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 void ShadowMapStage::PostRender()
 {
 		//put back the viewport the way it was
-		auto& renderData = m_renderer->GetRendererData();
-		renderData.m_pImmediateContext->RSSetViewports(1, &renderData.m_mainViewport);
+		m_renderData.m_pImmediateContext->RSSetViewports(1, &m_renderData.m_mainViewport);
 }

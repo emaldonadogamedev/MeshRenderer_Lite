@@ -150,6 +150,12 @@
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\DeferredShadowLightStage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\DeferredSimpleLightStage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\IRenderStage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Utilities\precompiled.h">
@@ -318,6 +324,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\DeferredShadowLightStage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\DeferredSimpleLightStage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

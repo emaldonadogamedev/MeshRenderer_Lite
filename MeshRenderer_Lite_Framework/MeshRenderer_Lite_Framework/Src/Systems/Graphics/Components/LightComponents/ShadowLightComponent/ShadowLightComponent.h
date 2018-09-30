@@ -3,7 +3,7 @@
 #include <Systems/Graphics/Components/LightComponents/LightComponent/LightComponent.h>
 #include <Systems/Graphics/GraphicsUtilities/ObjectHandle.h>
 
-class Light;
+struct Light;
 
 class ShadowLightComponent : public IComponent
 {

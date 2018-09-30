@@ -95,6 +95,32 @@ static const float XMLengthBetween2Points(const DirectX::XMVECTOR& a, const Dire
 	sqrtf(XMLengthSquaredBetween2Points(a,b));
 }
 
+static float Clamp(const float value, const float minValue = 0.f, const float maxValue = 1.f)
+{
+		return min(max(minValue, value), maxValue);
+}
+
+static float RandFloat(const float minValue = 0.f, const float maxValue = 1.f)
+{
+		return minValue + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (maxValue - minValue)));
+}
+
+static int RandInt(const int minValue = 0, const int maxValue = 100)
+{
+		if (minValue == maxValue)
+				return minValue;
+
+		return minValue + (rand() % maxValue) + 1;
+}
+
+static unsigned RandUnsignedInt(const unsigned minValue = 0, const unsigned maxValue = 100)
+{
+		if (minValue == maxValue)
+				return minValue;
+
+		return minValue + (rand() % maxValue) + 1;
+}
+
 //Memory delete/release
 #ifndef SafeRelease
 #define SafeRelease(x) if(x) { x->Release(); x = nullptr;}

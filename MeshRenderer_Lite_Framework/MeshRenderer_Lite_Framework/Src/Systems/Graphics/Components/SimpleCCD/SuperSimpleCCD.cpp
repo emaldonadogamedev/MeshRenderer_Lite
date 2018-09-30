@@ -134,16 +134,6 @@ void SuperSimpleCCD::FindEndEffector()
 	}
 }
 
-float SuperSimpleCCD::Clamp(const float value, const float minValue, const float maxValue) const
-{
-	return min(max(minValue, value), maxValue);
-}
-
-float SuperSimpleCCD::RandFloat(const float minValue, const float maxValue) const
-{
-	return minValue + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (int)(maxValue - minValue)));
-}
-
 float SuperSimpleCCD::AiVec3_Dot(const aiVector3D& a, const aiVector3D& b) const
 {
 	return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);

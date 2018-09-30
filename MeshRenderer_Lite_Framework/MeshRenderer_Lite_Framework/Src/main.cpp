@@ -4,6 +4,9 @@
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)
 {
+	//insert new random seed based on the time
+	srand(time(NULL));
+
   TestApp testApp;
   
   if (testApp.Initialize(hInstance))

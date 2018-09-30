@@ -25,6 +25,7 @@
 #include <Systems/Graphics/DX11RenderStages/ForwardRenderStage/ForwardRenderStage.h>
 #include <Systems/Graphics/DX11RenderStages/DeferredRenderingStages/AmbientLightStage.h>
 #include <Systems/Graphics/DX11RenderStages/DeferredRenderingStages/DeferredShadowLightStage.h>
+#include <Systems/Graphics/DX11RenderStages/DeferredRenderingStages/DeferredSimpleLightStage.h>
 #include <Systems/Graphics/DX11RenderStages/DeferredRenderingStages/GBufferStage.h>
 #include <Systems/Graphics/DX11RenderStages/ShadowMapStage/ShadowMapStage.h>
 #include <Systems/Graphics/DX11RenderStages/UI Stage/ImGuiStage.h>
@@ -83,9 +84,12 @@ void GraphicsSystem::Update(const float dt)
 	//iterate through all render stages(Including UI)
 	for (const auto renderStage : m_renderStages)
 	{
-		renderStage->PreRender();
-		renderStage->Render(m_resources, dt);
-		renderStage->PostRender();
+			if (renderStage->GetIsActive())
+			{
+					renderStage->PreRender();
+					renderStage->Render(m_resources, dt);
+					renderStage->PostRender();
+			}
 	}
 
 	//Finally present image to the screen
@@ -463,20 +467,24 @@ void GraphicsSystem::AddRenderStages()
 	//TODO: Add reflection map stage
 	AddRenderStageHelper(new GBufferStage(m_dx11Renderer.get(), &m_renderComponents));
 
-	Model* quadModel = GetModel("quad");
+	const Model* const quadModel = GetModel("quad");
+	const Model* const sphereModel = GetModel("sphere");
 	AddRenderStageHelper(new AmbientLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
-	//AddRenderStageHelper(new DeferredShadowLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
+	AddRenderStageHelper(new DeferredShadowLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()), false);
+	AddRenderStageHelper(new DeferredSimpleLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle(), 
+			sphereModel));
 
-	//AddRenderStageHelper(new ForwardRenderStage(m_dx11Renderer.get(), &m_renderComponents));
-	AddRenderStageHelper(new PathWalkDebugStage(m_dx11Renderer.get(), &m_renderComponents));
+	AddRenderStageHelper(new ForwardRenderStage(m_dx11Renderer.get(), &m_renderComponents), false);
+	AddRenderStageHelper(new PathWalkDebugStage(m_dx11Renderer.get(), &m_renderComponents), false);
 	AddRenderStageHelper(new ImGuiStage(m_dx11Renderer.get(), &m_renderComponents));
 }
 
-void GraphicsSystem::AddRenderStageHelper(IRenderStage* const renderStage)
+void GraphicsSystem::AddRenderStageHelper(IRenderStage* const renderStage, const bool isActive)
 {
 	if (renderStage)
 	{
 		m_renderStages.emplace_back(std::move(renderStage));
+		renderStage->SetIsActive(isActive);
 	}
 }
 
@@ -525,6 +533,7 @@ void GraphicsSystem::LoadBasicShaders()
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "GbufferPS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "DeferredAmbientStagePS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "DeferredShadowLightStagePS");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "DeferredSimpleLightStagePS");
 }
 
 void GraphicsSystem::LoadBasicShaderHelper(ObjectHandle& shaderHandle, const ObjectType shaderType, const std::string & fileName, const std::string & fileExtension)

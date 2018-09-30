@@ -155,6 +155,18 @@ void PrimitiveGenerator::CreateQuad(float width, float height, float zLevel, Mod
 	ModelData.m_meshEntryList.push_back(me);
 }
 
+void PrimitiveGenerator::CreateCircle(float radius, int vertexCount, Model& ModelData)
+{
+		ModelData.m_vertices.clear();
+		ModelData.m_indices.clear();
+
+		const float angleDiff = DirectX::XM_2PI / float(vertexCount);
+
+		for (float angle = 0.f; angle < DirectX::XM_2PI; angle += angleDiff)
+		{
+		}
+}
+
 void PrimitiveGenerator::CreateSphere(float radius, unsigned sliceCount, unsigned stackCount, Model& ModelData)
 {
 	ModelData.m_vertices.clear();

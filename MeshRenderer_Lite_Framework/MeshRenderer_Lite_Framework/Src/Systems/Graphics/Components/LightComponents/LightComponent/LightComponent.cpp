@@ -2,27 +2,46 @@
 #include<Systems/Graphics/Components/LightComponents/Light.h>
 #include<Systems/Graphics/Components/LightComponents/LightComponent/LightComponent.h>
 
+#include<Systems/Core/GameObject/GameObject.h>
+#include<Systems/Core/Components/Transform/Transform.h>
+
 LightComponent::LightComponent(const GameObject* owner, bool isActive)
 		:IComponent(ComponentType::RENDERABLE_LIGHT, owner, isActive)
 {
-		m_light = new Light();
-		m_light->isTaken = 1;
-		m_light->isUsingShadows = 0;
+		for (unsigned int i = 0; i < s_maxLights; ++i)
+		{
+				if (!sceneLightsNoShadows[i].isTaken)
+				{
+						m_light = &sceneLightsNoShadows[i];
+						m_light->isTaken = 1;
+						m_light->isActive = isActive;
+						return;
+				}
+		}
+
+		throw std::exception("Allocated more simple lights than possible!");
 }
 
 LightComponent::~LightComponent()
 {
-		SafeDelete(m_light);
 }
 
-Light* LightComponent::GetLight() const
+SimpleLight* LightComponent::GetLight() const
 {
 		return m_light;
 }
 
-const unsigned int LightComponent::s_maxLights = 200;
+void LightComponent::SetLightRange(const float r)
+{
+		auto t = (Transform*)GetOwner()->GetComponent(ComponentType::TRANSFORM);
+		t->SetScale(r,r,r);
 
-const Light* const LightComponent::GetSceneLightsNoShadowPtr()
+		m_light->m_range = r;
+}
+
+const unsigned int LightComponent::s_maxLights = 100;
+
+const SimpleLight* const LightComponent::GetSceneLightsNoShadowPtr()
 {
 		return sceneLightsNoShadows;
 }
@@ -34,4 +53,4 @@ int LightComponent::GetActiveLightsNoShadowCount()
 
 int LightComponent::s_takenLightCount = 0;;
 
-Light LightComponent::sceneLightsNoShadows[s_maxLights] = {};
+SimpleLight LightComponent::sceneLightsNoShadows[s_maxLights] = {};

@@ -46,6 +46,13 @@ void Transform::SetScale(const XMVECTOR &scale)
 	m_scale = scale;
 }
 
+void Transform::SetScale(const float sx, const float sy, const float sz)
+{
+		m_scale.m128_f32[0] = sx;
+		m_scale.m128_f32[1] = sy;
+		m_scale.m128_f32[2] = sz;
+}
+
 void Transform::SetOrientation(const XMVECTOR& orientation)
 {
 	m_rotation = orientation;

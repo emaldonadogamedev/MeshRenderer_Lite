@@ -26,7 +26,7 @@ public:
 	void ClearMainBuffer() const;
 	void SwapBuffers(void) const;
 
-	DX11RendererData& GetRendererData() const;
+	DX11RendererData& GetRendererData();
 
 	//////////////////////////////////////////////////////////////////////////
 	//Drawing Functions

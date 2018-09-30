@@ -26,8 +26,7 @@ void PathWalkDebugStage::PreRender()
 
 void PathWalkDebugStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 {
-	auto& renderData = m_renderer->GetRendererData();
-	renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
+	m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
 
 	//Set shaders
 	ObjectHandle handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("SimpleVS");
@@ -42,10 +41,10 @@ void PathWalkDebugStage::Render(HandleDictionaryVec& graphicsResources, const fl
 		if (component->GetIsActive())
 		{
 			const auto path = static_cast<const CurvePathComponent*>(component);
-			renderData.testPerObjectBuffer.worldMtx = XMMatrixTranspose(XMMatrixTranslationFromVector(path->m_pathCenterPos));
+			m_renderData.testPerObjectBuffer.worldMtx = XMMatrixTranspose(XMMatrixTranslationFromVector(path->m_pathCenterPos));
 
-			renderData.m_pImmediateContext->UpdateSubresource(renderData.testPerObjectConstBuffer,
-				0, NULL, &renderData.testPerObjectBuffer, 0, 0);
+			m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testPerObjectConstBuffer,
+				0, NULL, &m_renderData.testPerObjectBuffer, 0, 0);
 
 			m_renderer->BindVertexBuffer(path->GetPathVBuffer(), sizeof(VertexAnimation));
 			m_renderer->Draw(path->GetPathVertexCount(), 0);

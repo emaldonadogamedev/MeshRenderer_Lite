@@ -290,16 +290,6 @@ int CurvePathComponent::GetPathVertexCount() const
 	return m_drawPoints.size();
 }
 
-float CurvePathComponent::Clamp(const float value, const float minValue, const float maxValue) const
-{
-	return min( max(minValue, value), maxValue);
-}
-
-float CurvePathComponent::RandFloat(const float minValue, const float maxValue) const
-{
-	return minValue + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX /(maxValue - minValue)));
-}
-
 void CurvePathComponent::ShiftRightPointIndices()
 {
 	++m_currentP3_index;

@@ -81,10 +81,12 @@
     <ClCompile Include="Src\Systems\Graphics\DX11Renderer\DX11Renderer.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\AmbientLightStage.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\DeferredShadowLightStage.cpp" />
+    <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\DeferredSimpleLightStage.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\GBufferStage.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\ForwardDebugStage\PathWalkDebugStage.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\ForwardRenderStage\ForwardRenderStage.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\IconDebugStage\IconDebugStage.cpp" />
+    <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\IRenderStage.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\ShadowMapStage\ShadowMapStage.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\UI Stage\ImGuiStage.cpp" />
     <ClCompile Include="Src\Systems\Graphics\GraphicsSystem.cpp" />
@@ -133,6 +135,7 @@
     <ClInclude Include="Src\Systems\Core\IScene\Scene.h" />
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\AmbientLightStage.h" />
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\DeferredShadowLightStage.h" />
+    <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\DeferredSimpleLightStage.h" />
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\GBufferStage.h" />
     <ClInclude Include="Src\Systems\Graphics\ModelClasses\MeshMaterial\MeshEntryMaterial.h" />
     <ClInclude Include="Src\Systems\ISystem.h" />

@@ -102,6 +102,28 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		model2->SetDiffTextureFileName("Standard_red_pxr256.png", 0);
 		test3DComp->SetModel(model2);
 
+		//Many mini lights!
+		for (int i = 0; i < 16; i++)
+		{
+				testMiniLights[i] = std::make_unique<GameObject>();
+
+				auto testMiniLightObj = testMiniLights[i].get();
+
+				transform = new Transform(testMiniLights[i].get());
+				transform->SetPositionn(DirectX::XMVectorSet(RandFloat(-50.f, 50.f), RandFloat(-50.f, 50.f), RandFloat(-50.f, 50.f), 1.f));
+				gameObjSystem->AddComponent(transform);
+				testMiniLightObj->AddComponent(transform);
+
+				auto simpleLightComp = new LightComponent(testMiniLights[i].get());
+				float range = RandFloat(2, 8.0f);
+				simpleLightComp->SetLightRange(range);
+				auto light = simpleLightComp->GetLight();
+				light->m_Iambient = XMFLOAT3(RandFloat(0.2f, 0.4f), RandFloat(0.2f, 0.4f), RandFloat(0.2f, 0.4f));
+				light->m_Idiffuse = XMFLOAT3(RandFloat(3.f, 7.f), RandFloat(3.f, 7.f), RandFloat(3.f, 7.f));
+				testMiniLightObj->AddComponent(simpleLightComp);
+				graphicsSystem->AddComponent(simpleLightComp);
+		}
+
 		return true;
 	}
 

@@ -25,7 +25,7 @@ ShadowLightComponent::ShadowLightComponent(const GameObject* owner, bool isActiv
 				++textureIdx;
 		}
 
-		throw std::exception("Allocated more lights than possible!");
+		throw std::exception("Allocated more shadow lights than possible!");
 }
 
 ShadowLightComponent::~ShadowLightComponent()

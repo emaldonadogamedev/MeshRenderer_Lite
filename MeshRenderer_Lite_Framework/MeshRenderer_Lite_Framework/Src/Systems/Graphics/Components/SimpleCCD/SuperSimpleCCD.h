@@ -42,9 +42,6 @@ private:
 
 	void FindEndEffector();
 
-	float Clamp(const float value, const float minValue = 0.0f, const float maxValue = 1.0f) const;
-	float RandFloat(const float minValue = 0.f, const float maxValue = 1.0f) const;
-
 	float AiVec3_Dot(const aiVector3D& a, const aiVector3D& b)const;
 	aiVector3D AiVec3_Cross(const aiVector3D& a, const aiVector3D& b)const;
 

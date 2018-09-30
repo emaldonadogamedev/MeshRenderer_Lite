@@ -27,8 +27,7 @@ ImGuiStage::~ImGuiStage()
 
 void ImGuiStage::PreRender()
 {
-	auto& renderData = m_renderer->GetRendererData();
-	renderData.m_pImmediateContext->RSSetState(renderData.m_d3dRasterStateImgui);
+	m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateImgui);
 	m_renderer->DisableAlphaBlending();
 }
 
@@ -130,8 +129,6 @@ void ImGuiStage::PostRender()
 
 void ImGuiStage::ShowGraphicsSettings()
 {
-	auto& renderData = m_renderer->GetRendererData();
-
 	if (ImGui::BeginMainMenuBar())
 	{
 		if (ImGui::BeginMenu("Graphics Settings"))
@@ -139,16 +136,16 @@ void ImGuiStage::ShowGraphicsSettings()
 			if (ImGui::BeginMenu("Render States"))
 			{
 				if (ImGui::MenuItem("Solid, No Culling")) {
-					renderData.m_currentRasterState = renderData.m_d3dRasterStateDefault;
+					m_renderData.m_currentRasterState = m_renderData.m_d3dRasterStateDefault;
 				}
 				if (ImGui::MenuItem("Solid, Front Culling")) {
-					renderData.m_currentRasterState = renderData.m_d3dRasterStateSolCullFront;
+					m_renderData.m_currentRasterState = m_renderData.m_d3dRasterStateSolCullFront;
 				}
 				if (ImGui::MenuItem("Solid, Back Culling")) {
-					renderData.m_currentRasterState = renderData.m_d3dRasterStateSolCullBack;
+					m_renderData.m_currentRasterState = m_renderData.m_d3dRasterStateSolCullBack;
 				}
 				if (ImGui::MenuItem("Wire-frame")) {
-					renderData.m_currentRasterState = renderData.m_d3dRasterStateWireframe;
+					m_renderData.m_currentRasterState = m_renderData.m_d3dRasterStateWireframe;
 				}
 				ImGui::EndMenu();
 			}
@@ -163,21 +160,21 @@ void ImGuiStage::ShowGraphicsSettings()
 			ImGui::Separator();
 			if (ImGui::BeginMenu("Debug Menu..."))
 			{
-				ImGui::Checkbox("Show Debug Info...", &renderData.m_showDebugInfo);
+				ImGui::Checkbox("Show Debug Info...", &m_renderData.m_showDebugInfo);
 				if (ImGui::MenuItem("Position")) {
-					renderData.m_debugIdx = 0.f;
+					m_renderData.m_debugIdx = 0.f;
 				}
 				if (ImGui::MenuItem("Normals")) {
-					renderData.m_debugIdx = 1.f;
+					m_renderData.m_debugIdx = 1.f;
 				}
 				if (ImGui::MenuItem("Tangent")) {
-					renderData.m_debugIdx = 2.f;
+					m_renderData.m_debugIdx = 2.f;
 				}
 				if (ImGui::MenuItem("Depth Buffer")) {
-					renderData.m_debugIdx = 3.f;
+					m_renderData.m_debugIdx = 3.f;
 				}
 				if (ImGui::MenuItem("UV coords")) {
-					renderData.m_debugIdx = 4.f;
+					m_renderData.m_debugIdx = 4.f;
 				}
 				ImGui::EndMenu();
 			}

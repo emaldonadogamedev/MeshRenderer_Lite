@@ -25,21 +25,20 @@ ForwardRenderStage::~ForwardRenderStage()
 void ForwardRenderStage::PreRender()
 {
 	//bind main render target and clear it
-	auto& renderData = m_renderer->GetRendererData();
-	renderData.m_pImmediateContext->OMSetRenderTargets(1, &renderData.m_pMainRenderTargetView, renderData.m_DepthStencilView);
-	renderData.m_pImmediateContext->ClearRenderTargetView(renderData.m_pMainRenderTargetView, renderData.m_clearColor.m128_f32);
-	renderData.m_pImmediateContext->ClearDepthStencilView(renderData.m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
-	renderData.m_pImmediateContext->RSSetState(renderData.m_currentRasterState);
-	renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_renderData.m_pImmediateContext->OMSetRenderTargets(1, &m_renderData.m_pMainRenderTargetView, m_renderData.m_DepthStencilView);
+	m_renderData.m_pImmediateContext->ClearRenderTargetView(m_renderData.m_pMainRenderTargetView, m_renderData.m_clearColor.m128_f32);
+	m_renderData.m_pImmediateContext->ClearDepthStencilView(m_renderData.m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+	m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_currentRasterState);
+	m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	m_renderer->EnableAlphaBlending();
 
 	static ID3D11SamplerState* const samplerStates[4] = {
-		renderData.m_pWrapSamplerState,
-		renderData.m_pMirrorSamplerState,
-		renderData.m_pClampSamplerState,
-		renderData.m_pBorderSamplerState
+		m_renderData.m_pWrapSamplerState,
+		m_renderData.m_pMirrorSamplerState,
+		m_renderData.m_pClampSamplerState,
+		m_renderData.m_pBorderSamplerState
 	};
-	renderData.m_pImmediateContext->PSSetSamplers(0, 4, samplerStates);
+	m_renderData.m_pImmediateContext->PSSetSamplers(0, 4, samplerStates);
 
 	//Bind all of the shadow maps
 	const auto& lightComponents = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_LIGHT_WITH_SHADOW];
@@ -53,8 +52,6 @@ void ForwardRenderStage::PreRender()
 
 void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 {
-	auto& renderData = m_renderer->GetRendererData();
-
 	//Set shaders
 	ObjectHandle handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("defaultVS");
 	m_renderer->BindVertexShader(handle);
@@ -72,14 +69,14 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 	m_renderer->BindPixelShader(handle);
 
 	//Update / Set const buffers
-	renderData.m_pImmediateContext->VSSetConstantBuffers(1, 1, &renderData.testViewProjConstBuffer);
-	renderData.m_pImmediateContext->PSSetConstantBuffers(1, 1, &renderData.testViewProjConstBuffer);
+	m_renderData.m_pImmediateContext->VSSetConstantBuffers(1, 1, &m_renderData.testViewProjConstBuffer);
+	m_renderData.m_pImmediateContext->PSSetConstantBuffers(1, 1, &m_renderData.testViewProjConstBuffer);
 
 		//update lights const buffer
 	static const Light* sceneLights = ShadowLightComponent::GetSceneLightsWithShadowPtr();
-	renderData.m_pImmediateContext->UpdateSubresource(renderData.testLightWithShadowConstBuffer, 0, nullptr, 
+	m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testLightWithShadowConstBuffer, 0, nullptr, 
 		sceneLights, 0, 0);
-	renderData.m_pImmediateContext->PSSetConstantBuffers(7, 1, &renderData.testLightWithShadowConstBuffer);
+	m_renderData.m_pImmediateContext->PSSetConstantBuffers(7, 1, &m_renderData.testLightWithShadowConstBuffer);
 
 	//forward render all of the objects
 	const auto& modelComponents = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_3D];
@@ -96,27 +93,27 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 			m_renderer->BindIndexBuffer(model->GetIBufferHandle());
 
 			auto* const transform = (Transform*)component->GetOwner()->GetComponent(ComponentType::TRANSFORM);
-			renderData.testPerObjectBuffer.worldMtx = transform->GetWorldTransform();
+			m_renderData.testPerObjectBuffer.worldMtx = transform->GetWorldTransform();
 
-			renderData.testPerObjectBuffer.isAnimated = model->m_modelType == ModelType::MODEL_SKINNED;
-			renderData.m_pImmediateContext->UpdateSubresource(renderData.testPerObjectConstBuffer,
-				0, NULL, &renderData.testPerObjectBuffer, 0, 0);
+			m_renderData.testPerObjectBuffer.isAnimated = model->m_modelType == ModelType::MODEL_SKINNED;
+			m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testPerObjectConstBuffer,
+				0, NULL, &m_renderData.testPerObjectBuffer, 0, 0);
 
-			renderData.m_pImmediateContext->VSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
-			renderData.m_pImmediateContext->PSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
+			m_renderData.m_pImmediateContext->VSSetConstantBuffers(0, 1, &m_renderData.testPerObjectConstBuffer);
+			m_renderData.m_pImmediateContext->PSSetConstantBuffers(0, 1, &m_renderData.testPerObjectConstBuffer);
 
 			//Update bone animation const buffer
 			const int copySize = model->m_boneFinalTransformMtxVec.size();
 			const int copyVecLocSize = model->m_boneLocations.size();
-			std::memcpy(renderData.testAnimationBuffer.boneMatrices, model->m_boneFinalTransformMtxVec.data(),
+			std::memcpy(m_renderData.testAnimationBuffer.boneMatrices, model->m_boneFinalTransformMtxVec.data(),
 				sizeof(XMMATRIX) * (copySize > Model::s_maxBoneCount ? Model::s_maxBoneCount : copySize ));
-			std::memcpy(renderData.testAnimationBuffer.boneLocations, model->m_boneLocations.data(),
+			std::memcpy(m_renderData.testAnimationBuffer.boneLocations, model->m_boneLocations.data(),
 				sizeof(XMVECTOR) * (copyVecLocSize > Model::s_maxBoneLocCount ? Model::s_maxBoneLocCount : copyVecLocSize) 
 								 * (unsigned char)model->m_debugDrawEnabled);
 
-			renderData.m_pImmediateContext->UpdateSubresource(renderData.testAnimationConstBuffer,
-				0, NULL, &renderData.testAnimationBuffer, 0, 0);
-			renderData.m_pImmediateContext->VSSetConstantBuffers(2, 1, &renderData.testAnimationConstBuffer);
+			m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testAnimationConstBuffer,
+				0, NULL, &m_renderData.testAnimationBuffer, 0, 0);
+			m_renderData.m_pImmediateContext->VSSetConstantBuffers(2, 1, &m_renderData.testAnimationConstBuffer);
 
 			//Draw each mesh entry, it's all one big VBuffer and IBufer though
 			for (auto& meshEntry : model->m_meshEntryList)
@@ -127,10 +124,10 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 				auto& textures2D = graphicsResources.at((int)ObjectType::TEXTURE_2D);
 
 				//Set the material information
-				renderData.testMeshMaterialBuffer = meshEntry.meshMaterial;
-				renderData.m_pImmediateContext->UpdateSubresource(renderData.testMeshMaterialConstBuffer,
-						0, NULL, &renderData.testMeshMaterialBuffer.m_phongMaterial, 0, 0);
-				renderData.m_pImmediateContext->PSSetConstantBuffers(6, 1, &renderData.testMeshMaterialConstBuffer);
+				m_renderData.testMeshMaterialBuffer = meshEntry.meshMaterial;
+				m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testMeshMaterialConstBuffer,
+						0, NULL, &m_renderData.testMeshMaterialBuffer.m_phongMaterial, 0, 0);
+				m_renderData.m_pImmediateContext->PSSetConstantBuffers(6, 1, &m_renderData.testMeshMaterialConstBuffer);
 
 				//Set the diffuse texture
 				if (meshEntry.meshMaterial.m_phongMaterial.useDiffuseTexture)
@@ -138,14 +135,14 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 						const auto it = textures2D.find(meshEntry.diffTextureName);
 						if (it != textures2D.end())
 						{
-								const auto& diffTextSRV = renderData.textures2D[*it->second].srv;
-								renderData.m_pImmediateContext->PSSetShaderResources(0, 1, &diffTextSRV);
+								const auto& diffTextSRV = m_renderData.textures2D[*it->second].srv;
+								m_renderData.m_pImmediateContext->PSSetShaderResources(0, 1, &diffTextSRV);
 						}
 						else
 						{
 								if (const auto newTexture2D = m_renderer->GetTexture2D("../MeshRenderer_Lite_Framework/Assets/Textures/" + meshEntry.diffTextureName))
 								{
-										renderData.m_pImmediateContext->PSSetShaderResources(0, 1, &renderData.textures2D[*newTexture2D].srv);
+										m_renderData.m_pImmediateContext->PSSetShaderResources(0, 1, &m_renderData.textures2D[*newTexture2D].srv);
 										textures2D[meshEntry.diffTextureName] = newTexture2D;
 								}
 						}
@@ -156,12 +153,12 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 				{
 						const auto it_np = textures2D.find(meshEntry.normalMapName);
 						if (it_np != textures2D.end()) {
-								const auto& diffTextSRV = renderData.textures2D[*it_np->second].srv;
-								renderData.m_pImmediateContext->PSSetShaderResources(2, 1, &diffTextSRV);
+								const auto& diffTextSRV = m_renderData.textures2D[*it_np->second].srv;
+								m_renderData.m_pImmediateContext->PSSetShaderResources(2, 1, &diffTextSRV);
 						}
 						else {
 								if (const auto newNormalMap = m_renderer->GetTexture2D("../MeshRenderer_Lite_Framework/Assets/Textures/" + meshEntry.normalMapName)) {
-										renderData.m_pImmediateContext->PSSetShaderResources(2, 1, &renderData.textures2D[*newNormalMap].srv);
+										m_renderData.m_pImmediateContext->PSSetShaderResources(2, 1, &m_renderData.textures2D[*newNormalMap].srv);
 
 										textures2D[meshEntry.normalMapName] = newNormalMap;
 								}
@@ -182,12 +179,12 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 	handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("SimplePS");
 	m_renderer->BindPixelShader(handle);
 
-	renderData.testPerObjectBuffer.worldMtx = XMMatrixIdentity();
-	renderData.m_pImmediateContext->UpdateSubresource(renderData.testPerObjectConstBuffer,
-		0, NULL, &renderData.testPerObjectBuffer, 0, 0);
+	m_renderData.testPerObjectBuffer.worldMtx = XMMatrixIdentity();
+	m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testPerObjectConstBuffer,
+		0, NULL, &m_renderData.testPerObjectBuffer, 0, 0);
 
-	renderData.m_pImmediateContext->VSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
-	renderData.m_pImmediateContext->PSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
+	m_renderData.m_pImmediateContext->VSSetConstantBuffers(0, 1, &m_renderData.testPerObjectConstBuffer);
+	m_renderData.m_pImmediateContext->PSSetConstantBuffers(0, 1, &m_renderData.testPerObjectConstBuffer);
 
 	const auto& clothComponents = (*m_gfxSystemComponents)[ComponentType::PHYSICS_SIMPLE_CLOTH];
 	for (auto component : clothComponents)
@@ -202,12 +199,12 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 			auto& particles = clothComp->particles;
 			for (int i = 0; i < particles.size(); ++i)
 			{
-				renderData.testSimpleClothBuffer.particleData[i].position = particles[i].getPos();
+				m_renderData.testSimpleClothBuffer.particleData[i].position = particles[i].getPos();
 			}
 
-			renderData.m_pImmediateContext->UpdateSubresource(renderData.testSimpleClothConstBuffer,
-				0, NULL, &renderData.testSimpleClothBuffer, 0, 0);
-			renderData.m_pImmediateContext->VSSetConstantBuffers(4, 1, &renderData.testSimpleClothConstBuffer);
+			m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testSimpleClothConstBuffer,
+				0, NULL, &m_renderData.testSimpleClothBuffer, 0, 0);
+			m_renderData.m_pImmediateContext->VSSetConstantBuffers(4, 1, &m_renderData.testSimpleClothConstBuffer);
 
 			//m_renderer->Draw(clothComp->particles.size());// clothComp->m_indexCount, 0, 0);
 			m_renderer->DrawIndexed(clothComp->m_indexCount, 0, 0);

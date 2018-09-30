@@ -17,6 +17,7 @@ public:
 
 	void SetPositionn(const XMVECTOR& position);
 	void SetScale(const XMVECTOR &scale);
+	void SetScale(const float sx, const float sy, const float sz);
 	void SetOrientation(const XMVECTOR& orientation);
 	void SetOrientation(const XMMATRIX& orientationMtx);
 	void SetRotationX(float rot);

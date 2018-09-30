@@ -9,8 +9,6 @@ PathComponent::PathComponent(const GameObject* owner)
 	:IComponent(ComponentType::RENDERABLE_PATH, owner)
 	, m_pathCenterPos(XMVectorSet(0,0,0,1.0f))
 {
-	srand(time(NULL));
-
 	DefaultPointSet();
 	PrepareDrawPoints();
 }
@@ -123,16 +121,6 @@ void PathComponent::UpdatePath(const float dt)
 int PathComponent::GetPathVertexCount() const
 {
 	return m_drawPoints.size();
-}
-
-float PathComponent::Clamp(const float value, const float minValue, const float maxValue) const
-{
-	return min( max(minValue, value), maxValue);
-}
-
-float PathComponent::RandFloat(float minValue, float maxValue) const
-{
-	return minValue + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX /(maxValue - minValue)));
 }
 
 void PathComponent::ShiftPointIndices()

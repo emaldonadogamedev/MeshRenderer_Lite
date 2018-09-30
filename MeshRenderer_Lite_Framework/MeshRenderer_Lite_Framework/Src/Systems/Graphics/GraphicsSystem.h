@@ -42,7 +42,7 @@ protected:
 	//Initialize helpers
 	void InitializeImGui();
 	void AddRenderStages();
-	void AddRenderStageHelper(IRenderStage* const renderStage);
+	void AddRenderStageHelper(IRenderStage* const renderStage, const bool isActive = true);
 	Model* LoadModelHelper(const std::string& fileName);
 	void LoadBasicShaders();
 	void LoadBasicShaderHelper(ObjectHandle& shaderHandle, const ObjectType shaderType, const std::string& fileName, 

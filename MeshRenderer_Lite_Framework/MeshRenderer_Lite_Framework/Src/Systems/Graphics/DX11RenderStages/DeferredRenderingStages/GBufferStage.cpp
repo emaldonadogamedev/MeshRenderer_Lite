@@ -20,19 +20,17 @@ GBufferStage::~GBufferStage()
 
 void GBufferStage::PreRender()
 {
-		auto& renderData = m_renderer->GetRendererData();
-
-		renderData.m_pImmediateContext->OMSetRenderTargets((int)DX11RendererData::GBufferRTType::COUNT, renderData.m_pGbufferRTVs,
-				renderData.m_DepthStencilView);
+		m_renderData.m_pImmediateContext->OMSetRenderTargets((int)DX11RendererData::GBufferRTType::COUNT, m_renderData.m_pGbufferRTVs,
+				m_renderData.m_DepthStencilView);
 
 		static const auto blackClearColor = XMVectorSet(0,0,0,1.0f);
 		for (unsigned char i = 0; i < (unsigned char)DX11RendererData::GBufferRTType::COUNT; ++i)
 		{
-				renderData.m_pImmediateContext->ClearRenderTargetView(renderData.m_pGbufferRTVs[i], blackClearColor.m128_f32);
+				m_renderData.m_pImmediateContext->ClearRenderTargetView(m_renderData.m_pGbufferRTVs[i], blackClearColor.m128_f32);
 		}
-		renderData.m_pImmediateContext->ClearDepthStencilView(renderData.m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
-		renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		renderData.m_pImmediateContext->RSSetState(renderData.m_d3dRasterStateDefault);
+		m_renderData.m_pImmediateContext->ClearDepthStencilView(m_renderData.m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+		m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateDefault);
 		m_renderer->DisableAlphaBlending();
 }
 
@@ -46,8 +44,7 @@ void GBufferStage::Render(HandleDictionaryVec& graphicsResources, const float dt
 		m_renderer->BindPixelShader(handle);
 
 		//Update / Set const buffers
-		auto& renderData = m_renderer->GetRendererData();
-		renderData.m_pImmediateContext->VSSetConstantBuffers(1, 1, &renderData.testViewProjConstBuffer);
+		m_renderData.m_pImmediateContext->VSSetConstantBuffers(1, 1, &m_renderData.testViewProjConstBuffer);
 
 		//forward render all of the objects
 		const auto& modelComponents = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_3D];
@@ -64,27 +61,27 @@ void GBufferStage::Render(HandleDictionaryVec& graphicsResources, const float dt
 						m_renderer->BindIndexBuffer(model->GetIBufferHandle());
 
 						auto* const transform = (Transform*)component->GetOwner()->GetComponent(ComponentType::TRANSFORM);
-						renderData.testPerObjectBuffer.worldMtx = transform->GetWorldTransform();
+						m_renderData.testPerObjectBuffer.worldMtx = transform->GetWorldTransform();
 
-						renderData.testPerObjectBuffer.isAnimated = model->m_modelType == ModelType::MODEL_SKINNED;
-						renderData.m_pImmediateContext->UpdateSubresource(renderData.testPerObjectConstBuffer,
-								0, NULL, &renderData.testPerObjectBuffer, 0, 0);
+						m_renderData.testPerObjectBuffer.isAnimated = model->m_modelType == ModelType::MODEL_SKINNED;
+						m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testPerObjectConstBuffer,
+								0, NULL, &m_renderData.testPerObjectBuffer, 0, 0);
 
-						renderData.m_pImmediateContext->VSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
-						renderData.m_pImmediateContext->PSSetConstantBuffers(0, 1, &renderData.testPerObjectConstBuffer);
+						m_renderData.m_pImmediateContext->VSSetConstantBuffers(0, 1, &m_renderData.testPerObjectConstBuffer);
+						m_renderData.m_pImmediateContext->PSSetConstantBuffers(0, 1, &m_renderData.testPerObjectConstBuffer);
 
 						//Update bone animation const buffer
 						const int copySize = model->m_boneFinalTransformMtxVec.size();
 						const int copyVecLocSize = model->m_boneLocations.size();
-						std::memcpy(renderData.testAnimationBuffer.boneMatrices, model->m_boneFinalTransformMtxVec.data(),
+						std::memcpy(m_renderData.testAnimationBuffer.boneMatrices, model->m_boneFinalTransformMtxVec.data(),
 								sizeof(XMMATRIX) * (copySize > Model::s_maxBoneCount ? Model::s_maxBoneCount : copySize));
-						std::memcpy(renderData.testAnimationBuffer.boneLocations, model->m_boneLocations.data(),
+						std::memcpy(m_renderData.testAnimationBuffer.boneLocations, model->m_boneLocations.data(),
 								sizeof(XMVECTOR) * (copyVecLocSize > Model::s_maxBoneLocCount ? Model::s_maxBoneLocCount : copyVecLocSize)
 								* (unsigned char)model->m_debugDrawEnabled);
 
-						renderData.m_pImmediateContext->UpdateSubresource(renderData.testAnimationConstBuffer,
-								0, NULL, &renderData.testAnimationBuffer, 0, 0);
-						renderData.m_pImmediateContext->VSSetConstantBuffers(2, 1, &renderData.testAnimationConstBuffer);
+						m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testAnimationConstBuffer,
+								0, NULL, &m_renderData.testAnimationBuffer, 0, 0);
+						m_renderData.m_pImmediateContext->VSSetConstantBuffers(2, 1, &m_renderData.testAnimationConstBuffer);
 
 						//Draw each mesh entry, it's all one big VBuffer and IBufer though
 						for (auto& meshEntry : model->m_meshEntryList)
@@ -93,10 +90,10 @@ void GBufferStage::Render(HandleDictionaryVec& graphicsResources, const float dt
 										continue;
 
 								//Set the material information
-								renderData.testMeshMaterialBuffer = meshEntry.meshMaterial;
-								renderData.m_pImmediateContext->UpdateSubresource(renderData.testMeshMaterialConstBuffer,
-										0, NULL, &renderData.testMeshMaterialBuffer.m_phongMaterial, 0, 0);
-								renderData.m_pImmediateContext->PSSetConstantBuffers(6, 1, &renderData.testMeshMaterialConstBuffer);
+								m_renderData.testMeshMaterialBuffer = meshEntry.meshMaterial;
+								m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testMeshMaterialConstBuffer,
+										0, NULL, &m_renderData.testMeshMaterialBuffer.m_phongMaterial, 0, 0);
+								m_renderData.m_pImmediateContext->PSSetConstantBuffers(6, 1, &m_renderData.testMeshMaterialConstBuffer);
 
 								auto& textures2D = graphicsResources.at((int)ObjectType::TEXTURE_2D);
 								//Set the diffuse texture
@@ -105,14 +102,14 @@ void GBufferStage::Render(HandleDictionaryVec& graphicsResources, const float dt
 										const auto it = textures2D.find(meshEntry.diffTextureName);
 										if (it != textures2D.end())
 										{
-												const auto& diffTextSRV = renderData.textures2D[*it->second].srv;
-												renderData.m_pImmediateContext->PSSetShaderResources(0, 1, &diffTextSRV);
+												const auto& diffTextSRV = m_renderData.textures2D[*it->second].srv;
+												m_renderData.m_pImmediateContext->PSSetShaderResources(0, 1, &diffTextSRV);
 										}
 										else
 										{
 												if (const auto newTexture2D = m_renderer->GetTexture2D("../MeshRenderer_Lite_Framework/Assets/Textures/" + meshEntry.diffTextureName))
 												{
-														renderData.m_pImmediateContext->PSSetShaderResources(0, 1, &renderData.textures2D[*newTexture2D].srv);
+														m_renderData.m_pImmediateContext->PSSetShaderResources(0, 1, &m_renderData.textures2D[*newTexture2D].srv);
 														textures2D[meshEntry.diffTextureName] = newTexture2D;
 												}
 										}
@@ -123,12 +120,12 @@ void GBufferStage::Render(HandleDictionaryVec& graphicsResources, const float dt
 								{
 										const auto it_np = textures2D.find(meshEntry.normalMapName);
 										if (it_np != textures2D.end()) {
-												const auto& diffTextSRV = renderData.textures2D[*it_np->second].srv;
-												renderData.m_pImmediateContext->PSSetShaderResources(2, 1, &diffTextSRV);
+												const auto& diffTextSRV = m_renderData.textures2D[*it_np->second].srv;
+												m_renderData.m_pImmediateContext->PSSetShaderResources(2, 1, &diffTextSRV);
 										}
 										else {
 												if (const auto newNormalMap = m_renderer->GetTexture2D("../MeshRenderer_Lite_Framework/Assets/Textures/" + meshEntry.normalMapName)) {
-														renderData.m_pImmediateContext->PSSetShaderResources(2, 1, &renderData.textures2D[*newNormalMap].srv);
+														m_renderData.m_pImmediateContext->PSSetShaderResources(2, 1, &m_renderData.textures2D[*newNormalMap].srv);
 
 														textures2D[meshEntry.normalMapName] = newNormalMap;
 												}

@@ -14,6 +14,18 @@ enum class LightType : int
 		COUNT
 };
 
+struct SimpleLight
+{
+		XMFLOAT3 m_position;
+		float m_range;
+
+		XMFLOAT3 m_Iambient = XMFLOAT3(0.4f, 0.4f, 0.4f);
+		int isTaken = 0;
+
+		XMFLOAT3 m_Idiffuse = XMFLOAT3(0.8f, 0.8f, 0.8f);
+		int isActive = 0;
+};
+
 struct Light 
 {
 		int m_lightType = (int)LightType::LT_POINT;
