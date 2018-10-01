@@ -39,7 +39,7 @@ void LightComponent::SetLightRange(const float r)
 		m_light->m_range = r;
 }
 
-const unsigned int LightComponent::s_maxLights = 100;
+const unsigned int LightComponent::s_maxLights = 500;
 
 const SimpleLight* const LightComponent::GetSceneLightsNoShadowPtr()
 {

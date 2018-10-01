@@ -22,7 +22,9 @@ float4 main(PixelInputType pixel) : SV_TARGET
 
 		if (distSquared >= sceneLightNoShadow.m_range * sceneLightNoShadow.m_range)
 		{
-				return CaculateBRDFLighting(position, normal, kd, float4(ksAndNs.xyz, 1.0f), ksAndNs.w, cameraPosition.xyz,
+				float4 shadowLightColor = previouslyUsedRT.Sample(textureSamplerWrap, uv);
+
+				return shadowLightColor + CaculateBRDFLighting(position, normal, kd, float4(ksAndNs.xyz, 1.0f), ksAndNs.w, cameraPosition.xyz,
 						sceneLightNoShadow.m_position, float4(sceneLightNoShadow.m_Iambient, 1.0f),
 						float4(sceneLightNoShadow.m_Idiffuse, 1.0f));
 		}

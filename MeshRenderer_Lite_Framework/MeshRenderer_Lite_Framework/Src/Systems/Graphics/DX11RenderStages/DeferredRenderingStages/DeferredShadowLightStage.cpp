@@ -21,7 +21,13 @@ DeferredShadowLightStage::~DeferredShadowLightStage()
 void DeferredShadowLightStage::PreRender()
 {
 		//bind main render target and clear it
-		m_renderData.m_pImmediateContext->OMSetRenderTargets(1, &m_renderData.m_pBackBufferRenderTargetView, nullptr); //No depth testing required
+		m_renderer->BindRenderTarget(m_renderData.m_MainRenderTargets[m_renderData.m_currentMainRTindex], false);//No depth testing 
+		m_renderer->ClearRenderTarget(m_renderData.m_MainRenderTargets[m_renderData.m_currentMainRTindex], m_renderData.m_clearColor);
+
+		m_renderer->BindTextureShaderResource(ObjectType::PIXEL_SHADER, 24, 1, m_renderData.m_MainRenderTargets[!m_renderData.m_currentMainRTindex]);
+
+		//bind main render target and clear it
+		//m_renderData.m_pImmediateContext->OMSetRenderTargets(1, &m_renderData.m_pBackBufferRenderTargetView, nullptr); //No depth testing required
 		m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateDefault);
 		m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		m_renderer->EnableAlphaBlending();
@@ -58,5 +64,5 @@ void DeferredShadowLightStage::Render(HandleDictionaryVec& graphicsResources, co
 
 void DeferredShadowLightStage::PostRender()
 {
-
+		m_renderData.m_currentMainRTindex = !m_renderData.m_currentMainRTindex;
 }

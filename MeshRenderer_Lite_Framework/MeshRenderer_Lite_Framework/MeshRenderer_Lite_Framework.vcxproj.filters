@@ -156,6 +156,9 @@
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\IRenderStage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\FinalBackBufferStage\FinalBackBufferStage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Utilities\precompiled.h">
@@ -327,6 +330,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\DeferredSimpleLightStage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\FinalBackBufferStage\FinalBackBufferStage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

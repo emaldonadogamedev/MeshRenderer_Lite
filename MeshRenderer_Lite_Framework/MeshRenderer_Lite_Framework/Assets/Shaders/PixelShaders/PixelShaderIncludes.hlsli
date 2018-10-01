@@ -36,6 +36,8 @@ Texture2D normalsRT : register(t21);
 Texture2D	diffuseRT : register(t22);
 Texture2D specularAndNsRT : register(t23);
 
+Texture2D previouslyUsedRT : register(t24);
+
 //Scene Lights
 
  //-- light types

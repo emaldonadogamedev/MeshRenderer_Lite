@@ -83,6 +83,7 @@
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\DeferredShadowLightStage.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\DeferredSimpleLightStage.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\GBufferStage.cpp" />
+    <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\FinalBackBufferStage\FinalBackBufferStage.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\ForwardDebugStage\PathWalkDebugStage.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\ForwardRenderStage\ForwardRenderStage.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\IconDebugStage\IconDebugStage.cpp" />
@@ -137,6 +138,7 @@
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\DeferredShadowLightStage.h" />
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\DeferredSimpleLightStage.h" />
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\GBufferStage.h" />
+    <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\FinalBackBufferStage\FinalBackBufferStage.h" />
     <ClInclude Include="Src\Systems\Graphics\ModelClasses\MeshMaterial\MeshEntryMaterial.h" />
     <ClInclude Include="Src\Systems\ISystem.h" />
     <ClInclude Include="Src\Systems\Graphics\BufferClasses\ConstantBuffers.h" />

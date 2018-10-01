@@ -21,12 +21,13 @@
 #include <Systems/Graphics/Components/SimpleCloth/SimpleClothComponent.h>
 #include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
 #include <Systems/Graphics/DX11Renderer/DX11RendererData.h>
-#include <Systems/Graphics/DX11RenderStages/ForwardDebugStage/PathWalkDebugStage.h>
 #include <Systems/Graphics/DX11RenderStages/ForwardRenderStage/ForwardRenderStage.h>
 #include <Systems/Graphics/DX11RenderStages/DeferredRenderingStages/AmbientLightStage.h>
 #include <Systems/Graphics/DX11RenderStages/DeferredRenderingStages/DeferredShadowLightStage.h>
 #include <Systems/Graphics/DX11RenderStages/DeferredRenderingStages/DeferredSimpleLightStage.h>
 #include <Systems/Graphics/DX11RenderStages/DeferredRenderingStages/GBufferStage.h>
+#include <Systems/Graphics/DX11RenderStages/ForwardDebugStage/PathWalkDebugStage.h>
+#include <Systems/Graphics/DX11RenderStages/FinalBackBufferStage/FinalBackBufferStage.h>
 #include <Systems/Graphics/DX11RenderStages/ShadowMapStage/ShadowMapStage.h>
 #include <Systems/Graphics/DX11RenderStages/UI Stage/ImGuiStage.h>
 #include <Systems/Graphics/ModelClasses/Model/Model.h>
@@ -471,12 +472,14 @@ void GraphicsSystem::AddRenderStages()
 	const Model* const sphereModel = GetModel("sphere");
 	AddRenderStageHelper(new AmbientLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
 	AddRenderStageHelper(new DeferredShadowLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
-	AddRenderStageHelper(new DeferredSimpleLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle(), 
-			sphereModel), false);
+	AddRenderStageHelper(new DeferredSimpleLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle(), sphereModel));
 
 	AddRenderStageHelper(new ForwardRenderStage(m_dx11Renderer.get(), &m_renderComponents), false);
 	AddRenderStageHelper(new PathWalkDebugStage(m_dx11Renderer.get(), &m_renderComponents), false);
 	AddRenderStageHelper(new ImGuiStage(m_dx11Renderer.get(), &m_renderComponents));
+
+	//COPY ALL OF THE RESULTS TO THE BACK BUFFER TO PRESENT THE FINAL FRAME
+	AddRenderStageHelper(new FinalBackBufferStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
 }
 
 void GraphicsSystem::AddRenderStageHelper(IRenderStage* const renderStage, const bool isActive)
@@ -534,6 +537,7 @@ void GraphicsSystem::LoadBasicShaders()
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "DeferredAmbientStagePS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "DeferredShadowLightStagePS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "DeferredSimpleLightStagePS");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "CopyRenderTarget");
 }
 
 void GraphicsSystem::LoadBasicShaderHelper(ObjectHandle& shaderHandle, const ObjectType shaderType, const std::string & fileName, const std::string & fileExtension)

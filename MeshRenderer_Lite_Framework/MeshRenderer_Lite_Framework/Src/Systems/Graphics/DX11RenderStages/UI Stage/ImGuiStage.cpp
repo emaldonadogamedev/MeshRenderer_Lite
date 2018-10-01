@@ -27,6 +27,9 @@ ImGuiStage::~ImGuiStage()
 
 void ImGuiStage::PreRender()
 {
+	//bind main render target and clear it
+	m_renderer->BindRenderTarget(m_renderData.m_MainRenderTargets[m_renderData.m_currentMainRTindex], true);
+
 	m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateImgui);
 	m_renderer->DisableAlphaBlending();
 }
@@ -137,6 +140,7 @@ void ImGuiStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 
 void ImGuiStage::PostRender()
 {
+		m_renderData.m_currentMainRTindex = !m_renderData.m_currentMainRTindex;
 }
 
 void ImGuiStage::ShowGraphicsSettings()

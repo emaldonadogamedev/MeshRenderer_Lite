@@ -25,9 +25,16 @@ ForwardRenderStage::~ForwardRenderStage()
 void ForwardRenderStage::PreRender()
 {
 	//bind main render target and clear it
-	m_renderData.m_pImmediateContext->OMSetRenderTargets(1, &m_renderData.m_pBackBufferRenderTargetView, m_renderData.m_DepthStencilView);
-	m_renderData.m_pImmediateContext->ClearRenderTargetView(m_renderData.m_pBackBufferRenderTargetView, m_renderData.m_clearColor.m128_f32);
-	m_renderData.m_pImmediateContext->ClearDepthStencilView(m_renderData.m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+	m_renderer->BindRenderTarget(m_renderData.m_MainRenderTargets[m_renderData.m_currentMainRTindex], true);//No depth testing 
+	m_renderer->ClearRenderTarget(m_renderData.m_MainRenderTargets[m_renderData.m_currentMainRTindex], m_renderData.m_clearColor);
+
+	//Bind previously used main RT as a shader resource
+	m_renderer->BindTextureShaderResource(ObjectType::PIXEL_SHADER, 24, 1, m_renderData.m_MainRenderTargets[!m_renderData.m_currentMainRTindex]);
+
+	//bind main render target and clear it
+	//m_renderData.m_pImmediateContext->OMSetRenderTargets(1, &m_renderData.m_pBackBufferRenderTargetView, m_renderData.m_DepthStencilView);
+	//m_renderData.m_pImmediateContext->ClearRenderTargetView(m_renderData.m_pBackBufferRenderTargetView, m_renderData.m_clearColor.m128_f32);
+	//m_renderData.m_pImmediateContext->ClearDepthStencilView(m_renderData.m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 	m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_currentRasterState);
 	m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	m_renderer->EnableAlphaBlending();

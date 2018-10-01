@@ -17,5 +17,5 @@ protected:
 	std::unique_ptr<GameObject> testLight;
 	std::unique_ptr<GameObject> testLight2;
 
-	std::unique_ptr<GameObject> testMiniLights[16];
+	std::unique_ptr<GameObject> testMiniLights[12];
 };

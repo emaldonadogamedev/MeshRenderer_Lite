@@ -62,13 +62,13 @@ struct RenderTarget : TextureObject
 	ID3D11RenderTargetView* rtv = nullptr;
 	DataFormat format;
 
-	//Associated depth stencil
+	//Associated depth/stencil buffer
 	ID3D11DepthStencilView* depthStencilView = nullptr;
 	ID3D11Texture2D* depthBuffer = nullptr;
 
 	int width = 0, height = 0;
 
-	float GetAspectRatio() const 
+	float GetAspectRatio() const
 	{
 			return float(width) / float(height);
 	}

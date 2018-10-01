@@ -32,7 +32,7 @@ public:
 	ID3D11RenderTargetView* m_pGbufferRTVs[(int)GBufferRTType::COUNT] = { nullptr };
 
 	ObjectHandle m_MainRenderTargets[2] = {};
-	bool m_useAlternaterMainRT = false;
+	bool m_currentMainRTindex = false;
 
 	ID3D11Texture2D* m_DepthStencilBuffer = nullptr;
 	ID3D11DepthStencilView* m_DepthStencilView = nullptr;

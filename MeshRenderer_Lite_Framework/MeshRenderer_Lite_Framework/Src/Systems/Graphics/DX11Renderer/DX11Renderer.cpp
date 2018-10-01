@@ -513,11 +513,12 @@ void DX11Renderer::CreateRenderTarget(ObjectHandle& rt, const int W, const int H
 	}
 }
 
-void DX11Renderer::BindRenderTarget(const ObjectHandle& rt)
+void DX11Renderer::BindRenderTarget(const ObjectHandle& rt, const bool useDepthMap)
 {
 	if (rt && rt.GetType() == ObjectType::RENDER_TARGET) {
 		const auto& renderTarget = m_renderData->renderTargets[*rt];
-		m_renderData->m_pImmediateContext->OMSetRenderTargets(1, &renderTarget.rtv, renderTarget.depthStencilView);
+		m_renderData->m_pImmediateContext->OMSetRenderTargets(1, &renderTarget.rtv, 
+				useDepthMap ? renderTarget.depthStencilView : nullptr);
 	}
 }
 
@@ -1087,7 +1088,7 @@ bool DX11Renderer::InitializeD3D(const int width, const int height, HWND hwnd)
 	bool result = InitializeSwapChain(width, height, hwnd);
 	result &= InitializeRasterizerStates();
 	result &= InitializeBlendStates();
-	result &= InitializeTextureSamplers();
+	//result &= InitializeTextureSamplers();
 
 	result &= ResizeBuffers(width, height);
 
@@ -1427,14 +1428,14 @@ bool DX11Renderer::ResizeBuffers(const int width, const int height)
 	for (unsigned char i = 0; i < (unsigned char)DX11RendererData::GBufferRTType::COUNT; ++i)
 	{
 			auto& handle = m_renderData->m_GBufferObjHandles[i];
-			CreateRenderTarget(handle, width, height, DataFormat::FLOAT4, false);
+			CreateRenderTarget(handle, width, height, DataFormat::FLOAT4, true);
 			m_renderData->m_pGbufferRTVs[i] = m_renderData->renderTargets[*(handle)].rtv;
 	}
 
 	//Create the 2 main render targets
 	for (char i = 0; i < 2; ++i)
 	{
-			CreateRenderTarget(m_renderData->m_MainRenderTargets[i], width, height, DataFormat::FLOAT4, false);
+			CreateRenderTarget(m_renderData->m_MainRenderTargets[i], width, height, DataFormat::FLOAT4, true);
 	}
 
 	//BIND RENDER TARGET VIEW

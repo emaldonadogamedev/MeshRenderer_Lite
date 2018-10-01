@@ -26,7 +26,14 @@ DeferredSimpleLightStage::~DeferredSimpleLightStage()
 void DeferredSimpleLightStage::PreRender()
 {
 		//bind main render target and clear it
-		m_renderData.m_pImmediateContext->OMSetRenderTargets(1, &m_renderData.m_pBackBufferRenderTargetView, nullptr); //No depth testing required for now
+		m_renderer->BindRenderTarget(m_renderData.m_MainRenderTargets[m_renderData.m_currentMainRTindex], false);//No depth testing 
+		m_renderer->ClearRenderTarget(m_renderData.m_MainRenderTargets[m_renderData.m_currentMainRTindex], m_renderData.m_clearColor);
+
+		//Bind previously used main RT as a shader resource
+		m_renderer->BindTextureShaderResource(ObjectType::PIXEL_SHADER, 24, 1, m_renderData.m_MainRenderTargets[!m_renderData.m_currentMainRTindex]);
+
+		//bind main render target and clear it
+		//m_renderData.m_pImmediateContext->OMSetRenderTargets(1, &m_renderData.m_pBackBufferRenderTargetView, nullptr); //No depth testing required for now
 		//m_renderData.m_pImmediateContext->ClearRenderTargetView(m_renderData.m_pMainRenderTargetView, m_renderData.m_clearColor.m128_f32);
 		m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateSolCullBack); //We're drawing spheres
 		m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -90,5 +97,5 @@ void DeferredSimpleLightStage::Render(HandleDictionaryVec& graphicsResources, co
 
 void DeferredSimpleLightStage::PostRender()
 {
-
+		m_renderData.m_currentMainRTindex = !m_renderData.m_currentMainRTindex;
 }

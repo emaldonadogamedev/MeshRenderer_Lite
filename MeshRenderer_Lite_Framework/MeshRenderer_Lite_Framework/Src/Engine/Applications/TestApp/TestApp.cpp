@@ -26,7 +26,9 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 {
 	if (IApplication::Initialize(hInstance)) {
 		testObj = std::make_unique<GameObject>();
-		testObj->AddComponent(new Transform(testObj.get()));
+		auto transform = new Transform(testObj.get());
+		testObj->AddComponent(transform);
+		transform->SetScale(12, 12, 12);
 		ModelComponent* test3DComp = new ModelComponent(testObj.get());
 		auto graphicsSystem = static_cast<GraphicsSystem*>(GetSystem(SystemType::ST_GRAPHICS));
 		auto gameObjSystem = static_cast<GameObjectSystem*>(GetSystem(SystemType::ST_GAME_OBJECT_SYSTEM));
@@ -62,7 +64,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 
 		//test light 1
 		testLight = std::make_unique<GameObject>();
-		auto transform = new Transform(testLight.get());
+		transform = new Transform(testLight.get());
 		transform->SetPositionn(DirectX::XMVectorSet(2.8f, 3.f, 0.f, 1.f));
 		testLight->AddComponent(transform);
 		gameObjSystem->AddComponent(transform);
@@ -97,7 +99,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		test3DComp = new ModelComponent(testFloor.get());
 		testFloor->AddComponent(test3DComp);
 		m_graphicsSystem->AddComponent(test3DComp);
-		auto model2 = graphicsSystem->GetModel("sphere");
+		auto model2 = graphicsSystem->GetModel("box");
 		model2->m_meshEntryList[0].meshMaterial.SetToPresetMaterial(PredefinedMaterials::Emerald);
 		model2->SetDiffTextureFileName("crate_1.jpg", 0);
 		model2->SetNormalMapFileName("Standard_red_pxr256_normal.png", 0);
@@ -105,7 +107,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		test3DComp->SetModel(model2);
 
 		//Many mini lights!
-		for (int i = 0; i < 16; i++)
+		for (int i = 0; i < 12; i++)
 		{
 				testMiniLights[i] = std::make_unique<GameObject>();
 

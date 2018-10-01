@@ -23,7 +23,7 @@ float Dterm(in float3 N, in float3 H, in float roughness)
 		return term1 * term2;
 }
 
-float4 CaculateBRDFLighting(float3 vertexPos, float3 vertexNormal, float4 Kd, float4 Ks, float ns, float3 cameraPos, float3 lightPos, float4 Ia, float4 Id)
+float4 CaculateBRDFLighting(float3 vertexPos, float3 vertexNormal, float4 Kd, float4 Ks, float ns, float3 cameraPos, float3 lightPos, float4 Ia, float4 Id, bool isDeferred = true)
 {
 		const float3 viewVec = normalize(cameraPos - vertexPos);
 		const float vDotN = max(dot(viewVec, vertexNormal), 0);
@@ -32,7 +32,7 @@ float4 CaculateBRDFLighting(float3 vertexPos, float3 vertexNormal, float4 Kd, fl
 		float4 diffuse, BRDF;
 
 		//Ambient term
-		float4 finalColor = Ia * Kd;
+		float4 finalColor = isDeferred ? float4(0, 0, 0, 0) : Ia * Kd;
 
 		lightVec = (lightPos - vertexPos);
 		float lightVecLength = length(lightVec);
