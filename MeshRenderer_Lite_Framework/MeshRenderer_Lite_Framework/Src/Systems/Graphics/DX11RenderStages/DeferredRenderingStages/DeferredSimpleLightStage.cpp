@@ -26,7 +26,7 @@ DeferredSimpleLightStage::~DeferredSimpleLightStage()
 void DeferredSimpleLightStage::PreRender()
 {
 		//bind main render target and clear it
-		m_renderData.m_pImmediateContext->OMSetRenderTargets(1, &m_renderData.m_pMainRenderTargetView, nullptr); //No depth testing required for now
+		m_renderData.m_pImmediateContext->OMSetRenderTargets(1, &m_renderData.m_pBackBufferRenderTargetView, nullptr); //No depth testing required for now
 		//m_renderData.m_pImmediateContext->ClearRenderTargetView(m_renderData.m_pMainRenderTargetView, m_renderData.m_clearColor.m128_f32);
 		m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateSolCullBack); //We're drawing spheres
 		m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -37,9 +37,6 @@ void DeferredSimpleLightStage::PreRender()
 		{
 				m_renderer->BindTextureShaderResource(ObjectType::PIXEL_SHADER, textureId, 1, m_renderData.m_GBufferObjHandles[rtHandle]);
 		}
-
-		D3D11_VIEWPORT viewport{ 0,0,m_renderer->GetRenderTargetWidth(), m_renderer->GetRenderTargetHeight(), 0, 1.0f };
-		m_renderData.m_pImmediateContext->RSSetViewports(1, &viewport);
 }
 
 void DeferredSimpleLightStage::Render(HandleDictionaryVec& graphicsResources, const float dt)

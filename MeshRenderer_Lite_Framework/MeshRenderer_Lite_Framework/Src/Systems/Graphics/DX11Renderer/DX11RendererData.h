@@ -14,12 +14,8 @@ public:
 	ID3D11DeviceContext* m_pImmediateContext = nullptr;
 	IDXGISwapChain* m_pSwapChain = nullptr;
 
-	ID3D11Texture2D* m_DepthStencilBuffer = nullptr;
-	ID3D11DepthStencilView* m_DepthStencilView = nullptr;
-
 	//Pointer to the main render target stored on the GPU
-	ID3D11RenderTargetView* m_pMainRenderTargetView = nullptr;
-	XMVECTOR m_clearColor = { 0,0.3f,0,1 };
+	ID3D11RenderTargetView* m_pBackBufferRenderTargetView = nullptr;
 
 	//deferred rendering render targets
 	enum class GBufferRTType : unsigned  char
@@ -34,6 +30,13 @@ public:
 
 	ObjectHandle m_GBufferObjHandles[(int)GBufferRTType::COUNT] = { };
 	ID3D11RenderTargetView* m_pGbufferRTVs[(int)GBufferRTType::COUNT] = { nullptr };
+
+	ObjectHandle m_MainRenderTargets[2] = {};
+	bool m_useAlternaterMainRT = false;
+
+	ID3D11Texture2D* m_DepthStencilBuffer = nullptr;
+	ID3D11DepthStencilView* m_DepthStencilView = nullptr;
+	XMVECTOR m_clearColor = { 0,0.3f,0,1 };
 
 	D3D_DRIVER_TYPE m_DriverType;
 	D3D_FEATURE_LEVEL m_FeatureLevel;

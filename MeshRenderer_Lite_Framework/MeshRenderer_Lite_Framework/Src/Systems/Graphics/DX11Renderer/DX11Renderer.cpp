@@ -114,7 +114,7 @@ void DX11Renderer::ReleaseData()
 	if (m_renderData->m_pImmediateContext)
 		m_renderData->m_pImmediateContext->ClearState();
 
-	SafeRelease(m_renderData->m_pMainRenderTargetView);
+	SafeRelease(m_renderData->m_pBackBufferRenderTargetView);
 	SafeRelease(m_renderData->m_pSwapChain);
 	SafeRelease(m_renderData->m_pImmediateContext);
 	SafeRelease(m_renderData->m_pDevice);
@@ -122,7 +122,7 @@ void DX11Renderer::ReleaseData()
 
 void DX11Renderer::ClearMainBuffer() const
 {
-	m_renderData->m_pImmediateContext->ClearRenderTargetView(m_renderData->m_pMainRenderTargetView, m_renderData->m_clearColor.m128_f32);
+	m_renderData->m_pImmediateContext->ClearRenderTargetView(m_renderData->m_pBackBufferRenderTargetView, m_renderData->m_clearColor.m128_f32);
 	m_renderData->m_pImmediateContext->ClearDepthStencilView(m_renderData->m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 }
 
@@ -1084,16 +1084,14 @@ int DX11Renderer::GetRenderTargetHeight() const
 
 bool DX11Renderer::InitializeD3D(const int width, const int height, HWND hwnd)
 {
-	InitializeSwapChain(width, height, hwnd);
-	InitializeRasterizerStates();
-	InitializeBlendStates();
+	bool result = InitializeSwapChain(width, height, hwnd);
+	result &= InitializeRasterizerStates();
+	result &= InitializeBlendStates();
+	result &= InitializeTextureSamplers();
 
-	ResizeBuffers(width, height);
+	result &= ResizeBuffers(width, height);
 
-	m_renderTargetWidth = width;
-	m_renderTargetHeight = height;
-
-	return true;
+	return result;
 }
 
 bool DX11Renderer::InitializeSwapChain(const int width, const int height, HWND hwnd)
@@ -1334,6 +1332,15 @@ bool DX11Renderer::InitializeTextureSamplers()
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
 	HR(m_renderData->m_pDevice->CreateSamplerState(&samplerDesc, &m_renderData->m_pBorderSamplerState));
 
+	static ID3D11SamplerState* const samplerStates[4] = 
+	{
+		m_renderData->m_pWrapSamplerState,
+		m_renderData->m_pMirrorSamplerState,
+		m_renderData->m_pClampSamplerState,
+		m_renderData->m_pBorderSamplerState
+	};
+	m_renderData->m_pImmediateContext->PSSetSamplers(0, 4, samplerStates);
+
 	return true;
 }
 
@@ -1375,7 +1382,7 @@ bool DX11Renderer::ResizeBuffers(const int width, const int height)
 
 	//////////////////////////////////////////////////////////////////////////
 	// Resize main back buffer
-	SafeRelease(m_renderData->m_pMainRenderTargetView);
+	SafeRelease(m_renderData->m_pBackBufferRenderTargetView);
 	HR(m_renderData->m_pSwapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0));
 
 	// Get buffer and create a render-target-view.
@@ -1383,7 +1390,7 @@ bool DX11Renderer::ResizeBuffers(const int width, const int height)
 	HR(m_renderData->m_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),(void**)&pBuffer));
 	// Perform error handling here!
 
-	HR(m_renderData->m_pDevice->CreateRenderTargetView(pBuffer, nullptr, &(m_renderData->m_pMainRenderTargetView)));
+	HR(m_renderData->m_pDevice->CreateRenderTargetView(pBuffer, nullptr, &(m_renderData->m_pBackBufferRenderTargetView)));
 	// Perform error handling here!
 	pBuffer->Release();
 
@@ -1424,8 +1431,14 @@ bool DX11Renderer::ResizeBuffers(const int width, const int height)
 			m_renderData->m_pGbufferRTVs[i] = m_renderData->renderTargets[*(handle)].rtv;
 	}
 
+	//Create the 2 main render targets
+	for (char i = 0; i < 2; ++i)
+	{
+			CreateRenderTarget(m_renderData->m_MainRenderTargets[i], width, height, DataFormat::FLOAT4, false);
+	}
+
 	//BIND RENDER TARGET VIEW
-	m_renderData->m_pImmediateContext->OMSetRenderTargets(1, &m_renderData->m_pMainRenderTargetView, m_renderData->m_DepthStencilView);
+	m_renderData->m_pImmediateContext->OMSetRenderTargets(1, &m_renderData->m_pBackBufferRenderTargetView, m_renderData->m_DepthStencilView);
 
 	// Set up the viewport.
 	m_renderData->m_mainViewport.Width = width;

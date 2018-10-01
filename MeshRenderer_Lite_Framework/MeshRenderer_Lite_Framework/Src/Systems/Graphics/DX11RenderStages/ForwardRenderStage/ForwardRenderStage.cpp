@@ -25,20 +25,12 @@ ForwardRenderStage::~ForwardRenderStage()
 void ForwardRenderStage::PreRender()
 {
 	//bind main render target and clear it
-	m_renderData.m_pImmediateContext->OMSetRenderTargets(1, &m_renderData.m_pMainRenderTargetView, m_renderData.m_DepthStencilView);
-	m_renderData.m_pImmediateContext->ClearRenderTargetView(m_renderData.m_pMainRenderTargetView, m_renderData.m_clearColor.m128_f32);
+	m_renderData.m_pImmediateContext->OMSetRenderTargets(1, &m_renderData.m_pBackBufferRenderTargetView, m_renderData.m_DepthStencilView);
+	m_renderData.m_pImmediateContext->ClearRenderTargetView(m_renderData.m_pBackBufferRenderTargetView, m_renderData.m_clearColor.m128_f32);
 	m_renderData.m_pImmediateContext->ClearDepthStencilView(m_renderData.m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 	m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_currentRasterState);
 	m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	m_renderer->EnableAlphaBlending();
-
-	static ID3D11SamplerState* const samplerStates[4] = {
-		m_renderData.m_pWrapSamplerState,
-		m_renderData.m_pMirrorSamplerState,
-		m_renderData.m_pClampSamplerState,
-		m_renderData.m_pBorderSamplerState
-	};
-	m_renderData.m_pImmediateContext->PSSetSamplers(0, 4, samplerStates);
 
 	//Bind all of the shadow maps
 	const auto& lightComponents = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_LIGHT_WITH_SHADOW];
