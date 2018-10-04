@@ -14,20 +14,21 @@ float4 main(PixelInputType pixel) : SV_TARGET
 		float4 kd = diffuseRT.Sample(textureSamplerWrap, uv);
 		float4 ksAndNs = specularAndNsRT.Sample(textureSamplerWrap, uv);
 
+		return CaculateBRDFLighting(position, normal, kd, float4(ksAndNs.xyz, 1.0f), ksAndNs.w, cameraPosition.xyz,
+				sceneLightNoShadow.m_position, float4(sceneLightNoShadow.m_Iambient, 1.0f),
+				float4(sceneLightNoShadow.m_Idiffuse, 1.0f));
+
 		const float deltaX = sceneLightNoShadow.m_position.x - position.x;
 		const float deltaY = sceneLightNoShadow.m_position.y - position.y;
 		const float deltaZ = sceneLightNoShadow.m_position.z - position.z;
 
 		const float distSquared = (deltaX * deltaX) + (deltaY * deltaY) + (deltaZ * deltaZ);
 
-		if (distSquared >= sceneLightNoShadow.m_range * sceneLightNoShadow.m_range)
+		if (distSquared < sceneLightNoShadow.m_range * sceneLightNoShadow.m_range)
 		{
-				float4 shadowLightColor = previouslyUsedRT.Sample(textureSamplerWrap, uv);
-
-				return shadowLightColor + CaculateBRDFLighting(position, normal, kd, float4(ksAndNs.xyz, 1.0f), ksAndNs.w, cameraPosition.xyz,
+				return CaculateBRDFLighting(position, normal, kd, float4(ksAndNs.xyz, 1.0f), ksAndNs.w, cameraPosition.xyz,
 						sceneLightNoShadow.m_position, float4(sceneLightNoShadow.m_Iambient, 1.0f),
 						float4(sceneLightNoShadow.m_Idiffuse, 1.0f));
 		}
-
-		return float4(1, 0, 0, 1);
+		return float4(0, 0, 0, 1);
 }

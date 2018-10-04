@@ -11,7 +11,7 @@ float4 main(PixelInputType pixel) : SV_TARGET
 		float4 kd = diffuseRT.Sample(textureSamplerWrap, uv);
 		float4 ksAndNs = specularAndNsRT.Sample(textureSamplerWrap, uv);
 
-		float4 ambient = previouslyUsedRT.Sample(textureSamplerWrap, uv);
+		//float4 ambient = previouslyUsedRT.Sample(textureSamplerWrap, uv);
 		
 		float4 result = float4(0, 0, 0, 1.0f);
 
@@ -21,7 +21,7 @@ float4 main(PixelInputType pixel) : SV_TARGET
 				{
 						if (sceneLights[i].isActive)
 						{
-								result += ambient + CaculateBRDFLighting(position, normal, kd, float4(ksAndNs.xyz, 1.0f), ksAndNs.w, cameraPosition.xyz,
+								result +=  CaculateBRDFLighting(position, normal, kd, float4(ksAndNs.xyz, 1.0f), ksAndNs.w, cameraPosition.xyz,
 										sceneLights[i].m_position, sceneLights[i].m_Iambient, sceneLights[i].m_Idiffuse);
 						}
 				}

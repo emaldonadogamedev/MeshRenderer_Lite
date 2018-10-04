@@ -6,6 +6,8 @@
 //stl includes
 #include <algorithm>
 #include <assert.h>
+#include <future>
+#include <thread>
 #include <chrono>
 #include <fstream>
 #include <iostream>
@@ -15,7 +17,6 @@
 #include <set>
 #include <stack>
 #include <string>
-#include <thread>
 #include <time.h>
 #include <tuple>
 #include <map>

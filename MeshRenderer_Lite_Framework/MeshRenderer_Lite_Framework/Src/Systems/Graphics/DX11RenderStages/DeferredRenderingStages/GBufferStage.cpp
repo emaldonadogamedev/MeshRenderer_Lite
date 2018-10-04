@@ -31,7 +31,7 @@ void GBufferStage::PreRender()
 		m_renderData.m_pImmediateContext->ClearDepthStencilView(m_renderData.m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 		m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateDefault);
-		m_renderer->DisableAlphaBlending();
+		m_renderer->DisableColorBlending();
 }
 
 void GBufferStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
@@ -120,8 +120,8 @@ void GBufferStage::Render(HandleDictionaryVec& graphicsResources, const float dt
 								{
 										const auto it_np = textures2D.find(meshEntry.normalMapName);
 										if (it_np != textures2D.end()) {
-												const auto& diffTextSRV = m_renderData.textures2D[*it_np->second].srv;
-												m_renderData.m_pImmediateContext->PSSetShaderResources(2, 1, &diffTextSRV);
+												const auto& normalMapTextSRV = m_renderData.textures2D[*it_np->second].srv;
+												m_renderData.m_pImmediateContext->PSSetShaderResources(2, 1, &normalMapTextSRV);
 										}
 										else {
 												if (const auto newNormalMap = m_renderer->GetTexture2D("../MeshRenderer_Lite_Framework/Assets/Textures/" + meshEntry.normalMapName)) {

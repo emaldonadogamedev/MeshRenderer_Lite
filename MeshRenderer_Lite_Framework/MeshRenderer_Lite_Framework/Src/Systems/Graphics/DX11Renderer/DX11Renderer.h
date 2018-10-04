@@ -92,9 +92,10 @@ public:
 	//Debug
 	bool IsDebugInfoEnabled() const;
 	void SetDebugInfoEnabled(const bool v);
-	//Alpha blending
+	//Color blending
+	void DisableColorBlending();
 	void EnableAlphaBlending();
-	void DisableAlphaBlending();
+	void EnableAdditiveBlending();
 
 	int GetRenderTargetWidth() const;
 	int GetRenderTargetHeight() const;

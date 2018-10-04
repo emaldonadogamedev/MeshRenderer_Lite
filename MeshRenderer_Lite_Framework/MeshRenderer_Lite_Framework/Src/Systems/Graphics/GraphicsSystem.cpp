@@ -8,6 +8,7 @@
 #include <assimp/matrix4x4.h>
 
 #include <Engine/Applications/IApplication/IApplication.h>
+#include <Engine/GameClock/GameClock.h>
 #include <Imgui/imgui.h>
 #include <Imgui/imgui_impl_dx11.h>
 #include <Systems/Core/Components/Transform/Transform.h>
@@ -81,20 +82,6 @@ void GraphicsSystem::Update(const float dt)
 
 	//TEST - Current camera update
 	TestUpdateCamera(dt);
-
-	//iterate through all render stages(Including UI)
-	for (const auto renderStage : m_renderStages)
-	{
-			if (renderStage->GetIsActive())
-			{
-					renderStage->PreRender();
-					renderStage->Render(m_resources, dt);
-					renderStage->PostRender();
-			}
-	}
-
-	//Finally present image to the screen
-	m_dx11Renderer->SwapBuffers();
 }
 
 void GraphicsSystem::UpdateModelComponents(const float dt)
@@ -443,6 +430,25 @@ void GraphicsSystem::AddComponent(IComponent* component)
 	}
 }
 
+void GraphicsSystem::RunRenderPasses()
+{
+		float dt = m_engineOwner->GetClock().GetDeltaTime();
+
+		//iterate through all render stages(Including UI)
+		for (const auto renderStage : m_renderStages)
+		{
+				if (renderStage->GetIsActive())
+				{
+						renderStage->PreRender();
+						renderStage->Render(m_resources, dt);
+						renderStage->PostRender();
+				}
+		}
+
+		//Finally present image to the screen
+		m_dx11Renderer->SwapBuffers();
+}
+
 DX11Renderer* GraphicsSystem::GetRenderer() const
 {
 	return m_dx11Renderer.get();
@@ -472,7 +478,7 @@ void GraphicsSystem::AddRenderStages()
 	const Model* const sphereModel = GetModel("sphere");
 	AddRenderStageHelper(new AmbientLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
 	AddRenderStageHelper(new DeferredShadowLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
-	AddRenderStageHelper(new DeferredSimpleLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle(), sphereModel));
+	AddRenderStageHelper(new DeferredSimpleLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle(), quadModel));
 
 	AddRenderStageHelper(new ForwardRenderStage(m_dx11Renderer.get(), &m_renderComponents), false);
 	AddRenderStageHelper(new PathWalkDebugStage(m_dx11Renderer.get(), &m_renderComponents), false);

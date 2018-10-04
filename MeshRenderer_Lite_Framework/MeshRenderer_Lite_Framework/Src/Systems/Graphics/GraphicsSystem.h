@@ -32,6 +32,8 @@ public:
 	virtual void ReceiveMessage(const IMessage& msg) override;
 	virtual void AddComponent(IComponent* component) override;
 
+	void RunRenderPasses();
+
 	void Resize(const int w, const int h);
 
 	//Getters

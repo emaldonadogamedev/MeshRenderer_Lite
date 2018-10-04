@@ -57,7 +57,7 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 
 	if (m_renderer->IsDebugInfoEnabled()) {
 		handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("ShowDebugInfoPS");
-		m_renderer->DisableAlphaBlending();
+		m_renderer->DisableColorBlending();
 	}
 	else if (m_renderer->IsLightingEnabled()) {
 		handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("phongLighting");

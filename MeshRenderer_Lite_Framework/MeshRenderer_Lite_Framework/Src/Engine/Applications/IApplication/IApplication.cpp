@@ -68,6 +68,8 @@ bool IApplication::Initialize(HINSTANCE hInstance)
 
 void IApplication::Run(void)
 {
+		using namespace std::chrono_literals;
+
 	MSG msg;
 	ZeroMemory(&msg, sizeof(MSG));
 
@@ -93,12 +95,42 @@ void IApplication::Run(void)
 		if (!m_isPaused)
 		{
 			CalculateFrameTime();
+
+			//update all systems
 			const float dt = m_clock->GetDeltaTime();
 
 			for (const auto& it : m_systems) 
 			{
 				it->Update(dt);
 			}
+
+#define SINGLE_THREADED_RENDERING 1
+
+#if SINGLE_THREADED_RENDERING
+			m_graphicsSystem->RunRenderPasses();
+#else //MULTITHREADED BROKEN
+			std::packaged_task<void()> renderTask([this]
+			{
+					m_graphicsSystem->RunRenderPasses();
+			});
+			
+			// Wait for render thread to be done
+			if (renderTask.valid())
+			{
+					auto future = renderTask.get_future();
+			
+					// Get thread status using wait_for as before.
+					auto status = std::future_status::timeout;
+					do {
+							status = future.wait_for(1ms);
+					} while (status == std::future_status::deferred);
+			}
+			
+			std::thread renderThread(std::move(renderTask));
+			if (renderThread.joinable())
+					renderThread.join();
+#endif
+
 #ifdef _DEBUG
 			//const int multiplier = (int)(dt < s_fps60);
 			//const int waitTimeMS = (int)((s_fps60 - dt) * 1000.0f);

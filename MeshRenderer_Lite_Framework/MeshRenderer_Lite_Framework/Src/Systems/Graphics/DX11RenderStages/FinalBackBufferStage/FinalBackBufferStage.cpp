@@ -22,7 +22,7 @@ void FinalBackBufferStage::PreRender()
 		m_renderData.m_pImmediateContext->ClearRenderTargetView(m_renderData.m_pBackBufferRenderTargetView, m_renderData.m_clearColor.m128_f32);
 		m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateDefault);
 		m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		m_renderer->DisableAlphaBlending();
+		m_renderer->DisableColorBlending();
 
 		m_renderData.m_pImmediateContext->RSSetViewports(1, &m_renderData.m_mainViewport);
 }
@@ -38,7 +38,7 @@ void FinalBackBufferStage::Render(HandleDictionaryVec& graphicsResources, const 
 		m_renderer->BindNullVertexBuffer(); //we create the geometry on the Vertex Shader
 		m_renderer->BindIndexBuffer(m_fsqIndexBuffer);
 
-		m_renderer->BindTextureShaderResource(ObjectType::PIXEL_SHADER, 24, 1, m_renderData.m_MainRenderTargets[!m_renderData.m_currentMainRTindex]);
+		m_renderer->BindTextureShaderResource(ObjectType::PIXEL_SHADER, 24, 1, m_renderData.m_MainRenderTargets[m_renderData.m_currentMainRTindex]);
 
 		m_renderer->DrawIndexed(6);
 }

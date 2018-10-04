@@ -25,19 +25,9 @@ DeferredSimpleLightStage::~DeferredSimpleLightStage()
 
 void DeferredSimpleLightStage::PreRender()
 {
-		//bind main render target and clear it
-		m_renderer->BindRenderTarget(m_renderData.m_MainRenderTargets[m_renderData.m_currentMainRTindex], false);//No depth testing 
-		m_renderer->ClearRenderTarget(m_renderData.m_MainRenderTargets[m_renderData.m_currentMainRTindex], m_renderData.m_clearColor);
-
-		//Bind previously used main RT as a shader resource
-		m_renderer->BindTextureShaderResource(ObjectType::PIXEL_SHADER, 24, 1, m_renderData.m_MainRenderTargets[!m_renderData.m_currentMainRTindex]);
-
-		//bind main render target and clear it
-		//m_renderData.m_pImmediateContext->OMSetRenderTargets(1, &m_renderData.m_pBackBufferRenderTargetView, nullptr); //No depth testing required for now
-		//m_renderData.m_pImmediateContext->ClearRenderTargetView(m_renderData.m_pMainRenderTargetView, m_renderData.m_clearColor.m128_f32);
 		m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateSolCullBack); //We're drawing spheres
 		m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		m_renderer->EnableAlphaBlending();
+		m_renderer->EnableAdditiveBlending();
 
 		//Bind the G-buffer render targets
 		for (char rtHandle = 0, textureId = 20; rtHandle < (char)DX11RendererData::GBufferRTType::COUNT; ++rtHandle, ++textureId)
@@ -48,14 +38,24 @@ void DeferredSimpleLightStage::PreRender()
 
 void DeferredSimpleLightStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 {
-		ObjectHandle handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("defaultVS");
+		//TODO!!!
+		//MAKE THIS FUNCTION USE ALL THE LIGHT'S RANGE AGAIN!!!
+		//THIS IS CURRENTLY USING A FULL-SCREEN QUAD FOR TESTING!!
+
+		//ObjectHandle handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("defaultVS");
+		ObjectHandle handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("FullScreenQuadVS");
 		m_renderer->BindVertexShader(handle);
 
 		handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("DeferredSimpleLightStagePS");
 		m_renderer->BindPixelShader(handle);
 
-		m_renderer->BindVertexBuffer(m_sphereModel->GetVBufferHandle(), sizeof(VertexAnimation));
+		//m_renderer->BindVertexBuffer(m_sphereModel->GetVBufferHandle(), sizeof(VertexAnimation));
+		m_renderer->BindNullVertexBuffer(); //we create the geometry on the Vertex Shader
 		m_renderer->BindIndexBuffer(m_sphereModel->GetIBufferHandle());
+
+		m_renderer->DrawIndexed(6);
+
+		return;
 
 		//forward render all of the spheres with light properties
 		const auto& lightComponents = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_LIGHT];
@@ -97,5 +97,5 @@ void DeferredSimpleLightStage::Render(HandleDictionaryVec& graphicsResources, co
 
 void DeferredSimpleLightStage::PostRender()
 {
-		m_renderData.m_currentMainRTindex = !m_renderData.m_currentMainRTindex;
+		//m_renderer->DisableColorBlending();
 }

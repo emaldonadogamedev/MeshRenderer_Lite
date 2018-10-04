@@ -3,7 +3,7 @@
 
 float4 main(PixelInputType pixel) : SV_TARGET
 {
-	float4 result = float4(0, 0, 0, 1.0f);
+	float4 result = float4(0,0,0,0);
 
 		for (unsigned int i = 0; i < s_maxLights; ++i)
 		{

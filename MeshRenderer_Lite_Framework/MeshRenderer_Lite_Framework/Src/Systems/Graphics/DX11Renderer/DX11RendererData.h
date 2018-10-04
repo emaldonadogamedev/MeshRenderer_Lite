@@ -57,7 +57,9 @@ public:
 	ID3D11InputLayout* m_pVSInputLayoutVertexAnimation = nullptr;
 
 	//Blend states
-	ID3D11BlendState* m_transparency = nullptr;
+	ID3D11BlendState* m_alphaBlending = nullptr;
+	ID3D11BlendState* m_additiveBlending = nullptr;
+
 
 	//Resource containers
 	std::vector<RenderTarget> renderTargets;

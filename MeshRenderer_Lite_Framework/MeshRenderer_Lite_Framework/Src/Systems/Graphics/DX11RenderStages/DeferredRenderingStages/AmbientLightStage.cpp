@@ -28,7 +28,7 @@ void AmbientLightStage::PreRender()
 		//m_renderData.m_pImmediateContext->ClearRenderTargetView(m_renderData.m_pBackBufferRenderTargetView, m_renderData.m_clearColor.m128_f32);
 		m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateDefault);
 		m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		m_renderer->DisableAlphaBlending();
+		m_renderer->DisableColorBlending();
 
 		m_renderData.m_pImmediateContext->RSSetViewports(1, &m_renderData.m_mainViewport);
 }
@@ -53,5 +53,4 @@ void AmbientLightStage::Render(HandleDictionaryVec& graphicsResources, const flo
 
 void AmbientLightStage::PostRender()
 {
-		m_renderData.m_currentMainRTindex = !m_renderData.m_currentMainRTindex;
 }
