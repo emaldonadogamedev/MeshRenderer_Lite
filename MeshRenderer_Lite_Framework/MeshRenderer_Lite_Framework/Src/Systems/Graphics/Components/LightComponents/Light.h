@@ -24,6 +24,11 @@ struct SimpleLight
 
 		XMFLOAT3 m_Idiffuse = XMFLOAT3(0.8f, 0.8f, 0.8f);
 		int isActive = 0;
+
+		float attConst = 1.0f;
+		float attLinear = 0.7f;
+		float attQuadratic = 1.8f;
+		float padding;
 };
 
 struct Light 

@@ -9,11 +9,9 @@
 #include<Systems/Graphics/DX11Renderer/DX11RendererData.h>
 #include<Systems/Graphics/ModelClasses/Model/Model.h>
 
-DeferredSimpleLightStage::DeferredSimpleLightStage(DX11Renderer* const renderer, RenderCompUmap* const gfxComponents, 
-		const ObjectHandle& fsqIndexBuffer, const Model* const sphereModel)
+DeferredSimpleLightStage::DeferredSimpleLightStage(DX11Renderer* const renderer, RenderCompUmap* const gfxComponents, const Model* const sphereModel)
 		:IRenderStage(renderer, gfxComponents)
-		,m_fsqIndexBuffer(fsqIndexBuffer)
-		,m_sphereModel(sphereModel)
+		,m_boxModel(sphereModel)
 {
 
 }
@@ -25,7 +23,7 @@ DeferredSimpleLightStage::~DeferredSimpleLightStage()
 
 void DeferredSimpleLightStage::PreRender()
 {
-		m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateSolCullBack); //We're drawing spheres
+		m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateDefault); //We're drawing spheres
 		m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		m_renderer->EnableAdditiveBlending();
 
@@ -38,20 +36,15 @@ void DeferredSimpleLightStage::PreRender()
 
 void DeferredSimpleLightStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 {
-		//TODO!!!
-		//MAKE THIS FUNCTION USE ALL THE LIGHT'S RANGE AGAIN!!!
-		//THIS IS CURRENTLY USING A FULL-SCREEN QUAD FOR TESTING!!
 
 		ObjectHandle handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("defaultVS");
-		//ObjectHandle handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("FullScreenQuadVS");
 		m_renderer->BindVertexShader(handle);
 
 		handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("DeferredSimpleLightStagePS");
 		m_renderer->BindPixelShader(handle);
 
-		m_renderer->BindVertexBuffer(m_sphereModel->GetVBufferHandle(), sizeof(VertexAnimation));
-		//m_renderer->BindNullVertexBuffer(); //we create the geometry on the Vertex Shader
-		m_renderer->BindIndexBuffer(m_sphereModel->GetIBufferHandle());
+		m_renderer->BindVertexBuffer(m_boxModel->GetVBufferHandle(), sizeof(VertexAnimation));
+		m_renderer->BindIndexBuffer(m_boxModel->GetIBufferHandle());
 
 		//Update / Set const buffers
 		m_renderData.m_pImmediateContext->VSSetConstantBuffers(1, 1, &m_renderData.testViewProjConstBuffer);
@@ -95,7 +88,7 @@ void DeferredSimpleLightStage::Render(HandleDictionaryVec& graphicsResources, co
 								0, NULL, simpleLight, 0, 0);
 						m_renderData.m_pImmediateContext->PSSetConstantBuffers(8, 1, &m_renderData.testLightNoShadowConstBuffer);
 
-						m_renderer->DrawIndexed(m_sphereModel->GetIndicesCount());
+						m_renderer->DrawIndexed(m_boxModel->GetIndicesCount());
 				}
 		}
 }

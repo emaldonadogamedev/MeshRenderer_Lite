@@ -22,7 +22,8 @@ float4 main(PixelInputType pixel) : SV_TARGET
 						if (sceneLights[i].isActive)
 						{
 								result +=  CaculateBRDFLighting(position, normal, kd, float4(ksAndNs.xyz, 1.0f), ksAndNs.w, cameraPosition.xyz,
-										sceneLights[i].m_position, sceneLights[i].m_Iambient, sceneLights[i].m_Idiffuse);
+										sceneLights[i].m_position, sceneLights[i].m_Iambient, sceneLights[i].m_Idiffuse, sceneLights[i].m_ConstantAttenuation,
+										sceneLights[i].m_LinearAttenuation, sceneLights[i].m_QuadraticAttenuation);
 						}
 				}
 				else

@@ -26,8 +26,8 @@ float4 main(PixelInputType pixel) : SV_TARGET
 			float att = (1.0f / distSquared) - (1.0f / rangeSquared);
 
 				return att * CaculateBRDFLighting(position, normal, kd, float4(ksAndNs.xyz, 1.0f), ksAndNs.w, cameraPosition.xyz,
-						sceneLightNoShadow.m_position, float4(sceneLightNoShadow.m_Iambient, 1.0f),
-						float4(sceneLightNoShadow.m_Idiffuse, 1.0f));
+						sceneLightNoShadow.m_position, float4(sceneLightNoShadow.m_Iambient, 1.0f), float4(sceneLightNoShadow.m_Idiffuse, 1.0f),
+						sceneLightNoShadow.attConst, sceneLightNoShadow.attLinear, sceneLightNoShadow.attQuadratic);
 		}
 
 		return float4(0, 0, 0, 1.0f);

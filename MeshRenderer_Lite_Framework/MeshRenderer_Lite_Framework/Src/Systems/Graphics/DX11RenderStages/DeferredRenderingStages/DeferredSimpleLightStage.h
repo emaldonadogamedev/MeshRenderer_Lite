@@ -7,8 +7,7 @@ class Model;
 
 class DeferredSimpleLightStage : IRenderStage
 {
-		DeferredSimpleLightStage(DX11Renderer* const renderer, RenderCompUmap* const gfxComponents, 
-				const ObjectHandle& fsqIndexBuffer, const Model* const sphereModel);
+		DeferredSimpleLightStage(DX11Renderer* const renderer, RenderCompUmap* const gfxComponents, const Model* const sphereModel);
 		virtual ~DeferredSimpleLightStage();
 
 		virtual void PreRender() override;
@@ -16,8 +15,7 @@ class DeferredSimpleLightStage : IRenderStage
 		virtual void PostRender() override;
 
 protected:
-		ObjectHandle m_fsqIndexBuffer;
-		const Model* const m_sphereModel;
+		const Model* const m_boxModel;
 
 		friend GraphicsSystem;
 };

@@ -23,7 +23,8 @@ float Dterm(in float3 N, in float3 H, in float roughness)
 		return term1 * term2;
 }
 
-float4 CaculateBRDFLighting(float3 vertexPos, float3 vertexNormal, float4 Kd, float4 Ks, float ns, float3 cameraPos, float3 lightPos, float4 Ia, float4 Id, bool isDeferred = true)
+float4 CaculateBRDFLighting(float3 vertexPos, float3 vertexNormal, float4 Kd, float4 Ks, float ns, float3 cameraPos, float3 lightPos, float4 Ia, float4 Id, 
+		float attC, float attL, float attQ, bool isDeferred = true)
 {
 		const float3 viewVec = normalize(cameraPos - vertexPos);
 		const float vDotN = max(dot(viewVec, vertexNormal), 0);
@@ -52,7 +53,7 @@ float4 CaculateBRDFLighting(float3 vertexPos, float3 vertexNormal, float4 Kd, fl
 
 		BRDF = diffuse + (F * G * D) / (4.0f * LdotN * vDotN);
 
-		float attenuation = CalculateAttenuation(1, lightVecLength, 1.0, 0.7, 1.8);
+		float attenuation = CalculateAttenuation(1, lightVecLength, attC, attL, attQ);
 
 		finalColor += (
 				attenuation *

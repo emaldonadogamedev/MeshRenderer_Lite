@@ -78,6 +78,11 @@ struct SimpleLight
 
 		float3 m_Idiffuse;
 		int isActive;
+
+		float attConst;
+		float attLinear;
+		float attQuadratic;
+		float padding;
 };
 
 static const unsigned int s_maxLights = 15;
