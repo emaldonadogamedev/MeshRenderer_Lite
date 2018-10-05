@@ -46,6 +46,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//model->SetDiffTextureFileName("AlphaBlendTest.png", 0);
 		model->m_meshEntryList[0].meshMaterial = MeshEntryMaterial::GetPresetMaterial(PredefinedMaterials::GreenPlastic);
 		test3DComp->SetModel(model);
+		test3DComp->SetIsActive(false);
 
 		testObj->AddComponent(test3DComp);
 		graphicsSystem->AddComponent(test3DComp);
@@ -119,11 +120,11 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 				testMiniLightObj->AddComponent(transform);
 		
 				auto simpleLightComp = new LightComponent(testMiniLights[i].get());
-				float range = RandFloat(1, 5);
+				float range = RandFloat(15, 30);
 				simpleLightComp->SetLightRange(range);
 				auto light = simpleLightComp->GetLight();
 				light->m_Iambient = XMFLOAT3(RandFloat(0.2f, 0.4f), RandFloat(0.2f, 0.4f), RandFloat(0.2f, 0.4f));
-				light->m_Idiffuse = XMFLOAT3(RandFloat(3.f, 7.f), RandFloat(3.f, 7.f), RandFloat(3.f, 7.f));
+				light->m_Idiffuse = XMFLOAT3(RandFloat(300.f, 700.f), RandFloat(300.f, 700.f), RandFloat(300.f, 700.f));
 				testMiniLightObj->AddComponent(simpleLightComp);
 				graphicsSystem->AddComponent(simpleLightComp);
 		}

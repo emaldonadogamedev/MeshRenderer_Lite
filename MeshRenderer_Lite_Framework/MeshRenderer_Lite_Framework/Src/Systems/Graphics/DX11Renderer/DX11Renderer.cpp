@@ -1106,7 +1106,7 @@ bool DX11Renderer::InitializeSwapChain(const int width, const int height, HWND h
 	UINT createDeviceFlags = 0;
 
 #ifdef _DEBUG
-	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+	//createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif //_DEBUG
 
 	const D3D_DRIVER_TYPE driverTypes[] =
@@ -1380,7 +1380,7 @@ bool DX11Renderer::InitializeBlendStates()
 	rtbd.DestBlend = D3D11_BLEND_ONE;
 	rtbd.BlendOp = D3D11_BLEND_OP_ADD;
 	rtbd.SrcBlendAlpha = D3D11_BLEND_ONE;
-	rtbd.DestBlendAlpha = D3D11_BLEND_ZERO;
+	rtbd.DestBlendAlpha = D3D11_BLEND_ONE;
 	rtbd.BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	rtbd.RenderTargetWriteMask = D3D10_COLOR_WRITE_ENABLE_ALL;
 

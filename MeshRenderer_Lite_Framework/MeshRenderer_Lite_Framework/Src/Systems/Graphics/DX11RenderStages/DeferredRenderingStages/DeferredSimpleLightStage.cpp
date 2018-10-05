@@ -42,20 +42,24 @@ void DeferredSimpleLightStage::Render(HandleDictionaryVec& graphicsResources, co
 		//MAKE THIS FUNCTION USE ALL THE LIGHT'S RANGE AGAIN!!!
 		//THIS IS CURRENTLY USING A FULL-SCREEN QUAD FOR TESTING!!
 
-		//ObjectHandle handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("defaultVS");
-		ObjectHandle handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("FullScreenQuadVS");
+		ObjectHandle handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("defaultVS");
+		//ObjectHandle handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("FullScreenQuadVS");
 		m_renderer->BindVertexShader(handle);
 
 		handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("DeferredSimpleLightStagePS");
 		m_renderer->BindPixelShader(handle);
 
-		//m_renderer->BindVertexBuffer(m_sphereModel->GetVBufferHandle(), sizeof(VertexAnimation));
-		m_renderer->BindNullVertexBuffer(); //we create the geometry on the Vertex Shader
+		m_renderer->BindVertexBuffer(m_sphereModel->GetVBufferHandle(), sizeof(VertexAnimation));
+		//m_renderer->BindNullVertexBuffer(); //we create the geometry on the Vertex Shader
 		m_renderer->BindIndexBuffer(m_sphereModel->GetIBufferHandle());
 
-		m_renderer->DrawIndexed(6);
+		//Update / Set const buffers
+		m_renderData.m_pImmediateContext->VSSetConstantBuffers(1, 1, &m_renderData.testViewProjConstBuffer);
+		m_renderData.m_pImmediateContext->PSSetConstantBuffers(1, 1, &m_renderData.testViewProjConstBuffer);
 
-		return;
+		//m_renderer->DrawIndexed(6);
+		//
+		//return;
 
 		//forward render all of the spheres with light properties
 		const auto& lightComponents = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_LIGHT];
@@ -85,6 +89,7 @@ void DeferredSimpleLightStage::Render(HandleDictionaryVec& graphicsResources, co
 						simpleLight->m_position.x = translation.m128_f32[0];
 						simpleLight->m_position.y = translation.m128_f32[1];
 						simpleLight->m_position.z = translation.m128_f32[2];
+						simpleLight->m_range = transform->GetScale().m128_f32[0];
 
 						m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testLightNoShadowConstBuffer,
 								0, NULL, simpleLight, 0, 0);

@@ -52,11 +52,10 @@ float4 CaculateBRDFLighting(float3 vertexPos, float3 vertexNormal, float4 Kd, fl
 
 		BRDF = diffuse + (F * G * D) / (4.0f * LdotN * vDotN);
 
-		//float attenuation = CalculateAttenuation(light.m_lightType, lightVecLength, light.m_ConstantAttenuation,
-		//		light.m_LinearAttenuation, light.m_QuadraticAttenuation);
+		float attenuation = CalculateAttenuation(1, lightVecLength, 1.0, 0.7, 1.8);
 
 		finalColor += (
-				//attenuation *
+				attenuation *
 				((Id * max(dot(vertexNormal, lightVec), 0.f) * BRDF))
 				);
 

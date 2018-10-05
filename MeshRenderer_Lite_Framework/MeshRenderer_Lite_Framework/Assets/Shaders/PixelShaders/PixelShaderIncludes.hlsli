@@ -94,18 +94,18 @@ cbuffer SceneLightsNoShadow : register(b8)
 // Object Material
 struct PhongMaterial
 {
-		float4 ambientKa;
-		float4 diffuseKd;
+	float4 ambientKa;
+	float4 diffuseKd;
 
-		float3 specularKs;
-		float specularPowerNs;
+	float3 specularKs;
+	float specularPowerNs;
 
-		float4 emissiveKe;
+	float4 emissiveKe;
 
-		int useDiffuseTexture;
-		int useNormalMap;
-		int useAlphaBlending;
-		int padding;
+	int useDiffuseTexture;
+	int useNormalMap;
+	int useAlphaBlending;
+	int padding;
 };
 
 cbuffer ObjectMaterial : register(b6)
