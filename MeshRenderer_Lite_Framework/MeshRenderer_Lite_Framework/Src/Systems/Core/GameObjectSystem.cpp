@@ -26,6 +26,14 @@ void GameObjectSystem::Update(const float dt)
 				Transform* transform = (Transform*)component;
 				transform->UpdateWorldMatrix();
 		}
+
+		std::sort(m_transformComponents.begin(), m_transformComponents.end(), [](const IComponent* lhs, const IComponent* rhs)
+		{
+				const auto& lhsPos = ((Transform*)lhs)->GetPosition();
+				const auto& rhsPos = ((Transform*)rhs)->GetPosition();
+		
+				return lhsPos.m128_f32[2] < rhsPos.m128_f32[2];
+		});
 }
 
 void GameObjectSystem::Shutdown()

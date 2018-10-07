@@ -41,7 +41,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//auto model = graphicsSystem->GetModel("walk.fbx");
 		//auto model = graphicsSystem->GetModel("dragon.obj");
 		//auto model = graphicsSystem->GetModel("box");
-		auto model = graphicsSystem->GetModel("boblampclean.md5mesh");
+		auto model = graphicsSystem->GetModel("sphere");
 		//auto model = graphicsSystem->GetModel("bottle.obj");
 		//model->SetDiffTextureFileName("AlphaBlendTest.png", 0);
 		model->m_meshEntryList[0].meshMaterial = MeshEntryMaterial::GetPresetMaterial(PredefinedMaterials::GreenPlastic);
@@ -124,7 +124,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 				simpleLightComp->SetLightRange(range);
 				auto light = simpleLightComp->GetLight();
 				light->m_Iambient = XMFLOAT3(RandFloat(0.2f, 0.4f), RandFloat(0.2f, 0.4f), RandFloat(0.2f, 0.4f));
-				light->m_Idiffuse = XMFLOAT3(RandFloat(300.f, 700.f), RandFloat(300.f, 700.f), RandFloat(300.f, 700.f));
+				light->m_Idiffuse = XMFLOAT3(RandFloat(500.f, 700.f), RandFloat(500.f, 700.f), RandFloat(500.f, 700.f));
 				testMiniLightObj->AddComponent(simpleLightComp);
 				graphicsSystem->AddComponent(simpleLightComp);
 		}

@@ -1,7 +1,6 @@
 #include <Utilities/precompiled.h>
 #include <Engine/Applications/IApplication/IApplication.h>
 
-#include <Systems/Core/GameObjectSystem.h>
 #include <Imgui/imgui.h>
 #include <Imgui/imgui_impl_dx11.h>
 
@@ -9,6 +8,7 @@
 #include <windowsx.h>
 
 #include<Engine/GameClock/GameClock.h>
+#include <Systems/Core/GameObjectSystem.h>
 #include <Systems/Graphics/GraphicsSystem.h>
 #include <Systems/Input/InputSystem.h>
 #include <Systems/Input/Keyboard.h>
@@ -159,17 +159,11 @@ ISystem* IApplication::GetSystem(const SystemType systemType) const
 	return m_systems[(int)systemType];
 }
 
-void IApplication::SendMessageToSystems(const IMessage * const msg)
+void IApplication::SendMessageToSystems(const IMessage& msg)
 {
-	if (msg)
+	for (auto& it : m_systems)
 	{
-		for (auto& it : m_systems)
-		{
-			it->ReceiveMessage(*msg);
-		}
-
-		//delete the message pointer
-		delete msg;
+		it->ReceiveMessage(msg);
 	}
 }
 

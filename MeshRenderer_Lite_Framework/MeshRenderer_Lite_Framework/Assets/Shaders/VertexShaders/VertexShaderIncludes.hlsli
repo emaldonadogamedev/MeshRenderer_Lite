@@ -42,6 +42,6 @@ cbuffer SimpleCloth_ConstBuffer : register(b4)
 //--------------------------------------------------------------------------------------
 cbuffer LightViewProjBuffer : register(b5)
 {
-		matrix lightViewMtx;
-		matrix lightProjectionMtx;
+		float4x4 lightViewMtx;
+		float4x4 lightProjectionMtx;
 };

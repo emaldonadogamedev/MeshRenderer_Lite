@@ -36,7 +36,7 @@ public:
 	virtual void Shutdown(void);
 
 	ISystem* GetSystem(const SystemType systemType) const;
-	void SendMessageToSystems(const IMessage* const msg);
+	void SendMessageToSystems(const IMessage& msg);
 
 	bool IsRunning() const;
 	LRESULT MessageHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);

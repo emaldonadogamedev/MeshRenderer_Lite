@@ -137,3 +137,10 @@ static unsigned RandUnsignedInt(const unsigned minValue = 0, const unsigned maxV
 #ifndef SafeDeleteArr
 #define SafeDeleteArr(x) if(x){ delete [] x; x = nullptr; }
 #endif
+
+//static variables
+//directories
+const std::string s_shaderDir = "../MeshRenderer_Lite_Framework/Assets/Shaders/";
+const std::string s_vertexShaderDir = "../MeshRenderer_Lite_Framework/Assets/Shaders/VertexShaders/";
+const std::string s_pixelShaderDir = "../MeshRenderer_Lite_Framework/Assets/Shaders/PixelShaders/";
+const std::string s_textureDir = "../MeshRenderer_Lite_Framework/Assets/Textures/";

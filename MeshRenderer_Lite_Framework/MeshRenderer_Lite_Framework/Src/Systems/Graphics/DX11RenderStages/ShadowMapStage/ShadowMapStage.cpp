@@ -26,7 +26,7 @@ ShadowMapStage::~ShadowMapStage()
 
 void ShadowMapStage::PreRender()
 {
-		m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateSolCullFront);
+		m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateSolCullNone);
 		m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		m_renderer->DisableColorBlending();
 }
@@ -82,8 +82,8 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 						0, NULL, &m_renderData.testLightViewBuffer, 0, 0);
 
 				// Set light POV buffers
-				m_renderData.m_pImmediateContext->VSSetConstantBuffers(5, 1, &m_renderData.testViewProjConstBuffer);
-				m_renderData.m_pImmediateContext->PSSetConstantBuffers(5, 1, &m_renderData.testViewProjConstBuffer);
+				m_renderData.m_pImmediateContext->VSSetConstantBuffers(5, 1, &m_renderData.testLightViewConstBuffer);
+				//m_renderData.m_pImmediateContext->PSSetConstantBuffers(5, 1, &m_renderData.testViewProjConstBuffer);
 
 				//forward render all of the objects
 				const auto& modelComponents = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_3D];

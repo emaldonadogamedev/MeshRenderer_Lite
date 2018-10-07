@@ -19,8 +19,9 @@ void FinalBackBufferStage::PreRender()
 {
 		//bind main render target and clear it
 		m_renderData.m_pImmediateContext->OMSetRenderTargets(1, &m_renderData.m_pBackBufferRenderTargetView, nullptr); //No depth testing required
-		m_renderData.m_pImmediateContext->ClearRenderTargetView(m_renderData.m_pBackBufferRenderTargetView, m_renderData.m_clearColor.m128_f32);
-		m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateDefault);
+		m_renderData.m_pImmediateContext->ClearRenderTargetView(m_renderData.m_pBackBufferRenderTargetView, 
+				m_renderData.testGlobalShaderProperties.gClearColor.m128_f32);
+		m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateSolCullNone);
 		m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		m_renderer->DisableColorBlending();
 

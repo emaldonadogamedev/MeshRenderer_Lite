@@ -26,7 +26,8 @@ void ForwardRenderStage::PreRender()
 {
 	//bind main render target and clear it
 	m_renderer->BindRenderTarget(m_renderData.m_MainRenderTargets[m_renderData.m_currentMainRTindex], true);//No depth testing 
-	m_renderer->ClearRenderTarget(m_renderData.m_MainRenderTargets[m_renderData.m_currentMainRTindex], m_renderData.m_clearColor);
+	m_renderer->ClearRenderTarget(m_renderData.m_MainRenderTargets[m_renderData.m_currentMainRTindex], 
+			m_renderData.testGlobalShaderProperties.gClearColor);
 
 	//Bind previously used main RT as a shader resource
 	m_renderer->BindTextureShaderResource(ObjectType::PIXEL_SHADER, 24, 1, m_renderData.m_MainRenderTargets[!m_renderData.m_currentMainRTindex]);
@@ -55,16 +56,7 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 	ObjectHandle handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("defaultVS");
 	m_renderer->BindVertexShader(handle);
 
-	if (m_renderer->IsDebugInfoEnabled()) {
-		handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("ShowDebugInfoPS");
-		m_renderer->DisableColorBlending();
-	}
-	else if (m_renderer->IsLightingEnabled()) {
-		handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("phongLighting");
-	}
-	else
-		handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("defaultPS");
-
+	handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("phongLighting");
 	m_renderer->BindPixelShader(handle);
 
 	//Update / Set const buffers

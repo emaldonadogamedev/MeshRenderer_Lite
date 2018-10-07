@@ -2,10 +2,11 @@
 
 #include <DirectXMath.h>
 
-using DirectX::XMVECTOR;
+using DirectX::XMFLOAT3;
 using DirectX::XMMATRIX;
-using DirectX::XMVectorSet;
+using DirectX::XMVECTOR;
 using DirectX::XMMatrixIdentity;
+using DirectX::XMVectorSet;
 
 struct ViewProjBuffer
 {
@@ -49,5 +50,31 @@ struct LightViewProjBuffer
 {
 		XMMATRIX lightViewMtx;
 		XMMATRIX lightProjectionMtx;
+};
+
+enum class GlobalGraphicsDebugType : int
+{
+		G_DEBUG_NONE,
+		G_DEBUG_POSITION,
+		G_DEBUG_DEPTH,
+		G_DEBUG_UV_COORDS,
+		G_DEBUG_NORMALS,
+		G_DEBUG_TANGENTS,
+		G_DEBUG_BITANGENTS,
+		G_DEBUG_DIFFUSE,
+		G_DEBUG_SPECULAR,
+
+		COUNT
+};
+
+struct GlobalShaderProperties
+{
+		XMVECTOR gClearColor = XMVectorSet(0, .3f, 0, 1.0f);
+
+		XMFLOAT3 gGlobalAmbient = XMFLOAT3(.2f, .2f, .2f);
+		int gDebugInfoType = (int)GlobalGraphicsDebugType::G_DEBUG_NONE;
+
+		int gIsUsingDeferred = 1;
+		int padding[3];
 };
 

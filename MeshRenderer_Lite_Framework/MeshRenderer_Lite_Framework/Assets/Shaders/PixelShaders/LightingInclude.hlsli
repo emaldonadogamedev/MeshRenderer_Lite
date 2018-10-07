@@ -33,7 +33,7 @@ float4 CaculateBRDFLighting(float3 vertexPos, float3 vertexNormal, float4 Kd, fl
 		float4 diffuse, BRDF;
 
 		//Ambient term
-		float4 finalColor = isDeferred ? float4(0, 0, 0, 0) : Ia * Kd;
+		float4 finalColor = isDeferred ? float4(0, 0, 0, 1.0f) : Ia * Kd;
 
 		lightVec = (lightPos - vertexPos);
 		float lightVecLength = length(lightVec);

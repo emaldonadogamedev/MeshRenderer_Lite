@@ -432,7 +432,11 @@ void GraphicsSystem::AddComponent(IComponent* component)
 
 void GraphicsSystem::RunRenderPasses()
 {
-		float dt = m_engineOwner->GetClock().GetDeltaTime();
+		const float dt = m_engineOwner->GetClock().GetDeltaTime();
+
+		//Update the global shader properties const buffer
+		m_dx11Renderer->m_renderData->m_pImmediateContext->UpdateSubresource(m_dx11Renderer->m_renderData->testGlobalShaderPropertiesConstBuffer,
+				0, NULL, &m_dx11Renderer->m_renderData->testGlobalShaderProperties, 0, 0);
 
 		//iterate through all render stages(Including UI)
 		for (const auto renderStage : m_renderStages)
@@ -482,10 +486,10 @@ void GraphicsSystem::AddRenderStages()
 
 	AddRenderStageHelper(new ForwardRenderStage(m_dx11Renderer.get(), &m_renderComponents), false);
 	AddRenderStageHelper(new PathWalkDebugStage(m_dx11Renderer.get(), &m_renderComponents), false);
-	AddRenderStageHelper(new ImGuiStage(m_dx11Renderer.get(), &m_renderComponents));
 
-	//COPY ALL OF THE RESULTS TO THE BACK BUFFER TO PRESENT THE FINAL FRAME
+	//COPY ALL OF THE RESULTS TO THE BACK BUFFER TO PRESENT THE FINAL FRAME AFTER THE UI STAGE
 	AddRenderStageHelper(new FinalBackBufferStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
+	AddRenderStageHelper(new ImGuiStage(m_dx11Renderer.get(), &m_renderComponents));
 }
 
 void GraphicsSystem::AddRenderStageHelper(IRenderStage* const renderStage, const bool isActive)
@@ -632,21 +636,10 @@ void GraphicsSystem::TestUpdateCamera(const float dt)
 
 	//Update view buffer
 	m_dx11Renderer->m_renderData->testCamera->Update();
-	m_dx11Renderer->m_renderData->testViewProjBuffer.cameraPosition.m128_f32[0] = m_dx11Renderer->m_renderData->testCamera->m_Position.m128_f32[0];
-	m_dx11Renderer->m_renderData->testViewProjBuffer.cameraPosition.m128_f32[1] = m_dx11Renderer->m_renderData->testCamera->m_Position.m128_f32[1];
-	m_dx11Renderer->m_renderData->testViewProjBuffer.cameraPosition.m128_f32[2] = m_dx11Renderer->m_renderData->testCamera->m_Position.m128_f32[2];
-	m_dx11Renderer->m_renderData->testViewProjBuffer.cameraPosition.m128_f32[3] = m_dx11Renderer->m_renderData->m_debugIdx;
-
 	m_dx11Renderer->m_renderData->testViewProjBuffer.cameraPosition = m_dx11Renderer->m_renderData->testCamera->m_Position;
 	m_dx11Renderer->m_renderData->testViewProjBuffer.viewMtx = m_dx11Renderer->m_renderData->testCamera->GetView();
 	m_dx11Renderer->m_renderData->testViewProjBuffer.invViewMtx =
 			DirectX::XMMatrixInverse(nullptr, m_dx11Renderer->m_renderData->testViewProjBuffer.viewMtx);
-	//m_dx11Renderer->m_renderData->testViewProjBuffer.projectionMtx = testCamera->GetProjection();
 	m_dx11Renderer->m_renderData->m_pImmediateContext->UpdateSubresource(m_dx11Renderer->m_renderData->testViewProjConstBuffer,
 			0, NULL, &m_dx11Renderer->m_renderData->testViewProjBuffer, 0, 0);
 }
-
-const string GraphicsSystem::s_shaderDir = "../MeshRenderer_Lite_Framework/Assets/Shaders/";
-const string GraphicsSystem::s_vertexShaderDir = "../MeshRenderer_Lite_Framework/Assets/Shaders/VertexShaders/";
-const string GraphicsSystem::s_pixelShaderDir = "../MeshRenderer_Lite_Framework/Assets/Shaders/PixelShaders/";
-const string GraphicsSystem::s_textureDir = "../MeshRenderer_Lite_Framework/Assets/Shaders/";

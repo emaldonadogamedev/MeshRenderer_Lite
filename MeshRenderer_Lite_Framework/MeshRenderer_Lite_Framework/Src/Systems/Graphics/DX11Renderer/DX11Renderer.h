@@ -86,12 +86,6 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	//Misc.
-	//Lighting
-	bool IsLightingEnabled() const;
-	void SetLightingEnabled(const bool v);
-	//Debug
-	bool IsDebugInfoEnabled() const;
-	void SetDebugInfoEnabled(const bool v);
 	//Color blending
 	void DisableColorBlending();
 	void EnableAlphaBlending();

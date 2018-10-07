@@ -23,7 +23,7 @@ DeferredSimpleLightStage::~DeferredSimpleLightStage()
 
 void DeferredSimpleLightStage::PreRender()
 {
-		m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateDefault); //We're drawing spheres
+		m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateSolCullNone); //We're drawing spheres
 		m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		m_renderer->EnableAdditiveBlending();
 

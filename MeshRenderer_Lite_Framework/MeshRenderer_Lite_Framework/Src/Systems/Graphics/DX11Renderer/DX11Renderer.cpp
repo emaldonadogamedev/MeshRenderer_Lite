@@ -89,7 +89,7 @@ void DX11Renderer::ReleaseData()
 	//////////////////////////////////////////////////////////////////////////
 
 	//cleanup rasterizers
-	SafeRelease(m_renderData->m_d3dRasterStateDefault);
+	SafeRelease(m_renderData->m_d3dRasterStateSolCullNone);
 	SafeRelease(m_renderData->m_d3dRasterStateSolCullBack);
 	SafeRelease(m_renderData->m_d3dRasterStateSolCullFront);
 	SafeRelease(m_renderData->m_d3dRasterStateWireframe);
@@ -122,7 +122,8 @@ void DX11Renderer::ReleaseData()
 
 void DX11Renderer::ClearMainBuffer() const
 {
-	m_renderData->m_pImmediateContext->ClearRenderTargetView(m_renderData->m_pBackBufferRenderTargetView, m_renderData->m_clearColor.m128_f32);
+	m_renderData->m_pImmediateContext->ClearRenderTargetView(m_renderData->m_pBackBufferRenderTargetView, 
+			m_renderData->testGlobalShaderProperties.gClearColor.m128_f32);
 	m_renderData->m_pImmediateContext->ClearDepthStencilView(m_renderData->m_DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 }
 
@@ -1041,26 +1042,6 @@ void DX11Renderer::ReleaseObject(const ObjectHandle& object)
 	}
 }
 
-bool DX11Renderer::IsLightingEnabled() const
-{
-	return m_renderData->m_lightingEnabled;
-}
-
-void DX11Renderer::SetLightingEnabled(const bool v)
-{
-	m_renderData->m_lightingEnabled = v;
-}
-
-bool DX11Renderer::IsDebugInfoEnabled() const
-{
-	return m_renderData->m_showDebugInfo;
-}
-
-void DX11Renderer::SetDebugInfoEnabled(const bool v)
-{
-	m_renderData->m_showDebugInfo = v;
-}
-
 void DX11Renderer::EnableAlphaBlending()
 {
 	float blendFactor[] = { 0.f, 0.f, 0.f, 0.f };
@@ -1200,7 +1181,7 @@ bool DX11Renderer::InitializeRasterizerStates()
 	rasterizerDesc.SlopeScaledDepthBias = 0.0f;
 
 	// Create the default rasterizer state object.
-	m_renderData->m_pDevice->CreateRasterizerState(&rasterizerDesc, &m_renderData->m_d3dRasterStateDefault);
+	m_renderData->m_pDevice->CreateRasterizerState(&rasterizerDesc, &m_renderData->m_d3dRasterStateSolCullNone);
 
 	//Create the back face cull mode
 	rasterizerDesc.CullMode = D3D11_CULL_BACK;
@@ -1231,7 +1212,7 @@ bool DX11Renderer::InitializeRasterizerStates()
 	RSDesc.MultisampleEnable = FALSE; //swapDesc.SampleDesc.Count > 1 ? TRUE : FALSE;
 	m_renderData->m_pDevice->CreateRasterizerState(&RSDesc, &m_renderData->m_d3dRasterStateImgui);
 
-	m_renderData->m_pImmediateContext->RSSetState(m_renderData->m_currentRasterState = m_renderData->m_d3dRasterStateDefault);
+	m_renderData->m_pImmediateContext->RSSetState(m_renderData->m_currentRasterState = m_renderData->m_d3dRasterStateSolCullNone);
 
 	return true;
 }
@@ -1274,6 +1255,9 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 
 	bd.ByteWidth = sizeof(SimpleLight);//  * LightComponent::s_maxLights;
 	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testLightNoShadowConstBuffer));
+
+	bd.ByteWidth = sizeof(GlobalShaderProperties);
+	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testGlobalShaderPropertiesConstBuffer));
 
 	// Initialize the world matrices
 	//m_renderData->testPerObjectBuffer.worldMtx = XMMatrixScaling(1,1,1) * DirectX::XMMatrixRotationX(XM_PIDIV2) * XMMatrixTranslation(-1, 1, 0);

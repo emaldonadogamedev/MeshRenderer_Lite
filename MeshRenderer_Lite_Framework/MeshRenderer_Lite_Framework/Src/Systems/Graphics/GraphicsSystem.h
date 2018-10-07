@@ -70,12 +70,5 @@ protected:
 	//Resource Collection
 	HandleDictionaryVec m_resources;
 
-	//static variables
-	//directories
-	static const string s_shaderDir;
-	static const string s_vertexShaderDir;
-	static const string s_pixelShaderDir;
-	static const string s_textureDir;
-
 	friend IApplication;
 };

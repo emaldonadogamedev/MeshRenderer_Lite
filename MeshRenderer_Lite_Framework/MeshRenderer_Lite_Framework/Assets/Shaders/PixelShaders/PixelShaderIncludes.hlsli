@@ -38,6 +38,29 @@ Texture2D specularAndNsRT : register(t23);
 
 Texture2D previouslyUsedRT : register(t24);
 
+
+// Object Material
+struct PhongMaterial
+{
+		float4 ambientKa;
+		float4 diffuseKd;
+
+		float3 specularKs;
+		float specularPowerNs;
+
+		float4 emissiveKe;
+
+		int useDiffuseTexture;
+		int useNormalMap;
+		int useAlphaBlending;
+		int padding;
+};
+
+cbuffer ObjectMaterial : register(b6)
+{
+		PhongMaterial meshMaterial;
+}
+
 //Scene Lights
 
  //-- light types
@@ -68,6 +91,12 @@ struct Light
 	int isUsingShadows;
 };
 
+static const unsigned int s_maxLights = 15;
+cbuffer SceneLights : register(b7)
+{
+		Light sceneLights[s_maxLights];
+}
+
 struct SimpleLight
 {
 		float3 m_position;
@@ -85,35 +114,26 @@ struct SimpleLight
 		float padding;
 };
 
-static const unsigned int s_maxLights = 15;
-cbuffer SceneLights : register(b7)
-{
-	Light sceneLights[s_maxLights];
-}
-
 cbuffer SceneLightsNoShadow : register(b8)
 {
 		SimpleLight sceneLightNoShadow;
 }
 
-// Object Material
-struct PhongMaterial
+//Debug information types
+static const int G_DEBUG_NONE = 0;
+static const int G_DEBUG_POSITION = 1;
+static const int G_DEBUG_DEPTH = 2;
+static const int G_DEBUG_NORMALS = 3;
+static const int G_DEBUG_DIFFUSE = 4;
+static const int G_DEBUG_SPECULAR = 5;
+
+cbuffer GlobalShaderProperties : register(b9)
 {
-	float4 ambientKa;
-	float4 diffuseKd;
+		float4 gClearColor;
 
-	float3 specularKs;
-	float specularPowerNs;
+		float3 gGlobalAmbient;
+		int gDebugInfoType;
 
-	float4 emissiveKe;
-
-	int useDiffuseTexture;
-	int useNormalMap;
-	int useAlphaBlending;
-	int padding;
+		int gIsUsingDeferred;
+		int3 padding_b9;
 };
-
-cbuffer ObjectMaterial : register(b6)
-{
-		PhongMaterial meshMaterial;
-}

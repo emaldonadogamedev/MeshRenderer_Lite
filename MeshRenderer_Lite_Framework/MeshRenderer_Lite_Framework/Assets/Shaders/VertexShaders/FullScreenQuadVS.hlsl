@@ -24,8 +24,5 @@ PixelInputType main(VertexInputType vertex, uint vertexID : SV_VERTEXID)
 		result.uv = fsqUVs[vertexID];
 		result.position = fqsPositions[vertexID];
 
-		//result.uv = float2((vertexID << 1) & 2, vertexID & 2);
-		//result.position = float4(result.uv * float2(2, -2) + float2(-1, 1), 0, 1);
-
 		return result;
 }

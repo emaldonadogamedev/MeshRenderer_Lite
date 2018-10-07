@@ -19,6 +19,7 @@ ShadowLightComponent::ShadowLightComponent(const GameObject* owner, bool isActiv
 						m_light->isUsingShadows = static_cast<int>(m_useShadows);
 						m_shadowRThandle = &shadowMapHandles[i];
 						m_shadowTextureIdx = textureIdx;
+						++s_takenLightCount;
 						return;
 				}
 
@@ -30,7 +31,9 @@ ShadowLightComponent::ShadowLightComponent(const GameObject* owner, bool isActiv
 
 ShadowLightComponent::~ShadowLightComponent()
 {
-	m_light->isTaken = 0;
+		m_light->isTaken = 0;
+		m_light->isActive = 0;
+		--s_takenLightCount;
 }
 
 Light* ShadowLightComponent::GetLight() const

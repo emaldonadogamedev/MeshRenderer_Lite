@@ -42,15 +42,22 @@ void ImGuiStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 	//ImGui::ShowTestWindow(&drawit);
 	ShowGraphicsSettings();
 
-	const auto& modelComponent = (ModelComponent*)GetComponentHelper(ComponentType::RENDERABLE_3D, 1);
+	auto& modelComponents = m_gfxSystemComponents->at(ComponentType::RENDERABLE_3D);
 	const auto& curvePathComponent = (CurvePathComponent*) GetComponentHelper(ComponentType::RENDERABLE_CURVE_PATH, 1);
 
-	if (modelComponent)
+	if (!modelComponents.empty())
 	{
-		auto* const transform = (Transform*)modelComponent->GetOwner()->GetComponent(ComponentType::TRANSFORM);
-		Model* model = modelComponent->GetModel();
+			Transform* transform = nullptr;
+			Model* model = nullptr;
+
 		if (ImGui::Begin("Animation Properties"))
 		{
+			static int modelComponentIdx = 0;
+			ImGui::SliderInt("Model number: ", &modelComponentIdx, 0, modelComponents.size() - 1);
+			const auto& modelComponent = (ModelComponent*)GetComponentHelper(ComponentType::RENDERABLE_3D, modelComponentIdx);
+			transform = (Transform*)modelComponent->GetOwner()->GetComponent(ComponentType::TRANSFORM);
+			model = modelComponent->GetModel();
+
 			ImGui::Text("FPS: %.3f", 1.0f/dt);
 			
 			if (model->GetModelType() == ModelType::MODEL_SKINNED)
@@ -115,6 +122,8 @@ void ImGuiStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 
 		if (ImGui::Begin("Shadow Light Properties"))
 		{
+				ImGui::DragFloat3("Global Ambient", &m_renderData.testGlobalShaderProperties.gGlobalAmbient.x, 0.001f, 0.f, 1.0f, "%.3f");
+
 				const auto& shadowLight = m_gfxSystemComponents->at(ComponentType::RENDERABLE_LIGHT_WITH_SHADOW)[0];
 				const ShadowLightComponent* shadowLighComp = (const ShadowLightComponent*)shadowLight;
 				const auto light = shadowLighComp->GetLight();
@@ -130,7 +139,6 @@ void ImGuiStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 				ImGui::DragFloat3("Diffuse", light->m_Idiffuse.m128_f32, 0.001f, 0.f, 1.0f, "%.3f");
 				ImGui::DragFloat3("Specular", light->m_Ispecular.m128_f32, 0.001f, 0.f, 1.0f, "%.3f");
 
-				ImGui::Separator();
 				ImGui::End();
 		}
 	}
@@ -152,7 +160,7 @@ void ImGuiStage::ShowGraphicsSettings()
 			if (ImGui::BeginMenu("Render States"))
 			{
 				if (ImGui::MenuItem("Solid, No Culling")) {
-					m_renderData.m_currentRasterState = m_renderData.m_d3dRasterStateDefault;
+					m_renderData.m_currentRasterState = m_renderData.m_d3dRasterStateSolCullNone;
 				}
 				if (ImGui::MenuItem("Solid, Front Culling")) {
 					m_renderData.m_currentRasterState = m_renderData.m_d3dRasterStateSolCullFront;
@@ -167,30 +175,31 @@ void ImGuiStage::ShowGraphicsSettings()
 			}
 
 			ImGui::Separator();
-			if (ImGui::MenuItem("Lit")) {
-				m_renderer->SetLightingEnabled(true);
-			}
-			if (ImGui::MenuItem("Unlit")) {
-				m_renderer->SetLightingEnabled(false);
-			}
-			ImGui::Separator();
 			if (ImGui::BeginMenu("Debug Menu..."))
 			{
-				ImGui::Checkbox("Show Debug Info...", &m_renderData.m_showDebugInfo);
+				if (ImGui::MenuItem("No Debug Info")) {
+						m_renderData.testGlobalShaderProperties.gDebugInfoType = 
+								(int)GlobalGraphicsDebugType::G_DEBUG_NONE;
+				}
 				if (ImGui::MenuItem("Position")) {
-					m_renderData.m_debugIdx = 0.f;
+						m_renderData.testGlobalShaderProperties.gDebugInfoType = 
+								(int)GlobalGraphicsDebugType::G_DEBUG_POSITION;
 				}
 				if (ImGui::MenuItem("Normals")) {
-					m_renderData.m_debugIdx = 1.f;
+					m_renderData.testGlobalShaderProperties.gDebugInfoType = 
+							(int)GlobalGraphicsDebugType::G_DEBUG_NORMALS;
 				}
 				if (ImGui::MenuItem("Tangent")) {
-					m_renderData.m_debugIdx = 2.f;
+						m_renderData.testGlobalShaderProperties.gDebugInfoType =
+								(int)GlobalGraphicsDebugType::G_DEBUG_TANGENTS;
 				}
 				if (ImGui::MenuItem("Depth Buffer")) {
-					m_renderData.m_debugIdx = 3.f;
+						m_renderData.testGlobalShaderProperties.gDebugInfoType =
+								(int)GlobalGraphicsDebugType::G_DEBUG_DEPTH;
 				}
 				if (ImGui::MenuItem("UV coords")) {
-					m_renderData.m_debugIdx = 4.f;
+						m_renderData.testGlobalShaderProperties.gDebugInfoType =
+								(int)GlobalGraphicsDebugType::G_DEBUG_UV_COORDS;
 				}
 				ImGui::EndMenu();
 			}

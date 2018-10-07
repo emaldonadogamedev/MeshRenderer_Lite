@@ -18,7 +18,7 @@ public:
 	ID3D11RenderTargetView* m_pBackBufferRenderTargetView = nullptr;
 
 	//deferred rendering render targets
-	enum class GBufferRTType : unsigned  char
+	enum class GBufferRTType : byte
 	{
 			POSITION,
 			NORMALS,
@@ -36,7 +36,6 @@ public:
 
 	ID3D11Texture2D* m_DepthStencilBuffer = nullptr;
 	ID3D11DepthStencilView* m_DepthStencilView = nullptr;
-	XMVECTOR m_clearColor = { 0,0.3f,0,1 };
 
 	D3D_DRIVER_TYPE m_DriverType;
 	D3D_FEATURE_LEVEL m_FeatureLevel;
@@ -45,7 +44,7 @@ public:
 
 	//rasterizer states
 	ID3D11RasterizerState* m_currentRasterState = nullptr;
-	ID3D11RasterizerState* m_d3dRasterStateDefault = nullptr;
+	ID3D11RasterizerState* m_d3dRasterStateSolCullNone = nullptr;
 	ID3D11RasterizerState* m_d3dRasterStateSolCullBack = nullptr;
 	ID3D11RasterizerState* m_d3dRasterStateSolCullFront = nullptr;
 	ID3D11RasterizerState* m_d3dRasterStateWireframe = nullptr;
@@ -104,13 +103,11 @@ public:
 
 	ID3D11Buffer* testLightNoShadowConstBuffer = nullptr;
 
+	GlobalShaderProperties testGlobalShaderProperties;
+	ID3D11Buffer* testGlobalShaderPropertiesConstBuffer = nullptr;
+
 	//Cameras
 	std::unique_ptr<Camera> testCamera = std::make_unique<Camera>();
-
-	//Misc.
-	bool m_showDebugInfo = false;
-	float m_debugIdx = 0.f;
-	bool m_lightingEnabled = true;
 
 private:
 	template<typename Container>
