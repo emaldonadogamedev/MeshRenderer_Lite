@@ -20,12 +20,6 @@ DeferredShadowLightStage::~DeferredShadowLightStage()
 
 void DeferredShadowLightStage::PreRender()
 {
-		//bind main render target and clear it
-		//m_renderer->BindRenderTarget(m_renderData.m_MainRenderTargets[m_renderData.m_currentMainRTindex], false);//No depth testing 
-		//m_renderer->ClearRenderTarget(m_renderData.m_MainRenderTargets[m_renderData.m_currentMainRTindex], m_renderData.m_clearColor);
-
-		//bind main render target and clear it
-		//m_renderData.m_pImmediateContext->OMSetRenderTargets(1, &m_renderData.m_pBackBufferRenderTargetView, nullptr); //No depth testing required
 		m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateSolCullNone);
 		m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		m_renderer->EnableAdditiveBlending();
@@ -48,8 +42,14 @@ void DeferredShadowLightStage::PreRender()
 
 void DeferredShadowLightStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 {
+		if (m_renderData.testGlobalShaderProperties.gDebugInfoType != (int)GlobalGraphicsDebugType::G_DEBUG_NONE)
+				return;
+
 		m_renderer->BindNullVertexBuffer(); //we create the geometry on the Vertex Shader
 		m_renderer->BindIndexBuffer(m_fsqIndexBuffer);
+
+		// Set light POV buffers
+		m_renderData.m_pImmediateContext->PSSetConstantBuffers(5, 1, &m_renderData.testLightViewConstBuffer);
 
 		ObjectHandle handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("FullScreenQuadVS");
 		m_renderer->BindVertexShader(handle);

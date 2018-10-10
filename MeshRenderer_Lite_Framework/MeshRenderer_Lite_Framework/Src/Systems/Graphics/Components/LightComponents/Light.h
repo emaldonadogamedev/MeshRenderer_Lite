@@ -4,6 +4,10 @@
 
 using DirectX::XMVECTOR;
 using DirectX::XMFLOAT3;
+using DirectX::XMMATRIX;
+
+using DirectX::XMVectorSet;
+using DirectX::XMMatrixIdentity;
 
 enum class LightType : int
 {
@@ -14,6 +18,7 @@ enum class LightType : int
 		COUNT
 };
 
+static const unsigned int s_maxSimpleLights = 1500;
 struct SimpleLight
 {
 		XMFLOAT3 m_position;
@@ -25,20 +30,27 @@ struct SimpleLight
 		XMFLOAT3 m_Idiffuse = XMFLOAT3(0.8f, 0.8f, 0.8f);
 		int isActive = 0;
 
-		float attConst = 1.0f;
+		float attConst = 1.f;
 		float attLinear = 0.7f;
 		float attQuadratic = 1.8f;
 		float padding;
 };
 
+struct LightViewProj
+{
+		XMMATRIX lightViewMtx = XMMatrixIdentity();
+		XMMATRIX lightProjectionMtx = XMMatrixIdentity();
+};
+
+static const unsigned int s_maxShadowLights = 15;
 struct Light 
 {
 		int m_lightType = (int)LightType::LT_POINT;
 		XMFLOAT3 m_position = XMFLOAT3(0, 0, 0);
 
-		XMVECTOR m_Iambient = DirectX::XMVectorSet(0.4f, 0.4f, 0.4f, 1.0f);
-		XMVECTOR m_Idiffuse = DirectX::XMVectorSet(0.8f, 0.8f, 0.8f, 1.0f);
-		XMVECTOR m_Ispecular = DirectX::XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
+		XMVECTOR m_Iambient = XMVectorSet(0.4f, 0.4f, 0.4f, 1.0f);
+		XMVECTOR m_Idiffuse = XMVectorSet(0.8f, 0.8f, 0.8f, 1.0f);
+		XMVECTOR m_Ispecular = XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
 
 		XMFLOAT3 m_spotDirection = XMFLOAT3(0, -1, 0);
 		float m_spotInnerAngle = 0.2f;

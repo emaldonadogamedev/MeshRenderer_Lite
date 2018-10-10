@@ -1244,10 +1244,10 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 	bd.ByteWidth = sizeof(SimpleCloth_ConstBuffer);
 	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testSimpleClothConstBuffer));
 
-	bd.ByteWidth = sizeof(Light) * ShadowLightComponent::s_maxLights;
+	bd.ByteWidth = sizeof(Light) * s_maxShadowLights;
 	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testLightWithShadowConstBuffer));
 
-	bd.ByteWidth = sizeof(LightViewProjBuffer);
+	bd.ByteWidth = sizeof(LightViewProj) * s_maxShadowLights;
 	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testLightViewConstBuffer));
 
 	bd.ByteWidth = sizeof(MeshEntryMaterial);
@@ -1274,10 +1274,6 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 	// Initialize the projection matrix
 	m_renderData->testViewProjBuffer.projectionMtx = XMMatrixTranspose(XMMatrixPerspectiveFovLH(XM_PIDIV4, width / (FLOAT)height, 0.01f, 1000.0f));
 	m_renderData->m_pImmediateContext->UpdateSubresource(m_renderData->testViewProjConstBuffer, 0, NULL, &m_renderData->testViewProjBuffer, 0, 0);
-
-	//Initialize light view buffer
-	m_renderData->testLightViewBuffer.lightViewMtx = XMMatrixIdentity();
-	m_renderData->testLightViewBuffer.lightProjectionMtx = XMMatrixIdentity();
 
 	// Set primitive topology
 	m_renderData->m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -1337,12 +1333,14 @@ bool DX11Renderer::InitializeTextureSamplers()
 
 bool DX11Renderer::InitializeBlendStates()
 {
+
 	D3D11_BLEND_DESC blendDesc;
 	ZeroMemory(&blendDesc, sizeof(blendDesc));
 
 	D3D11_RENDER_TARGET_BLEND_DESC rtbd;
 	ZeroMemory(&rtbd, sizeof(rtbd));
 
+	//Alpha blending
 	rtbd.BlendEnable = true;
 	rtbd.SrcBlend = D3D11_BLEND_SRC_COLOR;
 	rtbd.DestBlend = D3D11_BLEND_BLEND_FACTOR;
@@ -1357,13 +1355,14 @@ bool DX11Renderer::InitializeBlendStates()
 
 	HR(m_renderData->m_pDevice->CreateBlendState(&blendDesc, &m_renderData->m_alphaBlending));
 
+	//Additive blending
 	ZeroMemory(&blendDesc, sizeof(blendDesc));
 	ZeroMemory(&rtbd, sizeof(rtbd));
 	rtbd.BlendEnable = true;
-	rtbd.SrcBlend = D3D11_BLEND_ONE;
+	rtbd.SrcBlend = D3D11_BLEND_SRC_ALPHA;
 	rtbd.DestBlend = D3D11_BLEND_ONE;
 	rtbd.BlendOp = D3D11_BLEND_OP_ADD;
-	rtbd.SrcBlendAlpha = D3D11_BLEND_ONE;
+	rtbd.SrcBlendAlpha = D3D11_BLEND_ZERO;
 	rtbd.DestBlendAlpha = D3D11_BLEND_ONE;
 	rtbd.BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	rtbd.RenderTargetWriteMask = D3D10_COLOR_WRITE_ENABLE_ALL;

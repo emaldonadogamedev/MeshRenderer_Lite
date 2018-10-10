@@ -2,6 +2,8 @@
 
 #include <Engine/Applications/IApplication/IApplication.h>
 
+#define MINI_LIGHT_COUNT 100
+
 class TestApp : public IApplication {
 
 public:
@@ -17,5 +19,5 @@ protected:
 	std::unique_ptr<GameObject> testLight;
 	std::unique_ptr<GameObject> testLight2;
 
-	std::unique_ptr<GameObject> testMiniLights[30];
+	std::unique_ptr<GameObject> testMiniLights[MINI_LIGHT_COUNT];
 };

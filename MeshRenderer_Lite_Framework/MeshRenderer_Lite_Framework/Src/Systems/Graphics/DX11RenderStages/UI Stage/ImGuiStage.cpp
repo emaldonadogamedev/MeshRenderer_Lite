@@ -139,6 +139,10 @@ void ImGuiStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 				ImGui::DragFloat3("Diffuse", light->m_Idiffuse.m128_f32, 0.001f, 0.f, 1.0f, "%.3f");
 				ImGui::DragFloat3("Specular", light->m_Ispecular.m128_f32, 0.001f, 0.f, 1.0f, "%.3f");
 
+				ImGui::DragFloat("Constant Att: ", &light->m_ConstantAttenuation, 0.001f);
+				ImGui::DragFloat("Linear Att: ", &light->m_LinearAttenuation, 0.001f);
+				ImGui::DragFloat("Quadratics Att: ", &light->m_QuadraticAttenuation, 0.001f);
+
 				ImGui::End();
 		}
 	}
@@ -188,10 +192,6 @@ void ImGuiStage::ShowGraphicsSettings()
 				if (ImGui::MenuItem("Normals")) {
 					m_renderData.testGlobalShaderProperties.gDebugInfoType = 
 							(int)GlobalGraphicsDebugType::G_DEBUG_NORMALS;
-				}
-				if (ImGui::MenuItem("Tangent")) {
-						m_renderData.testGlobalShaderProperties.gDebugInfoType =
-								(int)GlobalGraphicsDebugType::G_DEBUG_TANGENTS;
 				}
 				if (ImGui::MenuItem("Depth Buffer")) {
 						m_renderData.testGlobalShaderProperties.gDebugInfoType =

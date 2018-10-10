@@ -95,7 +95,6 @@ public:
 
 	ID3D11Buffer* testLightWithShadowConstBuffer = nullptr;
 
-	LightViewProjBuffer testLightViewBuffer;
 	ID3D11Buffer* testLightViewConstBuffer = nullptr;
 
 	MeshEntryMaterial testMeshMaterialBuffer = MeshEntryMaterial::GetPresetMaterial(PredefinedMaterials::GreenPlastic);

@@ -1,4 +1,5 @@
 #include "../ShaderIncludes.hlsli"
+#include "../VertexShaders/VertexShaderIncludes.hlsli"
 #include "PixelShaderIncludes.hlsli"
 #include "LightingInclude.hlsli"
 
@@ -19,7 +20,55 @@ float4 main(PixelInputType pixel) : SV_TARGET
 		{
 				if (sceneLights[i].isTaken && sceneLights[i].isActive)
 				{
-						result +=  CaculateBRDFLighting(position, normal, kd, float4(ksAndNs.xyz, 1.0f), ksAndNs.w, cameraPosition.xyz,
+						float lightIntensity = 1.0f;
+						if (sceneLights[i].isUsingShadows)
+						{		
+								// Set the bias value for fixing the floating point precision issues.
+								float bias = 0.001f;
+								
+								//get pos into light's point of view
+								float4 lightViewPosition = float4(position, 1.0f); // world space pos.
+								lightViewPosition = mul(lightViewPosition, lightViewProj[shadowMapPassIdx].lightViewMtx);
+								lightViewPosition = mul(lightViewPosition, lightViewProj[shadowMapPassIdx].lightProjectionMtx);
+								
+								// Calculate the projected texture coordinates.
+								float2 projectTexCoord;
+								projectTexCoord.x = lightViewPosition.x / lightViewPosition.w / 2.0f + 0.5f;
+								projectTexCoord.y = -lightViewPosition.y / lightViewPosition.w / 2.0f + 0.5f;
+								
+								// Determine if the projected coordinates are in the 0 to 1 range.  If so then this pixel is in the view of the light.
+								if ((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y))
+								{
+										// Sample the shadow map depth value from the depth texture using the sampler at the projected texture coordinate location.
+										float depthValue = shadowMaps[i].Sample(textureSamplerWrap, projectTexCoord).x;
+
+										// Calculate the depth of the light.
+										float lightDepthValue = lightViewPosition.z / lightViewPosition.w;
+
+										// Subtract the bias from the lightDepthValue.
+										lightDepthValue = lightDepthValue - bias;
+
+										// Compare the depth of the shadow map value and the depth of the light to determine whether to shadow or to light this 
+										//pixel. If the light is in front of the object then light the pixel, if not then shadow this pixel since an object 
+										//(occluder) is casting a shadow on it.
+										if (lightDepthValue < depthValue)
+										{
+												// Calculate the amount of light on this pixel.
+												lightIntensity = saturate(dot(normal, sceneLights[i].m_position));
+
+												//if (lightIntensity > 0.0f)
+												//{
+												//		// Determine the final diffuse color based on the diffuse color and the amount of light intensity.
+												//		kd += (kd * lightIntensity);
+												//
+												//		// Saturate the final light color.
+												//		kd = saturate(kd);
+												//}
+										}
+								}
+						}
+
+						result += (1 - lightIntensity) * CaculateBRDFLighting(position, normal, kd, float4(ksAndNs.xyz, 1.0f), ksAndNs.w, cameraPosition.xyz,
 								sceneLights[i].m_position, sceneLights[i].m_Iambient, sceneLights[i].m_Idiffuse, sceneLights[i].m_ConstantAttenuation,
 								sceneLights[i].m_LinearAttenuation, sceneLights[i].m_QuadraticAttenuation);
 				}

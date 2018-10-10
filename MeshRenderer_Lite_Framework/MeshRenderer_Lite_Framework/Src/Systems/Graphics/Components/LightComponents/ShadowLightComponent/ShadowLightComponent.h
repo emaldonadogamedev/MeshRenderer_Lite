@@ -1,9 +1,10 @@
 #pragma once
 
-#include <Systems/Graphics/Components/LightComponents/LightComponent/LightComponent.h>
+#include <Systems/Core/Components/IComponent.h>
 #include <Systems/Graphics/GraphicsUtilities/ObjectHandle.h>
 
 struct Light;
+struct LightViewProj;
 
 class ShadowLightComponent : public IComponent
 {
@@ -13,6 +14,7 @@ public:
 	virtual ~ShadowLightComponent();
 
 	Light* GetLight() const;
+	LightViewProj* GetLightViewProjBuffer() const;
 
 	bool IsUsingShadows() const;
 	ObjectHandle& GetShadowRThandle();
@@ -21,12 +23,13 @@ public:
 
 	void SetUseShadows(const bool v);
 
-	static const unsigned int s_maxLights;
 	static const Light* const GetSceneLightsWithShadowPtr();
+	static const LightViewProj* const GetShadowLightViewProjBuffersPtr();
 	static int GetActiveLightsWithShadowCount();
 
 protected:
-		Light* m_light;
+	Light* m_light;
+	LightViewProj* m_viewProj;
 
 	bool m_useShadows;
 	ObjectHandle* m_shadowRThandle;
@@ -35,6 +38,7 @@ protected:
 
 	static Light sceneLightsWithShadows[];
 	static ObjectHandle shadowMapHandles[];
+	static LightViewProj shadowLightViewProjBuffers[];
 	static int s_takenLightCount;
 
 	friend class GraphicsSystem;

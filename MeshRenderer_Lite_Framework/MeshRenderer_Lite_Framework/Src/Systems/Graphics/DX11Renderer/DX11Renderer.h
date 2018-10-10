@@ -77,8 +77,8 @@ public:
 	//Render Target functions
 	void CreateRenderTarget(ObjectHandle& rt, const int W, const int H, const DataFormat dataFormat, bool useDepthBuffer = true);
 	void BindRenderTarget(const ObjectHandle& rt, const bool useDepthMap = true);
-	void ClearRenderTarget(const ObjectHandle& rt, const float colorArr[4] = { 0 });
-	void ClearRenderTarget(const ObjectHandle& rt, const XMVECTOR& clearColor = XMVECTOR());
+	void ClearRenderTarget(const ObjectHandle& rt, const float colorArr[4]);
+	void ClearRenderTarget(const ObjectHandle& rt, const XMVECTOR& clearColor);
 
 	//////////////////////////////////////////////////////////////////////////
 	//Release

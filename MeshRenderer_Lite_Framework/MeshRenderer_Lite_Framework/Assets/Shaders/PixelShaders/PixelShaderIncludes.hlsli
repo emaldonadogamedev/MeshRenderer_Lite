@@ -14,21 +14,22 @@ TextureCube dynCubeMapTextures : register(t4);
 //Shadow map textures(15)
 #define SHADOW_MAP(x) shadowMap_##x
 
-Texture2D shadowMap_0 : register(t5);
-Texture2D shadowMap_1 : register(t6);
-Texture2D shadowMap_2 : register(t7);
-Texture2D shadowMap_3 : register(t8);
-Texture2D shadowMap_4 : register(t9);
-Texture2D shadowMap_5 : register(t10);
-Texture2D shadowMap_6 : register(t11);
-Texture2D shadowMap_7 : register(t12);
-Texture2D shadowMap_8 : register(t13);
-Texture2D shadowMap_9 : register(t14);
-Texture2D shadowMap_10 : register(t15);
-Texture2D shadowMap_11 : register(t16);
-Texture2D shadowMap_12 : register(t17);
-Texture2D shadowMap_13 : register(t18);
-Texture2D shadowMap_14 : register(t19);
+Texture2D shadowMaps[15] : register(t5);
+//Texture2D shadowMap_0 : register(t5);
+//Texture2D shadowMap_1 : register(t6);
+//Texture2D shadowMap_2 : register(t7);
+//Texture2D shadowMap_3 : register(t8);
+//Texture2D shadowMap_4 : register(t9);
+//Texture2D shadowMap_5 : register(t10);
+//Texture2D shadowMap_6 : register(t11);
+//Texture2D shadowMap_7 : register(t12);
+//Texture2D shadowMap_8 : register(t13);
+//Texture2D shadowMap_9 : register(t14);
+//Texture2D shadowMap_10 : register(t15);
+//Texture2D shadowMap_11 : register(t16);
+//Texture2D shadowMap_12 : register(t17);
+//Texture2D shadowMap_13 : register(t18);
+//Texture2D shadowMap_14 : register(t19);
 
 //Deferred Rendering Render Targets
 Texture2D positionRT : register(t20);
@@ -53,7 +54,7 @@ struct PhongMaterial
 		int useDiffuseTexture;
 		int useNormalMap;
 		int useAlphaBlending;
-		int padding;
+		int isShadowCaster;
 };
 
 cbuffer ObjectMaterial : register(b6)
@@ -123,9 +124,11 @@ cbuffer SceneLightsNoShadow : register(b8)
 static const int G_DEBUG_NONE = 0;
 static const int G_DEBUG_POSITION = 1;
 static const int G_DEBUG_DEPTH = 2;
-static const int G_DEBUG_NORMALS = 3;
-static const int G_DEBUG_DIFFUSE = 4;
-static const int G_DEBUG_SPECULAR = 5;
+static const int G_DEBUG_UV_COORDS = 3;
+static const int G_DEBUG_NORMALS = 4;
+static const int G_DEBUG_DIFFUSE = 5;
+static const int G_DEBUG_SPECULAR = 6;
+static const int G_DEBUG_COUNT = 7;
 
 cbuffer GlobalShaderProperties : register(b9)
 {

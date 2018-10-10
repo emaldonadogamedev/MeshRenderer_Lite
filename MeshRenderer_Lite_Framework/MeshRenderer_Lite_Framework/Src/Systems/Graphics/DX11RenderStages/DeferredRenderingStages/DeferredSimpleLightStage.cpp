@@ -36,6 +36,8 @@ void DeferredSimpleLightStage::PreRender()
 
 void DeferredSimpleLightStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 {
+		if (m_renderData.testGlobalShaderProperties.gDebugInfoType != (int)GlobalGraphicsDebugType::G_DEBUG_NONE)
+				return;
 
 		ObjectHandle handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("defaultVS");
 		m_renderer->BindVertexShader(handle);

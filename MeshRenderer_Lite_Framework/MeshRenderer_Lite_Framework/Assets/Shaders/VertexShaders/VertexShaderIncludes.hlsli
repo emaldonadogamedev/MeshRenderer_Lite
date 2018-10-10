@@ -40,8 +40,13 @@ cbuffer SimpleCloth_ConstBuffer : register(b4)
 //--------------------------------------------------------------------------------------
 // Per Light - Shadow Map variables
 //--------------------------------------------------------------------------------------
-cbuffer LightViewProjBuffer : register(b5)
+struct LightViewProj
 {
 		float4x4 lightViewMtx;
 		float4x4 lightProjectionMtx;
+};
+
+cbuffer LightViewProjBuffer : register(b5)
+{
+		LightViewProj lightViewProj[15];
 };

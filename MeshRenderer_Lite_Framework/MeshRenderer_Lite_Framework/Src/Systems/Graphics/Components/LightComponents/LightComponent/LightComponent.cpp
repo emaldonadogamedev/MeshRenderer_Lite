@@ -8,13 +8,14 @@
 LightComponent::LightComponent(const GameObject* owner, bool isActive)
 		:IComponent(ComponentType::RENDERABLE_LIGHT, owner, isActive)
 {
-		for (unsigned int i = 0; i < s_maxLights; ++i)
+		for (unsigned int i = 0; i < s_maxSimpleLights; ++i)
 		{
 				if (!sceneLightsNoShadows[i].isTaken)
 				{
 						m_light = &sceneLightsNoShadows[i];
 						m_light->isTaken = 1;
 						m_light->isActive = isActive;
+						++s_takenLightCount;
 						return;
 				}
 		}
@@ -24,6 +25,8 @@ LightComponent::LightComponent(const GameObject* owner, bool isActive)
 
 LightComponent::~LightComponent()
 {
+		--s_takenLightCount;
+		m_light->isTaken = 0;
 }
 
 SimpleLight* LightComponent::GetLight() const
@@ -33,13 +36,11 @@ SimpleLight* LightComponent::GetLight() const
 
 void LightComponent::SetLightRange(const float r)
 {
-		auto t = (Transform*)GetOwner()->GetComponent(ComponentType::TRANSFORM);
-		t->SetScale(r,r,r);
+		const auto lightTransform = (Transform*)GetOwner()->GetComponent(ComponentType::TRANSFORM);
+		lightTransform->SetScale(r,r,r);
 
 		m_light->m_range = r;
 }
-
-const unsigned int LightComponent::s_maxLights = 1500;
 
 const SimpleLight* const LightComponent::GetSceneLightsNoShadowPtr()
 {
@@ -51,6 +52,5 @@ int LightComponent::GetActiveLightsNoShadowCount()
 		return s_takenLightCount;
 }
 
-int LightComponent::s_takenLightCount = 0;;
-
-SimpleLight LightComponent::sceneLightsNoShadows[s_maxLights] = {};
+int LightComponent::s_takenLightCount = 0;
+SimpleLight LightComponent::sceneLightsNoShadows[s_maxSimpleLights] = {};

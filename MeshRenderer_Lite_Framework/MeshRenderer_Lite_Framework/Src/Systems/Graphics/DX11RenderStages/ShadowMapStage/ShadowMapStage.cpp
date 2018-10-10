@@ -40,6 +40,7 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 		handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("ShadowPS");
 		m_renderer->BindPixelShader(handle);
 
+		int lightIdx = 0;
 		const auto& lightComps = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_LIGHT_WITH_SHADOW];
 		for (auto& light : lightComps)
 		{
@@ -56,34 +57,17 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 
 				//Set the shadow texture as the render target, also clear it
 				m_renderer->BindRenderTarget(shadowRThandle);
-				m_renderer->ClearRenderTarget(shadowRThandle, XMVECTOR());
+				static const auto shadowClearColor = XMVectorSet(0, 0, 0, 1.0f);
+				m_renderer->ClearRenderTarget(shadowRThandle, shadowClearColor);
 
 				D3D11_VIEWPORT shadowViewport { 0,0,shadowRTObj.width, shadowRTObj.height,0,1.0f };
 				m_renderData.m_pImmediateContext->RSSetViewports(1, &shadowViewport);
 
-				//update the view matrix according to the light's position
-				m_renderData.testLightViewBuffer.lightViewMtx = XMMatrixTranspose(
-						XMMatrixLookAtLH(
-								(static_cast<Transform* const>(lightComp->GetOwner()->GetComponent(ComponentType::TRANSFORM)))->GetPosition(),
-								//renderData.testCamera->m_LookAt,
-								XMVectorSet(0,0,0,1.0f),
-								m_renderData.testCamera->m_Up)
-				);
-
-				//update the projection matrix according to the shadow's texture resolution
-				m_renderData.testLightViewBuffer.lightProjectionMtx = XMMatrixTranspose(
-						//XMMatrixPerspectiveLH(shadowRTObj.width, shadowRTObj.height, renderData.testCamera->m_Near, 
-						//		renderData.testCamera->m_Far)
-						XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV2, shadowRTObj.GetAspectRatio(), m_renderData.testCamera->m_Near,
-								m_renderData.testCamera->m_Far)
-				);
-
-				m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testLightViewConstBuffer,
-						0, NULL, &m_renderData.testLightViewBuffer, 0, 0);
-
 				// Set light POV buffers
 				m_renderData.m_pImmediateContext->VSSetConstantBuffers(5, 1, &m_renderData.testLightViewConstBuffer);
-				//m_renderData.m_pImmediateContext->PSSetConstantBuffers(5, 1, &m_renderData.testViewProjConstBuffer);
+
+				//Update the light index on the per-object buffer
+				m_renderData.testPerObjectBuffer.shadowMapPassIdx = lightIdx++;
 
 				//forward render all of the objects
 				const auto& modelComponents = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_3D];

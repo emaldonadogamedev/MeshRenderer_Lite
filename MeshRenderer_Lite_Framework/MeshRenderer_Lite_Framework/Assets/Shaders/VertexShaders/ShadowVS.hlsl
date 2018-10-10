@@ -17,8 +17,8 @@ PixelInputType main(VertexInputType vertex)
 		}
 
 		result.worldPos = mul(pos, worldMtx);
-		result.position = mul(result.worldPos, lightViewMtx);
-		result.position = mul(result.position, lightProjectionMtx);
+		result.position = mul(result.worldPos, lightViewProj[shadowMapPassIdx].lightViewMtx);
+		result.position = mul(result.position, lightViewProj[shadowMapPassIdx].lightProjectionMtx);
 
 		return result;
 }

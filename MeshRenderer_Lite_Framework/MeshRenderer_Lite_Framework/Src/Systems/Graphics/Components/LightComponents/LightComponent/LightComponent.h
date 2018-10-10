@@ -13,8 +13,6 @@ public:
 		SimpleLight* GetLight() const;
 		void SetLightRange(const float r);
 
-		static const unsigned int s_maxLights;
-
 		static const SimpleLight* const GetSceneLightsNoShadowPtr();
 		static int GetActiveLightsNoShadowCount();
 protected:		

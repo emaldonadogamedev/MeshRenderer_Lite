@@ -17,6 +17,7 @@
 #include <Systems/Graphics/Components/ModelComponent/ModelComponent.h>
 #include <Systems/Graphics/Components/CurvePathComponent/CurvePathComponent.h>
 #include <Systems/Graphics/Components/LightComponents/Light.h>
+#include <Systems/Graphics/Components/LightComponents/LightComponent/LightComponent.h>
 #include <Systems/Graphics/Components/LightComponents/ShadowLightComponent/ShadowLightComponent.h>
 #include <Systems/Graphics/Components/SimpleCCD/SuperSimpleCCD.h>
 #include <Systems/Graphics/Components/SimpleCloth/SimpleClothComponent.h>
@@ -102,6 +103,7 @@ void GraphicsSystem::UpdateModelComponents(const float dt)
 
 void GraphicsSystem::UpdateLightComponents(const float dt)
 {
+	auto& renderData = m_dx11Renderer->GetRendererData();
 	auto& lightComponents = m_renderComponents[ComponentType::RENDERABLE_LIGHT];
 	auto& shadowLightComponents = m_renderComponents[ComponentType::RENDERABLE_LIGHT_WITH_SHADOW];
 
@@ -116,16 +118,47 @@ void GraphicsSystem::UpdateLightComponents(const float dt)
 
 	for (auto& component : shadowLightComponents)
 	{
-			auto light = (static_cast<const ShadowLightComponent*>(component))->GetLight();
-			auto& lightTransform = (static_cast<Transform* const>(component->GetOwner()->GetComponent(ComponentType::TRANSFORM)))->GetPosition();
-			light->m_position.x = lightTransform.m128_f32[0];
-			light->m_position.y = lightTransform.m128_f32[1];
-			light->m_position.z = lightTransform.m128_f32[2];
+			ShadowLightComponent* lightComp = (ShadowLightComponent*)component;
+			auto light = lightComp->GetLight();
+			auto lightViewProj = lightComp->GetLightViewProjBuffer();
+			auto& lightTransformPos = (static_cast<Transform* const>(component->GetOwner()->GetComponent(ComponentType::TRANSFORM)))->GetPosition();
+			light->m_position.x = lightTransformPos.m128_f32[0];
+			light->m_position.y = lightTransformPos.m128_f32[1];
+			light->m_position.z = lightTransformPos.m128_f32[2];
+			light->isUsingShadows = lightComp->IsUsingShadows();
+
+			//////////////////////////////////////////////////////////////////////////
+			//Update the light POV & Projection buffers
+			if (!lightComp->IsUsingShadows())
+					continue;
+
+			const auto& shadowRThandle = lightComp->GetShadowRThandle();
+			if (!shadowRThandle)
+					continue;
+
+			auto& shadowRTObj = renderData.renderTargets[*shadowRThandle];
+
+			//update the view matrix according to the light's position
+			lightViewProj->lightViewMtx = XMMatrixTranspose(
+					XMMatrixLookAtLH(
+							lightTransformPos,
+							//renderData.testCamera->m_LookAt,
+							XMVectorSet(0, 0, 0, 1.0f),
+							renderData.testCamera->m_Up)
+			);
+
+			//update the projection matrix according to the shadow's texture resolution
+			lightViewProj->lightProjectionMtx = XMMatrixTranspose(
+					XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV2, shadowRTObj.GetAspectRatio(), renderData.testCamera->m_Near,
+							renderData.testCamera->m_Far)
+			);
 	}
 
-	auto& renderData = m_dx11Renderer->GetRendererData();
 	renderData.m_pImmediateContext->UpdateSubresource(renderData.testLightWithShadowConstBuffer,
 			0, NULL, ShadowLightComponent::GetSceneLightsWithShadowPtr(), 0, 0);
+
+	renderData.m_pImmediateContext->UpdateSubresource(renderData.testLightViewConstBuffer,
+			0, NULL, ShadowLightComponent::GetShadowLightViewProjBuffersPtr(), 0, 0);
 }
 
 #pragma  region ANIMATION HELPERS
@@ -482,10 +515,12 @@ void GraphicsSystem::AddRenderStages()
 	const Model* const boxModel = GetModel("box");
 	AddRenderStageHelper(new AmbientLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
 	AddRenderStageHelper(new DeferredShadowLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
-	AddRenderStageHelper(new DeferredSimpleLightStage(m_dx11Renderer.get(), &m_renderComponents, boxModel));
+	AddRenderStageHelper(new DeferredSimpleLightStage(m_dx11Renderer.get(), &m_renderComponents, boxModel), false);
 
 	AddRenderStageHelper(new ForwardRenderStage(m_dx11Renderer.get(), &m_renderComponents), false);
 	AddRenderStageHelper(new PathWalkDebugStage(m_dx11Renderer.get(), &m_renderComponents), false);
+
+	//TODO: Add post processing render stages here
 
 	//COPY ALL OF THE RESULTS TO THE BACK BUFFER TO PRESENT THE FINAL FRAME AFTER THE UI STAGE
 	AddRenderStageHelper(new FinalBackBufferStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));

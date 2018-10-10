@@ -10,7 +10,7 @@ ShadowLightComponent::ShadowLightComponent(const GameObject* owner, bool isActiv
 	, m_shadowMapWidthHeight(shadowWidthHeight)
 {
 		int textureIdx = 5;
-		for (unsigned int i = 0; i < s_maxLights; ++i)
+		for (unsigned int i = 0; i < s_maxShadowLights; ++i)
 		{
 				if (!sceneLightsWithShadows[i].isTaken)
 				{
@@ -19,6 +19,8 @@ ShadowLightComponent::ShadowLightComponent(const GameObject* owner, bool isActiv
 						m_light->isUsingShadows = static_cast<int>(m_useShadows);
 						m_shadowRThandle = &shadowMapHandles[i];
 						m_shadowTextureIdx = textureIdx;
+						m_viewProj = &shadowLightViewProjBuffers[i];
+						
 						++s_takenLightCount;
 						return;
 				}
@@ -39,6 +41,11 @@ ShadowLightComponent::~ShadowLightComponent()
 Light* ShadowLightComponent::GetLight() const
 {
 		return m_light;
+}
+
+LightViewProj* ShadowLightComponent::GetLightViewProjBuffer() const
+{
+		return m_viewProj;
 }
 
 bool ShadowLightComponent::IsUsingShadows() const
@@ -66,11 +73,14 @@ void ShadowLightComponent::SetUseShadows(const bool v)
 	m_useShadows = v;
 }
 
-const unsigned int ShadowLightComponent::s_maxLights = 15;
-
 const Light* const ShadowLightComponent::GetSceneLightsWithShadowPtr()
 {
 	return sceneLightsWithShadows;
+}
+
+const LightViewProj* const ShadowLightComponent::GetShadowLightViewProjBuffersPtr()
+{
+		return shadowLightViewProjBuffers;
 }
 
 int ShadowLightComponent::GetActiveLightsWithShadowCount()
@@ -78,9 +88,7 @@ int ShadowLightComponent::GetActiveLightsWithShadowCount()
 	return s_takenLightCount;
 }
 
+LightViewProj ShadowLightComponent::shadowLightViewProjBuffers[s_maxShadowLights];
 int ShadowLightComponent::s_takenLightCount = 0;
-
-ObjectHandle ShadowLightComponent::shadowMapHandles[s_maxLights] = { ObjectHandle::Null()};
-
-Light ShadowLightComponent::sceneLightsWithShadows[s_maxLights];
-
+ObjectHandle ShadowLightComponent::shadowMapHandles[s_maxShadowLights] = { ObjectHandle::Null()};
+Light ShadowLightComponent::sceneLightsWithShadows[s_maxShadowLights];

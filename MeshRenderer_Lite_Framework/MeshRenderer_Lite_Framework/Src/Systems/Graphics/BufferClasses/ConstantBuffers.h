@@ -24,7 +24,8 @@ struct PerObectBuffer
 
 		int isSkydome;
 		int isAnimated;
-		int padding[2];
+		int shadowMapPassIdx;
+		int padding;
 };
 
 static const unsigned char s_maxBoneCount = 100;
@@ -46,12 +47,6 @@ struct SimpleCloth_ConstBuffer
 	ClothParticleGPU particleData[s_maxParticleData];
 };
 
-struct LightViewProjBuffer
-{
-		XMMATRIX lightViewMtx;
-		XMMATRIX lightProjectionMtx;
-};
-
 enum class GlobalGraphicsDebugType : int
 {
 		G_DEBUG_NONE,
@@ -59,8 +54,6 @@ enum class GlobalGraphicsDebugType : int
 		G_DEBUG_DEPTH,
 		G_DEBUG_UV_COORDS,
 		G_DEBUG_NORMALS,
-		G_DEBUG_TANGENTS,
-		G_DEBUG_BITANGENTS,
 		G_DEBUG_DIFFUSE,
 		G_DEBUG_SPECULAR,
 

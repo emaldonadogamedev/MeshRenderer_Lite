@@ -9,6 +9,9 @@ using DirectX::XMFLOAT3;
 //In this cool website they list some cool material values:
 //https://www.3dgep.com/texturing-lighting-directx-11/#Materials_Properties
 
+//UE4 PBR materials
+//https://docs.unrealengine.com/en-us/Engine/Rendering/Materials/PhysicallyBased
+
 enum class PredefinedMaterials : int
 {
 		Emerald,
@@ -33,24 +36,13 @@ struct MaterialProperties
 		int useDiffuseTexture = 0;
 		int useNormalMap = 0;
 		int useAlphaBlending = 0;
-		int padding;
+		int isShadowCaster = 1;
 };
 
 struct MeshEntryMaterial
 {
-
-public:
 		MeshEntryMaterial(const XMFLOAT4& ka, const XMFLOAT4& kd, const XMFLOAT3& ks, const float ns, 
-				const XMFLOAT4& ke = XMFLOAT4(0, 0, 0, 0), const int useDiffText = 1, const int useNormMap = 1)
-		{
-				m_materialProperties.ambientKa = ka;
-				m_materialProperties.diffuseKd = kd;
-				m_materialProperties.specularKs = ks;
-				m_materialProperties.specularPowerNs = ns;
-				m_materialProperties.emissiveKe = ke;
-				m_materialProperties.useDiffuseTexture = useDiffText;
-				m_materialProperties.useNormalMap = useNormMap;
-		}
+				const XMFLOAT4& ke = XMFLOAT4(0, 0, 0, 0), const int useDiffText = 1, const int useNormMap = 1);
 
 		MeshEntryMaterial& operator=(const MeshEntryMaterial& rhs);
 

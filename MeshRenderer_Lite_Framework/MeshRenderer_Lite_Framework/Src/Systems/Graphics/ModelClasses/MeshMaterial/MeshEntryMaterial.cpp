@@ -1,6 +1,18 @@
 #include <Utilities/precompiled.h>
 #include <Systems/Graphics/ModelClasses/MeshMaterial/MeshEntryMaterial.h>
 
+MeshEntryMaterial::MeshEntryMaterial(const XMFLOAT4& ka, const XMFLOAT4& kd, const XMFLOAT3& ks, const float ns, 
+		const XMFLOAT4& ke, const int useDiffText, const int useNormMap)
+{
+		m_materialProperties.ambientKa = ka;
+		m_materialProperties.diffuseKd = kd;
+		m_materialProperties.specularKs = ks;
+		m_materialProperties.specularPowerNs = ns;
+		m_materialProperties.emissiveKe = ke;
+		m_materialProperties.useDiffuseTexture = useDiffText;
+		m_materialProperties.useNormalMap = useNormMap;
+}
+
 MeshEntryMaterial& MeshEntryMaterial::operator=(const MeshEntryMaterial& rhs)
 {
 		m_materialProperties.ambientKa = rhs.m_materialProperties.ambientKa;
