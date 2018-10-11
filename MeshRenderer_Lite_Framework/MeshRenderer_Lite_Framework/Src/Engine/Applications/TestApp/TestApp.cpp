@@ -67,7 +67,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//test light 1
 		testLight = std::make_unique<GameObject>();
 		transform = new Transform(testLight.get());
-		transform->SetPositionn(DirectX::XMVectorSet(2.8f, 3.f, 0.f, 1.f));
+		transform->SetPositionn(DirectX::XMVectorSet(2.8f, 48.f, 0.f, 1.f));
 		testLight->AddComponent(transform);
 		gameObjSystem->AddComponent(transform);
 

@@ -38,7 +38,7 @@ void DX11Renderer::ReleaseData()
 	{
 		SafeRelease(rt.rtv);
 		SafeRelease(rt.srv);
-		SafeRelease(rt.texture);
+		SafeRelease(rt.texture2D);
 		SafeRelease(rt.depthBuffer);
 		SafeRelease(rt.depthStencilView);
 	}
@@ -264,7 +264,8 @@ void DX11Renderer::CreateIndexBuffer(ObjectHandle& indexBuffer, const BufferUsag
 		desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
 		break;
 
-	default: break;
+	default: 
+			break;
 	}
 
 	//Specify buffer description data
@@ -468,14 +469,14 @@ void DX11Renderer::CreateRenderTarget(ObjectHandle& rt, const int W, const int H
 		auto& renderTargetObj = m_renderData->renderTargets[*rt];
 
 		SafeRelease(renderTargetObj.rtv);
-		SafeRelease(renderTargetObj.texture);
+		SafeRelease(renderTargetObj.texture2D);
 		SafeRelease(renderTargetObj.srv);
 		SafeRelease(renderTargetObj.depthStencilView);
 		SafeRelease(renderTargetObj.depthBuffer);
 
 		renderTargetObj.format = dataFormat;
 		renderTargetObj.rtv = renderTargetView;
-		renderTargetObj.texture = tempTargetTexture;
+		renderTargetObj.texture2D = tempTargetTexture;
 		renderTargetObj.srv = shaderResourceView;
 		renderTargetObj.depthBuffer = depthBuffer;
 		renderTargetObj.depthStencilView = stencilView;
@@ -488,7 +489,7 @@ void DX11Renderer::CreateRenderTarget(ObjectHandle& rt, const int W, const int H
 		
 		renderTargetObj.format = dataFormat;
 		renderTargetObj.rtv = renderTargetView;
-		renderTargetObj.texture = tempTargetTexture;
+		renderTargetObj.texture2D = tempTargetTexture;
 		renderTargetObj.srv = shaderResourceView;
 		renderTargetObj.depthBuffer = depthBuffer;
 		renderTargetObj.depthStencilView = stencilView;
@@ -972,8 +973,8 @@ void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const int W, con
 	{
 		//Create the handle and assign the data
 		Texture2D texture;
-		texture.size.width = W; 
-		texture.size.height = H;
+		texture.width = W; 
+		texture.height = H;
 		texture.srv = shaderResourceView;
 
 		int index = m_renderData->NextAvailableIndex(m_renderData->textures2D);

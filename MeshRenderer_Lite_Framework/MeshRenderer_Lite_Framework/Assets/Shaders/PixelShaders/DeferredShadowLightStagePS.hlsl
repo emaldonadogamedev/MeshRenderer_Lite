@@ -20,22 +20,25 @@ float4 main(PixelInputType pixel) : SV_TARGET
 		{
 				if (sceneLights[i].isTaken && sceneLights[i].isActive)
 				{
+						//kd = shadowMaps[i].Sample(textureSamplerWrap, uv);
+
 						float lightIntensity = 1.0f;
-						if (sceneLights[i].isUsingShadows)
+						if (true)//sceneLights[i].isUsingShadows)
 						{		
 								// Set the bias value for fixing the floating point precision issues.
 								float bias = 0.001f;
 								
 								//get pos into light's point of view
 								float4 lightViewPosition = float4(position, 1.0f); // world space pos.
-								lightViewPosition = mul(lightViewPosition, lightViewProj[shadowMapPassIdx].lightViewMtx);
-								lightViewPosition = mul(lightViewPosition, lightViewProj[shadowMapPassIdx].lightProjectionMtx);
+								lightViewPosition = mul(lightViewPosition, lightViewProj[i].lightViewMtx);
+								lightViewPosition = mul(lightViewPosition, lightViewProj[i].lightProjectionMtx);
 								
 								// Calculate the projected texture coordinates.
 								float2 projectTexCoord;
 								projectTexCoord.x = lightViewPosition.x / lightViewPosition.w / 2.0f + 0.5f;
 								projectTexCoord.y = -lightViewPosition.y / lightViewPosition.w / 2.0f + 0.5f;
 								
+
 								// Determine if the projected coordinates are in the 0 to 1 range.  If so then this pixel is in the view of the light.
 								if ((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y))
 								{
@@ -56,14 +59,14 @@ float4 main(PixelInputType pixel) : SV_TARGET
 												// Calculate the amount of light on this pixel.
 												lightIntensity = saturate(dot(normal, sceneLights[i].m_position));
 
-												//if (lightIntensity > 0.0f)
-												//{
-												//		// Determine the final diffuse color based on the diffuse color and the amount of light intensity.
-												//		kd += (kd * lightIntensity);
-												//
-												//		// Saturate the final light color.
-												//		kd = saturate(kd);
-												//}
+												if (lightIntensity > 0.0f)
+												{
+														// Determine the final diffuse color based on the diffuse color and the amount of light intensity.
+														//kd += (kd * lightIntensity);
+												
+														// Saturate the final light color.
+														//kd = saturate(kd * lightIntensity);
+												}
 										}
 								}
 						}

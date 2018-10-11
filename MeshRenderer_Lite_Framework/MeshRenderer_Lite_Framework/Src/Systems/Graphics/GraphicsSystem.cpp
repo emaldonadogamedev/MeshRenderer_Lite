@@ -143,8 +143,8 @@ void GraphicsSystem::UpdateLightComponents(const float dt)
 					XMMatrixLookAtLH(
 							lightTransformPos,
 							//renderData.testCamera->m_LookAt,
-							XMVectorSet(0, 0, 0, 1.0f),
-							renderData.testCamera->m_Up)
+							XMVectorSet(0, 0, 0, 0),
+							XMVectorSet(0, 1.0f, 0, 0))
 			);
 
 			//update the projection matrix according to the shadow's texture resolution

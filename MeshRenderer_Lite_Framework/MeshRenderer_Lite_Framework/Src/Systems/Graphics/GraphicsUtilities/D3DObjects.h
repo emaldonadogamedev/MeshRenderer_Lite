@@ -46,36 +46,40 @@ struct Area
 struct Texture2D : TextureObject
 {
 	ID3D11Texture2D* texture2D;
-	Area size;
-};
-
-struct Texture3D : TextureObject
-{
-	ID3D11Texture3D* texture3D;
-	Area sizePerTexture;
-};
-typedef Texture3D CubeMap;
-
-struct RenderTarget : TextureObject
-{
-	ID3D11Texture2D* texture = nullptr;
-	ID3D11RenderTargetView* rtv = nullptr;
-	DataFormat format;
-
-	//Associated depth/stencil buffer
-	ID3D11DepthStencilView* depthStencilView = nullptr;
-	ID3D11Texture2D* depthBuffer = nullptr;
-
 	int width = 0, height = 0;
 
 	float GetAspectRatio() const
 	{
 			return float(width) / float(height);
 	}
+};
+
+struct RenderTarget : Texture2D
+{
+	ID3D11RenderTargetView* rtv = nullptr;
+	DataFormat format;
+
+	//Associated depth/stencil buffer
+	ID3D11Texture2D* depthBuffer = nullptr;
+	ID3D11DepthStencilView* depthStencilView = nullptr;
+	ID3D11ShaderResourceView* depthMapSrv = nullptr;
 
 	//float downSamplePercentage;
 	//Viewport viewport;
 };
+
+struct DepthStencilBuffer : Texture2D
+{
+		//Associated depth/stencil buffer
+		ID3D11DepthStencilView* depthStencilView = nullptr;
+};
+
+struct Texture3D : TextureObject
+{
+		ID3D11Texture3D* texture3D;
+		Area sizePerTexture;
+};
+typedef Texture3D CubeMap;
 
 struct ShaderBase : D3DObject
 {
