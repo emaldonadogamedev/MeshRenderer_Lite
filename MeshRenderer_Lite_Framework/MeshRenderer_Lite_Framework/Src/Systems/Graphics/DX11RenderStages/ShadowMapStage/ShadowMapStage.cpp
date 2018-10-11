@@ -40,6 +40,9 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 		handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("ShadowPS");
 		m_renderer->BindPixelShader(handle);
 
+		//Bind the view proj buffer to use the camera position
+		m_renderData.m_pImmediateContext->PSSetConstantBuffers(1, 1, &m_renderData.testViewProjConstBuffer);
+
 		int lightIdx = 0;
 		const auto& lightComps = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_LIGHT_WITH_SHADOW];
 		for (auto& light : lightComps)
