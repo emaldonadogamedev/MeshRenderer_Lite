@@ -17,8 +17,8 @@ public:
 	LightViewProj* GetLightViewProjBuffer() const;
 
 	bool IsUsingShadows() const;
-	ObjectHandle& GetShadowRThandle();
-	const ObjectHandle& GetShadowRThandle() const;
+	ObjectHandle& GetShadowDepthMapHandle();
+	const ObjectHandle& GetShadowDepthMapHandle() const;
 	const int GetShadowTextureIdx() const;
 
 	void SetUseShadows(const bool v);
@@ -32,7 +32,7 @@ protected:
 	LightViewProj* m_viewProj;
 
 	bool m_useShadows;
-	ObjectHandle* m_shadowRThandle;
+	ObjectHandle* m_shadowDepthMapHandle;
 	int m_shadowTextureIdx;
 	int m_shadowMapWidthHeight;
 

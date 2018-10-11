@@ -524,6 +524,12 @@ void DX11Renderer::BindRenderTarget(const ObjectHandle& rt, const bool useDepthM
 	}
 }
 
+void DX11Renderer::BindNullRenderTarget(const ObjectHandle& depthMapHandle)
+{
+		m_renderData->m_pImmediateContext->OMSetRenderTargets(0, nullptr, 
+				depthMapHandle ? m_renderData->depthBuffers[*depthMapHandle].depthStencilView : nullptr);
+}
+
 void DX11Renderer::ClearRenderTarget(const ObjectHandle& rt, const XMVECTOR& clearColor)
 {
 		ClearRenderTarget(rt, clearColor.m128_f32);

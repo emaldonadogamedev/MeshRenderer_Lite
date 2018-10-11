@@ -6,7 +6,7 @@ ShadowLightComponent::ShadowLightComponent(const GameObject* owner, bool isActiv
 		const int shadowWidthHeight) :
 	IComponent(ComponentType::RENDERABLE_LIGHT_WITH_SHADOW, owner, isActive)
 	, m_useShadows(useShadows)
-	, m_shadowRThandle()
+	, m_shadowDepthMapHandle()
 	, m_shadowMapWidthHeight(shadowWidthHeight)
 {
 		int textureIdx = 5;
@@ -17,7 +17,7 @@ ShadowLightComponent::ShadowLightComponent(const GameObject* owner, bool isActiv
 						m_light = &sceneLightsWithShadows[i];
 						m_light->isTaken = 1;
 						m_light->isUsingShadows = static_cast<int>(m_useShadows);
-						m_shadowRThandle = &shadowMapHandles[i];
+						m_shadowDepthMapHandle = &shadowMapHandles[i];
 						m_shadowTextureIdx = textureIdx;
 						m_viewProj = &shadowLightViewProjBuffers[i];
 						
@@ -53,14 +53,14 @@ bool ShadowLightComponent::IsUsingShadows() const
 	return m_useShadows;
 }
 
-ObjectHandle& ShadowLightComponent::GetShadowRThandle()
+ObjectHandle& ShadowLightComponent::GetShadowDepthMapHandle()
 {
-		return *m_shadowRThandle;
+		return *m_shadowDepthMapHandle;
 }
 
-const ObjectHandle& ShadowLightComponent::GetShadowRThandle() const
+const ObjectHandle& ShadowLightComponent::GetShadowDepthMapHandle() const
 {
-	return *m_shadowRThandle;
+	return *m_shadowDepthMapHandle;
 }
 
 const int ShadowLightComponent::GetShadowTextureIdx() const

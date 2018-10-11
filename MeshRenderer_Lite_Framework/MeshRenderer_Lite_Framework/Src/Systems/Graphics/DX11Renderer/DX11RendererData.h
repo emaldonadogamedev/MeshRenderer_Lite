@@ -61,9 +61,10 @@ public:
 
 
 	//Resource containers
-	std::vector<RenderTarget> renderTargets;
 	std::vector<Texture1D> textures1D;
 	std::vector<Texture2D> textures2D;
+	std::vector<RenderTarget> renderTargets;
+	std::vector<DepthBuffer> depthBuffers;
 	std::vector<Texture3D> textures3D;
 	std::vector<VertexShader> vertexShaders;
 	std::vector<PixelShader> pixelShaders;

@@ -52,7 +52,7 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 				if (!lightComp->IsUsingShadows())
 						continue;
 
-				const auto& shadowRThandle = lightComp->GetShadowRThandle();
+				const auto& shadowRThandle = lightComp->GetShadowDepthMapHandle();
 				if (!shadowRThandle)
 						continue;
 

@@ -46,7 +46,7 @@ void ForwardRenderStage::PreRender()
 	{
 			ShadowLightComponent* lightComp = (ShadowLightComponent*)component;
 			m_renderer->BindTextureShaderResource(ObjectType::PIXEL_SHADER, lightComp->GetShadowTextureIdx(), 1,
-					lightComp->GetShadowRThandle());
+					lightComp->GetShadowDepthMapHandle());
 	}
 }
 

@@ -132,7 +132,7 @@ void GraphicsSystem::UpdateLightComponents(const float dt)
 			if (!lightComp->IsUsingShadows())
 					continue;
 
-			const auto& shadowRThandle = lightComp->GetShadowRThandle();
+			const auto& shadowRThandle = lightComp->GetShadowDepthMapHandle();
 			if (!shadowRThandle)
 					continue;
 
@@ -452,12 +452,12 @@ void GraphicsSystem::AddComponent(IComponent* component)
 		if (component->GetComponentType() == ComponentType::RENDERABLE_LIGHT_WITH_SHADOW)
 		{
 				ShadowLightComponent* shadowLightComp = (ShadowLightComponent*)component;
-				m_dx11Renderer->CreateRenderTarget(shadowLightComp->GetShadowRThandle(), shadowLightComp->m_shadowMapWidthHeight,
+				m_dx11Renderer->CreateRenderTarget(shadowLightComp->GetShadowDepthMapHandle(), shadowLightComp->m_shadowMapWidthHeight,
 						shadowLightComp->m_shadowMapWidthHeight, DataFormat::FLOAT4);
 
 				auto& renderData = m_dx11Renderer->GetRendererData();
 
-				auto srv = renderData.renderTargets[*shadowLightComp->GetShadowRThandle()].srv;
+				auto srv = renderData.renderTargets[*shadowLightComp->GetShadowDepthMapHandle()].srv;
 				renderData.m_pImmediateContext->PSSetShaderResources(shadowLightComp->GetShadowTextureIdx(), 1, &srv);
 		}
 	}
