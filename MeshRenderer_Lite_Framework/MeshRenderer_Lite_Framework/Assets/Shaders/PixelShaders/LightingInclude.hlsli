@@ -49,9 +49,12 @@ float4 CaculateBRDFLighting(float3 vertexPos, float3 vertexNormal, float4 Kd, fl
 
 		float4 F = Fterm(Ks, lightVec, H);
 		float D = Dterm(vertexNormal, H, ns);
-		float G = 1.0f / (LdotH * LdotH);
 
-		BRDF = diffuse + (F * G * D) / (4.0f * LdotN * vDotN);
+		float Gdenominator = LdotH * LdotH;
+		float G = abs(Gdenominator) < 0.0001f ? 0.f : (1.0f / Gdenominator);
+
+		float denominator = (4.0f * LdotN * vDotN);
+		BRDF = denominator < 0.0001f ? float4(0,0,0,1.0f) : diffuse + (F * G * D) / denominator;
 
 		float attenuation = CalculateAttenuation(1, lightVecLength, attC, attL, attQ);
 

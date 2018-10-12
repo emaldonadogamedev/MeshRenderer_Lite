@@ -23,10 +23,10 @@ float4 main(PixelInputType pixel) : SV_TARGET
 						//kd = shadowMaps[i].Sample(textureSamplerWrap, uv);
 
 						float lightIntensity = 1.0f;
-						if (true)//sceneLights[i].isUsingShadows)
+						if (sceneLights[i].isUsingShadows)
 						{		
 								// Set the bias value for fixing the floating point precision issues.
-								float bias = 0.001f;
+								float bias = 0.0001f;
 								
 								//get pos into light's point of view
 								float4 lightViewPosition = float4(position, 1.0f); // world space pos.
@@ -49,7 +49,7 @@ float4 main(PixelInputType pixel) : SV_TARGET
 										float lightDepthValue = lightViewPosition.z / lightViewPosition.w;
 
 										// Subtract the bias from the lightDepthValue.
-										lightDepthValue = lightDepthValue - bias;
+										lightDepthValue -= bias;
 
 										// Compare the depth of the shadow map value and the depth of the light to determine whether to shadow or to light this 
 										//pixel. If the light is in front of the object then light the pixel, if not then shadow this pixel since an object 
@@ -57,23 +57,23 @@ float4 main(PixelInputType pixel) : SV_TARGET
 										if (lightDepthValue < depthValue)
 										{
 												// Calculate the amount of light on this pixel.
-												lightIntensity = saturate(dot(normal, sceneLights[i].m_position));
+												lightIntensity = saturate(dot(normal, normalize(sceneLights[i].m_position - position) ) );
 
 												if (lightIntensity > 0.0f)
 												{
 														// Determine the final diffuse color based on the diffuse color and the amount of light intensity.
 														//kd += (kd * lightIntensity);
 												
-														// Saturate the final light color.
+														//Saturate the final light color.
 														//kd = saturate(kd * lightIntensity);
 												}
 										}
 								}
 						}
 
-						result += lightIntensity * CaculateBRDFLighting(position, normal, kd, float4(ksAndNs.xyz, 1.0f), ksAndNs.w, cameraPosition.xyz,
+						result += saturate(lightIntensity * CaculateBRDFLighting(position, normal, kd, float4(ksAndNs.xyz, 1.0f), ksAndNs.w, cameraPosition.xyz,
 								sceneLights[i].m_position, sceneLights[i].m_Iambient, sceneLights[i].m_Idiffuse, sceneLights[i].m_ConstantAttenuation,
-								sceneLights[i].m_LinearAttenuation, sceneLights[i].m_QuadraticAttenuation);
+								sceneLights[i].m_LinearAttenuation, sceneLights[i].m_QuadraticAttenuation));
 				}
 				else
 						break;
