@@ -26,7 +26,7 @@ float4 main(PixelInputType pixel) : SV_TARGET
 						if (sceneLights[i].isUsingShadows)
 						{		
 								// Set the bias value for fixing the floating point precision issues.
-								float bias = 1;
+								float bias = 0.001f;
 								
 								//get pos into light's point of view
 								float4 lightViewPosition = float4(position, 1.0f); // world space pos.
