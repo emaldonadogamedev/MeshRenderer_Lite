@@ -26,7 +26,7 @@ float4 main(PixelInputType pixel) : SV_TARGET
 						if (sceneLights[i].isUsingShadows)
 						{		
 								// Set the bias value for fixing the floating point precision issues.
-								float bias = 0.0001f;
+								float bias = 0.1f;
 								
 								//get pos into light's point of view
 								float4 lightViewPosition = float4(position, 1.0f); // world space pos.
@@ -46,7 +46,7 @@ float4 main(PixelInputType pixel) : SV_TARGET
 										float depthValue = shadowMaps[i].Sample(textureSamplerWrap, projectTexCoord).x;
 
 										// Calculate the depth of the light.
-										float lightDepthValue = lightViewPosition.z / lightViewPosition.w;
+										float lightDepthValue = (lightViewPosition.w);
 
 										// Subtract the bias from the lightDepthValue.
 										lightDepthValue -= bias;
@@ -54,24 +54,25 @@ float4 main(PixelInputType pixel) : SV_TARGET
 										// Compare the depth of the shadow map value and the depth of the light to determine whether to shadow or to light this 
 										//pixel. If the light is in front of the object then light the pixel, if not then shadow this pixel since an object 
 										//(occluder) is casting a shadow on it.
-										if (lightDepthValue < depthValue)
+										if (lightDepthValue > depthValue)
 										{
+											lightIntensity = 0.f;
 												// Calculate the amount of light on this pixel.
-												lightIntensity = saturate(dot(normal, normalize(sceneLights[i].m_position - position) ) );
-
-												if (lightIntensity > 0.0f)
-												{
-														// Determine the final diffuse color based on the diffuse color and the amount of light intensity.
-														//kd += (kd * lightIntensity);
-												
-														//Saturate the final light color.
-														//kd = saturate(kd * lightIntensity);
-												}
+												//lightIntensity = saturate(dot(normal, normalize(sceneLights[i].m_position - position) ) );
+												//
+												//if (lightIntensity > 0.0f)
+												//{
+												//		// Determine the final diffuse color based on the diffuse color and the amount of light intensity.
+												//		//kd += (kd * lightIntensity);
+												//
+												//		///Saturate the final light color.
+												//		kd = saturate(kd * lightIntensity);
+												//}
 										}
 								}
 						}
 
-						result += saturate(lightIntensity * CaculateBRDFLighting(position, normal, kd, float4(ksAndNs.xyz, 1.0f), ksAndNs.w, cameraPosition.xyz,
+						result += lightIntensity  * saturate(lightIntensity * CaculateBRDFLighting(position, normal, kd, float4(ksAndNs.xyz, 1.0f), ksAndNs.w, cameraPosition.xyz,
 								sceneLights[i].m_position, sceneLights[i].m_Iambient, sceneLights[i].m_Idiffuse, sceneLights[i].m_ConstantAttenuation,
 								sceneLights[i].m_LinearAttenuation, sceneLights[i].m_QuadraticAttenuation));
 				}
