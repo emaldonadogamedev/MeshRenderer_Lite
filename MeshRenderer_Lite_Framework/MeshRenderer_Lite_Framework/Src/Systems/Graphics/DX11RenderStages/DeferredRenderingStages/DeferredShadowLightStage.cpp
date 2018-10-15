@@ -29,8 +29,12 @@ void DeferredShadowLightStage::PreRender()
 		for (const auto& component : lightComponents)
 		{
 				ShadowLightComponent* lightComp = (ShadowLightComponent*)component;
-				m_renderer->BindTextureShaderResource(ObjectType::PIXEL_SHADER, lightComp->GetShadowTextureIdx(), 1,
-						lightComp->GetShadowDepthMapHandle());
+				if (lightComp->IsUsingShadows())
+				{
+						m_renderer->BindTextureShaderResource(ObjectType::PIXEL_SHADER, lightComp->GetShadowTextureIdx(), 1,
+								lightComp->IsUsingSoftShadows() ? 
+								lightComp->GetSoftShadowDepthMapHandle() : lightComp->GetShadowDepthMapHandle());
+				}
 		}
 
 		//Bind the G-buffer render targets

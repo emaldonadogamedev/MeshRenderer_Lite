@@ -572,8 +572,8 @@ void GraphicsSystem::LoadBasicShaders()
 	//////////////////////////////////////////////////////////////////////////
 	// Default Pixel Shaders
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "defaultPS");
-	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "phongLighting");
-	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "BRDFLighting");
+	//LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "phongLighting");
+	//LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "BRDFLighting");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "ShowDebugInfoPS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "SimplePS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "DepthPS");

@@ -68,7 +68,7 @@ float4 CaculatePhongLighting(float3 vertexPos, float3 vertexNormal, float3 verte
 				lightVec /= lightVecLength;
 
 				//Ka term
-				tempColor = meshMaterial.ambientKa * sceneLights[i].m_Iambient;
+				tempColor = float4(meshMaterial.ambientKa * sceneLights[i].m_Iambient, 1.0f);
 
 				//KD term
 				//Get the diff texture's color

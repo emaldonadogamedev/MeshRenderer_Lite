@@ -135,9 +135,9 @@ void ImGuiStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 				ImGui::DragFloat3("Position", transform->GetPosition().m128_f32, 0.001f);
 
 				ImGui::DragFloat3("Light Direction", &light->m_spotDirection.x, 0.001f, -1.f, 1.f, "%.3f");
-				ImGui::DragFloat3("Ambient", light->m_Iambient.m128_f32, 0.001f, 0.f, 1.0f, "%.3f");
+				ImGui::DragFloat3("Ambient", &light->m_Iambient.x, 0.001f, 0.f, 1.0f, "%.3f");
 				ImGui::DragFloat3("Diffuse", light->m_Idiffuse.m128_f32, 0.001f, 0.f, 1.0f, "%.3f");
-				ImGui::DragFloat3("Specular", light->m_Ispecular.m128_f32, 0.001f, 0.f, 1.0f, "%.3f");
+				ImGui::DragFloat3("Specular", &light->m_Ispecular.x, 0.001f, 0.f, 1.0f, "%.3f");
 
 				ImGui::DragFloat("Constant Att: ", &light->m_ConstantAttenuation, 0.001f);
 				ImGui::DragFloat("Linear Att: ", &light->m_LinearAttenuation, 0.001f);

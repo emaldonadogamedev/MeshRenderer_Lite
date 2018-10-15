@@ -20,13 +20,11 @@ float4 main(PixelInputType pixel) : SV_TARGET
 		{
 				if (sceneLights[i].isTaken && sceneLights[i].isActive)
 				{
-						//kd = shadowMaps[i].Sample(textureSamplerWrap, uv);
-
 						float lightIntensity = 1.0f;
 						if (sceneLights[i].isUsingShadows)
 						{		
 								// Set the bias value for fixing the floating point precision issues.
-								float bias = 0.001f;
+								float bias = 0.01f;
 								
 								//get pos into light's point of view
 								float4 lightViewPosition = float4(position, 1.0f); // world space pos.
@@ -77,7 +75,7 @@ float4 main(PixelInputType pixel) : SV_TARGET
 						}
 
 						result += saturate(lightIntensity * CaculateBRDFLighting(position, normal, kd, float4(ksAndNs.xyz, 1.0f), ksAndNs.w, cameraPosition.xyz,
-								sceneLights[i].m_position, sceneLights[i].m_Iambient, sceneLights[i].m_Idiffuse, sceneLights[i].m_ConstantAttenuation,
+								sceneLights[i].m_position, float4(sceneLights[i].m_Iambient, 1.0f), sceneLights[i].m_Idiffuse, sceneLights[i].m_ConstantAttenuation,
 								sceneLights[i].m_LinearAttenuation, sceneLights[i].m_QuadraticAttenuation));
 				}
 				else

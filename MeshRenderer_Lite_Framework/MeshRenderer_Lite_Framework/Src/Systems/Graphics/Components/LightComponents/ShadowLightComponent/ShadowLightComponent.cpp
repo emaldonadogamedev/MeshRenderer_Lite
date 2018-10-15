@@ -1,11 +1,13 @@
 #include<Utilities/precompiled.h>
 #include<Systems/Graphics/Components/LightComponents/Light.h>
 #include<Systems/Graphics/Components/LightComponents/ShadowLightComponent/ShadowLightComponent.h>
+#include <Systems/Graphics/GraphicsUtilities/ObjectHandle.h>
 
-ShadowLightComponent::ShadowLightComponent(const GameObject* owner, bool isActive, bool useShadows, 
+ShadowLightComponent::ShadowLightComponent(const GameObject* owner, bool isActive, bool useShadows, bool useSoftShadows,
 		const int shadowWidthHeight) :
 	IComponent(ComponentType::RENDERABLE_LIGHT_WITH_SHADOW, owner, isActive)
 	, m_useShadows(useShadows)
+  , m_useSoftShadows(useSoftShadows)
 	, m_shadowDepthMapHandle()
 	, m_shadowMapWidthHeight(shadowWidthHeight)
 {
@@ -63,6 +65,16 @@ const ObjectHandle& ShadowLightComponent::GetShadowDepthMapHandle() const
 	return *m_shadowDepthMapHandle;
 }
 
+ObjectHandle& ShadowLightComponent::GetSoftShadowDepthMapHandle()
+{
+		return *m_softShadowDepthMapHandle;
+}
+
+const ObjectHandle& ShadowLightComponent::GetSoftShadowDepthMapHandle() const
+{
+		return *m_softShadowDepthMapHandle;
+}
+
 const int ShadowLightComponent::GetShadowTextureIdx() const
 {
 		return m_shadowTextureIdx;
@@ -71,6 +83,16 @@ const int ShadowLightComponent::GetShadowTextureIdx() const
 void ShadowLightComponent::SetUseShadows(const bool v)
 {
 	m_useShadows = v;
+}
+
+bool ShadowLightComponent::IsUsingSoftShadows() const
+{
+		return m_useSoftShadows;
+}
+
+void ShadowLightComponent::SetUseSoftShadows(const bool v)
+{
+		m_useSoftShadows = v;
 }
 
 const Light* const ShadowLightComponent::GetSceneLightsWithShadowPtr()
@@ -91,4 +113,5 @@ int ShadowLightComponent::GetActiveLightsWithShadowCount()
 LightViewProj ShadowLightComponent::shadowLightViewProjBuffers[s_maxShadowLights];
 int ShadowLightComponent::s_takenLightCount = 0;
 ObjectHandle ShadowLightComponent::shadowMapHandles[s_maxShadowLights] = { ObjectHandle::Null()};
+ObjectHandle ShadowLightComponent::softShadowMapHandles[s_maxShadowLights] = { ObjectHandle::Null() };
 Light ShadowLightComponent::sceneLightsWithShadows[s_maxShadowLights];
