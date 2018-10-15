@@ -58,6 +58,7 @@ public:
 		bool precompiled, const std::string& entryPoint = "main");
 	void CreatePixelShader(ObjectHandle& pixelShader, const std::string& fileName, bool precompiled, const std::string& entryPoint = "main");
 	void CreateGeometryShader(ObjectHandle& geometryShader, const std::string& fileName, bool precompiled, const std::string& entryPoint = "main");
+	void CreateComputeShader(ObjectHandle& computeShader, const std::string& fileName, bool precompiled, const std::string& entryPoint = "main");
 	
 	//Bind
 	void BindVertexShader(const ObjectHandle& vertexShader);
