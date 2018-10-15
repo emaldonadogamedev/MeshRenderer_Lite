@@ -38,11 +38,11 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//test3DComp->SetModel(loadedModels.at("tiny_4anim.x").get());
 		//test3DComp->SetModel(graphicsSystem->GetModel("gh_sample_animation.fbx"));
 		//auto model = graphicsSystem->GetModel("bottle.obj");
-		//auto model = graphicsSystem->GetModel("gh_sample_animation.fbx");
+		//auto model = graphicsSystem->GetModel("tiny_4anim.x");
 		//auto model = graphicsSystem->GetModel("walk.fbx");
 		//auto model = graphicsSystem->GetModel("dragon.obj");
 		//auto model = graphicsSystem->GetModel("box");
-		auto model = graphicsSystem->GetModel("sphere");
+		auto model = graphicsSystem->GetModel("dragon.obj");
 		//auto model = graphicsSystem->GetModel("bottle.obj");
 		//model->SetDiffTextureFileName("AlphaBlendTest.png", 0);
 		model->m_meshEntryList[0].meshMaterial = MeshEntryMaterial::GetPresetMaterial(PredefinedMaterials::GreenPlastic);

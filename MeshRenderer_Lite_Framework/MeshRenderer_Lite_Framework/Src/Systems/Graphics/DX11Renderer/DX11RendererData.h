@@ -70,6 +70,7 @@ public:
 	std::vector<PixelShader> pixelShaders;
 	std::vector<GeometryShader> geometryShaders;
 	std::vector<ComputeShader> computeShaders;
+	std::vector<HullShader> hullShaders;
 	std::vector<Buffer> vertexBuffers;
 	std::vector<Buffer> indexBuffers;
 	std::vector<Buffer> constantBuffers;

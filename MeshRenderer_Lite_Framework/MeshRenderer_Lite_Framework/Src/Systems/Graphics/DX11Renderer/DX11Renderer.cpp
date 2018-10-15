@@ -73,6 +73,18 @@ void DX11Renderer::ReleaseData()
 		SafeRelease(gs.shaderBlob);
 	}
 
+	//compute shaders
+	for (auto& cs : m_renderData->computeShaders) {
+			SafeRelease(cs.computeShader);
+			SafeRelease(cs.shaderBlob);
+	}
+
+	//hull / tessellation shaders
+	for (auto& hs : m_renderData->hullShaders) {
+			SafeRelease(hs.hullShader);
+			SafeRelease(hs.shaderBlob);
+	}
+
 	//vertex buffers
 	for (auto& vb : m_renderData->vertexBuffers)
 		SafeRelease(vb.buffer);
@@ -696,6 +708,8 @@ void DX11Renderer::CreateVertexShader(ObjectHandle& vertexShader, const std::str
 				vertexShaderObj.layout->Release();
 			if (vertexShaderObj.vertexShader)
 				vertexShaderObj.vertexShader->Release();
+			if (vertexShaderObj.layout)
+					vertexShaderObj.layout->Release();
 
 			//Assign new data
 			vertexShaderObj.layout = dxInputLayout;
@@ -747,7 +761,10 @@ void DX11Renderer::CreatePixelShader(ObjectHandle& pixelShader, const std::strin
 	{
 		PixelShader& pixelShaderObj = m_renderData->pixelShaders[*pixelShader];
 		if (pixelShaderObj.pixelShader)
-			pixelShaderObj.pixelShader->Release();
+		{
+				pixelShaderObj.pixelShader->Release();
+				pixelShaderObj.shaderBlob->Release();
+		}
 
 		pixelShaderObj.pixelShader = pixelShaderPtr;
 		pixelShaderObj.shaderBlob = blob;
@@ -775,6 +792,56 @@ void DX11Renderer::CreatePixelShader(ObjectHandle& pixelShader, const std::strin
 			pixelShader = CreateHandle(ObjectType::PIXEL_SHADER, index);
 		}
 	}
+}
+
+void DX11Renderer::CreateComputeShader(ObjectHandle& computeShader, const std::string& fileName, bool precompiled, const std::string& entryPoint)
+{
+		ID3D11ComputeShader* computeShaderPtr = nullptr;
+		int result;
+
+		ID3DBlob* blob = nullptr;
+		const std::string target = "cs_5_0";
+
+		CompileShaderHelper(result, &blob, fileName, target, entryPoint);
+
+		HR(m_renderData->m_pDevice->CreateComputeShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &computeShaderPtr));
+
+		//If handle already exists, update data
+		if (computeShader)
+		{
+				ComputeShader& computeShaderObj = m_renderData->computeShaders[*computeShader];
+				if (computeShaderObj.computeShader)
+				{
+						computeShaderObj.computeShader->Release();
+						computeShaderObj.shaderBlob->Release();
+				}
+
+				computeShaderObj.computeShader = computeShaderPtr;
+				computeShaderObj.shaderBlob = blob;
+		}
+		//Else create handle
+		else
+		{
+				ComputeShader computeShaderObj;
+				computeShaderObj.computeShader = computeShaderPtr;
+				computeShaderObj.shaderBlob = blob;
+
+				int index = m_renderData->NextAvailableIndex(m_renderData->computeShaders);
+
+				if (index == -1)
+				{
+						//No free space exists in container, push back
+						m_renderData->computeShaders.push_back(computeShaderObj);
+						computeShader = CreateHandle(ObjectType::COMPUTE_SHADER, m_renderData->computeShaders.size() - 1);
+				}
+
+				else
+				{
+						//Use available space in container
+						m_renderData->computeShaders[index] = computeShaderObj;
+						computeShader = CreateHandle(ObjectType::COMPUTE_SHADER, index);
+				}
+		}
 }
 
 void DX11Renderer::BindVertexShader(const ObjectHandle& vertexShader)
