@@ -68,6 +68,9 @@ public:
 
 	void BindTextureShaderResource(const ObjectType shaderType, unsigned int startSlot, unsigned int numViews, const ObjectHandle& objectWithSRV);
 
+	//Dispatch
+	void DispatchComputeShader(const ObjectHandle& computeShader, const UINT threadGroupX = 1, const UINT threadGroupY = 1, const UINT threadGroupZ = 1);
+
 	//////////////////////////////////////////////////////////////////////////
 	//Texture functions
 	void CreateTexture2D(ObjectHandle& textureHandle, const std::string& fileName, bool generateMipChain = true);

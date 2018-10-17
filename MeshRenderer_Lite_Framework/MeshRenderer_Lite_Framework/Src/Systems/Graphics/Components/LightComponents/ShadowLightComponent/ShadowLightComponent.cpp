@@ -19,7 +19,9 @@ ShadowLightComponent::ShadowLightComponent(const GameObject* owner, bool isActiv
 						m_light = &sceneLightsWithShadows[i];
 						m_light->isTaken = 1;
 						m_light->isUsingShadows = static_cast<int>(m_useShadows);
+						m_light->isUsingSoftShadows = static_cast<int>(m_useSoftShadows);
 						m_shadowDepthMapHandle = &shadowMapHandles[i];
+						m_softShadowDepthMapHandle = &softShadowMapHandles[i];
 						m_shadowTextureIdx = textureIdx;
 						m_viewProj = &shadowLightViewProjBuffers[i];
 						

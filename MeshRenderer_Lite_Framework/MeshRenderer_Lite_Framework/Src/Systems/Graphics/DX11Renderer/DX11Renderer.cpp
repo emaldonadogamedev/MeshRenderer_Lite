@@ -852,6 +852,9 @@ void DX11Renderer::BindVertexShader(const ObjectHandle& vertexShader)
 	//	return;
 	//}
 
+#if _DEBUG
+	assert(vertexShader && vertexShader.GetType() == ObjectType::VERTEX_SHADER);
+#endif
 	const VertexShader& shader = m_renderData->vertexShaders[*vertexShader];
 
 	//TODO: For now we're only using one input layout, make this work with multiple
@@ -861,8 +864,20 @@ void DX11Renderer::BindVertexShader(const ObjectHandle& vertexShader)
 
 void DX11Renderer::BindPixelShader(const ObjectHandle& pixelShader)
 {
-	const PixelShader& shader = m_renderData->pixelShaders[*pixelShader];
-	m_renderData->m_pImmediateContext->PSSetShader(shader.pixelShader, nullptr, 0);
+#if _DEBUG
+		assert(pixelShader && pixelShader.GetType() == ObjectType::PIXEL_SHADER);
+#endif
+		const PixelShader& shader = m_renderData->pixelShaders[*pixelShader];
+		m_renderData->m_pImmediateContext->PSSetShader(shader.pixelShader, nullptr, 0);
+}
+
+void DX11Renderer::BindComputeShader(const ObjectHandle& computeShader)
+{
+#if _DEBUG
+		assert(computeShader && computeShader.GetType() == ObjectType::COMPUTE_SHADER);
+#endif
+		const ComputeShader& shader = m_renderData->computeShaders[*computeShader];
+		m_renderData->m_pImmediateContext->CSSetShader(shader.computeShader, nullptr, 0);
 }
 
 void DX11Renderer::BindTextureShaderResource(const ObjectType shaderType, unsigned int startSlot, unsigned int numViews, const ObjectHandle& objectWithSRV)
@@ -909,6 +924,14 @@ void DX11Renderer::BindTextureShaderResource(const ObjectType shaderType, unsign
 						break;
 				}
 		}
+}
+
+void DX11Renderer::DispatchComputeShader(const ObjectHandle& computeShader, const UINT threadGroupX, const UINT threadGroupY, const UINT threadGroupZ)
+{
+#if _DEBUG
+		assert(computeShader && computeShader.GetType() == ObjectType::COMPUTE_SHADER);
+#endif
+		m_renderData->m_pImmediateContext->Dispatch(threadGroupX, threadGroupY, threadGroupZ);
 }
 
 void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const std::string& fileName, bool generateMipChain /*= true*/)

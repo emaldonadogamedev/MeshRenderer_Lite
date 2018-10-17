@@ -455,10 +455,8 @@ void GraphicsSystem::AddComponent(IComponent* component)
 				m_dx11Renderer->CreateRenderTarget(shadowLightComp->GetShadowDepthMapHandle(), shadowLightComp->m_shadowMapWidthHeight,
 						shadowLightComp->m_shadowMapWidthHeight, DataFormat::FLOAT4);
 
-				auto& renderData = m_dx11Renderer->GetRendererData();
-
-				auto srv = renderData.renderTargets[*shadowLightComp->GetShadowDepthMapHandle()].srv;
-				renderData.m_pImmediateContext->PSSetShaderResources(shadowLightComp->GetShadowTextureIdx(), 1, &srv);
+				m_dx11Renderer->CreateRenderTarget(shadowLightComp->GetSoftShadowDepthMapHandle(), shadowLightComp->m_shadowMapWidthHeight,
+						shadowLightComp->m_shadowMapWidthHeight, DataFormat::FLOAT4);
 		}
 	}
 }
@@ -675,6 +673,7 @@ void GraphicsSystem::TestUpdateCamera(const float dt)
 	m_dx11Renderer->m_renderData->testViewProjBuffer.viewMtx = m_dx11Renderer->m_renderData->testCamera->GetView();
 	m_dx11Renderer->m_renderData->testViewProjBuffer.invViewMtx =
 			DirectX::XMMatrixInverse(nullptr, m_dx11Renderer->m_renderData->testViewProjBuffer.viewMtx);
+
 	m_dx11Renderer->m_renderData->m_pImmediateContext->UpdateSubresource(m_dx11Renderer->m_renderData->testViewProjConstBuffer,
 			0, NULL, &m_dx11Renderer->m_renderData->testViewProjBuffer, 0, 0);
 }
