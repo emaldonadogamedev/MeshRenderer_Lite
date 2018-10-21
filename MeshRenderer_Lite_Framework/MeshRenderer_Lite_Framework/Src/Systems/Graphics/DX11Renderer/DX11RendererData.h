@@ -74,6 +74,7 @@ public:
 	std::vector<Buffer> vertexBuffers;
 	std::vector<Buffer> indexBuffers;
 	std::vector<Buffer> constantBuffers;
+	std::vector<StructuredBufferRW_Texture2D> structuredBuffersRW_Texture2D;
 
 	//Sampler states for textures
 	ID3D11SamplerState* m_pWrapSamplerState = nullptr;
@@ -129,6 +130,7 @@ private:
 
 	const DXGI_FORMAT dxgiFormatArrHelper[(int)DataFormat::COUNT] =
 	{
+		DXGI_FORMAT_UNKNOWN,
 		DXGI_FORMAT_R8_UNORM,
 		DXGI_FORMAT_R8G8_UNORM,
 		DXGI_FORMAT_R8G8B8A8_UNORM,

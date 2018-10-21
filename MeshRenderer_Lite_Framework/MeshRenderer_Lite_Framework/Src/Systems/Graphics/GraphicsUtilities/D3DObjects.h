@@ -3,47 +3,42 @@
 #include <Systems/Graphics/GraphicsUtilities/GraphicsTypes.h>
 #include <Systems/Graphics/GraphicsUtilities/ObjectHandle.h>
 
-struct ID3D11Texture1D;
-struct ID3D11Texture2D;
-struct ID3D11Texture3D;
+//struct ID3D11Texture1D;
+//struct ID3D11Texture2D;
+//struct ID3D11Texture3D;
+//
+//struct ID3D11RenderTargetView;
+//struct ID3D11DepthStencilView;
+//struct ID3D11ShaderResourceView;
+//
+//struct ID3D10Blob;
+//struct ID3D11VertexShader;
+//struct ID3D11InputLayout;
+//struct ID3D11PixelShader;
+//struct ID3D11GeometryShader;
+//struct ID3D11ComputeShader;
+//struct ID3D11HullShader;
+//
+//struct ID3D11Buffer;
 
-struct ID3D11RenderTargetView;
-struct ID3D11DepthStencilView;
-struct ID3D11ShaderResourceView;
-
-struct ID3D10Blob;
-struct ID3D11VertexShader;
-struct ID3D11InputLayout;
-struct ID3D11PixelShader;
-struct ID3D11GeometryShader;
-struct ID3D11ComputeShader;
-struct ID3D11HullShader;
-
-struct ID3D11Buffer;
-
-struct D3DObject
+struct D3DObjectBase
 {
-	D3DObject(void) : deleted(false) {}
+	D3DObjectBase(void) : deleted(false) {}
 	bool deleted;
 };
 
-struct TextureObject : D3DObject
+struct TextureObjectBase : D3DObjectBase
 {
 		ID3D11ShaderResourceView* srv = nullptr;
 };
 
-struct Texture1D : TextureObject
+struct Texture1D : TextureObjectBase
 {
 	ID3D11Texture1D* texture1D;
 	int size;
 };
 
-struct Area
-{
-	unsigned int width, height;
-};
-
-struct Texture2D : TextureObject
+struct Texture2D : TextureObjectBase
 {
 	ID3D11Texture2D* texture2D;
 	int width = 0, height = 0;
@@ -74,55 +69,60 @@ struct DepthStencilBuffer : Texture2D
 		ID3D11DepthStencilView* depthStencilView = nullptr;
 };
 
-struct Texture3D : TextureObject
+struct Texture3D : TextureObjectBase
 {
 		ID3D11Texture3D* texture3D;
-		Area sizePerTexture;
+		int widthPerTexture = 0, heightPerTexture = 0;
 };
 typedef Texture3D CubeMap;
 
-struct ShaderBase : D3DObject
+struct ShaderObjectBase : D3DObjectBase
 {
 	ID3D10Blob* shaderBlob;
 };
 
-struct VertexShader : ShaderBase
+struct VertexShader : ShaderObjectBase
 {
 	ID3D11VertexShader* vertexShader;
 	ID3D11InputLayout* layout;
 };
 
-struct PixelShader : ShaderBase
+struct PixelShader : ShaderObjectBase
 {
 	ID3D11PixelShader* pixelShader;
 };
 
-struct GeometryShader : ShaderBase
+struct GeometryShader : ShaderObjectBase
 {
 	ID3D11GeometryShader* geometryShader;
 };
 
-struct ComputeShader : ShaderBase
+struct ComputeShader : ShaderObjectBase
 {
 	ID3D11ComputeShader* computeShader;
 };
 
-struct HullShader : ShaderBase
+struct HullShader : ShaderObjectBase
 {
 	ID3D11HullShader* hullShader;
 };
 
-struct Buffer : D3DObject
+struct Buffer : D3DObjectBase
 {
 	ID3D11Buffer* buffer;
 	BufferUsage usage;
 	unsigned int size;
 };
 
-struct DepthBuffer : D3DObject
+struct StructuredBufferRW_Texture2D : Texture2D
+{
+		ID3D11UnorderedAccessView* uav;
+};
+
+struct DepthBuffer : D3DObjectBase
 {
 	ID3D11ShaderResourceView* srv;
 	ID3D11DepthStencilView* depthStencilView;
 	ObjectHandle toResizeWith;
-	Area size;
+	int width = 0, height = 0;
 };

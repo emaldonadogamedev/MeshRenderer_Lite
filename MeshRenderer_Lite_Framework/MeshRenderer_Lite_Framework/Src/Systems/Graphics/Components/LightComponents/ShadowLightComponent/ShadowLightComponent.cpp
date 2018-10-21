@@ -97,6 +97,11 @@ void ShadowLightComponent::SetUseSoftShadows(const bool v)
 		m_useSoftShadows = v;
 }
 
+int ShadowLightComponent::GetShadowMapDimension() const
+{
+		return m_shadowMapWidthHeight;
+}
+
 const Light* const ShadowLightComponent::GetSceneLightsWithShadowPtr()
 {
 	return sceneLightsWithShadows;

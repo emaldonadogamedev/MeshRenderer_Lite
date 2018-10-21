@@ -118,6 +118,38 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 								}
 						}
 				}
+
+				//////////////////////////////////////////////////////////////////////////
+				//Blur Shadow Maps for soft shadows
+
+				if (false)//lightComp->IsUsingSoftShadows())
+				{
+						const auto& softShadowRThandle = lightComp->GetSoftShadowDepthMapHandle();
+						if (!softShadowRThandle)
+								continue;
+
+						const int shadowMapDim = lightComp->GetShadowMapDimension();
+
+						//Horizontal Blur
+						handle = (graphicsResources[(int)ObjectType::COMPUTE_SHADER]).at("MomentShadowMapBlur_Horizontal");
+						m_renderer->BindComputeShader(handle);
+						m_renderer->BindTextureShaderResource(ObjectType::COMPUTE_SHADER, 0, 1, softShadowRThandle);
+						m_renderer->BindTextureShaderResource(ObjectType::COMPUTE_SHADER, 1, 1, shadowRThandle);
+						m_renderer->DispatchComputeShader(handle, shadowMapDim / 128, shadowMapDim, 1);
+
+
+						//Vertical Blur
+						handle = (graphicsResources[(int)ObjectType::COMPUTE_SHADER]).at("MomentShadowMapBlur_Vertical");
+						m_renderer->BindComputeShader(handle);
+						
+						//Here we swap and the soft shadow map and the originally hard shadow map
+						//The soft shadow map is blurred, but only horizontally
+						m_renderer->BindTextureShaderResource(ObjectType::COMPUTE_SHADER, 1, 1, softShadowRThandle);
+						m_renderer->BindTextureShaderResource(ObjectType::COMPUTE_SHADER, 0, 1, shadowRThandle);
+						
+						m_renderer->DispatchComputeShader(handle, shadowMapDim, shadowMapDim / 128, 1);
+
+				}
 		}
 }
 

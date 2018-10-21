@@ -22,6 +22,8 @@ public:
 	bool IsUsingSoftShadows() const;
 	void SetUseSoftShadows(const bool v);
 
+	int GetShadowMapDimension() const;
+
 	ObjectHandle& GetShadowDepthMapHandle();
 	const ObjectHandle& GetShadowDepthMapHandle() const;
 

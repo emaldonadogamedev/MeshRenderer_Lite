@@ -59,6 +59,7 @@ void DX11Renderer::ReleaseData()
 	for (auto& vs : m_renderData->vertexShaders) {
 		SafeRelease(vs.vertexShader);
 		SafeRelease(vs.shaderBlob);
+		SafeRelease(vs.layout);
 	}
 
 	//pixel shaders
@@ -97,6 +98,13 @@ void DX11Renderer::ReleaseData()
 	for (auto& cb : m_renderData->constantBuffers)
 		SafeRelease(cb.buffer);
 
+	//structured rw texture2D buffers
+	for (auto& sbrw : m_renderData->structuredBuffersRW_Texture2D)
+	{
+			SafeRelease(sbrw.texture2D);
+			SafeRelease(sbrw.srv);
+			SafeRelease(sbrw.uav);
+	}
 
 	//////////////////////////////////////////////////////////////////////////
 
@@ -563,6 +571,102 @@ void DX11Renderer::ClearRenderTarget(const ObjectHandle& rt, const float colorAr
 		}
 }
 
+void DX11Renderer::CreateStructuredBufferRW_Texture2D(ObjectHandle& sbrwTexture2Dhandle, const BufferUsage bufferUsage, unsigned w, unsigned h)
+{
+		D3D11_TEXTURE2D_DESC texture2dDesc;
+		ZeroMemory(&texture2dDesc, sizeof(D3D11_TEXTURE2D_DESC));
+		texture2dDesc.Width = w;
+		texture2dDesc.Height = h;
+		texture2dDesc.MipLevels = texture2dDesc.ArraySize = 1;
+		texture2dDesc.Format = DXGI_FORMAT_UNKNOWN;
+		texture2dDesc.SampleDesc.Count = 1;
+		texture2dDesc.SampleDesc.Quality = 0;
+
+		//Establish description usage
+		switch (bufferUsage)
+		{
+		case BufferUsage::USAGE_DEFAULT:
+				texture2dDesc.Usage = D3D11_USAGE_DEFAULT;
+				break;
+		case BufferUsage::USAGE_IMMUTABLE:
+				texture2dDesc.Usage = D3D11_USAGE_IMMUTABLE;
+				break;
+		case BufferUsage::USAGE_DYNAMIC:
+				texture2dDesc.Usage = D3D11_USAGE_DYNAMIC;
+				texture2dDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+				break;
+		case BufferUsage::USAGE_STAGING:
+				texture2dDesc.Usage = D3D11_USAGE_STAGING;
+				texture2dDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+				break;
+		default:
+				break;
+		}
+
+		texture2dDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+
+		ID3D11Texture2D* texture2Dbuffer = nullptr;
+		HR(m_renderData->m_pDevice->CreateTexture2D(&texture2dDesc, nullptr, &texture2Dbuffer));
+
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+		ZeroMemory(&srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+		srvDesc.Texture2D.MipLevels = 1;
+		srvDesc.Texture2D.MostDetailedMip = 0;
+
+		ID3D11ShaderResourceView* srvPtr = nullptr;
+		HR(m_renderData->m_pDevice->CreateShaderResourceView(texture2Dbuffer, &srvDesc, &srvPtr));
+
+		D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc;
+		ZeroMemory(&uavDesc, sizeof(D3D11_UNORDERED_ACCESS_VIEW_DESC));
+		uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+		uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
+		uavDesc.Texture2D.MipSlice = 0;
+
+		ID3D11UnorderedAccessView* uavPtr = nullptr;
+		HR(m_renderData->m_pDevice->CreateUnorderedAccessView(texture2Dbuffer, &uavDesc, &uavPtr));
+
+		if (sbrwTexture2Dhandle && sbrwTexture2Dhandle.GetType() == ObjectType::STRUCTURED_BUFFER_RW_TEXTURE2D)
+		{
+				auto& sbrwTex2D = m_renderData->structuredBuffersRW_Texture2D[*sbrwTexture2Dhandle];
+
+				SafeRelease(sbrwTex2D.srv);
+				SafeRelease(sbrwTex2D.texture2D);
+				SafeRelease(sbrwTex2D.uav);
+
+				sbrwTex2D.texture2D = texture2Dbuffer;
+				sbrwTex2D.uav = uavPtr;
+				sbrwTex2D.srv = srvPtr;
+				sbrwTex2D.width = w;
+				sbrwTex2D.height = h;
+		}
+		else 
+		{
+				StructuredBufferRW_Texture2D sbrwTex2D;
+				sbrwTex2D.texture2D = texture2Dbuffer;
+				sbrwTex2D.uav = uavPtr;
+				sbrwTex2D.srv = srvPtr;
+				sbrwTex2D.width = w;
+				sbrwTex2D.height = h;
+
+				const int index = m_renderData->NextAvailableIndex(m_renderData->structuredBuffersRW_Texture2D);
+
+				//No free space in the texture container
+				if (index == -1)
+				{
+						m_renderData->structuredBuffersRW_Texture2D.push_back(std::move(sbrwTex2D));
+						sbrwTexture2Dhandle = CreateHandle(ObjectType::STRUCTURED_BUFFER_RW_TEXTURE2D, m_renderData->structuredBuffersRW_Texture2D.size() - 1);
+				}
+
+				//Insert into available slot
+				else
+				{
+						m_renderData->structuredBuffersRW_Texture2D[index] = sbrwTex2D;
+						sbrwTexture2Dhandle = CreateHandle(ObjectType::STRUCTURED_BUFFER_RW_TEXTURE2D, index);
+				}
+
+		}
+}
+
 void DX11Renderer::BindNullVertexBuffer()
 {
 	//Bind NULL buffer - this is used for the particles
@@ -884,7 +988,7 @@ void DX11Renderer::BindTextureShaderResource(const ObjectType shaderType, unsign
 {
 		if (objectWithSRV)
 		{
-				const TextureObject* textureObj = nullptr;
+				const TextureObjectBase* textureObj = nullptr;
 				switch (objectWithSRV.GetType())
 				{
 				case ObjectType::TEXTURE_1D:

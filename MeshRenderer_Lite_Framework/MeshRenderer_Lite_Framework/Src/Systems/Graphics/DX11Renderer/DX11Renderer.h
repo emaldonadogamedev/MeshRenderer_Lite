@@ -43,6 +43,8 @@ public:
 	void CreateVertexBuffer(ObjectHandle& vertexBuffer, const BufferUsage bufferUsage, unsigned size, const void* initialData = nullptr);
 	void CreateIndexBuffer(ObjectHandle& indexBuffer, const BufferUsage bufferUsage, unsigned size, const void* initialData = nullptr);
 	void CreateConstantBuffer(ObjectHandle& constantBuffer, unsigned size);
+	void CreateStructuredBufferRW_Texture1D(ObjectHandle& structuredBufferRW, const BufferUsage bufferUsage, unsigned size);
+	void CreateStructuredBufferRW_Texture2D(ObjectHandle& structuredBufferRW, const BufferUsage bufferUsage, unsigned w, unsigned h);
 
 	//Bind
 	void BindNullVertexBuffer();
