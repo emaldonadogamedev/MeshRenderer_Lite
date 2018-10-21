@@ -586,6 +586,8 @@ void GraphicsSystem::LoadBasicShaders()
 	//Default Compute Shaders
 	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "MomentShadowMapBlur_Horizontal");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "MomentShadowMapBlur_Vertical");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "SimpleBlur");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "Texture2DCopy");
 }
 
 void GraphicsSystem::LoadBasicShaderHelper(ObjectHandle& shaderHandle, const ObjectType shaderType, const std::string & fileName, const std::string & fileExtension)
