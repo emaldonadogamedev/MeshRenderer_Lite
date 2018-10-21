@@ -52,6 +52,7 @@ struct Texture2D : TextureObjectBase
 struct RenderTarget : Texture2D
 {
 	ID3D11RenderTargetView* rtv = nullptr;
+	ID3D11UnorderedAccessView* uav = nullptr;
 	DataFormat format;
 
 	//Associated depth/stencil buffer

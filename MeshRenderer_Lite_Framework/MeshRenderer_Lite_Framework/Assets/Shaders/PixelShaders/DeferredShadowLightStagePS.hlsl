@@ -42,7 +42,10 @@ float4 main(PixelInputType pixel) : SV_TARGET
 										if ((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y))
 										{
 												// Sample the shadow map depth value from the depth texture using the sampler at the projected texture coordinate location.
-												float depthValue = shadowMaps[i].Sample(textureSamplerWrap, projectTexCoord).x;
+												uint shadowMapW, shadowMapH;
+												shadowMaps[i].GetDimensions(shadowMapW, shadowMapH);
+												
+												float depthValue = shadowMaps[i][uint2(projectTexCoord.x * shadowMapW, projectTexCoord.y * shadowMapH)].x;
 
 												// Calculate the depth of the light.
 												float lightDepthValue = (lightViewPosition.w);

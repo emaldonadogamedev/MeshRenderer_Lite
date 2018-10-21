@@ -342,24 +342,49 @@ void DX11Renderer::CreateIndexBuffer(ObjectHandle& indexBuffer, const BufferUsag
 	}
 }
 
-void DX11Renderer::CreateConstantBuffer(ObjectHandle& constantBuffer, unsigned size)
+void DX11Renderer::CreateConstantBuffer(ObjectHandle& constantBuffer, const BufferUsage bufferUsage, unsigned size, const void* initialData)
 {
 	//Create zeroed out buffer description
 	D3D11_BUFFER_DESC desc;
 	ZeroMemory(&desc, sizeof(D3D11_BUFFER_DESC));
+	//Specify correct buffer usage
+	switch (bufferUsage)
+	{
+	case BufferUsage::USAGE_DEFAULT:
+			desc.Usage = D3D11_USAGE_DEFAULT;
+			break;
 
-	//Setup description
-	desc.Usage = D3D11_USAGE_DYNAMIC;
-	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	case BufferUsage::USAGE_IMMUTABLE:
+			desc.Usage = D3D11_USAGE_IMMUTABLE;
+			break;
+
+	case BufferUsage::USAGE_DYNAMIC:
+			desc.Usage = D3D11_USAGE_DYNAMIC;
+			desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+			break;
+
+	case BufferUsage::USAGE_STAGING:
+			desc.Usage = D3D11_USAGE_STAGING;
+			desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+			break;
+
+	default:
+			break;
+	}
 
 	//Need to ensure that memory is aligned to 16 bytes.
 	desc.ByteWidth = size;
+	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
 	//Create Buffer
 	ID3D11Buffer* buffer;
 
-	HR(m_renderData->m_pDevice->CreateBuffer(&desc, nullptr, &buffer));
+	//Zeroed out subresource data
+	D3D11_SUBRESOURCE_DATA srd;
+	ZeroMemory(&srd, sizeof(D3D11_SUBRESOURCE_DATA));
+	srd.pSysMem = initialData;
+
+	HR(m_renderData->m_pDevice->CreateBuffer(&desc, initialData ? &srd : nullptr, &buffer));
 
 	if (constantBuffer)
 	{
@@ -371,7 +396,7 @@ void DX11Renderer::CreateConstantBuffer(ObjectHandle& constantBuffer, unsigned s
 
 		//Update data
 		constBufferObj.buffer = buffer;
-		constBufferObj.usage = BufferUsage::USAGE_DYNAMIC;
+		constBufferObj.usage = bufferUsage;
 		constBufferObj.size = size;
 	}
 
@@ -381,7 +406,7 @@ void DX11Renderer::CreateConstantBuffer(ObjectHandle& constantBuffer, unsigned s
 
 		//Update data
 		constBufferObj.buffer = buffer;
-		constBufferObj.usage = BufferUsage::USAGE_DYNAMIC;
+		constBufferObj.usage = bufferUsage;
 		constBufferObj.size = size;
 
 		int index = m_renderData->NextAvailableIndex(m_renderData->constantBuffers);
@@ -428,7 +453,7 @@ void DX11Renderer::CreateRenderTarget(ObjectHandle& rt, const int W, const int H
 	textureDesc.Format = m_renderData->dxgiFormatArrHelper[(int)dataFormat];
 	textureDesc.SampleDesc.Count = 1;
 	textureDesc.Usage = D3D11_USAGE_DEFAULT;
-	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 	textureDesc.CPUAccessFlags = 0;
 	textureDesc.MiscFlags = 0;
 
@@ -454,6 +479,16 @@ void DX11Renderer::CreateRenderTarget(ObjectHandle& rt, const int W, const int H
 	ID3D11ShaderResourceView* shaderResourceView = nullptr;
 
 	HR(m_renderData->m_pDevice->CreateShaderResourceView(tempTargetTexture, &shaderResourceViewDesc, &shaderResourceView));
+
+
+	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc;
+	ZeroMemory(&uavDesc, sizeof(D3D11_UNORDERED_ACCESS_VIEW_DESC));
+	uavDesc.Format = textureDesc.Format;
+	uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
+	uavDesc.Texture2D.MipSlice = 0;
+
+	ID3D11UnorderedAccessView* uavPtr = nullptr;
+	HR(m_renderData->m_pDevice->CreateUnorderedAccessView(tempTargetTexture, &uavDesc, &uavPtr));
 
 
 	ID3D11Texture2D* depthBuffer = nullptr;
@@ -489,6 +524,7 @@ void DX11Renderer::CreateRenderTarget(ObjectHandle& rt, const int W, const int H
 		auto& renderTargetObj = m_renderData->renderTargets[*rt];
 
 		SafeRelease(renderTargetObj.rtv);
+		SafeRelease(renderTargetObj.uav);
 		SafeRelease(renderTargetObj.texture2D);
 		SafeRelease(renderTargetObj.srv);
 		SafeRelease(renderTargetObj.depthStencilView);
@@ -496,6 +532,7 @@ void DX11Renderer::CreateRenderTarget(ObjectHandle& rt, const int W, const int H
 
 		renderTargetObj.format = dataFormat;
 		renderTargetObj.rtv = renderTargetView;
+		renderTargetObj.uav = uavPtr;
 		renderTargetObj.texture2D = tempTargetTexture;
 		renderTargetObj.srv = shaderResourceView;
 		renderTargetObj.depthBuffer = depthBuffer;
@@ -509,6 +546,7 @@ void DX11Renderer::CreateRenderTarget(ObjectHandle& rt, const int W, const int H
 		
 		renderTargetObj.format = dataFormat;
 		renderTargetObj.rtv = renderTargetView;
+		renderTargetObj.uav = uavPtr;
 		renderTargetObj.texture2D = tempTargetTexture;
 		renderTargetObj.srv = shaderResourceView;
 		renderTargetObj.depthBuffer = depthBuffer;
@@ -571,14 +609,15 @@ void DX11Renderer::ClearRenderTarget(const ObjectHandle& rt, const float colorAr
 		}
 }
 
-void DX11Renderer::CreateStructuredBufferRW_Texture2D(ObjectHandle& sbrwTexture2Dhandle, const BufferUsage bufferUsage, unsigned w, unsigned h)
+void DX11Renderer::CreateStructuredBufferRW_Texture2D(ObjectHandle& sbrwTexture2Dhandle, const BufferUsage bufferUsage, 
+		const DataFormat dataFormat, unsigned w, unsigned h)
 {
 		D3D11_TEXTURE2D_DESC texture2dDesc;
 		ZeroMemory(&texture2dDesc, sizeof(D3D11_TEXTURE2D_DESC));
 		texture2dDesc.Width = w;
 		texture2dDesc.Height = h;
 		texture2dDesc.MipLevels = texture2dDesc.ArraySize = 1;
-		texture2dDesc.Format = DXGI_FORMAT_UNKNOWN;
+		texture2dDesc.Format = m_renderData->dxgiFormatArrHelper[(int)dataFormat];
 		texture2dDesc.SampleDesc.Count = 1;
 		texture2dDesc.SampleDesc.Quality = 0;
 
@@ -610,6 +649,8 @@ void DX11Renderer::CreateStructuredBufferRW_Texture2D(ObjectHandle& sbrwTexture2
 
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 		ZeroMemory(&srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+		srvDesc.Format = texture2dDesc.Format;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 		srvDesc.Texture2D.MipLevels = 1;
 		srvDesc.Texture2D.MostDetailedMip = 0;
 
@@ -618,7 +659,7 @@ void DX11Renderer::CreateStructuredBufferRW_Texture2D(ObjectHandle& sbrwTexture2
 
 		D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc;
 		ZeroMemory(&uavDesc, sizeof(D3D11_UNORDERED_ACCESS_VIEW_DESC));
-		uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+		uavDesc.Format = texture2dDesc.Format;
 		uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
 		uavDesc.Texture2D.MipSlice = 0;
 

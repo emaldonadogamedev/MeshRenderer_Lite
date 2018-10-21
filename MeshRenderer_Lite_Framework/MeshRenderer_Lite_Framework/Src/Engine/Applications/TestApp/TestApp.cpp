@@ -71,7 +71,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		testLight->AddComponent(transform);
 		gameObjSystem->AddComponent(transform);
 
-		ShadowLightComponent* lightComp = new ShadowLightComponent(testLight.get(), true, true);
+		ShadowLightComponent* lightComp = new ShadowLightComponent(testLight.get(), true, true, false);
 		//lightComp->GetLight()->m_lightType = LightType::LT_DIRECTIONAL;
 		testLight->AddComponent(lightComp);
 		graphicsSystem->AddComponent(lightComp);
@@ -84,7 +84,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		testLight2->AddComponent(transform);
 		gameObjSystem->AddComponent(transform);
 		
-		ShadowLightComponent* lightComp2 = new ShadowLightComponent(testLight2.get(), true, true);
+		ShadowLightComponent* lightComp2 = new ShadowLightComponent(testLight2.get(), false, false);
 		//lightComp->GetLight()->m_lightType = LightType::LT_DIRECTIONAL;
 		testLight2->AddComponent(lightComp2);
 		graphicsSystem->AddComponent(lightComp2);

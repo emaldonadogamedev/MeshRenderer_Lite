@@ -581,6 +581,11 @@ void GraphicsSystem::LoadBasicShaders()
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "DeferredShadowLightStagePS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "DeferredSimpleLightStagePS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "CopyRenderTarget");
+
+	//////////////////////////////////////////////////////////////////////////
+	//Default Compute Shaders
+	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "MomentShadowMapBlur_Horizontal");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "MomentShadowMapBlur_Vertical");
 }
 
 void GraphicsSystem::LoadBasicShaderHelper(ObjectHandle& shaderHandle, const ObjectType shaderType, const std::string & fileName, const std::string & fileExtension)
@@ -609,6 +614,12 @@ void GraphicsSystem::LoadBasicShaderHelper(ObjectHandle& shaderHandle, const Obj
 				shaderHandle.MakeNull();
 				m_dx11Renderer->CreatePixelShader(shaderHandle, s_pixelShaderDir + fileName + fileExtension, false);
 				m_resources[(int)ObjectType::PIXEL_SHADER][fileName] = shaderHandle;
+		}
+		else if (shaderType == ObjectType::COMPUTE_SHADER)
+		{
+				shaderHandle.MakeNull();
+				m_dx11Renderer->CreateComputeShader(shaderHandle, s_computeShaderDir + fileName + fileExtension, false);
+				m_resources[(int)ObjectType::COMPUTE_SHADER][fileName] = shaderHandle;
 		}
 }
 
