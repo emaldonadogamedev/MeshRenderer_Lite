@@ -31,6 +31,7 @@ void DeferredShadowLightStage::PreRender()
 				ShadowLightComponent* lightComp = (ShadowLightComponent*)component;
 				if (lightComp->IsUsingShadows())
 				{
+						m_renderer->BindTextureShaderResource(ObjectType::PIXEL_SHADER, lightComp->GetShadowTextureIdx(), 1, lightComp->GetShadowDepthMapHandle());
 				}
 		}
 
