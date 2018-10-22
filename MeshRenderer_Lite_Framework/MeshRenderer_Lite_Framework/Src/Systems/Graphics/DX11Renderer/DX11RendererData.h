@@ -74,6 +74,8 @@ public:
 	std::vector<Buffer> vertexBuffers;
 	std::vector<Buffer> indexBuffers;
 	std::vector<Buffer> constantBuffers;
+	std::vector<StructuredBuffer> structuredBuffers;
+	std::vector<StructuredBufferRW> structuredBuffersRW;
 	std::vector<StructuredBufferRW_Texture2D> structuredBuffersRW_Texture2D;
 
 	//Sampler states for textures

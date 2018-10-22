@@ -98,6 +98,20 @@ void DX11Renderer::ReleaseData()
 	for (auto& cb : m_renderData->constantBuffers)
 		SafeRelease(cb.buffer);
 
+	//structured buffers
+	for (auto& sb : m_renderData->structuredBuffers)
+	{
+			SafeRelease(sb.buffer);
+			SafeRelease(sb.srv);
+	}
+
+	//structured rw buffers
+	for (auto& sbrw : m_renderData->structuredBuffersRW)
+	{
+			SafeRelease(sbrw.buffer);
+			SafeRelease(sbrw.uav);
+	}
+
 	//structured rw texture2D buffers
 	for (auto& sbrw : m_renderData->structuredBuffersRW_Texture2D)
 	{
@@ -425,6 +439,204 @@ void DX11Renderer::CreateConstantBuffer(ObjectHandle& constantBuffer, const Buff
 			constantBuffer = CreateHandle(ObjectType::CONSTANT_BUFFER, index);
 		}
 	}
+}
+
+void DX11Renderer::CreateStructuredBuffer(ObjectHandle& structuredBuffer, const BufferUsage bufferUsage, unsigned numOfElements, 
+		unsigned stride, const void* initialData /*= nullptr*/)
+{
+		//Create zeroed out buffer description
+		D3D11_BUFFER_DESC desc;
+		ZeroMemory(&desc, sizeof(D3D11_BUFFER_DESC));
+		//Specify correct buffer usage
+		switch (bufferUsage)
+		{
+		case BufferUsage::USAGE_DEFAULT:
+				desc.Usage = D3D11_USAGE_DEFAULT;
+				break;
+
+		case BufferUsage::USAGE_IMMUTABLE:
+				desc.Usage = D3D11_USAGE_IMMUTABLE;
+				break;
+
+		case BufferUsage::USAGE_DYNAMIC:
+				desc.Usage = D3D11_USAGE_DYNAMIC;
+				desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+				break;
+
+		case BufferUsage::USAGE_STAGING:
+				desc.Usage = D3D11_USAGE_STAGING;
+				desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+				break;
+
+		default:
+				break;
+		}
+
+		//Need to ensure that memory is aligned to 16 bytes.
+		desc.ByteWidth = numOfElements * stride;
+		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		desc.StructureByteStride = stride;
+
+		//Create Buffer
+		ID3D11Buffer* buffer;
+
+		//Zeroed out subresource data
+		D3D11_SUBRESOURCE_DATA srd;
+		ZeroMemory(&srd, sizeof(D3D11_SUBRESOURCE_DATA));
+		srd.pSysMem = initialData;
+
+		HR(m_renderData->m_pDevice->CreateBuffer(&desc, initialData ? &srd : nullptr, &buffer));
+
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+		ZeroMemory(&srvDesc, sizeof(D3D11_UNORDERED_ACCESS_VIEW_DESC));
+		srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
+		srvDesc.Buffer.NumElements = numOfElements;
+
+		ID3D11ShaderResourceView* srvPtr = nullptr;
+		HR(m_renderData->m_pDevice->CreateShaderResourceView(buffer, &srvDesc, &srvPtr));
+
+		if (structuredBuffer)
+		{
+				StructuredBuffer& structuredBufferObj = m_renderData->structuredBuffers[*structuredBuffer];
+
+				//Free buffer if it has data
+				SafeRelease(structuredBufferObj.buffer);
+				SafeRelease(structuredBufferObj.srv);
+
+				//Update data
+				structuredBufferObj.buffer = buffer;
+				structuredBufferObj.srv = srvPtr;
+				structuredBufferObj.usage = bufferUsage;
+				structuredBufferObj.size = desc.ByteWidth;
+		}
+
+		else
+		{
+				StructuredBuffer structuredBufferObj;
+
+				//Update data
+				structuredBufferObj.buffer = buffer;
+				structuredBufferObj.srv = srvPtr;
+				structuredBufferObj.usage = bufferUsage;
+				structuredBufferObj.size = desc.ByteWidth;
+
+				int index = m_renderData->NextAvailableIndex(m_renderData->constantBuffers);
+
+				if (index == -1)
+				{
+						//No free space exists in container, push back
+						m_renderData->structuredBuffers.push_back(std::move(structuredBufferObj));
+						structuredBuffer = CreateHandle(ObjectType::STRUCTURED_BUFFER, m_renderData->structuredBuffers.size() - 1);
+				}
+
+				else
+				{
+						//Use available space in container
+						m_renderData->structuredBuffers[index] = structuredBufferObj;
+						structuredBuffer = CreateHandle(ObjectType::STRUCTURED_BUFFER, index);
+				}
+		}
+}
+
+void DX11Renderer::CreateStructuredBufferRW(ObjectHandle& structuredBufferRW, const BufferUsage bufferUsage, unsigned numOfElements, unsigned stride, const void* initialData /*= nullptr*/)
+{
+		//Create zeroed out buffer description
+		D3D11_BUFFER_DESC desc;
+		ZeroMemory(&desc, sizeof(D3D11_BUFFER_DESC));
+		//Specify correct buffer usage
+		switch (bufferUsage)
+		{
+		case BufferUsage::USAGE_DEFAULT:
+				desc.Usage = D3D11_USAGE_DEFAULT;
+				break;
+
+		case BufferUsage::USAGE_IMMUTABLE:
+				desc.Usage = D3D11_USAGE_IMMUTABLE;
+				break;
+
+		case BufferUsage::USAGE_DYNAMIC:
+				desc.Usage = D3D11_USAGE_DYNAMIC;
+				desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+				break;
+
+		case BufferUsage::USAGE_STAGING:
+				desc.Usage = D3D11_USAGE_STAGING;
+				desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+				break;
+
+		default:
+				break;
+		}
+
+		//Need to ensure that memory is aligned to 16 bytes.
+		desc.ByteWidth = numOfElements * stride;
+		desc.BindFlags = D3D11_BIND_UNORDERED_ACCESS;
+		desc.StructureByteStride = stride;
+
+		//Create Buffer
+		ID3D11Buffer* buffer;
+
+		//Zeroed out subresource data
+		D3D11_SUBRESOURCE_DATA srd;
+		ZeroMemory(&srd, sizeof(D3D11_SUBRESOURCE_DATA));
+		srd.pSysMem = initialData;
+
+		HR(m_renderData->m_pDevice->CreateBuffer(&desc, initialData ? &srd : nullptr, &buffer));
+
+		D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc;
+		ZeroMemory(&uavDesc, sizeof(D3D11_UNORDERED_ACCESS_VIEW_DESC));
+		uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+		uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
+		uavDesc.Buffer.NumElements = numOfElements;
+
+		ID3D11UnorderedAccessView* uavPtr = nullptr;
+		HR(m_renderData->m_pDevice->CreateUnorderedAccessView(buffer, &uavDesc, &uavPtr));
+
+		if (structuredBufferRW)
+		{
+				StructuredBufferRW& STRUCTURED_BUFFER_RW = m_renderData->structuredBuffersRW[*structuredBufferRW];
+
+				//Free buffer if it has data
+				if (STRUCTURED_BUFFER_RW.buffer)
+				{
+						SafeRelease(STRUCTURED_BUFFER_RW.buffer);
+						SafeRelease(STRUCTURED_BUFFER_RW.uav);
+				}
+
+				//Update data
+				STRUCTURED_BUFFER_RW.buffer = buffer;
+				STRUCTURED_BUFFER_RW.uav = uavPtr;
+				STRUCTURED_BUFFER_RW.usage = bufferUsage;
+				STRUCTURED_BUFFER_RW.size = desc.ByteWidth;
+		}
+
+		else
+		{
+				StructuredBufferRW structuredBufferRWobj;
+
+				//Update data
+				structuredBufferRWobj.buffer = buffer;
+				structuredBufferRWobj.uav = uavPtr;
+				structuredBufferRWobj.usage = bufferUsage;
+				structuredBufferRWobj.size = desc.ByteWidth;
+
+				int index = m_renderData->NextAvailableIndex(m_renderData->constantBuffers);
+
+				if (index == -1)
+				{
+						//No free space exists in container, push back
+						m_renderData->structuredBuffersRW.push_back(std::move(structuredBufferRWobj));
+						structuredBufferRW = CreateHandle(ObjectType::STRUCTURED_BUFFER_RW, m_renderData->structuredBuffersRW.size() - 1);
+				}
+
+				else
+				{
+						//Use available space in container
+						m_renderData->structuredBuffersRW[index] = structuredBufferRWobj;
+						structuredBufferRW = CreateHandle(ObjectType::STRUCTURED_BUFFER_RW, index);
+				}
+		}
 }
 
 ObjectHandle DX11Renderer::GetTexture2D(const std::string& fileName)

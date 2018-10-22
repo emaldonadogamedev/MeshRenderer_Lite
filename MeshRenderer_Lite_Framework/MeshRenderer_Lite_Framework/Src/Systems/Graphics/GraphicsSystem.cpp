@@ -576,6 +576,7 @@ void GraphicsSystem::LoadBasicShaders()
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "SimplePS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "DepthPS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "ShadowPS");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "MomentShadowPS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "GbufferPS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "DeferredAmbientStagePS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "DeferredShadowLightStagePS");

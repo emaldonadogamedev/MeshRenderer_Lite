@@ -115,6 +115,16 @@ struct Buffer : D3DObjectBase
 	unsigned int size;
 };
 
+struct StructuredBuffer : Buffer
+{
+		ID3D11ShaderResourceView* srv;
+};
+
+struct StructuredBufferRW : Buffer
+{
+		ID3D11UnorderedAccessView* uav;
+};
+
 struct StructuredBufferRW_Texture2D : Texture2D
 {
 		ID3D11UnorderedAccessView* uav;
