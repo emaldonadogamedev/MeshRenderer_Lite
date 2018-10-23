@@ -476,6 +476,7 @@ void DX11Renderer::CreateStructuredBuffer(ObjectHandle& structuredBuffer, const 
 		desc.ByteWidth = numOfElements * stride;
 		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 		desc.StructureByteStride = stride;
+		desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
 
 		//Create Buffer
 		ID3D11Buffer* buffer;
@@ -521,7 +522,7 @@ void DX11Renderer::CreateStructuredBuffer(ObjectHandle& structuredBuffer, const 
 				structuredBufferObj.usage = bufferUsage;
 				structuredBufferObj.size = desc.ByteWidth;
 
-				int index = m_renderData->NextAvailableIndex(m_renderData->constantBuffers);
+				int index = m_renderData->NextAvailableIndex(m_renderData->structuredBuffers);
 
 				if (index == -1)
 				{
@@ -621,7 +622,7 @@ void DX11Renderer::CreateStructuredBufferRW(ObjectHandle& structuredBufferRW, co
 				structuredBufferRWobj.usage = bufferUsage;
 				structuredBufferRWobj.size = desc.ByteWidth;
 
-				int index = m_renderData->NextAvailableIndex(m_renderData->constantBuffers);
+				int index = m_renderData->NextAvailableIndex(m_renderData->structuredBuffersRW);
 
 				if (index == -1)
 				{

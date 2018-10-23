@@ -10,6 +10,7 @@ ShadowLightComponent::ShadowLightComponent(const GameObject* owner, bool isActiv
   , m_useSoftShadows(useSoftShadows)
 	, m_shadowDepthMapHandle()
 	, m_shadowMapWidthHeight(shadowWidthHeight)
+	, m_softShadowMapKernelHalfWidth(3)
 {
 		int textureIdx = 5;
 		for (unsigned int i = 0; i < s_maxShadowLights; ++i)
@@ -20,8 +21,16 @@ ShadowLightComponent::ShadowLightComponent(const GameObject* owner, bool isActiv
 						m_light->isTaken = 1;
 						m_light->isUsingShadows = static_cast<int>(m_useShadows);
 						m_light->isUsingSoftShadows = static_cast<int>(m_useSoftShadows);
+						
 						m_shadowDepthMapHandle = &shadowMapHandles[i];
+						m_shadowDepthMapHandle->MakeNull();
+						
 						m_softShadowDepthMapHandle = &softShadowMapHandles[i];
+						m_softShadowDepthMapHandle->MakeNull();
+
+						m_softShadowKernelWeightsHandle = &softShadowKernelWeightHandles[i];
+						m_softShadowKernelWeightsHandle->MakeNull();
+						
 						m_shadowTextureIdx = textureIdx;
 						m_viewProj = &shadowLightViewProjBuffers[i];
 						
@@ -77,6 +86,21 @@ const ObjectHandle& ShadowLightComponent::GetSoftShadowDepthMapHandle() const
 		return *m_softShadowDepthMapHandle;
 }
 
+ObjectHandle& ShadowLightComponent::GetSoftShadowMapKernelWeightHandle()
+{
+		return *m_softShadowKernelWeightsHandle;
+}
+
+const ObjectHandle& ShadowLightComponent::GetSoftShadowMapKernelWeightHandle() const
+{
+		return *m_softShadowKernelWeightsHandle;
+}
+
+int ShadowLightComponent::GetSoftShadowMapKernelHalfWidth() const
+{
+		return m_softShadowMapKernelHalfWidth;
+}
+
 const int ShadowLightComponent::GetShadowTextureIdx() const
 {
 		return m_shadowTextureIdx;
@@ -119,6 +143,8 @@ int ShadowLightComponent::GetActiveLightsWithShadowCount()
 
 LightViewProj ShadowLightComponent::shadowLightViewProjBuffers[s_maxShadowLights];
 int ShadowLightComponent::s_takenLightCount = 0;
-ObjectHandle ShadowLightComponent::shadowMapHandles[s_maxShadowLights] = { ObjectHandle::Null()};
+
+ObjectHandle ShadowLightComponent::softShadowKernelWeightHandles[s_maxShadowLights] = { ObjectHandle::Null() };
+ObjectHandle ShadowLightComponent::shadowMapHandles[s_maxShadowLights] = { ObjectHandle::Null() };
 ObjectHandle ShadowLightComponent::softShadowMapHandles[s_maxShadowLights] = { ObjectHandle::Null() };
 Light ShadowLightComponent::sceneLightsWithShadows[s_maxShadowLights];

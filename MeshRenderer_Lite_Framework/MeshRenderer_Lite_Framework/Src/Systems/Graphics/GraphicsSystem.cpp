@@ -457,6 +457,29 @@ void GraphicsSystem::AddComponent(IComponent* component)
 
 				m_dx11Renderer->CreateRenderTarget(shadowLightComp->GetSoftShadowDepthMapHandle(), shadowLightComp->m_shadowMapWidthHeight,
 						shadowLightComp->m_shadowMapWidthHeight, DataFormat::FLOAT4);
+
+				const int halfWidth = shadowLightComp->GetSoftShadowMapKernelHalfWidth();
+				std::vector<float> kernelWeights;
+				const float e = 2.718281828459f;
+				float denominator = float(halfWidth) / 2.0f;
+				denominator *= denominator;
+				denominator *= 2.0f;
+				float sum = 0.f;
+				for (int w = -halfWidth; w <= halfWidth; w += 1)
+				{
+						kernelWeights.push_back( std::pow(e, -(float(w*w) / denominator) ));
+
+						sum += kernelWeights.back();
+				}
+
+				//normalize them to sum to 1
+				for (int i = 0; i < kernelWeights.size(); ++i)
+				{
+						kernelWeights[i] /= sum;
+				}
+
+				m_dx11Renderer->CreateStructuredBuffer(shadowLightComp->GetSoftShadowMapKernelWeightHandle(), BufferUsage::USAGE_DEFAULT, 
+						(halfWidth * 2) + 1, sizeof(float), kernelWeights.data());
 		}
 	}
 }

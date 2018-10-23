@@ -30,6 +30,11 @@ public:
 	ObjectHandle& GetSoftShadowDepthMapHandle();
 	const ObjectHandle& GetSoftShadowDepthMapHandle() const;
 
+	ObjectHandle& GetSoftShadowMapKernelWeightHandle();
+	const ObjectHandle& GetSoftShadowMapKernelWeightHandle() const;
+
+	int GetSoftShadowMapKernelHalfWidth() const;
+
 	const int GetShadowTextureIdx() const;
 
 	static const Light* const GetSceneLightsWithShadowPtr();
@@ -42,14 +47,18 @@ protected:
 
 	bool m_useShadows;
 	bool m_useSoftShadows;
-	ObjectHandle* m_shadowDepthMapHandle;
-	ObjectHandle* m_softShadowDepthMapHandle;
 	int m_shadowTextureIdx;
 	int m_shadowMapWidthHeight;
+
+	ObjectHandle* m_shadowDepthMapHandle;
+	ObjectHandle* m_softShadowDepthMapHandle;
+	ObjectHandle* m_softShadowKernelWeightsHandle;
+	int m_softShadowMapKernelHalfWidth;
 
 	static Light sceneLightsWithShadows[];
 	static ObjectHandle shadowMapHandles[];
 	static ObjectHandle softShadowMapHandles[];
+	static ObjectHandle softShadowKernelWeightHandles[];
 	static LightViewProj shadowLightViewProjBuffers[];
 	static int s_takenLightCount;
 
