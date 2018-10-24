@@ -122,6 +122,7 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 				{
 						const auto& softShadowRThandle = lightComp->GetSoftShadowDepthMapHandle();
 						const int shadowMapDim = lightComp->GetShadowMapDimension();
+						const auto& kernelWeightsHandle = lightComp->GetSoftShadowMapKernelWeightHandle();
 
 						////////////////////////////////////////////////////////////////////////////
 						////Simple Blur
@@ -143,6 +144,7 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 						m_renderer->BindComputeShader(handle);
 						m_renderer->BindTextureShaderResource(ObjectType::COMPUTE_SHADER, 0, 1, shadowRThandle);
 						m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(1, 1, &m_renderData.renderTargets[*softShadowRThandle].uav, nullptr);
+						m_renderData.m_pImmediateContext->CSSetShaderResources(1, 1, &m_renderData.structuredBuffers[*kernelWeightsHandle].srv);
 						m_renderer->DispatchComputeShader(handle, shadowMapDim / 128, shadowMapDim, 1);
 						
 						//////////////////////////////////////////////////////////////////////////

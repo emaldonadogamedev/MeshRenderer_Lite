@@ -28,6 +28,6 @@ void main(uint3 dispatchThreadId : SV_DispatchThreadID)
 				}
 		}
 
-		result.w = 1.0f;
-		outputShadowMap[pixelCoords] = saturate(result);
+		//result.w = 1.0f;
+		outputShadowMap[pixelCoords] = result;
 }
