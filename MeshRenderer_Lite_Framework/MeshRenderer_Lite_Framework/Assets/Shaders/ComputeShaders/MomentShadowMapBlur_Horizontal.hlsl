@@ -16,7 +16,6 @@ void main(uint3 dispatchThreadId : SV_DispatchThreadID)
 		outputShadowMap.GetDimensions(outShadowMapWidth, outShadowMapHeight);
 
 		const uint2 pixelCoords = dispatchThreadId.xy;
-		const float normalizedUV_y = float(pixelCoords.y) / float(outShadowMapHeight);
 
 		const uint halfSize = numStructs / 2;
 		float4 result = float4(0, 0, 0, 0);
@@ -28,6 +27,5 @@ void main(uint3 dispatchThreadId : SV_DispatchThreadID)
 				}
 		}
 
-		//result.w = 1.0f;
 		outputShadowMap[pixelCoords] = result;
 }

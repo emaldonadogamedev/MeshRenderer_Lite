@@ -1,6 +1,7 @@
 #include "../TextureShaderIncludes.hlsli"
 
-Texture2D inputShadowMap: register(t0);
+//Texture2D inputShadowMap : register(t0); //For some reason this crap doesn't work after running the horizontal blur shader
+RWTexture2D<float4> inputShadowMap : register(u1);
 RWTexture2D<float4> outputShadowMap : register(u0);
 StructuredBuffer <float> weights : register(t1);
 
@@ -16,7 +17,6 @@ void main(uint3 dispatchThreadId : SV_DispatchThreadID)
 		outputShadowMap.GetDimensions(outShadowMapWidth, outShadowMapHeight);
 
 		const uint2 pixelCoords = dispatchThreadId.xy;
-		const float normalizedUV_x = float(pixelCoords.x) / float(outShadowMapWidth);
 
 		const uint halfSize = numStructs / 2;
 		float4 result = float4(0, 0, 0, 0);
@@ -28,6 +28,5 @@ void main(uint3 dispatchThreadId : SV_DispatchThreadID)
 				}
 		}
 
-		//result.w = 1.0f;
 		outputShadowMap[pixelCoords] = result;
 }
