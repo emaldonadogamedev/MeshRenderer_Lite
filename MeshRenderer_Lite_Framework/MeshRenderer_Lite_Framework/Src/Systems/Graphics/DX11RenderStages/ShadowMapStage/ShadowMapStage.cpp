@@ -114,12 +114,13 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 										m_renderer->DrawIndexed(meshEntry.numIndices, meshEntry.baseIndex, meshEntry.baseVertex);
 								}
 						}
-				}
+				} // END - for (auto component : modelComponents)
 
 				//////////////////////////////////////////////////////////////////////////
 				//Blur Shadow Maps for soft shadows
 				if (lightComp->IsUsingSoftShadows())
 				{
+						m_renderer->BindNullRenderTarget();
 						const auto& softShadowRThandle = lightComp->GetSoftShadowDepthMapHandle();
 						const int shadowMapDim = lightComp->GetShadowMapDimension();
 						const auto& kernelWeightsHandle = lightComp->GetSoftShadowMapKernelWeightHandle();
@@ -143,10 +144,15 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 						handle = (graphicsResources[(int)ObjectType::COMPUTE_SHADER]).at("MomentShadowMapBlur_Horizontal");
 						m_renderer->BindComputeShader(handle);
 						m_renderer->BindTextureShaderResource(ObjectType::COMPUTE_SHADER, 0, 1, shadowRThandle);
-						m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(1, 1, &m_renderData.renderTargets[*softShadowRThandle].uav, nullptr);
+						m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(0, 1, &m_renderData.renderTargets[*softShadowRThandle].uav, nullptr);
 						m_renderData.m_pImmediateContext->CSSetShaderResources(1, 1, &m_renderData.structuredBuffers[*kernelWeightsHandle].srv);
 						m_renderer->DispatchComputeShader(handle, shadowMapDim / 128, shadowMapDim, 1);
 						
+						//////////////////////////////////////////////////////////////////////////
+						// Cleanup before vertical blur
+						m_renderData.m_pImmediateContext->CSSetShaderResources(0, 0, nullptr);
+						m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(0, 0, nullptr, nullptr);
+
 						//////////////////////////////////////////////////////////////////////////
 						//Vertical Blur
 						handle = (graphicsResources[(int)ObjectType::COMPUTE_SHADER]).at("MomentShadowMapBlur_Vertical");
@@ -154,11 +160,12 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 						
 						//Here we swap and the soft shadow map and the originally hard shadow map
 						//The soft shadow map is blurred, but only horizontally
-						m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(1, 1, &m_renderData.renderTargets[*shadowRThandle].uav, nullptr);
 						m_renderer->BindTextureShaderResource(ObjectType::COMPUTE_SHADER, 0, 1, softShadowRThandle);
+						m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(0, 1, &m_renderData.renderTargets[*shadowRThandle].uav, nullptr);
+						m_renderData.m_pImmediateContext->CSSetShaderResources(1, 1, &m_renderData.structuredBuffers[*kernelWeightsHandle].srv);
 						m_renderer->DispatchComputeShader(handle, shadowMapDim, shadowMapDim / 128, 1);
-				}
-		}
+				} //END - if (lightComp->IsUsingSoftShadows())
+		} // END - for (auto& light : lightComps)
 }
 
 void ShadowMapStage::PostRender()

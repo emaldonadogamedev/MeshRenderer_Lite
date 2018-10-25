@@ -1,7 +1,7 @@
 #include "../TextureShaderIncludes.hlsli"
 
-Texture2D inputShadowMap: register(t0);
-RWTexture2D<float4> outputShadowMap : register(u1);
+Texture2D inputShadowMap : register(t0);
+RWTexture2D<float4> outputShadowMap : register(u0);
 StructuredBuffer <float> weights : register(t1);
 
 

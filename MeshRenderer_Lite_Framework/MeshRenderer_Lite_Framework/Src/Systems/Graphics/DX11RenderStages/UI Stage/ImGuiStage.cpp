@@ -152,7 +152,7 @@ void ImGuiStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 
 void ImGuiStage::PostRender()
 {
-		//m_renderData.m_currentMainRTindex = !m_renderData.m_currentMainRTindex;
+
 }
 
 void ImGuiStage::ShowGraphicsSettings()
