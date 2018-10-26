@@ -100,7 +100,7 @@ float4 main(PixelInputType pixel) : SV_TARGET
 
 												float4 blurredDepthValue = shadowMaps[i][uint2(projectTexCoord.x * shadowMapW, projectTexCoord.y * shadowMapH)];
 												float4 bPrime = (1.0f - 0.001f) * blurredDepthValue;
-												bPrime += 0.001f * (float1x4(0.5f, 0.5f, 0.5f, 0.5f));
+												bPrime += 0.001f * (float4(0.5f, 0.5f, 0.5f, 0.5f));
 
 												matrix <float, 3, 3> lhsMatrix = 
 												{ 

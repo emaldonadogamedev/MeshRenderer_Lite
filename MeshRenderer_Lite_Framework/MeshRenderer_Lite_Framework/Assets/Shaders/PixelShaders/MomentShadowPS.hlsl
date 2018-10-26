@@ -2,12 +2,12 @@
 
 float4 main(PixelInputType pixel) : SV_TARGET
 {
-		const float wDepth = pixel.position.w;
+		const float zDepth = pixel.position.w;//pixel.position.z;
 		float4 depthValues;
-		depthValues.x = wDepth;                 //z
-		depthValues.y = depthValues.x * wDepth; //z^2
-		depthValues.z = depthValues.y * wDepth; //z^3
-		depthValues.w = depthValues.z * wDepth; //z^4
+		depthValues.x = zDepth;                 //z
+		depthValues.y = depthValues.x * zDepth; //z^2
+		depthValues.z = depthValues.y * zDepth; //z^3
+		depthValues.w = depthValues.z * zDepth; //z^4
 
 		return depthValues;
 }

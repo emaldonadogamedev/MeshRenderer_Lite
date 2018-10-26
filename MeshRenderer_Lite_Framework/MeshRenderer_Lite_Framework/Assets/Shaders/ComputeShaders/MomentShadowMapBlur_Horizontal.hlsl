@@ -4,6 +4,7 @@ Texture2D inputShadowMap : register(t0);
 RWTexture2D<float4> outputShadowMap : register(u0);
 StructuredBuffer <float> weights : register(t1);
 
+groupshared float4 sharedMemFloats[128 + 21];
 
 [numthreads(128, 1, 1)]
 void main(uint3 dispatchThreadId : SV_DispatchThreadID)
@@ -12,19 +13,27 @@ void main(uint3 dispatchThreadId : SV_DispatchThreadID)
 		uint stride; //number of bytes per element in weights buffer - THIS IS A REQUIRED VARIABLE, but not used in the shader code
 		weights.GetDimensions(numStructs, stride);
 
+		const int halfSize = int(numStructs) / 2;
+
 		uint outShadowMapWidth, outShadowMapHeight;
 		outputShadowMap.GetDimensions(outShadowMapWidth, outShadowMapHeight);
 
-		const uint2 pixelCoords = dispatchThreadId.xy;
+		const int2 pixelCoords = dispatchThreadId.xy;
 
-		const uint halfSize = numStructs / 2;
-		float4 result = float4(0, 0, 0, 0);
-		for (uint x = pixelCoords.x - halfSize, weightsIdx = 0; x <= (pixelCoords.x + halfSize); ++x, ++weightsIdx)
+		sharedMemFloats[pixelCoords.x] = inputShadowMap[pixelCoords + int2(-halfSize, 0)];
+		if (pixelCoords.x < (halfSize * 2))
 		{
-				if (x >= 0 && x < outShadowMapWidth)
-				{
-						result += weights[weightsIdx] * inputShadowMap[uint2(x, pixelCoords.y)];
-				}
+			sharedMemFloats[pixelCoords.x + 128] = inputShadowMap[pixelCoords + int2(128 - halfSize, 0)];// read extra 2*w pixels
+		}
+
+		//wait for all threads to read
+		AllMemoryBarrierWithGroupSync();
+
+		float4 result = float4(0, 0, 0, 0);
+
+		for (int i = -halfSize; i <= halfSize; ++i)
+		{
+			result += weights[i + halfSize] * sharedMemFloats[pixelCoords.x + i + halfSize];
 		}
 
 		outputShadowMap[pixelCoords] = result;
