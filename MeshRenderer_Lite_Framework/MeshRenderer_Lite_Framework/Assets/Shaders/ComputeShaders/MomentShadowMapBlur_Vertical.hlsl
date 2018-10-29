@@ -7,7 +7,7 @@ StructuredBuffer <float> weights : register(t1);
 groupshared float4 sharedMemFloats[128 + 21];
 
 [numthreads(1, 128, 1)]
-void main(uint3 dispatchThreadId : SV_DispatchThreadID)
+void main(uint3 dispatchThreadId : SV_DispatchThreadID, uint groupIndex : SV_GroupIndex)
 {
 		uint numStructs; //number of elements in weights buffer
 		uint stride; //number of bytes per element in weights buffer - THIS IS A REQUIRED VARIABLE, but not used in the shader code
@@ -20,16 +20,19 @@ void main(uint3 dispatchThreadId : SV_DispatchThreadID)
 
 		const int2 pixelCoords = dispatchThreadId.xy;
 
-		sharedMemFloats[pixelCoords.y] = inputShadowMap[pixelCoords + int2(0, -halfSize)];
+		sharedMemFloats[pixelCoords.y] = inputShadowMap[ int2(pixelCoords.x, max(pixelCoords.y - halfSize, 0)) ];
 		if (pixelCoords.y < (halfSize * 2))
 		{
-			sharedMemFloats[pixelCoords.y + 128] = inputShadowMap[pixelCoords + int2(0, 128 - halfSize)];// read extra 2*w pixels
+            // read extra 2*w pixels
+            int2 coords = int2(pixelCoords.x, min(pixelCoords.y + 128 - halfSize, outShadowMapHeight - 1) );
+
+			sharedMemFloats[clamp(pixelCoords.y + 128, 0, outShadowMapHeight - 1)] = inputShadowMap[coords];
 		}
 
 		//wait for all threads to read
 		//AllMemoryBarrier();
-		AllMemoryBarrierWithGroupSync();
-		//GroupMemoryBarrierWithGroupSync();
+		//AllMemoryBarrierWithGroupSync();
+		GroupMemoryBarrierWithGroupSync();
 
 		float4 result = float4(0, 0, 0, 0);
 
