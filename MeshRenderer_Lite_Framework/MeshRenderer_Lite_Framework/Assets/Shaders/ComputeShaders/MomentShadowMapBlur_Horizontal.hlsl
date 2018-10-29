@@ -27,13 +27,15 @@ void main(uint3 dispatchThreadId : SV_DispatchThreadID)
 		}
 
 		//wait for all threads to read
+		//AllMemoryBarrier();
 		AllMemoryBarrierWithGroupSync();
+		//GroupMemoryBarrierWithGroupSync();
 
 		float4 result = float4(0, 0, 0, 0);
 
-		for (int i = -halfSize; i <= halfSize; ++i)
+		for (int i = -halfSize, w = 0; i <= halfSize; ++i, ++w)
 		{
-			result += weights[i + halfSize] * sharedMemFloats[pixelCoords.x + i + halfSize];
+			result += weights[w] * sharedMemFloats[pixelCoords.x + i + halfSize];
 		}
 
 		outputShadowMap[pixelCoords] = result;

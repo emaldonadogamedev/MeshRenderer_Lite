@@ -7,6 +7,11 @@ static const float PI = 3.14159265f;
 static const float TWO_PI = 6.2831853f;
 static const float EPSILION = 0.0001f;
 
+float det3(float3 a, float3 b, float3 c) // Determinant of a 3x3 passed in as three colum
+{
+		return a.x*(b.y*c.z - b.z*c.y) + a.y*(b.z*c.x - b.x*c.z) + a.z*(b.x*c.y - b.y*c.x);
+}
+
 //--------------------------------------------------------------------------------------
 // Vertex & Pixel structure definitions
 //--------------------------------------------------------------------------------------

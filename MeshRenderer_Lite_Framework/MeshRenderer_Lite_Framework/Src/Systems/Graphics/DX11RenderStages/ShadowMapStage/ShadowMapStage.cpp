@@ -152,6 +152,7 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 						// Cleanup before vertical blur
 						m_renderData.m_pImmediateContext->CSSetShader(nullptr, nullptr, 0);
 						m_renderData.m_pImmediateContext->CSSetShaderResources(0, 0, nullptr);
+						m_renderData.m_pImmediateContext->CSSetShaderResources(1, 0, nullptr);
 						m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(0, 0, nullptr, nullptr);
 
 						//////////////////////////////////////////////////////////////////////////
@@ -161,11 +162,17 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 						
 						//Here we swap and the soft shadow map and the originally hard shadow map
 						//The soft shadow map is blurred, but only horizontally
-						//m_renderer->BindTextureShaderResource(ObjectType::COMPUTE_SHADER, 2, 1, softShadowRThandle);
-						m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(1, 1, &m_renderData.renderTargets[*softShadowRThandle].uav, nullptr);
+						m_renderer->BindTextureShaderResource(ObjectType::COMPUTE_SHADER, 0, 1, softShadowRThandle);
+						//m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(1, 1, &m_renderData.renderTargets[*softShadowRThandle].uav, nullptr);
 						m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(0, 1, &m_renderData.renderTargets[*shadowRThandle].uav, nullptr);
 						m_renderData.m_pImmediateContext->CSSetShaderResources(1, 1, &m_renderData.structuredBuffers[*kernelWeightsHandle].srv);
 						m_renderer->DispatchComputeShader(handle, shadowMapDim, shadowMapDim / 128, 1);
+
+						m_renderData.m_pImmediateContext->CSSetShader(nullptr, nullptr, 0);
+						m_renderData.m_pImmediateContext->CSSetShaderResources(0, 0, nullptr);
+						m_renderData.m_pImmediateContext->CSSetShaderResources(1, 0, nullptr);
+						m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(0, 0, nullptr, nullptr);
+
 				} //END - if (lightComp->IsUsingSoftShadows())
 		} // END - for (auto& light : lightComps)
 }
