@@ -1,6 +1,6 @@
 #include "../TextureShaderIncludes.hlsli"
 
-//Texture2D inputShadowMap : register(t0); //For some reason this crap doesn't work after running the horizontal blur shader
+Texture2D inputShadowMap : register(t0);
 RWTexture2D<float4> outputShadowMap : register(u0);
 StructuredBuffer <float> weights : register(t1);
 
@@ -27,11 +27,15 @@ void main(uint3 dispatchThreadId : SV_DispatchThreadID)
 		}
 
 		//wait for all threads to read
+		//AllMemoryBarrier();
 		AllMemoryBarrierWithGroupSync();
+		//GroupMemoryBarrierWithGroupSync();
 
 		float4 result = float4(0, 0, 0, 0);
 
+		for (int i = -halfSize, w = 0; i <= halfSize; ++i, ++w)
 		{
+			result += weights[w] * sharedMemFloats[pixelCoords.y + i + halfSize];
 		}
 
 		outputShadowMap[pixelCoords] = result;
