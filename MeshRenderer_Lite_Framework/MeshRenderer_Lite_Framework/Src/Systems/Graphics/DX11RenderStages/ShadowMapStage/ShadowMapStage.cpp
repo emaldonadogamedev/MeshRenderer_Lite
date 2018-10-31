@@ -147,14 +147,14 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 						m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(0, 1, &m_renderData.renderTargets[*softShadowRThandle].uav, nullptr);
 						m_renderData.m_pImmediateContext->CSSetShaderResources(1, 1, &m_renderData.structuredBuffers[*kernelWeightsHandle].srv);
 						m_renderer->DispatchComputeShader(handle, shadowMapDim / 128, shadowMapDim, 1);
-						
+
 						//////////////////////////////////////////////////////////////////////////
 						// Cleanup before vertical blur
-                        static ID3D11ShaderResourceView* const nullShadowSrvs[2] = { nullptr,nullptr };
-                        static ID3D11UnorderedAccessView* const nullUavArr[1] = { nullptr };
+						static ID3D11ShaderResourceView* const nullShadowSrvs[2] = { nullptr,nullptr };
+						static ID3D11UnorderedAccessView* const nullUavArr[1] = { nullptr };
 
 						m_renderData.m_pImmediateContext->CSSetShader(nullptr, nullptr, 0);
-                        m_renderData.m_pImmediateContext->CSSetShaderResources(0, 2, nullShadowSrvs);
+						m_renderData.m_pImmediateContext->CSSetShaderResources(0, 2, nullShadowSrvs);
 						m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(0, 1, nullUavArr, nullptr);
 
 						//////////////////////////////////////////////////////////////////////////
@@ -170,8 +170,8 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 						m_renderer->DispatchComputeShader(handle, shadowMapDim, shadowMapDim / 128, 1);
 
 						m_renderData.m_pImmediateContext->CSSetShader(nullptr, nullptr, 0);
-                        m_renderData.m_pImmediateContext->CSSetShaderResources(0, 2, nullShadowSrvs);
-                        m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(0, 1, nullUavArr, nullptr);
+            m_renderData.m_pImmediateContext->CSSetShaderResources(0, 2, nullShadowSrvs);
+            m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(0, 1, nullUavArr, nullptr);
 
 				} //END - if (lightComp->IsUsingSoftShadows())
 		} // END - for (auto& light : lightComps)

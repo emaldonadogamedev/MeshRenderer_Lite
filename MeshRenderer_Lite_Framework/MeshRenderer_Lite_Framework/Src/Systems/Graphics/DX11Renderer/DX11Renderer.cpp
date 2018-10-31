@@ -1387,7 +1387,7 @@ void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const int W, con
 	// Setup the render target texture description.
 	textureDesc.Width = W;
 	textureDesc.Height = H;
-	textureDesc.MipLevels = generateMipChain ? 4 : 1;
+	textureDesc.MipLevels = generateMipChain ? 5 : 1;
 	textureDesc.ArraySize = 1;
 	textureDesc.Format = m_renderData->dxgiFormatArrHelper[(int)dataFormat];
 	textureDesc.SampleDesc.Count = 1;
@@ -1419,8 +1419,10 @@ void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const int W, con
 		//texture.size = Area(image.Width, texDesc.Height);
 
 		SafeRelease(texture.srv);
+		SafeRelease(texture.texture2D);
 
 		texture.srv = shaderResourceView;
+		texture.texture2D = tempTargetTexture;
 	}
 
 	else
@@ -1430,6 +1432,7 @@ void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const int W, con
 		texture.width = W; 
 		texture.height = H;
 		texture.srv = shaderResourceView;
+		texture.texture2D = tempTargetTexture;
 
 		int index = m_renderData->NextAvailableIndex(m_renderData->textures2D);
 

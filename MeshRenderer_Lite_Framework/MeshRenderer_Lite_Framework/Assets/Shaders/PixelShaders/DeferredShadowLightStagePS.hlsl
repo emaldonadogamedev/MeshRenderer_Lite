@@ -93,8 +93,8 @@ float4 main(PixelInputType pixel) : SV_TARGET
 												shadowMaps[i].GetDimensions(shadowMapW, shadowMapH);
 
 												float4 blurredDepthValue = shadowMaps[i][uint2(projectTexCoord.x * shadowMapW, projectTexCoord.y * shadowMapH)];
-												float4 bPrime = (1.0f - 0.001f) * blurredDepthValue;
-												bPrime += 0.001f * (float4(0.5f, 0.5f, 0.5f, 0.5f));
+												float4 bPrime = (1.0f - 0.00003f) * blurredDepthValue;
+												bPrime += 0.00003f * (float4(0.5f, 0.5f, 0.5f, 0.5f));
 
 												const float3 A = float3(1.0f, bPrime.x, bPrime.y);
 												const float3 B = float3(bPrime.x, bPrime.y, bPrime.z);
@@ -105,7 +105,7 @@ float4 main(PixelInputType pixel) : SV_TARGET
 												float zf = positionRT.Sample(textureSamplerWrap, uv).w;
 
 												// Subtract the bias from the lightDepthValue.
-												//lightDepthValue -= bias;
+												zf -= bias;
 
 												const float3 Z = float3(1.0f, zf, zf * zf);
 
@@ -127,7 +127,7 @@ float4 main(PixelInputType pixel) : SV_TARGET
 												//make sure z2 is less than z3
 												if (z2 > z3)
 												{
-														float temp = z2;
+														const float temp = z2;
 														z2 = z3;
 														z3 = temp;
 												}
@@ -141,14 +141,13 @@ float4 main(PixelInputType pixel) : SV_TARGET
 												}
 												else if (zf <= z3)
 												{
-														const float num = (zf*z3) - (bPrime.x * (zf + z3)) + bPrime.y;
+														const float num = (zf * z3) - (bPrime.x * (zf + z3)) + bPrime.y;
 														const float den = (z3 - z2) * (zf - z2);
 														G = num / den;
 												}
-
 												else
 												{
-														const float num = (z2*z3) - (bPrime.x * (z2 + z3)) + bPrime.y;
+														const float num = (z2 * z3) - (bPrime.x * (z2 + z3)) + bPrime.y;
 														const float den = (zf - z2) * (zf - z3);
 														G = 1.0f - (num / den);
 												}
