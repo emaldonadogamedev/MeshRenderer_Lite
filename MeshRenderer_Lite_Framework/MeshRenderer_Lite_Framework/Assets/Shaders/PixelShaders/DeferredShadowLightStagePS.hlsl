@@ -48,7 +48,7 @@ float4 main(PixelInputType pixel) : SV_TARGET
 														float depthValue = shadowMaps[i][uint2(projectTexCoord.x * shadowMapW, projectTexCoord.y * shadowMapH)].x;
 
 														// Calculate the depth of the light.
-														float lightDepthValue = (lightViewPosition.z / lightViewPosition.w) * 10;
+                                                        float lightDepthValue = lightViewPosition.w / 100.0f;// (lightViewPosition.z / lightViewPosition.w) * 10;
 
 														// Subtract the bias from the lightDepthValue.
 														lightDepthValue -= bias;
@@ -56,10 +56,10 @@ float4 main(PixelInputType pixel) : SV_TARGET
 														// Compare the depth of the shadow map value and the depth of the light to determine whether to shadow or to light this 
 														//pixel. If the light is in front of the object then light the pixel, if not then shadow this pixel since an object 
 														//(occluder) is casting a shadow on it.
-														if (lightDepthValue < depthValue)
+														if (lightDepthValue > depthValue)
 														{
 																lightIntensity = 0.f;
-																lightIntensity = saturate(dot(normal, normalize(sceneLights[i].m_position - position)));
+																//lightIntensity = saturate(dot(normal, normalize(sceneLights[i].m_position - position)));
 																//kd = saturate(kd * lightIntensity);
 																//kd.w = 1.0f;
 																// Calculate the amount of light on this pixel.
@@ -92,9 +92,10 @@ float4 main(PixelInputType pixel) : SV_TARGET
 												uint shadowMapW, shadowMapH;
 												shadowMaps[i].GetDimensions(shadowMapW, shadowMapH);
 
+                                                const float alpha = 0.00003f;
 												float4 blurredDepthValue = shadowMaps[i][uint2(projectTexCoord.x * shadowMapW, projectTexCoord.y * shadowMapH)];
-												float4 bPrime = (1.0f - 0.00003f) * blurredDepthValue;
-												bPrime += 0.00003f * (float4(0.5f, 0.5f, 0.5f, 0.5f));
+												float4 bPrime = (1.0f - alpha) * blurredDepthValue;
+												bPrime += alpha * (float4(0.5f, 0.5f, 0.5f, 0.5f));
 
 												const float3 A = float3(1.0f, bPrime.x, bPrime.y);
 												const float3 B = float3(bPrime.x, bPrime.y, bPrime.z);
@@ -105,7 +106,7 @@ float4 main(PixelInputType pixel) : SV_TARGET
 												float zf = positionRT.Sample(textureSamplerWrap, uv).w;
 
 												// Subtract the bias from the lightDepthValue.
-												zf -= bias;
+												//zf -= bias;
 
 												const float3 Z = float3(1.0f, zf, zf * zf);
 
@@ -152,12 +153,12 @@ float4 main(PixelInputType pixel) : SV_TARGET
 														G = 1.0f - (num / den);
 												}
 
-												lightIntensity = 1.0f - G;
+												lightIntensity = G;
 										}
 								}
 						}
 
-						result += saturate(lightIntensity * CaculateBRDFLighting(position, normal, kd, float4(ksAndNs.xyz, 1.0f), ksAndNs.w, cameraPosition.xyz,
+						result += saturate(CaculateBRDFLighting(position, normal, lightIntensity * kd, lightIntensity * float4(ksAndNs.xyz, 1.0f), ksAndNs.w, cameraPosition.xyz,
 								sceneLights[i].m_position, float4(sceneLights[i].m_Iambient, 1.0f), sceneLights[i].m_Idiffuse, sceneLights[i].m_ConstantAttenuation,
 								sceneLights[i].m_LinearAttenuation, sceneLights[i].m_QuadraticAttenuation));
 				}

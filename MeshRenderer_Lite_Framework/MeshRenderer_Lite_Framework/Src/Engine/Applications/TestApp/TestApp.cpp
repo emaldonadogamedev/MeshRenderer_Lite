@@ -71,23 +71,23 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		testLight->AddComponent(transform);
 		gameObjSystem->AddComponent(transform);
 
-		ShadowLightComponent* lightComp = new ShadowLightComponent(testLight.get(), true, true, true);
+		ShadowLightComponent* lightComp = new ShadowLightComponent(testLight.get(), true, true, false);
 		//lightComp->GetLight()->m_lightType = LightType::LT_DIRECTIONAL;
 		testLight->AddComponent(lightComp);
 		graphicsSystem->AddComponent(lightComp);
 		lightComp->GetLight()->isActive = 1;
 
 		//test light 2
-		//testLight2 = std::make_unique<GameObject>();
-		//transform = new Transform(testLight2.get());
-		//transform->SetPositionn(DirectX::XMVectorSet(-78.8f, 90.0f, 0.f, 1.f));
-		//testLight2->AddComponent(transform);
-		//gameObjSystem->AddComponent(transform);
-		//
-		//ShadowLightComponent* lightComp2 = new ShadowLightComponent(testLight2.get(), false, false);
-		////lightComp->GetLight()->m_lightType = LightType::LT_DIRECTIONAL;
-		//testLight2->AddComponent(lightComp2);
-		//graphicsSystem->AddComponent(lightComp2);
+        //testLight2 = std::make_unique<GameObject>();
+        //transform = new Transform(testLight2.get());
+        //transform->SetPositionn(DirectX::XMVectorSet(-78.8f, 90.0f, 0.f, 1.f));
+        //testLight2->AddComponent(transform);
+        //gameObjSystem->AddComponent(transform);
+        //
+        //ShadowLightComponent* lightComp2 = new ShadowLightComponent(testLight2.get(), true, true);
+        ////lightComp->GetLight()->m_lightType = LightType::LT_DIRECTIONAL;
+        //testLight2->AddComponent(lightComp2);
+        //graphicsSystem->AddComponent(lightComp2);
 
 
 		//////////////////////////////////////////////////////////////////////////
