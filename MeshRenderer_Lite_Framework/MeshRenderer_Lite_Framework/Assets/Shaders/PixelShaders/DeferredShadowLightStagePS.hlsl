@@ -92,7 +92,7 @@ float4 main(PixelInputType pixel) : SV_TARGET
 												uint shadowMapW, shadowMapH;
 												shadowMaps[i].GetDimensions(shadowMapW, shadowMapH);
 
-                                                const float alpha = 0.00003f;
+                                                const float alpha = 0.001f;
 												float4 blurredDepthValue = shadowMaps[i][uint2(projectTexCoord.x * shadowMapW, projectTexCoord.y * shadowMapH)];
 												float4 bPrime = (1.0f - alpha) * blurredDepthValue;
 												bPrime += alpha * (float4(0.5f, 0.5f, 0.5f, 0.5f));
@@ -102,11 +102,11 @@ float4 main(PixelInputType pixel) : SV_TARGET
 												const float3 C = float3(bPrime.y, bPrime.z, bPrime.w);
 
 												// Calculate the depth of the light.
-												//float lightDepthValue = (lightViewPosition.z / lightViewPosition.w) * 10;
-												float zf = positionRT.Sample(textureSamplerWrap, uv).w;
+												float zf = lightViewPosition.w / 100.0f;
+												//float zf = positionRT.Sample(textureSamplerWrap, uv).w;
 
 												// Subtract the bias from the lightDepthValue.
-												//zf -= bias;
+												zf -= bias;
 
 												const float3 Z = float3(1.0f, zf, zf * zf);
 
@@ -145,15 +145,24 @@ float4 main(PixelInputType pixel) : SV_TARGET
 														const float num = (zf * z3) - (bPrime.x * (zf + z3)) + bPrime.y;
 														const float den = (z3 - z2) * (zf - z2);
 														G = num / den;
+														//G = 0.f;
 												}
 												else
 												{
 														const float num = (z2 * z3) - (bPrime.x * (z2 + z3)) + bPrime.y;
 														const float den = (zf - z2) * (zf - z3);
 														G = 1.0f - (num / den);
+														//G = 0.f;
 												}
 
-												lightIntensity = G;
+												lightIntensity = saturate(1.0f - G);
+
+												//if (zf > blurredDepthValue.x)
+												//{
+												//	lightIntensity = 0.f;
+												//}
+												//else
+												//	lightIntensity = 1.0f;// -G; TODO
 										}
 								}
 						}

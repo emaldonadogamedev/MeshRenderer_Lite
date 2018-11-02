@@ -31,9 +31,9 @@ void main(uint3 dispatchThreadId : SV_DispatchThreadID, uint3 groupThreadId : SV
 
 		//wait for all threads to read
 		//AllMemoryBarrier();
-		//AllMemoryBarrierWithGroupSync();
+		AllMemoryBarrierWithGroupSync();
 		//DeviceMemoryBarrier();
-		GroupMemoryBarrierWithGroupSync();
+		//GroupMemoryBarrierWithGroupSync();
 
 		float4 result = float4(0, 0, 0, 0);
 

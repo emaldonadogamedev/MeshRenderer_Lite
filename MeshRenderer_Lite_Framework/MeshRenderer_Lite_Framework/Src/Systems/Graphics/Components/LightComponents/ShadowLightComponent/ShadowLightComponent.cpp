@@ -10,7 +10,7 @@ ShadowLightComponent::ShadowLightComponent(const GameObject* owner, bool isActiv
   , m_useSoftShadows(useSoftShadows)
 	, m_shadowDepthMapHandle()
 	, m_shadowMapWidthHeight(shadowWidthHeight)
-	, m_softShadowMapKernelHalfWidth(3)
+	, m_softShadowMapKernelHalfWidth(9)
 {
 		int textureIdx = 5;
 		for (unsigned int i = 0; i < s_maxShadowLights; ++i)

@@ -5,7 +5,7 @@ GBufferOutput main(PixelInputType pixel)
 {
 	GBufferOutput output = (GBufferOutput)0;
 	output.Position.xyz = pixel.worldPos.xyz;
-	output.Position.w = (pixel.position.z / pixel.position.w) * 10.0f;
+	output.Position.w = pixel.position.w / 100.0f;
 
 	//to measuere texture dimensions
 	uint textWidth, textHeight;

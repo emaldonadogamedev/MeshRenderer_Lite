@@ -170,8 +170,8 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 						m_renderer->DispatchComputeShader(handle, shadowMapDim, shadowMapDim / 128, 1);
 
 						m_renderData.m_pImmediateContext->CSSetShader(nullptr, nullptr, 0);
-            m_renderData.m_pImmediateContext->CSSetShaderResources(0, 2, nullShadowSrvs);
-            m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(0, 1, nullUavArr, nullptr);
+						m_renderData.m_pImmediateContext->CSSetShaderResources(0, 2, nullShadowSrvs);
+						m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(0, 1, nullUavArr, nullptr);
 
 				} //END - if (lightComp->IsUsingSoftShadows())
 		} // END - for (auto& light : lightComps)
