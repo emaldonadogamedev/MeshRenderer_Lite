@@ -4,7 +4,7 @@ Texture2D inputShadowMap : register(t0);
 RWTexture2D<float4> outputShadowMap : register(u0);
 StructuredBuffer <float> weights : register(t1);
 
-groupshared float4 sharedMemFloats[128 + 21];
+groupshared float4 sharedMemFloats[128 + 51];
 
 [numthreads(1, 128, 1)]
 void main(uint3 dispatchThreadId : SV_DispatchThreadID, uint3 groupThreadId : SV_GroupThreadID)
