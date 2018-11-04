@@ -92,10 +92,10 @@ float4 main(PixelInputType pixel) : SV_TARGET
 												uint shadowMapW, shadowMapH;
 												shadowMaps[i].GetDimensions(shadowMapW, shadowMapH);
 
-                                                const float alpha = 0.001f;
+                        const float alpha = 0.001f;
 												float4 blurredDepthValue = shadowMaps[i][uint2(projectTexCoord.x * shadowMapW, projectTexCoord.y * shadowMapH)];
 												float4 bPrime = (1.0f - alpha) * blurredDepthValue;
-												bPrime += alpha * (float4(0.5f, 0.5f, 0.5f, 0.5f));
+												bPrime += alpha * float4(0.5f, 0.5f, 0.5f, 0.5f);
 
 												const float3 A = float3(1.0f, bPrime.x, bPrime.y);
 												const float3 B = float3(bPrime.x, bPrime.y, bPrime.z);
@@ -145,31 +145,39 @@ float4 main(PixelInputType pixel) : SV_TARGET
 														const float num = (zf * z3) - (bPrime.x * (zf + z3)) + bPrime.y;
 														const float den = (z3 - z2) * (zf - z2);
 														G = num / den;
-														//G = 0.f;
 												}
 												else
 												{
 														const float num = (z2 * z3) - (bPrime.x * (z2 + z3)) + bPrime.y;
 														const float den = (zf - z2) * (zf - z3);
 														G = 1.0f - (num / den);
-														//G = 0.f;
 												}
 
 												lightIntensity = saturate(1.0f - G);
-
-												//if (zf > blurredDepthValue.x)
-												//{
-												//	lightIntensity = 0.f;
-												//}
-												//else
-												//	lightIntensity = 1.0f;// -G; TODO
 										}
 								}
-						}
+						}// END - if (sceneLights[i].isUsingShadows)
 
-						result += saturate(CaculateBRDFLighting(position, normal, lightIntensity * kd, lightIntensity * float4(ksAndNs.xyz, 1.0f), ksAndNs.w, cameraPosition.xyz,
-								sceneLights[i].m_position, float4(sceneLights[i].m_Iambient, 1.0f), sceneLights[i].m_Idiffuse, sceneLights[i].m_ConstantAttenuation,
-								sceneLights[i].m_LinearAttenuation, sceneLights[i].m_QuadraticAttenuation));
+						float3 lightVec = (sceneLights[i].m_position - position);
+						const float lightVecLength = length(lightVec);
+
+						lightVec /= lightVecLength;
+
+						float attenuation = CalculateAttenuation(sceneLights[i].m_lightType, lightVecLength, sceneLights[i].m_ConstantAttenuation,
+								sceneLights[i].m_LinearAttenuation, sceneLights[i].m_QuadraticAttenuation);
+
+						float spotlight = CalculateSpotlightEffect(sceneLights[i].m_lightType, lightVec, sceneLights[i].m_spotDirection,
+								sceneLights[i].m_spotOutterAngle, sceneLights[i].m_spotInnerAngle, sceneLights[i].roughness);
+
+						const float3 viewVec = normalize(cameraPosition.xyz - position);
+
+								result +=
+						saturate(
+								attenuation * spotlight *
+
+								CaculateBRDFLighting(normal, lightIntensity * kd, lightIntensity * float4(ksAndNs.xyz, 1.0f), ksAndNs.w, viewVec,
+										lightVec, float4(sceneLights[i].m_Iambient, 1.0f), sceneLights[i].m_Idiffuse)
+						);
 				}
 				else
 						break;

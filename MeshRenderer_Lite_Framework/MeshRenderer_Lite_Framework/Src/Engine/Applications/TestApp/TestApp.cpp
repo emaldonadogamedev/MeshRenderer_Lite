@@ -78,16 +78,16 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		lightComp->GetLight()->isActive = 1;
 
 		//test light 2
-        //testLight2 = std::make_unique<GameObject>();
-        //transform = new Transform(testLight2.get());
-        //transform->SetPositionn(DirectX::XMVectorSet(-78.8f, 90.0f, 0.f, 1.f));
-        //testLight2->AddComponent(transform);
-        //gameObjSystem->AddComponent(transform);
-        //
-        //ShadowLightComponent* lightComp2 = new ShadowLightComponent(testLight2.get(), true, true);
-        ////lightComp->GetLight()->m_lightType = LightType::LT_DIRECTIONAL;
-        //testLight2->AddComponent(lightComp2);
-        //graphicsSystem->AddComponent(lightComp2);
+		//testLight2 = std::make_unique<GameObject>();
+		//transform = new Transform(testLight2.get());
+		//transform->SetPositionn(DirectX::XMVectorSet(-78.8f, 90.0f, 0.f, 1.f));
+		//testLight2->AddComponent(transform);
+		//gameObjSystem->AddComponent(transform);
+		//
+		//ShadowLightComponent* lightComp2 = new ShadowLightComponent(testLight2.get(), true, true, false);
+		////lightComp->GetLight()->m_lightType = LightType::LT_DIRECTIONAL;
+		//testLight2->AddComponent(lightComp2);
+		//graphicsSystem->AddComponent(lightComp2);
 
 
 		//////////////////////////////////////////////////////////////////////////
@@ -121,7 +121,7 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		//		testMiniLightObj->AddComponent(transform);
 		//
 		//		auto simpleLightComp = new LightComponent(testMiniLights[i].get());
-		//		float range = RandFloat(10, 15);
+		//		float range = RandFloat(10.f, 17.f);
 		//		simpleLightComp->SetLightRange(range);
 		//		auto light = simpleLightComp->GetLight();
 		//		light->m_Iambient = XMFLOAT3(RandFloat(0.2f, 0.4f), RandFloat(0.2f, 0.4f), RandFloat(0.2f, 0.4f));

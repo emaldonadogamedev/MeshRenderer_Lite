@@ -7,6 +7,32 @@ float CalculateAttenuation(in int lightType, in float d, in float C, in float L,
 				);
 }
 
+float CalculateSpotlightEffect(int lightType, in float3 lightVec, in float3 lightSpotDir, in float outerAngle,
+		in float innerAngle, in float ns)
+{
+		if (lightType != LT_SPOT || ns <= 0.0f)
+		{
+				return 1.0f;
+		}
+		const float3 D = normalize(-lightSpotDir);
+		const float LdotD = dot(lightVec, D);
+
+		if (LdotD < cos(outerAngle))
+		{
+				return 0.0f;
+		}
+		else if (LdotD > cos(innerAngle))
+		{
+				return 1.0f;
+		}
+
+		const float spotMinAngle = cos(innerAngle);
+		const float spotMaxAngle = cos(outerAngle);
+		const float cosAlpha = LdotD;//dot( D, L);
+
+		return pow((cosAlpha - spotMaxAngle) / (spotMinAngle - spotMaxAngle), ns);
+}
+
 float4 Fterm(in float4 Ks, in float3 L, in float3 H) {
 		//(1?L?H)^5
 		float temp = 1.0f - max(dot(L, H), 0.f);
@@ -23,22 +49,14 @@ float Dterm(in float3 N, in float3 H, in float roughness)
 		return term1 * term2;
 }
 
-float4 CaculateBRDFLighting(float3 vertexPos, float3 vertexNormal, float4 Kd, float4 Ks, float ns, float3 cameraPos, float3 lightPos, float4 Ia, float4 Id, 
-		float attC, float attL, float attQ, bool isDeferred = true)
+float4 CaculateBRDFLighting(float3 vertexNormal, float4 Kd, float4 Ks, float ns, float3 viewVec, float3 lightVec, float4 Ia, float4 Id, bool isDeferred = true)
 {
-		const float3 viewVec = normalize(cameraPos - vertexPos);
 		const float vDotN = max(dot(viewVec, vertexNormal), 0);
-		float3 lightVec;
 
 		float4 diffuse, BRDF;
 
 		//Ambient term
 		float4 finalColor = isDeferred ? float4(0, 0, 0, 1.0f) : Ia * Kd;
-
-		lightVec = (lightPos - vertexPos);
-		float lightVecLength = length(lightVec);
-
-		lightVec /= lightVecLength;
 
 		float LdotN = max(dot(lightVec, vertexNormal), 0.f);
 
@@ -56,10 +74,7 @@ float4 CaculateBRDFLighting(float3 vertexPos, float3 vertexNormal, float4 Kd, fl
 		float denominator = (4.0f * LdotN * vDotN);
 		BRDF = denominator < 0.0001f ? float4(0,0,0,1.0f) : diffuse + (F * G * D) / denominator;
 
-		float attenuation = CalculateAttenuation(1, lightVecLength, attC, attL, attQ);
-
 		finalColor += (
-				attenuation *
 				((Id * max(dot(vertexNormal, lightVec), 0.f) * BRDF))
 				);
 
