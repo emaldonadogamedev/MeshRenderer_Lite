@@ -32,7 +32,7 @@ struct SimpleLight
 
 		float attConst = 1.f;
 		float attLinear = 0.7f;
-		float attQuadratic = 0.f;
+		float attQuadratic = 0.1f;
 		float padding;
 };
 

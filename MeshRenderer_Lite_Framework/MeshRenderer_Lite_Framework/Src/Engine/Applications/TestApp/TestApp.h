@@ -2,7 +2,7 @@
 
 #include <Engine/Applications/IApplication/IApplication.h>
 
-#define MINI_LIGHT_COUNT 100
+#define MINI_LIGHT_COUNT 1000
 
 class TestApp : public IApplication {
 

@@ -24,7 +24,7 @@ float4 main(PixelInputType pixel) : SV_TARGET
 				float4 kd = diffuseRT.Sample(textureSamplerWrap, uv);
 				float4 ksAndNs = specularAndNsRT.Sample(textureSamplerWrap, uv);
 
-				float att = 1.0f;// -(distSquared / rangeSquared);
+				float att = 1.0f - (distSquared / rangeSquared);
 
 				float3 lightVec = (sceneLightNoShadow.m_position - position);
 				const float lightVecLength = length(lightVec);
