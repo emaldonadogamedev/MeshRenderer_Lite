@@ -60,38 +60,38 @@ void DeferredSimpleLightStage::Render(HandleDictionaryVec& graphicsResources, co
 		const auto& lightComponents = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_LIGHT];
 		for (auto component : lightComponents)
 		{
-				if (component->GetIsActive())
-				{
-						const LightComponent* const lightComp = (LightComponent*)component;
-						const auto simpleLight = lightComp->GetLight();
+			if (component->GetIsActive())
+			{
+				const LightComponent* const lightComp = (LightComponent*)component;
+				const auto simpleLight = lightComp->GetLight();
 
-						Transform* const transform = (Transform*)component->GetOwner()->GetComponent(ComponentType::TRANSFORM);
-						const auto& translation = transform->GetPosition();
+				Transform* const transform = (Transform*)component->GetOwner()->GetComponent(ComponentType::TRANSFORM);
+				const auto& translation = transform->GetPosition();
 
-						//Update the per obj. const buffer
-						m_renderData.testPerObjectBuffer.worldMtx = transform->GetWorldTransform();
-						m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testPerObjectConstBuffer,
-								0, NULL, &m_renderData.testPerObjectBuffer, 0, 0);
+				//Update the per obj. const buffer
+				m_renderData.testPerObjectBuffer.worldMtx = transform->GetWorldTransform();
+				m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testPerObjectConstBuffer,
+						0, NULL, &m_renderData.testPerObjectBuffer, 0, 0);
 
-						m_renderData.m_pImmediateContext->VSSetConstantBuffers(0, 1, &m_renderData.testPerObjectConstBuffer);
-						m_renderData.m_pImmediateContext->PSSetConstantBuffers(0, 1, &m_renderData.testPerObjectConstBuffer);
+				m_renderData.m_pImmediateContext->VSSetConstantBuffers(0, 1, &m_renderData.testPerObjectConstBuffer);
+				m_renderData.m_pImmediateContext->PSSetConstantBuffers(0, 1, &m_renderData.testPerObjectConstBuffer);
 
-						//Bind the view buffer
-						m_renderData.m_pImmediateContext->VSSetConstantBuffers(1, 1, &m_renderData.testViewProjConstBuffer);
-						m_renderData.m_pImmediateContext->PSSetConstantBuffers(1, 1, &m_renderData.testViewProjConstBuffer);
+				//Bind the view buffer
+				m_renderData.m_pImmediateContext->VSSetConstantBuffers(1, 1, &m_renderData.testViewProjConstBuffer);
+				m_renderData.m_pImmediateContext->PSSetConstantBuffers(1, 1, &m_renderData.testViewProjConstBuffer);
 
-						//Update the simple light const buffer
-						simpleLight->m_position.x = translation.m128_f32[0];
-						simpleLight->m_position.y = translation.m128_f32[1];
-						simpleLight->m_position.z = translation.m128_f32[2];
-						simpleLight->m_range = transform->GetScale().m128_f32[0];
+				//Update the simple light const buffer
+				simpleLight->m_position.x = translation.m128_f32[0];
+				simpleLight->m_position.y = translation.m128_f32[1];
+				simpleLight->m_position.z = translation.m128_f32[2];
+				simpleLight->m_range = transform->GetScale().m128_f32[0];
 
-						m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testLightNoShadowConstBuffer,
-								0, NULL, simpleLight, 0, 0);
-						m_renderData.m_pImmediateContext->PSSetConstantBuffers(8, 1, &m_renderData.testLightNoShadowConstBuffer);
+				m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testLightNoShadowConstBuffer,
+						0, NULL, simpleLight, 0, 0);
+				m_renderData.m_pImmediateContext->PSSetConstantBuffers(8, 1, &m_renderData.testLightNoShadowConstBuffer);
 
-						m_renderer->DrawIndexed(m_boxModel->GetIndicesCount());
-				}
+				m_renderer->DrawIndexed(m_boxModel->GetIndicesCount());
+			}
 		}
 }
 

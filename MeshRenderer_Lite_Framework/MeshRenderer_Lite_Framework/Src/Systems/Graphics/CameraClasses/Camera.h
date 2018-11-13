@@ -35,6 +35,9 @@ public:
   const XMMATRIX& GetView()const;
   const XMMATRIX& GetProjection()const;
 
+	bool GetIsUsingSkybox() const;
+	void SetIsUsingSkybox(const bool v);
+
   //Camera controls
   void Strafe(const float dt);
   void Walk(const float dt);
@@ -63,8 +66,11 @@ public:
   float m_camYaw = 0.0f;
   float m_camPitch = 0.0f;
 
-  float m_moveLeftRight;
- float  m_moveBackForward;
+	float m_moveLeftRight;
+  float m_moveBackForward;
+
+protected:
+	bool m_isUsingSkybox;
 
   XMMATRIX m_camRotationMatrix;
   XMMATRIX m_View;

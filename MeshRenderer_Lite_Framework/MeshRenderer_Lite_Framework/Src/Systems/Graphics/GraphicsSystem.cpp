@@ -31,6 +31,7 @@
 #include <Systems/Graphics/DX11RenderStages/ForwardDebugStage/PathWalkDebugStage.h>
 #include <Systems/Graphics/DX11RenderStages/FinalBackBufferStage/FinalBackBufferStage.h>
 #include <Systems/Graphics/DX11RenderStages/ShadowMapStage/ShadowMapStage.h>
+#include <Systems/Graphics/DX11RenderStages/SkyBoxRenderStage/SkyBoxRenderStage.h>
 #include <Systems/Graphics/DX11RenderStages/UI Stage/ImGuiStage.h>
 #include <Systems/Graphics/ModelClasses/Model/Model.h>
 #include <Systems/Graphics/ModelClasses/ModelManager/ModelManager.h>
@@ -529,11 +530,12 @@ void GraphicsSystem::InitializeImGui()
 void GraphicsSystem::AddRenderStages()
 {
 	AddRenderStageHelper(new ShadowMapStage(m_dx11Renderer.get(), &m_renderComponents));
+	const Model* const boxModel = GetModel("box");
+	AddRenderStageHelper(new SkyBoxRenderStage(m_dx11Renderer.get(), &m_renderComponents, boxModel), false);
 	//TODO: Add reflection map stage
 	AddRenderStageHelper(new GBufferStage(m_dx11Renderer.get(), &m_renderComponents));
 
 	const Model* const quadModel = GetModel("quad");
-	const Model* const boxModel = GetModel("box");
 	AddRenderStageHelper(new AmbientLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
 	AddRenderStageHelper(new DeferredShadowLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
 	AddRenderStageHelper(new DeferredSimpleLightStage(m_dx11Renderer.get(), &m_renderComponents, boxModel));

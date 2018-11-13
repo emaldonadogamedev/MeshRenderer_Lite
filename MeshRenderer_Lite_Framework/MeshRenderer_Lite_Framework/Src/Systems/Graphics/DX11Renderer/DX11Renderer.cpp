@@ -1335,6 +1335,7 @@ void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const std::strin
 	ID3D11ShaderResourceView* srv;
 	result = DirectX::CreateShaderResourceView(m_renderData->m_pDevice, image.GetImages(), image.GetImageCount(), metaData, &srv);
 
+
 	if (FAILED(result))
 		return;
 

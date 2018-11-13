@@ -57,6 +57,16 @@ const XMMATRIX& Camera::GetProjection() const
   return m_Projection;
 }
 
+bool Camera::GetIsUsingSkybox() const
+{
+		return m_isUsingSkybox;
+}
+
+void Camera::SetIsUsingSkybox(const bool v)
+{
+		m_isUsingSkybox = v;
+}
+
 void Camera::Strafe(const float dt)
 {
   //m_Position += s_defaultRight * dt * m_Speed;
