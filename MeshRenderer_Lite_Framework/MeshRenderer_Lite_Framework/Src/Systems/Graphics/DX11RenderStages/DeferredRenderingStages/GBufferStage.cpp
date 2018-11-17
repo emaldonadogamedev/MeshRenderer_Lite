@@ -50,91 +50,90 @@ void GBufferStage::Render(HandleDictionaryVec& graphicsResources, const float dt
 		const auto& modelComponents = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_3D];
 		for (auto component : modelComponents)
 		{
-				if (component->GetIsActive())
+			if (component->GetIsActive())
+			{
+				const auto model = (static_cast<const ModelComponent*>(component))->GetModel();
+
+				if (!model->m_drawSkin)
+					continue;
+
+				m_renderer->BindVertexBuffer(model->GetVBufferHandle(), sizeof(VertexAnimation));
+				m_renderer->BindIndexBuffer(model->GetIBufferHandle());
+
+				auto* const transform = (Transform*)component->GetOwner()->GetComponent(ComponentType::TRANSFORM);
+				m_renderData.testPerObjectBuffer.worldMtx = transform->GetWorldTransform();
+
+				m_renderData.testPerObjectBuffer.isAnimated = model->m_modelType == ModelType::MODEL_SKINNED;
+				m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testPerObjectConstBuffer,
+					0, NULL, &m_renderData.testPerObjectBuffer, 0, 0);
+
+				m_renderData.m_pImmediateContext->VSSetConstantBuffers(0, 1, &m_renderData.testPerObjectConstBuffer);
+				m_renderData.m_pImmediateContext->PSSetConstantBuffers(0, 1, &m_renderData.testPerObjectConstBuffer);
+
+				//Update bone animation const buffer
+				const int copySize = model->m_boneFinalTransformMtxVec.size();
+				const int copyVecLocSize = model->m_boneLocations.size();
+				std::memcpy(m_renderData.testAnimationBuffer.boneMatrices, model->m_boneFinalTransformMtxVec.data(),
+					sizeof(XMMATRIX) * (copySize > Model::s_maxBoneCount ? Model::s_maxBoneCount : copySize));
+				std::memcpy(m_renderData.testAnimationBuffer.boneLocations, model->m_boneLocations.data(),
+					sizeof(XMVECTOR) * (copyVecLocSize > Model::s_maxBoneLocCount ? Model::s_maxBoneLocCount : copyVecLocSize)
+					* (unsigned char)model->m_debugDrawEnabled);
+
+				m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testAnimationConstBuffer,
+					0, NULL, &m_renderData.testAnimationBuffer, 0, 0);
+				m_renderData.m_pImmediateContext->VSSetConstantBuffers(2, 1, &m_renderData.testAnimationConstBuffer);
+
+				//Draw each mesh entry, it's all one big VBuffer and IBufer though
+				for (auto& meshEntry : model->m_meshEntryList)
 				{
-						const auto model = (static_cast<const ModelComponent*>(component))->GetModel();
+					if (meshEntry.meshMaterial.m_materialProperties.useAlphaBlending)
+						continue;
 
-						if (!model->m_drawSkin)
-								continue;
+					//Set the material information
+					m_renderData.testMeshMaterialBuffer = meshEntry.meshMaterial;
+					m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testMeshMaterialConstBuffer,
+						0, NULL, &m_renderData.testMeshMaterialBuffer.m_materialProperties, 0, 0);
+					m_renderData.m_pImmediateContext->PSSetConstantBuffers(6, 1, &m_renderData.testMeshMaterialConstBuffer);
 
-						m_renderer->BindVertexBuffer(model->GetVBufferHandle(), sizeof(VertexAnimation));
-						m_renderer->BindIndexBuffer(model->GetIBufferHandle());
-
-						auto* const transform = (Transform*)component->GetOwner()->GetComponent(ComponentType::TRANSFORM);
-						m_renderData.testPerObjectBuffer.worldMtx = transform->GetWorldTransform();
-
-						m_renderData.testPerObjectBuffer.isAnimated = model->m_modelType == ModelType::MODEL_SKINNED;
-						m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testPerObjectConstBuffer,
-								0, NULL, &m_renderData.testPerObjectBuffer, 0, 0);
-
-						m_renderData.m_pImmediateContext->VSSetConstantBuffers(0, 1, &m_renderData.testPerObjectConstBuffer);
-						m_renderData.m_pImmediateContext->PSSetConstantBuffers(0, 1, &m_renderData.testPerObjectConstBuffer);
-
-						//Update bone animation const buffer
-						const int copySize = model->m_boneFinalTransformMtxVec.size();
-						const int copyVecLocSize = model->m_boneLocations.size();
-						std::memcpy(m_renderData.testAnimationBuffer.boneMatrices, model->m_boneFinalTransformMtxVec.data(),
-								sizeof(XMMATRIX) * (copySize > Model::s_maxBoneCount ? Model::s_maxBoneCount : copySize));
-						std::memcpy(m_renderData.testAnimationBuffer.boneLocations, model->m_boneLocations.data(),
-								sizeof(XMVECTOR) * (copyVecLocSize > Model::s_maxBoneLocCount ? Model::s_maxBoneLocCount : copyVecLocSize)
-								* (unsigned char)model->m_debugDrawEnabled);
-
-						m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testAnimationConstBuffer,
-								0, NULL, &m_renderData.testAnimationBuffer, 0, 0);
-						m_renderData.m_pImmediateContext->VSSetConstantBuffers(2, 1, &m_renderData.testAnimationConstBuffer);
-
-						//Draw each mesh entry, it's all one big VBuffer and IBufer though
-						for (auto& meshEntry : model->m_meshEntryList)
+					auto& textures2D = graphicsResources.at((int)ObjectType::TEXTURE_2D);
+					//Set the diffuse texture
+					if (meshEntry.meshMaterial.m_materialProperties.useDiffuseTexture)
+					{
+						const auto it = textures2D.find(meshEntry.diffTextureName);
+						if (it != textures2D.end())
 						{
-								if (meshEntry.meshMaterial.m_materialProperties.useAlphaBlending)
-										continue;
-
-								//Set the material information
-								m_renderData.testMeshMaterialBuffer = meshEntry.meshMaterial;
-								m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testMeshMaterialConstBuffer,
-										0, NULL, &m_renderData.testMeshMaterialBuffer.m_materialProperties, 0, 0);
-								m_renderData.m_pImmediateContext->PSSetConstantBuffers(6, 1, &m_renderData.testMeshMaterialConstBuffer);
-
-								auto& textures2D = graphicsResources.at((int)ObjectType::TEXTURE_2D);
-								//Set the diffuse texture
-								if (meshEntry.meshMaterial.m_materialProperties.useDiffuseTexture)
-								{
-										const auto it = textures2D.find(meshEntry.diffTextureName);
-										if (it != textures2D.end())
-										{
-												const auto& diffTextSRV = m_renderData.textures2D[*it->second].srv;
-												m_renderData.m_pImmediateContext->PSSetShaderResources(0, 1, &diffTextSRV);
-										}
-										else
-										{
-												if (const auto newTexture2D = m_renderer->GetTexture2D(s_textureDir + meshEntry.diffTextureName))
-												{
-														m_renderData.m_pImmediateContext->PSSetShaderResources(0, 1, &m_renderData.textures2D[*newTexture2D].srv);
-														textures2D[meshEntry.diffTextureName] = newTexture2D;
-												}
-										}
-								}
-
-								//Set the normal map
-								if (meshEntry.meshMaterial.m_materialProperties.useNormalMap)
-								{
-										const auto it_np = textures2D.find(meshEntry.normalMapName);
-										if (it_np != textures2D.end()) {
-												const auto& normalMapTextSRV = m_renderData.textures2D[*it_np->second].srv;
-												m_renderData.m_pImmediateContext->PSSetShaderResources(2, 1, &normalMapTextSRV);
-										}
-										else {
-												if (const auto newNormalMap = m_renderer->GetTexture2D(s_textureDir + meshEntry.normalMapName)) {
-														m_renderData.m_pImmediateContext->PSSetShaderResources(2, 1, &m_renderData.textures2D[*newNormalMap].srv);
-
-														textures2D[meshEntry.normalMapName] = newNormalMap;
-												}
-										}
-								}
-
-								m_renderer->DrawIndexed(meshEntry.numIndices, meshEntry.baseIndex, meshEntry.baseVertex);
+							const auto& diffTextSRV = m_renderData.textures2D[*it->second].srv;
+							m_renderData.m_pImmediateContext->PSSetShaderResources(0, 1, &diffTextSRV);
 						}
+						else
+						{
+							if (const auto newTexture2D = m_renderer->GetTexture2D(s_textureDir + meshEntry.diffTextureName))
+							{
+								m_renderData.m_pImmediateContext->PSSetShaderResources(0, 1, &m_renderData.textures2D[*newTexture2D].srv);
+								textures2D[meshEntry.diffTextureName] = newTexture2D;
+							}
+						}
+					}
+
+					//Set the normal map
+					if (meshEntry.meshMaterial.m_materialProperties.useNormalMap)
+					{
+						const auto it_np = textures2D.find(meshEntry.normalMapName);
+						if (it_np != textures2D.end()) {
+							const auto& normalMapTextSRV = m_renderData.textures2D[*it_np->second].srv;
+							m_renderData.m_pImmediateContext->PSSetShaderResources(2, 1, &normalMapTextSRV);
+						}
+						else {
+							if (const auto newNormalMap = m_renderer->GetTexture2D(s_textureDir + meshEntry.normalMapName)) {
+								m_renderData.m_pImmediateContext->PSSetShaderResources(2, 1, &m_renderData.textures2D[*newNormalMap].srv);
+								textures2D[meshEntry.normalMapName] = newNormalMap;
+							}
+						}
+					}
+
+					m_renderer->DrawIndexed(meshEntry.numIndices, meshEntry.baseIndex, meshEntry.baseVertex);
 				}
+			}
 		}
 }
 

@@ -42,10 +42,23 @@ void SkyBoxRenderStage::Render(HandleDictionaryVec& graphicsResources, const flo
 	m_renderer->BindIndexBuffer(m_boxModel->GetIBufferHandle());
 
 
-	if (const auto iblMap = m_renderer->GetTexture2D(s_textureDir + m_renderData.testCamera->GetSkyboxTexture() + ".hdr")) {
-		m_renderData.m_pImmediateContext->PSSetShaderResources(25, 1, &m_renderData.textures2D[*iblMap].srv);
+	auto& textures2D = graphicsResources.at((int)ObjectType::TEXTURE_2D);
+	const auto iblMapDir = s_textureDir + m_renderData.testCamera->GetSkyboxTexture() + ".hdr";
+
+	handle.MakeNull();
+
+	const auto it = textures2D.find(iblMapDir);
+	if (it != textures2D.end())
+	{
+		handle = it->second;
 	}
 
+	else {
+		handle = m_renderer->GetTexture2D(iblMapDir);
+		textures2D[iblMapDir] = handle;
+	}
+
+	m_renderData.m_pImmediateContext->PSSetShaderResources(25, 1, &m_renderData.textures2D[*handle].srv);
 	m_renderer->DrawIndexed(m_boxModel->GetIndicesCount());
 }
 

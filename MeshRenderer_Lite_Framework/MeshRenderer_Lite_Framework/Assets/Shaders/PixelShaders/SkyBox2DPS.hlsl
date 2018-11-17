@@ -19,6 +19,6 @@ float4 main(PixelInputType pixel) : SV_TARGET
 	float3 normal = normalsRT.Sample(textureSamplerWrap, pixel.uv).xyz;
 	
 	float2 uv = float2(0.5f - (atan2(normal.z, normal.x) / TWO_PI), acos(normal.y) / PI );
-	
+
 	return iblMap2D.Sample(textureSamplerWrap, uv);
 }

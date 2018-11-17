@@ -74,17 +74,21 @@ bool TestIBLapp::Initialize(HINSTANCE hInstance)
 		testLight->AddComponent(transform);
 		gameObjSystem->AddComponent(transform);
 
-		ShadowLightComponent* lightComp = new ShadowLightComponent(testLight.get(), true, false, true);
+		ShadowLightComponent* lightComp = new ShadowLightComponent(testLight.get(), true, false, false);
 		//lightComp->GetLight()->m_lightType = LightType::LT_DIRECTIONAL;
 		testLight->AddComponent(lightComp);
 		graphicsSystem->AddComponent(lightComp);
 		lightComp->GetLight()->isActive = 1;
 
 		//enable ibl map
-		const auto testCam = graphicsSystem->GetTestCamera();
+		Camera* const testCam = graphicsSystem->GetTestCamera();
 		testCam->SetIsUsingSkybox(true);
 		testCam->SetSkyboxTexture("Barce_Rooftop_C_3k");
+
+		return true;
 	}
+
+	return false;
 }
 
 void TestIBLapp::Shutdown(void)

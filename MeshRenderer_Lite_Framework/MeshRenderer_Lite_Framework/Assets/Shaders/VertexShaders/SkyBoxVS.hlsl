@@ -5,7 +5,7 @@ PixelInputType main(VertexInputType vertex)
 {
 	PixelInputType result = (PixelInputType)0;
 
-	float4 pos = float4(vertex.position * 500.0f, 1.0f);
+	float4 pos = float4(vertex.position * 100.0f, 1.0f);
 
 	//This is going to be the texture coordinates used as the texture cube
 	result.worldPos = pos;
