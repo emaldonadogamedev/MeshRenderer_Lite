@@ -68,7 +68,7 @@ bool IApplication::Initialize(HINSTANCE hInstance)
 
 void IApplication::Run(void)
 {
-		using namespace std::chrono_literals;
+	using namespace std::chrono_literals;
 
 	MSG msg;
 	ZeroMemory(&msg, sizeof(MSG));
@@ -76,7 +76,7 @@ void IApplication::Run(void)
 	m_clock->ResetClock();
 
 	//main game loop
-	while (m_isRunning) 
+	while (m_isRunning)
 	{
 		// If there are Window messages then process them.
 		while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))

@@ -39,6 +39,7 @@ public:
 	//Getters
 	DX11Renderer* GetRenderer() const;
 	Model* GetModel(const std::string& modelName);
+	Camera* GetTestCamera() const;
 
 protected:
 	//Initialize helpers

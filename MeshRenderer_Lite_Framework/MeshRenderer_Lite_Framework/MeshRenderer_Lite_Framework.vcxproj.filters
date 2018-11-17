@@ -159,6 +159,12 @@
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\FinalBackBufferStage\FinalBackBufferStage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\SkyBoxRenderStage\SkyBoxRenderStage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Engine\Applications\TestIBLapp\TestIBLapp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Utilities\precompiled.h">
@@ -333,6 +339,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\FinalBackBufferStage\FinalBackBufferStage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\SkyBoxRenderStage\SkyBoxRenderStage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Engine\Applications\TestIBLapp\TestIBLapp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

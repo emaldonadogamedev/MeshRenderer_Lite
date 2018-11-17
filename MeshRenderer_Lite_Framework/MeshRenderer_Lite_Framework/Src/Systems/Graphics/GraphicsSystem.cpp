@@ -496,12 +496,12 @@ void GraphicsSystem::RunRenderPasses()
 		//iterate through all render stages(Including UI)
 		for (const auto renderStage : m_renderStages)
 		{
-				if (renderStage->GetIsActive())
-				{
-						renderStage->PreRender();
-						renderStage->Render(m_resources, dt);
-						renderStage->PostRender();
-				}
+			if (renderStage->GetIsActive())
+			{
+				renderStage->PreRender();
+				renderStage->Render(m_resources, dt);
+				renderStage->PostRender();
+			}
 		}
 
 		//Finally present image to the screen
@@ -518,6 +518,11 @@ Model* GraphicsSystem::GetModel(const std::string& modelName)
 	return LoadModelHelper(modelName);
 }
 
+Camera* GraphicsSystem::GetTestCamera() const
+{
+	return m_dx11Renderer->GetRendererData().testCamera.get();
+}
+
 void GraphicsSystem::InitializeImGui()
 {
 	const WindowSystem* const window = reinterpret_cast<WindowSystem*>(m_engineOwner->GetSystem(SystemType::ST_WINDOW));
@@ -530,19 +535,20 @@ void GraphicsSystem::InitializeImGui()
 void GraphicsSystem::AddRenderStages()
 {
 	AddRenderStageHelper(new ShadowMapStage(m_dx11Renderer.get(), &m_renderComponents));
-	const Model* const boxModel = GetModel("box");
-	AddRenderStageHelper(new SkyBoxRenderStage(m_dx11Renderer.get(), &m_renderComponents, boxModel), false);
 	//TODO: Add reflection map stage
 	AddRenderStageHelper(new GBufferStage(m_dx11Renderer.get(), &m_renderComponents));
 
 	const Model* const quadModel = GetModel("quad");
 	AddRenderStageHelper(new AmbientLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
 	AddRenderStageHelper(new DeferredShadowLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
+	const Model* const boxModel = GetModel("box");
 	AddRenderStageHelper(new DeferredSimpleLightStage(m_dx11Renderer.get(), &m_renderComponents, boxModel));
 
 	AddRenderStageHelper(new ForwardRenderStage(m_dx11Renderer.get(), &m_renderComponents), false);
 	AddRenderStageHelper(new PathWalkDebugStage(m_dx11Renderer.get(), &m_renderComponents), false);
 
+	AddRenderStageHelper(new SkyBoxRenderStage(m_dx11Renderer.get(), &m_renderComponents, boxModel));
+	
 	//TODO: Add post processing render stages here
 
 	//COPY ALL OF THE RESULTS TO THE BACK BUFFER TO PRESENT THE FINAL FRAME AFTER THE UI STAGE
@@ -591,6 +597,7 @@ void GraphicsSystem::LoadBasicShaders()
 	LoadBasicShaderHelper(shaderHandle, ObjectType::VERTEX_SHADER, "SimpleClothVS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::VERTEX_SHADER, "ShadowVS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::VERTEX_SHADER, "FullScreenQuadVS");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::VERTEX_SHADER, "SkyBoxVS");
 
 	//////////////////////////////////////////////////////////////////////////
 	// Default Pixel Shaders
@@ -607,6 +614,7 @@ void GraphicsSystem::LoadBasicShaders()
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "DeferredShadowLightStagePS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "DeferredSimpleLightStagePS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "CopyRenderTarget");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "SkyBox2DPS");
 
 	//////////////////////////////////////////////////////////////////////////
 	//Default Compute Shaders

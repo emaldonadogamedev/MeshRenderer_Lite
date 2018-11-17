@@ -35,8 +35,12 @@ public:
   const XMMATRIX& GetView()const;
   const XMMATRIX& GetProjection()const;
 
-	bool GetIsUsingSkybox() const;
-	void SetIsUsingSkybox(const bool v);
+  bool GetIsUsingSkybox() const;
+  void SetIsUsingSkybox(const bool v);
+  
+  const std::string& GetSkyboxTexture() const;
+  void SetSkyboxTexture(const std::string& fileName);
+
 
   //Camera controls
   void Strafe(const float dt);
@@ -71,8 +75,12 @@ public:
 
 protected:
 	bool m_isUsingSkybox;
+	std::string m_skyboxTexture;
+	bool m_isSkyboxDirty;
 
   XMMATRIX m_camRotationMatrix;
   XMMATRIX m_View;
   XMMATRIX m_Projection;
+
+	friend class GraphicsSystem;
 };

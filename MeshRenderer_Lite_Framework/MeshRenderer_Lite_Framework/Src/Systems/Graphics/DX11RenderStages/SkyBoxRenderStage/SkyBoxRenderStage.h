@@ -16,6 +16,8 @@ class SkyBoxRenderStage : public IRenderStage
 		virtual void PostRender() override;
 
 	protected:
+		ObjectHandle m_skyboxTextureHandle;
+
 		const Model* const m_boxModel;
 
 		friend GraphicsSystem;

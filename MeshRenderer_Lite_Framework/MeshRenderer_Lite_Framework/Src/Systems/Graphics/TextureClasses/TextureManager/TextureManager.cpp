@@ -54,6 +54,7 @@ Texture2D* TextureManager::LoadTexture2D(const std::string& fileName)
 
 	if (handle)
 	{
+		m_loaded2DTextures[fileName] = handle;
 		return &m_renderer->m_renderData->textures2D[*handle];
 	}
 

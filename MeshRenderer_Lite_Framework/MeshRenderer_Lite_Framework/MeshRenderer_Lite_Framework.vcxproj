@@ -43,6 +43,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Src\Engine\Applications\TestIBLapp\TestIBLapp.cpp" />
     <ClCompile Include="Src\Systems\Core\GameObjectSystem.cpp" />
     <ClCompile Include="Src\Systems\Graphics\Components\LightComponents\LightComponent\LightComponent.cpp" />
     <ClCompile Include="Src\Engine\Applications\TestApp\TestApp.cpp" />
@@ -125,6 +126,7 @@
     <ClInclude Include="Includes\ImGui\imgui.h" />
     <ClInclude Include="Includes\ImGui\imgui_impl_dx11.h" />
     <ClInclude Include="Includes\ImGui\imgui_internal.h" />
+    <ClInclude Include="Src\Engine\Applications\TestIBLapp\TestIBLapp.h" />
     <ClInclude Include="Src\Systems\Core\GameObjectSystem.h" />
     <ClInclude Include="Src\Systems\Graphics\Components\LightComponents\LightComponent\LightComponent.h" />
     <ClInclude Include="Src\Engine\Applications\TestApp\TestApp.h" />

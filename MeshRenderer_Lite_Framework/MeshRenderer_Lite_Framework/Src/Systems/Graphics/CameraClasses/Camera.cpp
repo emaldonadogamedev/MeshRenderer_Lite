@@ -19,13 +19,16 @@ m_Forward(s_defaultForward),
 m_NearWindowHeight(0.0f),
 m_FarWindowHeight(0.0f),
 m_AspectRatio(0.0f),
-m_Near(0.01f),
-m_Far(1000.0f),
+m_Near(0.03f),
+m_Far(500.0f),
 m_FOV(DirectX::XM_PIDIV4),
 m_Speed(45.0f),
 m_rotSpeed(10.0f),
 m_moveLeftRight(0.f),
-m_moveBackForward(0.f)
+m_moveBackForward(0.f),
+m_isUsingSkybox(false),
+m_skyboxTexture(),
+m_isSkyboxDirty(false)
 {
 	m_View = m_Projection = XMMatrixIdentity();
 }
@@ -65,6 +68,16 @@ bool Camera::GetIsUsingSkybox() const
 void Camera::SetIsUsingSkybox(const bool v)
 {
 		m_isUsingSkybox = v;
+}
+
+const std::string& Camera::GetSkyboxTexture() const
+{
+	return m_skyboxTexture;
+}
+
+void Camera::SetSkyboxTexture(const std::string& fileName)
+{
+	m_skyboxTexture = fileName;
 }
 
 void Camera::Strafe(const float dt)
