@@ -59,10 +59,10 @@ struct PixelInputType
 
 struct GBufferOutput
 {
-		float4 Position: SV_Target0;
-		float4 Normal: SV_Target1;
-		float4 Diffuse: SV_Target2;
-		float4 SpecularAndNS: SV_Target3;
+	float4 Position: SV_Target0;
+	float4 Normal: SV_Target1;
+	float4 Diffuse: SV_Target2;
+	float4 SpecularAndNS: SV_Target3;
 };
 
 //--------------------------------------------------------------------------------------

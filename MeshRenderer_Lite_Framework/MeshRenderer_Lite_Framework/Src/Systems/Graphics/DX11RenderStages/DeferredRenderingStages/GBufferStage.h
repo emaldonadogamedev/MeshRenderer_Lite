@@ -3,18 +3,19 @@
 #include <Systems/Graphics/DX11RenderStages/IRenderStage.h>
 
 class GraphicsSystem;
+class Model;
 
 class GBufferStage : IRenderStage
 {
 public:
-		GBufferStage(DX11Renderer* const renderer, RenderCompUmap* const gfxComponents);
-		virtual ~GBufferStage();
+	GBufferStage(DX11Renderer* const renderer, RenderCompUmap* const gfxComponents, const Model* const boxGeometry);
+	virtual ~GBufferStage();
 
-		virtual void PreRender() override;
-		virtual void Render(HandleDictionaryVec& graphicsResources, const float dt) override;
-		virtual void PostRender() override;
+	virtual void PreRender() override;
+	virtual void Render(HandleDictionaryVec& graphicsResources, const float dt) override;
+	virtual void PostRender() override;
 
 protected:
-
-		friend GraphicsSystem;
+	const Model* const m_boxModel;
+	friend GraphicsSystem;
 };

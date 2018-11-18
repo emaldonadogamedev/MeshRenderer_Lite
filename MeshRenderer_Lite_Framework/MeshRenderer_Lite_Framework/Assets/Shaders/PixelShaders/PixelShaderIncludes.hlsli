@@ -19,7 +19,7 @@ struct PhongMaterial
 
 cbuffer ObjectMaterial : register(b6)
 {
-		PhongMaterial meshMaterial;
+	PhongMaterial meshMaterial;
 }
 
 //Scene Lights

@@ -6,10 +6,14 @@
 float4 main(PixelInputType pixel) : SV_TARGET
 {
 	float2 uv = pixel.uv;
+	
+	float4 kd = diffuseRT.Sample(textureSamplerWrap, uv);
+	//Alpha < 0.f means that the pixel belongs to the skybox, no light should be calculated here
+	if (kd.w < 0.f)
+		return float4(0, 0, 0, 0);
 
 	float3 position = positionRT.Sample(textureSamplerWrap, uv).xyz;
 	float3 normal = normalsRT.Sample(textureSamplerWrap, uv).xyz;
-	float4 kd = diffuseRT.Sample(textureSamplerWrap, uv);
 	float4 ksAndNs = specularAndNsRT.Sample(textureSamplerWrap, uv);
 	
 	float4 result = float4(0, 0, 0, 1.0f);

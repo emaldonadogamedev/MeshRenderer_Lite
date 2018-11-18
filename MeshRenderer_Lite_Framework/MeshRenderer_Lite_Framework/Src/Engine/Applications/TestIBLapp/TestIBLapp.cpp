@@ -38,7 +38,7 @@ bool TestIBLapp::Initialize(HINSTANCE hInstance)
 		auto graphicsSystem = static_cast<GraphicsSystem*>(GetSystem(SystemType::ST_GRAPHICS));
 		auto gameObjSystem = static_cast<GameObjectSystem*>(GetSystem(SystemType::ST_GAME_OBJECT_SYSTEM));
 
-		auto model = graphicsSystem->GetModel("dragon.obj");
+		auto model = graphicsSystem->GetModel("sphere");
 
 		model->m_meshEntryList[0].meshMaterial = MeshEntryMaterial::GetPresetMaterial(PredefinedMaterials::GreenPlastic);
 		test3DComp->SetModel(model);
@@ -88,7 +88,7 @@ bool TestIBLapp::Initialize(HINSTANCE hInstance)
 		//enable ibl!
 		m_graphicsSystem->SetIBLTexture("Barce_Rooftop_C_3k");
 		m_graphicsSystem->SetIsUsingIBL(true);
-		m_graphicsSystem->SetIBLsampleWeightCount(20);
+		m_graphicsSystem->SetIBLsampleWeightCount(34);
 
 		return true;
 	}

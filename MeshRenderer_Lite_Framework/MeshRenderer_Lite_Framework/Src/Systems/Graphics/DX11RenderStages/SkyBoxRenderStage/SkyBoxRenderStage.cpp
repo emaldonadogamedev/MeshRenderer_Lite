@@ -25,7 +25,7 @@ void SkyBoxRenderStage::PreRender()
 	m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateSolCullNone);
 	m_renderData.m_pImmediateContext->OMSetDepthStencilState(m_renderData.m_DSLessEqual, 0);
 	//m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateSkybox);
-	m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
+	m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	m_renderer->DisableColorBlending();
 	m_renderData.m_pImmediateContext->RSSetViewports(1, &m_renderData.m_mainViewport);
 }
@@ -37,7 +37,7 @@ void SkyBoxRenderStage::Render(HandleDictionaryVec& graphicsResources, const flo
 
 	ObjectHandle handle = (graphicsResources[(int)ObjectType::VERTEX_SHADER]).at("SkyBoxVS");
 	m_renderer->BindVertexShader(handle);
-	
+
 	handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("SkyBox2DPS");
 	m_renderer->BindPixelShader(handle);
 

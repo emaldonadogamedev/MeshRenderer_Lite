@@ -32,6 +32,12 @@ void AmbientLightStage::PreRender()
 		m_renderer->DisableColorBlending();
 
 		m_renderData.m_pImmediateContext->RSSetViewports(1, &m_renderData.m_mainViewport);
+
+		//Bind the G-buffer render targets
+		for (char rtHandle = 0, textureId = 20; rtHandle < (char)DX11RendererData::GBufferRTType::COUNT; ++rtHandle, ++textureId)
+		{
+			m_renderer->BindTextureShaderResource(ObjectType::PIXEL_SHADER, textureId, 1, m_renderData.m_GBufferObjHandles[rtHandle]);
+		}
 }
 
 void AmbientLightStage::Render(HandleDictionaryVec& graphicsResources, const float dt)

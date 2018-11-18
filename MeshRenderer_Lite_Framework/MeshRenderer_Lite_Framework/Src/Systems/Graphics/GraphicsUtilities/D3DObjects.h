@@ -117,17 +117,17 @@ struct Buffer : D3DObjectBase
 
 struct StructuredBuffer : Buffer
 {
-		ID3D11ShaderResourceView* srv;
+	ID3D11ShaderResourceView* srv;
 };
 
 struct StructuredBufferRW : Buffer
 {
-		ID3D11UnorderedAccessView* uav;
+	ID3D11UnorderedAccessView* uav;
 };
 
 struct StructuredBufferRW_Texture2D : Texture2D
 {
-		ID3D11UnorderedAccessView* uav;
+	ID3D11UnorderedAccessView* uav;
 };
 
 struct DepthBuffer : D3DObjectBase

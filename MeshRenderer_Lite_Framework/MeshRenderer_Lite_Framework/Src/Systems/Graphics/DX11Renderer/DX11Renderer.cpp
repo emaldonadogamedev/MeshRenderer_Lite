@@ -1302,7 +1302,7 @@ void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const std::strin
 	DirectX::TexMetadata metaData;
 	metaData.format = DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT;
 	metaData.dimension = DirectX::TEX_DIMENSION::TEX_DIMENSION_TEXTURE2D;
-	metaData.mipLevels = generateMipChain ? 4 : 1;
+	metaData.mipLevels = generateMipChain ? 6 : 1;
 	metaData.depth = 1;
 
 	HRESULT result;
@@ -1347,6 +1347,7 @@ void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const std::strin
 		//texture.size = Area(image.Width, texDesc.Height);
 
 		SafeRelease(texture.srv);
+		SafeRelease(texture.texture2D);
 
 		texture.srv = srv;
 	}
@@ -1674,9 +1675,9 @@ bool DX11Renderer::InitializeRasterizerStates()
 	m_renderData->m_pDevice->CreateRasterizerState(&RSDesc, &m_renderData->m_d3dRasterStateImgui);
 
 	//Create the rasterizer state for the skybox!
-	//rasterizerDesc.CullMode = D3D11_CULL_FRONT;
-	//rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-	//rasterizerDesc.FrontCounterClockwise = TRUE;
+	rasterizerDesc.CullMode = D3D11_CULL_NONE;
+	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	rasterizerDesc.FrontCounterClockwise = TRUE;
 
 	m_renderData->m_pDevice->CreateRasterizerState(&RSDesc, &m_renderData->m_d3dRasterStateSkybox);
 
@@ -1691,7 +1692,24 @@ bool DX11Renderer::InitializeDepthStates()
 	ZeroMemory(&dssDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
 	dssDesc.DepthEnable = true;
 	dssDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	dssDesc.DepthFunc = D3D11_COMPARISON_GREATER_EQUAL;
+	dssDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+	// Stencil test parameters
+	dssDesc.StencilEnable = false;
+	dssDesc.StencilReadMask = 0xFF;
+	dssDesc.StencilWriteMask = 0xFF;
+
+	// Stencil operations if pixel is front-facing
+	dssDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	dssDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	dssDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_ZERO;
+	dssDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	// Stencil operations if pixel is back-facing
+	dssDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_ZERO;
+	dssDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	dssDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	dssDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
 	HR(m_renderData->m_pDevice->CreateDepthStencilState(&dssDesc, &m_renderData->m_DSLessEqual));
 

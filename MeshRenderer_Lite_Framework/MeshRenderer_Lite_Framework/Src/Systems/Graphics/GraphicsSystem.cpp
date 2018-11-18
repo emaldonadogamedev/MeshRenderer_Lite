@@ -532,7 +532,10 @@ void GraphicsSystem::SetIBLsampleWeightCount(const int sampleCount)
 		}
 
 		m_dx11Renderer->CreateStructuredBuffer(m_dx11Renderer->m_renderData->iblSamplesHandle, BufferUsage::USAGE_DEFAULT,
-			m_dx11Renderer->m_renderData->iblSampleCount * 2, sizeof(float) * 2, tempSamples.data());
+			m_dx11Renderer->m_renderData->iblSampleCount, sizeof(float) * 2, tempSamples.data());
+
+		m_dx11Renderer->m_renderData->m_pImmediateContext->PSSetShaderResources(27, 1, 
+			&m_dx11Renderer->m_renderData->structuredBuffers[m_dx11Renderer->m_renderData->iblSamplesHandle].srv);
 	}
 }
 
@@ -632,7 +635,7 @@ void GraphicsSystem::AddRenderStages()
 
 	AddRenderStageHelper(new ShadowMapStage(m_dx11Renderer.get(), &m_renderComponents));
 	//TODO: Add reflection map stage
-	AddRenderStageHelper(new GBufferStage(m_dx11Renderer.get(), &m_renderComponents));
+	AddRenderStageHelper(new GBufferStage(m_dx11Renderer.get(), &m_renderComponents, boxModel));
 
 	AddRenderStageHelper(new AmbientLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
 	AddRenderStageHelper(new DeferredShadowLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
