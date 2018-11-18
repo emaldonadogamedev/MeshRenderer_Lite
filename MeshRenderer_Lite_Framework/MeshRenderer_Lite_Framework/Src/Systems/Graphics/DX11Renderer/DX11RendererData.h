@@ -20,12 +20,12 @@ public:
 	//deferred rendering render targets
 	enum class GBufferRTType : byte
 	{
-			POSITION,
-			NORMALS,
-			DIFFUSE,
-			SPECULAR_AND_NS,
+		POSITION,
+		NORMALS,
+		DIFFUSE,
+		SPECULAR_AND_NS,
 
-			COUNT
+		COUNT
 	};
 
 	ObjectHandle m_GBufferObjHandles[(int)GBufferRTType::COUNT] = { };
@@ -49,6 +49,7 @@ public:
 	ID3D11RasterizerState* m_d3dRasterStateSolCullFront = nullptr;
 	ID3D11RasterizerState* m_d3dRasterStateWireframe = nullptr;
 	ID3D11RasterizerState* m_d3dRasterStateImgui = nullptr;
+	ID3D11RasterizerState* m_d3dRasterStateSkybox = nullptr;
 	
 	ID3D11InputLayout* m_pVSInputLayoutVertexWire = nullptr;
 	ID3D11InputLayout* m_pVSInputLayoutVertexNormal = nullptr;
@@ -59,6 +60,8 @@ public:
 	ID3D11BlendState* m_alphaBlending = nullptr;
 	ID3D11BlendState* m_additiveBlending = nullptr;
 
+	//Depth-Stencil states
+	ID3D11DepthStencilState* m_DSLessEqual = nullptr;
 
 	//Resource containers
 	std::vector<Texture1D> textures1D;

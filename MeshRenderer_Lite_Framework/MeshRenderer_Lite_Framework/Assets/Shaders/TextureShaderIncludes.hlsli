@@ -19,7 +19,7 @@ Texture2D shadowMaps[15] : register(t5);
 //Deferred Rendering Render Targets
 Texture2D positionRT : register(t20);
 Texture2D normalsRT : register(t21);
-Texture2D	diffuseRT : register(t22);
+Texture2D diffuseRT : register(t22);
 Texture2D specularAndNsRT : register(t23);
 
 Texture2D previouslyUsedRT : register(t24);

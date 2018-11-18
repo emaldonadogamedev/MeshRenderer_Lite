@@ -12,6 +12,11 @@ float det3(float3 a, float3 b, float3 c) // Determinant of a 3x3 passed in as th
 		return a.x*(b.y*c.z - b.z*c.y) + a.y*(b.z*c.x - b.x*c.z) + a.z*(b.x*c.y - b.y*c.x);
 }
 
+float2 SphericalUVMapping(float3 N)
+{
+	return float2(0.5f - (atan2(N.z, -N.x) / TWO_PI), acos(N.y) / PI);
+}
+
 //--------------------------------------------------------------------------------------
 // Vertex & Pixel structure definitions
 //--------------------------------------------------------------------------------------
@@ -37,7 +42,7 @@ struct PixelInputType
 	float3 tangent      : TANGENT;
 	float3 bitangent    : BITANGENT;
 	float2 uv           : UV;
-	float4 color				: COLOR;
+	float4 color		: COLOR;
 };
 
 struct GBufferOutput

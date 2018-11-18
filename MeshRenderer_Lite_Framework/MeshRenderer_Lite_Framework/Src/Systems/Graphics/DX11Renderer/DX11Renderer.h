@@ -113,6 +113,7 @@ protected:
 	bool InitializeSwapChain(const int width, const int height, HWND hwnd);
 	bool InitializeConstBuffers();
 	bool InitializeRasterizerStates();
+	bool InitializeDepthStates();
 	bool InitializeTextureSamplers();
 	bool InitializeBlendStates();
 	bool ResizeBuffers(const int width, const int height);

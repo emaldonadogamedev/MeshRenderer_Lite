@@ -5,12 +5,20 @@ PixelInputType main(VertexInputType vertex)
 {
 	PixelInputType result = (PixelInputType)0;
 
-	float4 pos = float4(vertex.position * 100.0f, 1.0f);
+	float4 pos = float4(vertex.position, 1.0f);
 
 	//This is going to be the texture coordinates used as the texture cube
-	result.worldPos = pos;
-	
-	result.position = mul(pos, viewMtx);
+	result.worldPos = float4(vertex.position * 500, 1.0f);
+
+	float4x4 newViewMat = viewMtx;
+
+	newViewMat[0][3] = newViewMat[3][0] = 0.0f;
+	newViewMat[1][3] = newViewMat[3][1] = 0.0f;
+	newViewMat[2][3] = newViewMat[3][2] = 0.0f;
+	newViewMat[3][3] = 1.0f;
+
+	//result.position = float4(mul(pos.xyz, (float3x3)viewMtx), 1.0f);
+	result.position = mul(pos, newViewMat);
 	result.position = mul(result.position, projectionMtx);
 
 	//Since it's a sky box, we need to make sure that the position 

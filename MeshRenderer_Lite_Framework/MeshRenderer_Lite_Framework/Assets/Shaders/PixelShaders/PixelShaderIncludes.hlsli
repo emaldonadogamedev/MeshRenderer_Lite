@@ -3,18 +3,18 @@
 // Object Material
 struct PhongMaterial
 {
-		float4 ambientKa;
-		float4 diffuseKd;
+	float4 ambientKa;
+	float4 diffuseKd;
 
-		float3 specularKs;
-		float specularPowerNs;
+	float3 specularKs;
+	float specularPowerNs;
 
-		float4 emissiveKe;
+	float4 emissiveKe;
 
-		int useDiffuseTexture;
-		int useNormalMap;
-		int useAlphaBlending;
-		int isShadowCaster;
+	int useDiffuseTexture;
+	int useNormalMap;
+	int useAlphaBlending;
+	int isShadowCaster;
 };
 
 cbuffer ObjectMaterial : register(b6)
@@ -64,19 +64,19 @@ cbuffer SceneLights : register(b7)
 
 struct SimpleLight
 {
-		float3 m_position;
-		float m_range;
+	float3 m_position;
+	float m_range;
 
-		float3 m_Iambient;
-		int isTaken;
+	float3 m_Iambient;
+	int isTaken;
 
-		float3 m_Idiffuse;
-		int isActive;
+	float3 m_Idiffuse;
+	int isActive;
 
-		float attConst;
-		float attLinear;
-		float attQuadratic;
-		float padding;
+	float attConst;
+	float attLinear;
+	float attQuadratic;
+	float padding;
 };
 
 cbuffer SceneLightsNoShadow : register(b8)
@@ -96,11 +96,13 @@ static const int G_DEBUG_COUNT = 7;
 
 cbuffer GlobalShaderProperties : register(b9)
 {
-		float4 gClearColor;
+	float4 gClearColor;
 
-		float3 gGlobalAmbient;
-		int gDebugInfoType;
+	float3 gGlobalAmbient;
+	int gDebugInfoType;
 
-		int gIsUsingDeferred;
-		int3 padding_b9;
+	int gIsUsingDeferred;
+	int gIsUsingIBL;
+	float toneMappingExposureControl;
+	float toneMappingExtraExpControl;
 };

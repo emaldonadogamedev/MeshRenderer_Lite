@@ -534,21 +534,21 @@ void GraphicsSystem::InitializeImGui()
 
 void GraphicsSystem::AddRenderStages()
 {
+	const Model* const boxModel = GetModel("box");
+	const Model* const quadModel = GetModel("quad");
+
 	AddRenderStageHelper(new ShadowMapStage(m_dx11Renderer.get(), &m_renderComponents));
 	//TODO: Add reflection map stage
 	AddRenderStageHelper(new GBufferStage(m_dx11Renderer.get(), &m_renderComponents));
 
-	const Model* const quadModel = GetModel("quad");
 	AddRenderStageHelper(new AmbientLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
 	AddRenderStageHelper(new DeferredShadowLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
-	const Model* const boxModel = GetModel("box");
 	AddRenderStageHelper(new DeferredSimpleLightStage(m_dx11Renderer.get(), &m_renderComponents, boxModel));
 
 	AddRenderStageHelper(new ForwardRenderStage(m_dx11Renderer.get(), &m_renderComponents), false);
 	AddRenderStageHelper(new PathWalkDebugStage(m_dx11Renderer.get(), &m_renderComponents), false);
+	AddRenderStageHelper(new SkyBoxRenderStage(m_dx11Renderer.get(), &m_renderComponents, boxModel), false);
 
-	AddRenderStageHelper(new SkyBoxRenderStage(m_dx11Renderer.get(), &m_renderComponents, boxModel));
-	
 	//TODO: Add post processing render stages here
 
 	//COPY ALL OF THE RESULTS TO THE BACK BUFFER TO PRESENT THE FINAL FRAME AFTER THE UI STAGE
@@ -628,34 +628,34 @@ void GraphicsSystem::LoadBasicShaderHelper(ObjectHandle& shaderHandle, const Obj
 {
 		if (shaderType == ObjectType::VERTEX_SHADER)
 		{
-				static const InputLayout defaultVS_inputLayout =
-				{
-					InputData("POSITION", DataFormat::FLOAT3, false),
-					InputData("NORMAL", DataFormat::FLOAT3, false),
-					InputData("TANGENT", DataFormat::FLOAT3, false),
-					InputData("BITANGENT", DataFormat::FLOAT3, false),
-					InputData("UV", DataFormat::FLOAT2, false),
-					InputData("COLOR", DataFormat::FLOAT4, false),
-					InputData("BONES", DataFormat::INT4, false),
-					InputData("WEIGHTS", DataFormat::FLOAT4, false)
-				};
+			static const InputLayout defaultVS_inputLayout =
+			{
+				InputData("POSITION", DataFormat::FLOAT3, false),
+				InputData("NORMAL", DataFormat::FLOAT3, false),
+				InputData("TANGENT", DataFormat::FLOAT3, false),
+				InputData("BITANGENT", DataFormat::FLOAT3, false),
+				InputData("UV", DataFormat::FLOAT2, false),
+				InputData("COLOR", DataFormat::FLOAT4, false),
+				InputData("BONES", DataFormat::INT4, false),
+				InputData("WEIGHTS", DataFormat::FLOAT4, false)
+			};
 
-				shaderHandle.MakeNull();
-				m_dx11Renderer->CreateVertexShader(shaderHandle, s_vertexShaderDir + fileName + fileExtension, defaultVS_inputLayout, false);
-				m_resources[(int)ObjectType::VERTEX_SHADER][fileName] = shaderHandle;
+			shaderHandle.MakeNull();
+			m_dx11Renderer->CreateVertexShader(shaderHandle, s_vertexShaderDir + fileName + fileExtension, defaultVS_inputLayout, false);
+			m_resources[(int)ObjectType::VERTEX_SHADER][fileName] = shaderHandle;
 		}
 
 		else if (shaderType == ObjectType::PIXEL_SHADER)
 		{
-				shaderHandle.MakeNull();
-				m_dx11Renderer->CreatePixelShader(shaderHandle, s_pixelShaderDir + fileName + fileExtension, false);
-				m_resources[(int)ObjectType::PIXEL_SHADER][fileName] = shaderHandle;
+			shaderHandle.MakeNull();
+			m_dx11Renderer->CreatePixelShader(shaderHandle, s_pixelShaderDir + fileName + fileExtension, false);
+			m_resources[(int)ObjectType::PIXEL_SHADER][fileName] = shaderHandle;
 		}
 		else if (shaderType == ObjectType::COMPUTE_SHADER)
 		{
-				shaderHandle.MakeNull();
-				m_dx11Renderer->CreateComputeShader(shaderHandle, s_computeShaderDir + fileName + fileExtension, false);
-				m_resources[(int)ObjectType::COMPUTE_SHADER][fileName] = shaderHandle;
+			shaderHandle.MakeNull();
+			m_dx11Renderer->CreateComputeShader(shaderHandle, s_computeShaderDir + fileName + fileExtension, false);
+			m_resources[(int)ObjectType::COMPUTE_SHADER][fileName] = shaderHandle;
 		}
 }
 
@@ -718,8 +718,8 @@ void GraphicsSystem::TestUpdateCamera(const float dt)
 	m_dx11Renderer->m_renderData->testCamera->Update();
 	m_dx11Renderer->m_renderData->testViewProjBuffer.cameraPosition = m_dx11Renderer->m_renderData->testCamera->m_Position;
 	m_dx11Renderer->m_renderData->testViewProjBuffer.viewMtx = m_dx11Renderer->m_renderData->testCamera->GetView();
-	m_dx11Renderer->m_renderData->testViewProjBuffer.invViewMtx =
-			DirectX::XMMatrixInverse(nullptr, m_dx11Renderer->m_renderData->testViewProjBuffer.viewMtx);
+	//m_dx11Renderer->m_renderData->testViewProjBuffer.invViewMtx =
+	//		DirectX::XMMatrixInverse(nullptr, m_dx11Renderer->m_renderData->testViewProjBuffer.viewMtx);
 
 	m_dx11Renderer->m_renderData->m_pImmediateContext->UpdateSubresource(m_dx11Renderer->m_renderData->testViewProjConstBuffer,
 			0, NULL, &m_dx11Renderer->m_renderData->testViewProjBuffer, 0, 0);

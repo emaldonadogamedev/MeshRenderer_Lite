@@ -1533,8 +1533,10 @@ bool DX11Renderer::InitializeD3D(const int width, const int height, HWND hwnd)
 {
 	bool result = InitializeSwapChain(width, height, hwnd);
 	result &= InitializeRasterizerStates();
+	result &= InitializeDepthStates();
 	result &= InitializeBlendStates();
 	//result &= InitializeTextureSamplers();
+
 
 	result &= ResizeBuffers(width, height);
 
@@ -1671,7 +1673,27 @@ bool DX11Renderer::InitializeRasterizerStates()
 	RSDesc.MultisampleEnable = FALSE; //swapDesc.SampleDesc.Count > 1 ? TRUE : FALSE;
 	m_renderData->m_pDevice->CreateRasterizerState(&RSDesc, &m_renderData->m_d3dRasterStateImgui);
 
+	//Create the rasterizer state for the skybox!
+	//rasterizerDesc.CullMode = D3D11_CULL_FRONT;
+	//rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	//rasterizerDesc.FrontCounterClockwise = TRUE;
+
+	m_renderData->m_pDevice->CreateRasterizerState(&RSDesc, &m_renderData->m_d3dRasterStateSkybox);
+
 	m_renderData->m_pImmediateContext->RSSetState(m_renderData->m_currentRasterState = m_renderData->m_d3dRasterStateSolCullNone);
+
+	return true;
+}
+
+bool DX11Renderer::InitializeDepthStates()
+{
+	D3D11_DEPTH_STENCIL_DESC dssDesc;
+	ZeroMemory(&dssDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+	dssDesc.DepthEnable = true;
+	dssDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	dssDesc.DepthFunc = D3D11_COMPARISON_GREATER_EQUAL;
+
+	HR(m_renderData->m_pDevice->CreateDepthStencilState(&dssDesc, &m_renderData->m_DSLessEqual));
 
 	return true;
 }

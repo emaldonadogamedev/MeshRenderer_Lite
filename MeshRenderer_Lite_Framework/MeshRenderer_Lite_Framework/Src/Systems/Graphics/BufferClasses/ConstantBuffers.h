@@ -68,6 +68,8 @@ struct GlobalShaderProperties
 		int gDebugInfoType = (int)GlobalGraphicsDebugType::G_DEBUG_NONE;
 
 		int gIsUsingDeferred = 1;
-		int padding[3];
+		int gIsUsingIBL;
+		float toneMappingExposureControl = 1.f;
+		float toneMappingExtraExpControl = 1.f;
 };
 

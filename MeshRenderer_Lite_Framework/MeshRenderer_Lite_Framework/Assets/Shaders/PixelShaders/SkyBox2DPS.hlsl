@@ -1,24 +1,17 @@
 #include "../ShaderIncludes.hlsli"
 #include "PixelShaderIncludes.hlsli"
 
-RasterizerState NoCull
-{
-	CullMode = None;
-};
-
-DepthStencilState LessEqualDSS
-{
-	// Make sure the depth function is LESS_EQUAL and not just LESS.  
-	// Otherwise, the normalized depth values at z = 1 (NDC) will 
-	// fail the depth test if the depth buffer was cleared to 1.
-	DepthFunc = LESS_EQUAL;
-};
-
 float4 main(PixelInputType pixel) : SV_TARGET
 {
-	float3 normal = normalsRT.Sample(textureSamplerWrap, pixel.uv).xyz;
+	float3 cubeUV = normalize(pixel.worldPos);
 	
-	float2 uv = float2(0.5f - (atan2(normal.z, normal.x) / TWO_PI), acos(normal.y) / PI );
+	float2 uv = SphericalUVMapping(cubeUV);
 
-	return iblMap2D.Sample(textureSamplerWrap, uv);
+	float3 iblColor = iblMap2D.Sample(textureSamplerWrap, uv).xyz;
+	iblColor *= toneMappingExposureControl;
+
+	float3 result = pow(iblColor / (iblColor + float3(1.f, 1.f, 1.f)), toneMappingExtraExpControl / 2.2);
+
+	//Flag to let the other stages know that no lighting calculation needs to be done here.
+	return float4(result, -1.f);
 }

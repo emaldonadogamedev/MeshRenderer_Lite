@@ -22,9 +22,12 @@ SkyBoxRenderStage::~SkyBoxRenderStage()
 
 void SkyBoxRenderStage::PreRender()
 {
-	m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateSolCullBack); 
-	m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateSolCullNone);
+	m_renderData.m_pImmediateContext->OMSetDepthStencilState(m_renderData.m_DSLessEqual, 0);
+	//m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateSkybox);
+	m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
 	m_renderer->DisableColorBlending();
+	m_renderData.m_pImmediateContext->RSSetViewports(1, &m_renderData.m_mainViewport);
 }
 
 void SkyBoxRenderStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
@@ -64,5 +67,5 @@ void SkyBoxRenderStage::Render(HandleDictionaryVec& graphicsResources, const flo
 
 void SkyBoxRenderStage::PostRender()
 {
-
+	m_renderData.m_pImmediateContext->OMSetDepthStencilState(nullptr, 0);
 }
