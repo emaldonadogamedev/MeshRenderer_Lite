@@ -1,6 +1,8 @@
 #include "../ShaderIncludes.hlsli"
 #include "PixelShaderIncludes.hlsli"
 
+float2 iblUVdistordedWeights[40];
+
 float4 main(PixelInputType pixel) : SV_TARGET
 {
 		float4 pos = positionRT.Sample(textureSamplerWrap, pixel.uv);
@@ -13,9 +15,19 @@ float4 main(PixelInputType pixel) : SV_TARGET
 			float2 uv = SphericalUVMapping(normal);
 			float3 irrColor = irradianceMap2D.Sample(textureSamplerWrap, uv).xyz;
 
+			///////////////////////////////////////////////////////////////////////////////////////////////////
+			// Diffuse part of IBL
+			//Tone down the HDR color to 0 to 1 format
 			irrColor = pow(irrColor / (irrColor + float3(1.f, 1.f, 1.f)), toneMappingExtraExpControl / 2.2);
+			float4 diffuse = (diff / PI) * float4(irrColor, 1.0f);
 
-			resultColors[G_DEBUG_NONE] = (diff / PI) * float4(irrColor, 1.0f);
+			///////////////////////////////////////////////////////////////////////////////////////////////////
+			// Specular part of IBL
+
+			float4 specular = float4(0, 0, 0, 0);
+
+			resultColors[G_DEBUG_NONE] = saturate(diffuse + specular);
+
 		}
 		else //If no IBL, use regular ambient calculation
 		{

@@ -21,8 +21,9 @@ Texture2D positionRT : register(t20);
 Texture2D normalsRT : register(t21);
 Texture2D diffuseRT : register(t22);
 Texture2D specularAndNsRT : register(t23);
-
 Texture2D previouslyUsedRT : register(t24);
 
+//IBL resources
 Texture2D iblMap2D : register(t25);
 Texture2D irradianceMap2D : register(t26);
+StructuredBuffer<float2> sampleWeights : register(t27);

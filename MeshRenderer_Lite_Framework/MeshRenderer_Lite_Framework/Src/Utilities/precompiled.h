@@ -96,9 +96,14 @@ static const float XMLengthBetween2Points(const DirectX::XMVECTOR& a, const Dire
 	sqrtf(XMLengthSquaredBetween2Points(a,b));
 }
 
-static float Clamp(const float value, const float minValue = 0.f, const float maxValue = 1.f)
+static float ClampInt(const int value, const int minValue, const int maxValue)
 {
-		return min(max(minValue, value), maxValue);
+	return min(max(minValue, value), maxValue);
+}
+
+static float ClampFloat(const float value, const float minValue = 0.f, const float maxValue = 1.f)
+{
+	return min(max(minValue, value), maxValue);
 }
 
 static float RandFloat(const float minValue = 0.f, const float maxValue = 1.f)

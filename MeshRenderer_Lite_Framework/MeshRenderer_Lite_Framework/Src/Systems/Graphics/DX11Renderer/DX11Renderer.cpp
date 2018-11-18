@@ -499,17 +499,17 @@ void DX11Renderer::CreateStructuredBuffer(ObjectHandle& structuredBuffer, const 
 
 		if (structuredBuffer)
 		{
-				StructuredBuffer& structuredBufferObj = m_renderData->structuredBuffers[*structuredBuffer];
+			StructuredBuffer& structuredBufferObj = m_renderData->structuredBuffers[*structuredBuffer];
 
-				//Free buffer if it has data
-				SafeRelease(structuredBufferObj.buffer);
-				SafeRelease(structuredBufferObj.srv);
+			//Free buffer if it has data
+			SafeRelease(structuredBufferObj.buffer);
+			SafeRelease(structuredBufferObj.srv);
 
-				//Update data
-				structuredBufferObj.buffer = buffer;
-				structuredBufferObj.srv = srvPtr;
-				structuredBufferObj.usage = bufferUsage;
-				structuredBufferObj.size = desc.ByteWidth;
+			//Update data
+			structuredBufferObj.buffer = buffer;
+			structuredBufferObj.srv = srvPtr;
+			structuredBufferObj.usage = bufferUsage;
+			structuredBufferObj.size = desc.ByteWidth;
 		}
 
 		else
@@ -1120,8 +1120,8 @@ void DX11Renderer::CreatePixelShader(ObjectHandle& pixelShader, const std::strin
 		PixelShader& pixelShaderObj = m_renderData->pixelShaders[*pixelShader];
 		if (pixelShaderObj.pixelShader)
 		{
-				pixelShaderObj.pixelShader->Release();
-				pixelShaderObj.shaderBlob->Release();
+			pixelShaderObj.pixelShader->Release();
+			pixelShaderObj.shaderBlob->Release();
 		}
 
 		pixelShaderObj.pixelShader = pixelShaderPtr;

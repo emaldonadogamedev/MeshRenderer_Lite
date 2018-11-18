@@ -17,6 +17,18 @@ float2 SphericalUVMapping(float3 N)
 	return float2(0.5f - (atan2(N.z, -N.x) / TWO_PI), acos(N.y) / PI);
 }
 
+float3 UVtoNdirection(float2 uv)
+{
+	const float TwoPiHalfMinusUx = TWO_PI * (0.5f - uv.x);
+	const float sinPIv = sin(PI * uv.y);
+
+	return float3(
+		cos(TwoPiHalfMinusUx) * sinPIv,
+		sin(TwoPiHalfMinusUx) * sinPIv,
+		cos(PI * uv.y)
+	);
+}
+
 //--------------------------------------------------------------------------------------
 // Vertex & Pixel structure definitions
 //--------------------------------------------------------------------------------------
@@ -27,10 +39,10 @@ struct VertexInputType
 	float3 tangent      : TANGENT;
 	float3 bitangent    : BITANGENT;
 	float2 uv           : UV;
-	float4 color		    : COLOR;
+	float4 color		: COLOR;
 
 	//Animation bone information
-	uint4 boneIDs		    : BONES;
+	uint4 boneIDs		: BONES;
 	float4 boneWeights	: WEIGHTS;
 };
 

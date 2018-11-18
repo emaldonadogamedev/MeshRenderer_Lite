@@ -36,6 +36,15 @@ public:
 
 	void Resize(const int w, const int h);
 
+	//Global IBL Settings
+	const std::string& GetIBLTexture() const;
+	void SetIBLTexture(const std::string& iblTexture);
+
+	bool GetIsUsingIBL()const;
+	void SetIsUsingIBL(const bool v);
+
+	void SetIBLsampleWeightCount(const int sampleCount);
+
 	//Getters
 	DX11Renderer* GetRenderer() const;
 	Model* GetModel(const std::string& modelName);
@@ -67,6 +76,10 @@ protected:
 
 	std::unique_ptr<ModelManager> m_modelManager;
 	std::unique_ptr<TextureManager> m_textureManager;
+
+	std::string m_iblTextureMap;
+	bool m_isUsingIBL;
+	bool m_isIBLloadingDirty;
 
 	//Resource Collection
 	HandleDictionaryVec m_resources;

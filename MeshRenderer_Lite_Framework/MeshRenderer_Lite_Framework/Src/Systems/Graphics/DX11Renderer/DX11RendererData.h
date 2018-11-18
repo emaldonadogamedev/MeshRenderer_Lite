@@ -113,6 +113,9 @@ public:
 	GlobalShaderProperties testGlobalShaderProperties;
 	ID3D11Buffer* testGlobalShaderPropertiesConstBuffer = nullptr;
 
+	ObjectHandle iblSamplesHandle;
+	int iblSampleCount = 0;
+
 	//Cameras
 	std::unique_ptr<Camera> testCamera = std::make_unique<Camera>();
 

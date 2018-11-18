@@ -48,6 +48,9 @@ GraphicsSystem::GraphicsSystem(IApplication* const eng)
 	,m_dx11Renderer(std::make_unique<DX11Renderer>())
 	,m_modelManager(std::make_unique<ModelManager>(m_dx11Renderer.get()))
 	,m_textureManager(std::make_unique<TextureManager>(m_dx11Renderer.get()))
+	,m_iblTextureMap()
+	,m_isUsingIBL(false)
+	,m_isIBLloadingDirty(false)
 {
 	//m_renderComponents.resize((size_t)ComponentType::COUNT);
 	m_resources.resize((size_t)ObjectType::COUNT);
@@ -443,6 +446,96 @@ void GraphicsSystem::Resize(const int w, const int h)
 	m_dx11Renderer->GetRendererData().testViewProjBuffer.invProjectionMtx = DirectX::XMMatrixInverse(nullptr, projMtx);
 }
 
+const std::string& GraphicsSystem::GetIBLTexture() const
+{
+	return m_iblTextureMap;
+}
+
+void GraphicsSystem::SetIBLTexture(const std::string& iblTexture)
+{
+	m_iblTextureMap = iblTexture;
+	
+	//////////////////////////////////////////////////////////////////////////
+	// Load the IBL texture
+	const std::string iblDir = s_textureDir + iblTexture + ".hdr";
+
+	auto& texture2D = m_resources[(int)ObjectType::TEXTURE_2D];
+	const auto iter = texture2D.find(iblDir);
+	ObjectHandle iblMapHandle;
+	if (iter != texture2D.end())
+	{
+		iblMapHandle = iter->second;
+	}
+	else
+	{
+		iblMapHandle = m_dx11Renderer->GetTexture2D(iblDir);
+		texture2D[iblDir] = iblMapHandle;
+	}
+
+	m_dx11Renderer->BindTextureShaderResource(ObjectType::PIXEL_SHADER, 25, 1, iblMapHandle);
+
+	//////////////////////////////////////////////////////////////////////////
+	// Load the irradiance map
+	const std::string irrDir = s_textureDir + iblTexture + ".irr.hdr";
+
+	const auto iter2 = texture2D.find(irrDir);
+	ObjectHandle irrMapHandle;
+	if (iter2 != texture2D.end())
+	{
+		irrMapHandle = iter2->second;
+	}
+	else
+	{
+		irrMapHandle = m_dx11Renderer->GetTexture2D(irrDir);
+		texture2D[irrDir] = irrMapHandle;
+	}
+
+	m_dx11Renderer->BindTextureShaderResource(ObjectType::PIXEL_SHADER, 26, 1, irrMapHandle);
+}
+
+bool GraphicsSystem::GetIsUsingIBL() const
+{
+	return m_isUsingIBL;
+}
+
+void GraphicsSystem::SetIsUsingIBL(const bool v)
+{
+	m_isUsingIBL = v;
+	m_dx11Renderer->m_renderData->testGlobalShaderProperties.gIsUsingIBL = static_cast<int>(v);
+}
+
+void GraphicsSystem::SetIBLsampleWeightCount(const int sampleCount)
+{
+	if (m_dx11Renderer->m_renderData->iblSampleCount != sampleCount)
+	{
+		m_dx11Renderer->m_renderData->iblSampleCount = ClampInt(sampleCount, 20, 40);
+		std::vector<float> tempSamples(m_dx11Renderer->m_renderData->iblSampleCount * 2, 0.f);
+
+		int kk, pos = 0;
+		float u;
+
+		for (int k = 0; k < m_dx11Renderer->m_renderData->iblSampleCount; ++k)
+		{
+			u = 0.f;
+			float p = 0.5f;
+			for (int kk = k; kk; p *= 0.5f, kk >>= 1)
+			{
+				if (kk & 1)
+				{
+					u += p;
+				}
+			}
+
+			float v = (float(k) + 0.5f) / float(m_dx11Renderer->m_renderData->iblSampleCount);
+			tempSamples[pos++] = u;
+			tempSamples[pos++] = v;
+		}
+
+		m_dx11Renderer->CreateStructuredBuffer(m_dx11Renderer->m_renderData->iblSamplesHandle, BufferUsage::USAGE_DEFAULT,
+			m_dx11Renderer->m_renderData->iblSampleCount * 2, sizeof(float) * 2, tempSamples.data());
+	}
+}
+
 void GraphicsSystem::AddComponent(IComponent* component)
 {
 	if (component)
@@ -452,35 +545,35 @@ void GraphicsSystem::AddComponent(IComponent* component)
 		//If it's a light component, create the shadow map
 		if (component->GetComponentType() == ComponentType::RENDERABLE_LIGHT_WITH_SHADOW)
 		{
-				ShadowLightComponent* shadowLightComp = (ShadowLightComponent*)component;
-				m_dx11Renderer->CreateRenderTarget(shadowLightComp->GetShadowDepthMapHandle(), shadowLightComp->m_shadowMapWidthHeight,
-						shadowLightComp->m_shadowMapWidthHeight, DataFormat::FLOAT4);
+			ShadowLightComponent* shadowLightComp = (ShadowLightComponent*)component;
+			m_dx11Renderer->CreateRenderTarget(shadowLightComp->GetShadowDepthMapHandle(), shadowLightComp->m_shadowMapWidthHeight,
+				shadowLightComp->m_shadowMapWidthHeight, DataFormat::FLOAT4);
 
-				m_dx11Renderer->CreateRenderTarget(shadowLightComp->GetSoftShadowDepthMapHandle(), shadowLightComp->m_shadowMapWidthHeight,
-						shadowLightComp->m_shadowMapWidthHeight, DataFormat::FLOAT4);
+			m_dx11Renderer->CreateRenderTarget(shadowLightComp->GetSoftShadowDepthMapHandle(), shadowLightComp->m_shadowMapWidthHeight,
+				shadowLightComp->m_shadowMapWidthHeight, DataFormat::FLOAT4);
 
-				const int halfWidth = shadowLightComp->GetSoftShadowMapKernelHalfWidth();
-				std::vector<float> kernelWeights;
-				static const float e = 2.718281828459f;
-				float denominator = float(halfWidth) / 2.0f;
-				denominator *= denominator;
-				denominator *= 2.0f;
-				float sum = 0.f;
-				for (int w = -halfWidth; w <= halfWidth; w += 1)
-				{
-						kernelWeights.push_back( std::pow(e, -(float(w*w) / denominator) ));
+			const int halfWidth = shadowLightComp->GetSoftShadowMapKernelHalfWidth();
+			std::vector<float> kernelWeights;
+			static const float e = 2.718281828459f;
+			float denominator = float(halfWidth) / 2.0f;
+			denominator *= denominator;
+			denominator *= 2.0f;
+			float sum = 0.f;
+			for (int w = -halfWidth; w <= halfWidth; w += 1)
+			{
+				kernelWeights.push_back(std::pow(e, -(float(w*w) / denominator)));
 
-						sum += kernelWeights.back();
-				}
+				sum += kernelWeights.back();
+			}
 
-				//normalize them to sum to 1
-				for (int i = 0; i < kernelWeights.size(); ++i)
-				{
-						kernelWeights[i] /= sum;
-				}
+			//normalize them to sum to 1
+			for (int i = 0; i < kernelWeights.size(); ++i)
+			{
+				kernelWeights[i] /= sum;
+			}
 
-				m_dx11Renderer->CreateStructuredBuffer(shadowLightComp->GetSoftShadowMapKernelWeightHandle(), 
-						BufferUsage::USAGE_DEFAULT, (halfWidth * 2) + 1, sizeof(float), kernelWeights.data());
+			m_dx11Renderer->CreateStructuredBuffer(shadowLightComp->GetSoftShadowMapKernelWeightHandle(),
+				BufferUsage::USAGE_DEFAULT, (halfWidth * 2) + 1, sizeof(float), kernelWeights.data());
 		}
 	}
 }

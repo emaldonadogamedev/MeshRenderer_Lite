@@ -28,10 +28,10 @@ const XMVECTOR CurvePathComponent::GetCurrentSplinePoint()
 {
 	m_currentPos = m_nextPos;
 
-	const int splineEntryIndex = GetSplineSegmentEntryIndex( Clamp(m_currentRate));
+	const int splineEntryIndex = GetSplineSegmentEntryIndex( ClampFloat(m_currentRate));
 	float t = m_forwardDiffTable[splineEntryIndex].segmentParametricValue;
 
-	MovePointIndices(Clamp(m_currentRate));
+	MovePointIndices(ClampFloat(m_currentRate));
 
 	const XMVECTOR& P0 = m_controlPoints[m_currentP0_index];
 	const XMVECTOR& P1 = m_controlPoints[m_currentP1_index];
@@ -63,7 +63,7 @@ float CurvePathComponent::GetCurrentAngle()
 
 	//return m_currentAngle;
 
-	const int splineEntryIndex = GetSplineSegmentEntryIndex(Clamp(m_currentRate));
+	const int splineEntryIndex = GetSplineSegmentEntryIndex(ClampFloat(m_currentRate));
 	float t = m_forwardDiffTable[splineEntryIndex].segmentParametricValue;
 	
 	const XMVECTOR& P0 = m_controlPoints[m_currentP0_index];
