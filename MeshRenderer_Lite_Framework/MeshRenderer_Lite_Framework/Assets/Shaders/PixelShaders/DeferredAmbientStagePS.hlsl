@@ -22,8 +22,8 @@ float4 main(PixelInputType pixel) : SV_TARGET
 			///////////////////////////////////////////////////////////////////////////////////////////////////
 			// Diffuse part of IBL
 			//Tone down the HDR color to 0 to 1 format
-			//irrColor = pow(irrColor / (irrColor + float3(1.f, 1.f, 1.f)), toneMappingExtraExpControl / 2.2);
-			float4 diffuse = (diff / PI) * float4(irrColor  * 10, 1.0f);
+			irrColor = pow(irrColor / (irrColor + float3(1.f, 1.f, 1.f)), toneMappingExtraExpControl / 2.2);
+			float4 diffuse = (diff / PI) * float4(irrColor, 1.0f);
 
 			///////////////////////////////////////////////////////////////////////////////////////////////////
 			// Specular part of IBL
@@ -37,7 +37,7 @@ float4 main(PixelInputType pixel) : SV_TARGET
 			float3 viewVec = normalize(cameraPosition.xyz - pos.xyz);
 			
 			//Needed vectors for reflection
-			float3 R = normalize( (2.0f * (dot(normal, viewVec)) * normal) - viewVec);
+			float3 R = (2.0f * (dot(normal, viewVec)) * normal) - viewVec;
 			float3 A = normalize( cross(float3(0,1.f, 0), R ));
 			float3 B = normalize( cross(R, A));
 
@@ -52,7 +52,8 @@ float4 main(PixelInputType pixel) : SV_TARGET
 				float3 H = normalize(L + viewVec);
 				
 				float LdotH = max(dot(L, H), 0.f);
-				float G = (1.f /(LdotH * LdotH)) / 4.f;
+				float LdotHSquare = LdotH <= 0.0001f ? 1.f : LdotH * LdotH;
+				float G = (1.f /LdotHSquare) / 4.f;
 				float oneMinusLdotH = (1.f - LdotH);
 				float3 F = KSandNS.xyz + (float3(1,1,1) - KSandNS.xyz) * 
 					(oneMinusLdotH * oneMinusLdotH * oneMinusLdotH * oneMinusLdotH *oneMinusLdotH);
@@ -60,6 +61,7 @@ float4 main(PixelInputType pixel) : SV_TARGET
 
 				float2 sampleUV = SphericalUVMapping(wk);
 				float3 radianceSample = iblMap2D.Sample(textureSamplerWrap, sampleUV).xyz;
+				radianceSample = pow(radianceSample / (radianceSample + float3(1.f, 1.f, 1.f)), toneMappingExtraExpControl / 2.2);
 				specular += G * F * radianceSample * NdotL;
 			}
 			

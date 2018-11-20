@@ -70,7 +70,7 @@ void ModelManager::LoadPrimitiveShapes()
 	m_loadedModels["quad"] = std::move(quad);
 	
 	auto sphere = std::make_unique<Model>();
-	m_primitiveGen->CreateSphere(0.5f, 60, 60, *sphere);
+	m_primitiveGen->CreateSphere(0.5f, 20, 20, *sphere);
 	sphere->GenerateBuffers(m_renderer);
 	m_loadedModels["sphere"] = std::move(sphere);
 }
