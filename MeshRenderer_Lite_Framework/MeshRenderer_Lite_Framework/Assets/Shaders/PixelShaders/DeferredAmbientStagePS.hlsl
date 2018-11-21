@@ -22,7 +22,7 @@ float4 main(PixelInputType pixel) : SV_TARGET
 			///////////////////////////////////////////////////////////////////////////////////////////////////
 			// Diffuse part of IBL
 			//Tone down the HDR color to 0 to 1 format
-			irrColor = pow(irrColor / (irrColor + float3(1.f, 1.f, 1.f)), toneMappingExtraExpControl / 2.2);
+			//irrColor = pow(irrColor / (irrColor + float3(1.f, 1.f, 1.f)), toneMappingExtraExpControl / 2.2);
 			float4 diffuse = (diff / PI) * float4(irrColor, 1.0f);
 
 			///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -41,18 +41,18 @@ float4 main(PixelInputType pixel) : SV_TARGET
 			float3 A = normalize( cross(float3(0,1.f, 0), R ));
 			float3 B = normalize( cross(R, A));
 
-			[unroll(40)]
-			for (uint i = 0; i < numStructs; ++i)
+			[unroll(20)]
+			for (uint i = 0; i < 20; ++i)
 			{
-				float2 distortedUVs = float2(sampleWeights[i].x, acos(pow(abs(sampleWeights[i].y), 1.f / (ns + 1.f))) / PI);
-				float3 L = UVtoNdirection(distortedUVs);
-				float NdotL = max(dot(normal, L), 0.f);
+				float2 distortedUVs = float2(sampleWeights[i].x, acos(pow(sampleWeights[i].y, 1.f / (ns + 1.f))) / PI);
+				float3 L = UVtoNdirection(distortedUVs);				
 
-				float3 wk = normalize( (L.x * A) + (L.y * B) + (L.z * R) );
-				float3 H = normalize(L + viewVec);
+				float3 wk = normalize((L.x * A) + (L.y * B) + (L.z * R));
+				float3 H = normalize(wk + viewVec);
+				float NdotL = max(dot(normal, wk), 0.f);
 				
-				float LdotH = max(dot(L, H), 0.f);
-				float LdotHSquare = LdotH <= 0.0001f ? 1.f : LdotH * LdotH;
+				float LdotH = max(dot(wk, H), 0.f);
+				float LdotHSquare = LdotH <= 0.0001f ? 0.0001f : LdotH * LdotH;
 				float G = (1.f /LdotHSquare) / 4.f;
 				float oneMinusLdotH = (1.f - LdotH);
 				float3 F = KSandNS.xyz + (float3(1,1,1) - KSandNS.xyz) * 
@@ -61,14 +61,18 @@ float4 main(PixelInputType pixel) : SV_TARGET
 
 				float2 sampleUV = SphericalUVMapping(wk);
 				float3 radianceSample = iblMap2D.Sample(textureSamplerWrap, sampleUV).xyz;
-				radianceSample = pow(radianceSample / (radianceSample + float3(1.f, 1.f, 1.f)), toneMappingExtraExpControl / 2.2);
+				//radianceSample = pow(radianceSample / (radianceSample + float3(1.f, 1.f, 1.f)), toneMappingExtraExpControl / 2.2);
 				specular += G * F * radianceSample * NdotL;
 			}
 			
 			//Divide by the amount of weights
 			specular /= float(numStructs);
 
-			resultColors[G_DEBUG_NONE] = saturate(diffuse + float4(specular, 1));
+			float4 result = diffuse + float4(specular, 1);
+			result = pow(result / (result + float4(1, 1, 1, 1)), toneMappingExtraExpControl / 2.2);
+
+
+			resultColors[G_DEBUG_NONE] = saturate(result);
 
 		}
 		else //If no IBL, use regular ambient calculation
