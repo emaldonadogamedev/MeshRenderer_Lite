@@ -514,29 +514,29 @@ void DX11Renderer::CreateStructuredBuffer(ObjectHandle& structuredBuffer, const 
 
 		else
 		{
-				StructuredBuffer structuredBufferObj;
+			StructuredBuffer structuredBufferObj;
 
-				//Update data
-				structuredBufferObj.buffer = buffer;
-				structuredBufferObj.srv = srvPtr;
-				structuredBufferObj.usage = bufferUsage;
-				structuredBufferObj.size = desc.ByteWidth;
+			//Update data
+			structuredBufferObj.buffer = buffer;
+			structuredBufferObj.srv = srvPtr;
+			structuredBufferObj.usage = bufferUsage;
+			structuredBufferObj.size = desc.ByteWidth;
 
-				int index = m_renderData->NextAvailableIndex(m_renderData->structuredBuffers);
+			int index = m_renderData->NextAvailableIndex(m_renderData->structuredBuffers);
 
-				if (index == -1)
-				{
-						//No free space exists in container, push back
-						m_renderData->structuredBuffers.push_back(std::move(structuredBufferObj));
-						structuredBuffer = CreateHandle(ObjectType::STRUCTURED_BUFFER, m_renderData->structuredBuffers.size() - 1);
-				}
+			if (index == -1)
+			{
+				//No free space exists in container, push back
+				m_renderData->structuredBuffers.push_back(std::move(structuredBufferObj));
+				structuredBuffer = CreateHandle(ObjectType::STRUCTURED_BUFFER, m_renderData->structuredBuffers.size() - 1);
+			}
 
-				else
-				{
-						//Use available space in container
-						m_renderData->structuredBuffers[index] = structuredBufferObj;
-						structuredBuffer = CreateHandle(ObjectType::STRUCTURED_BUFFER, index);
-				}
+			else
+			{
+				//Use available space in container
+				m_renderData->structuredBuffers[index] = structuredBufferObj;
+				structuredBuffer = CreateHandle(ObjectType::STRUCTURED_BUFFER, index);
+			}
 		}
 }
 

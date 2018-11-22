@@ -508,7 +508,7 @@ void GraphicsSystem::SetIBLsampleWeightCount(const int sampleCount)
 {
 	if (m_dx11Renderer->m_renderData->iblSampleCount != sampleCount)
 	{
-		m_dx11Renderer->m_renderData->iblSampleCount = ClampInt(sampleCount, 20, 40);
+		m_dx11Renderer->m_renderData->iblSampleCount = ClampInt(sampleCount, 1, 40);
 		std::vector<float> tempSamples(m_dx11Renderer->m_renderData->iblSampleCount * 2, 0.f);
 
 		int kk, pos = 0;

@@ -41,28 +41,38 @@ float4 main(PixelInputType pixel) : SV_TARGET
 			float3 A = normalize( cross(float3(0,1.f, 0), R ));
 			float3 B = normalize( cross(R, A));
 
-			[unroll(20)]
-			for (uint i = 0; i < 20; ++i)
+			float2 distortedUVs;
+			float3 L;
+			float3 wk; // sample light direction
+			float3 H; // to calculate half-vector
+			float NdotWk; // to calculate wk dot N
+			float WkDotH, WkDotHSquare; // to calculate wk dot H
+			float G; // G term in BRDF
+			float oneMinusWkDotH; //temp storage to avoid extra calculations
+			float3 F; //BRDF F term
+			float2 sampleUV; // temp storage to convert wk to UV coords
+			float3 radianceSample; // temp storage to sample from the radiance texture
+			
+			[loop]
+			for (uint i = 0; i < numStructs; ++i)
 			{
-				float2 distortedUVs = float2(sampleWeights[i].x, acos(pow(sampleWeights[i].y, 1.f / (ns + 1.f))) / PI);
-				float3 L = UVtoNdirection(distortedUVs);				
+				distortedUVs = float2(sampleWeights[i].x, acos(pow(sampleWeights[i].y, 1.f / (ns + 1.f))) / PI);
+				L = UVtoNdirection(distortedUVs);				
 
-				float3 wk = normalize((L.x * A) + (L.y * B) + (L.z * R));
-				float3 H = normalize(wk + viewVec);
-				float NdotL = max(dot(normal, wk), 0.f);
+				wk = normalize((L.x * A) + (L.y * B) + (L.z * R));
+				H = normalize(wk + viewVec);
+				NdotWk = max(dot(normal, wk), 0.f);
 				
-				float LdotH = max(dot(wk, H), 0.f);
-				float LdotHSquare = LdotH <= 0.0001f ? 0.0001f : LdotH * LdotH;
-				float G = (1.f /LdotHSquare) / 4.f;
-				float oneMinusLdotH = (1.f - LdotH);
-				float3 F = KSandNS.xyz + (float3(1,1,1) - KSandNS.xyz) * 
-					(oneMinusLdotH * oneMinusLdotH * oneMinusLdotH * oneMinusLdotH *oneMinusLdotH);
+				WkDotH = max(dot(wk, H), 0.f);
+				WkDotHSquare = WkDotH <= 0.0001f ? 0.0001f : WkDotH * WkDotH;
+				G = (1.f / WkDotHSquare) / 4.f;
+				oneMinusWkDotH = (1.f - WkDotH);
+				F = KSandNS.xyz + (float3(1,1,1) - KSandNS.xyz) * 
+					(oneMinusWkDotH * oneMinusWkDotH * oneMinusWkDotH * oneMinusWkDotH * oneMinusWkDotH);
 				
-
-				float2 sampleUV = SphericalUVMapping(wk);
-				float3 radianceSample = iblMap2D.Sample(textureSamplerWrap, sampleUV).xyz;
-				//radianceSample = pow(radianceSample / (radianceSample + float3(1.f, 1.f, 1.f)), toneMappingExtraExpControl / 2.2);
-				specular += G * F * radianceSample * NdotL;
+				sampleUV = SphericalUVMapping(wk);
+				radianceSample = iblMap2D.Sample(textureSamplerWrap, sampleUV).xyz;
+				specular += G * F * radianceSample * NdotWk;
 			}
 			
 			//Divide by the amount of weights
@@ -71,9 +81,8 @@ float4 main(PixelInputType pixel) : SV_TARGET
 			float4 result = diffuse + float4(specular, 1);
 			result = pow(result / (result + float4(1, 1, 1, 1)), toneMappingExtraExpControl / 2.2);
 
-
-			resultColors[G_DEBUG_NONE] = saturate(result);
-
+			// multiplying by the global ambient light for extra control to the final color
+			resultColors[G_DEBUG_NONE] = saturate(float4(gGlobalAmbient, 1.f) * result);
 		}
 		else //If no IBL, use regular ambient calculation
 		{

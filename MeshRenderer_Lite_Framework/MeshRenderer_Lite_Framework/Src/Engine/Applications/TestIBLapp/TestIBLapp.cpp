@@ -91,7 +91,7 @@ bool TestIBLapp::Initialize(HINSTANCE hInstance)
 		//enable ibl!
 		m_graphicsSystem->SetIBLTexture("Alexs_Apt_2k");
 		m_graphicsSystem->SetIsUsingIBL(true);
-		m_graphicsSystem->SetIBLsampleWeightCount(20);
+		m_graphicsSystem->SetIBLsampleWeightCount(1);
 
 		return true;
 	}
