@@ -49,8 +49,11 @@ void DX11Renderer::ReleaseData()
 
 	//2D textures
 	for (auto& tex2D : m_renderData->textures2D)
+	{
 		SafeRelease(tex2D.srv);
-
+		SafeRelease(tex2D.texture2D);
+		SafeDelete(tex2D.scratchImgPtr);
+	}
 	//3D textures
 	for (auto& tex3D : m_renderData->textures3D)
 		SafeRelease(tex3D.srv);
@@ -772,14 +775,14 @@ void DX11Renderer::CreateRenderTarget(ObjectHandle& rt, const int W, const int H
 		//No free space in the texture container
 		if (index == -1)
 		{
-			m_renderData->renderTargets.emplace_back(renderTargetObj);
+			m_renderData->renderTargets.emplace_back(std::move(renderTargetObj));
 			rt = CreateHandle(ObjectType::RENDER_TARGET, m_renderData->renderTargets.size() - 1);
 		}
 
 		//Insert into available slot
 		else
 		{
-			m_renderData->renderTargets[index] = renderTargetObj;
+			m_renderData->renderTargets[index] = std::move(renderTargetObj);
 			rt = CreateHandle(ObjectType::RENDER_TARGET, index);
 		}
 
@@ -907,15 +910,15 @@ void DX11Renderer::CreateStructuredBufferRW_Texture2D(ObjectHandle& sbrwTexture2
 				//No free space in the texture container
 				if (index == -1)
 				{
-						m_renderData->structuredBuffersRW_Texture2D.push_back(std::move(sbrwTex2D));
-						sbrwTexture2Dhandle = CreateHandle(ObjectType::STRUCTURED_BUFFER_RW_TEXTURE2D, m_renderData->structuredBuffersRW_Texture2D.size() - 1);
+					m_renderData->structuredBuffersRW_Texture2D.push_back(std::move(sbrwTex2D));
+					sbrwTexture2Dhandle = CreateHandle(ObjectType::STRUCTURED_BUFFER_RW_TEXTURE2D, m_renderData->structuredBuffersRW_Texture2D.size() - 1);
 				}
 
 				//Insert into available slot
 				else
 				{
-						m_renderData->structuredBuffersRW_Texture2D[index] = sbrwTex2D;
-						sbrwTexture2Dhandle = CreateHandle(ObjectType::STRUCTURED_BUFFER_RW_TEXTURE2D, index);
+					m_renderData->structuredBuffersRW_Texture2D[index] = std::move(sbrwTex2D);
+					sbrwTexture2Dhandle = CreateHandle(ObjectType::STRUCTURED_BUFFER_RW_TEXTURE2D, index);
 				}
 
 		}
@@ -1297,7 +1300,7 @@ void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const std::strin
 	const size_t r = fileName.find_last_of('.') + 1;
 	const char l = tolower(fileName[r]);
 	const auto wFileName = std::wstring(fileName.begin(), fileName.end());
-	DirectX::ScratchImage image;
+	DirectX::ScratchImage* image = new DirectX::ScratchImage();
 	
 	DirectX::TexMetadata metaData;
 	metaData.format = DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT;
@@ -1310,31 +1313,30 @@ void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const std::strin
 	//in case the file is tga / NOTE: DO NOT USE .TIFF TEXTURES!!!
 	if (l == 't')
 	{
-		result = DirectX::LoadFromTGAFile(wFileName.c_str(), &metaData, image);
+		result = DirectX::LoadFromTGAFile(wFileName.c_str(), &metaData, *image);
 	}
 	//in case the file is dds
 	else if (l == 'd')
 	{
-		result = DirectX::LoadFromDDSFile(wFileName.c_str(), 0, &metaData, image);
+		result = DirectX::LoadFromDDSFile(wFileName.c_str(), 0, &metaData, *image);
 	}
 	//in case the file is hdr
 	else if (l == 'h') 
 	{
-		result = DirectX::LoadFromHDRFile(wFileName.c_str(), &metaData, image);
+		result = DirectX::LoadFromHDRFile(wFileName.c_str(), &metaData, *image);
 	}
 
 	//else use wic
 	else
 	{
-		result = DirectX::LoadFromWICFile(wFileName.c_str(), 0, &metaData, image);
+		result = DirectX::LoadFromWICFile(wFileName.c_str(), 0, &metaData, *image);
 	}
 
 	if (FAILED(result))
 		return;
 
 	ID3D11ShaderResourceView* srv;
-	result = DirectX::CreateShaderResourceView(m_renderData->m_pDevice, image.GetImages(), image.GetImageCount(), metaData, &srv);
-
+	result = DirectX::CreateShaderResourceView(m_renderData->m_pDevice, image->GetImages(), image->GetImageCount(), metaData, &srv);
 
 	if (FAILED(result))
 		return;
@@ -1348,6 +1350,7 @@ void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const std::strin
 
 		SafeRelease(texture.srv);
 		SafeRelease(texture.texture2D);
+		SafeDelete(texture.scratchImgPtr);
 
 		texture.srv = srv;
 	}
@@ -1358,13 +1361,15 @@ void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const std::strin
 		Texture2D texture;
 		//texture.size = Area(texDesc.Width, texDesc.Height);
 		texture.srv = srv;
+		//image->Initialize(metaData, 0);
+		texture.scratchImgPtr = image;
 
 		int index = m_renderData->NextAvailableIndex(m_renderData->textures2D);
 
 		//No free space in the texture container
 		if (index == -1)
 		{
-			m_renderData->textures2D.emplace_back(texture);
+			m_renderData->textures2D.push_back(texture);
 			textureHandle = CreateHandle(ObjectType::TEXTURE_2D, m_renderData->textures2D.size() - 1);
 		}
 
@@ -1441,14 +1446,14 @@ void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const int W, con
 		//No free space in the texture container
 		if (index == -1)
 		{
-			m_renderData->textures2D.emplace_back(texture);
+			m_renderData->textures2D.emplace_back(std::move(texture));
 			textureHandle = CreateHandle(ObjectType::TEXTURE_2D, m_renderData->textures2D.size() - 1);
 		}
 
 		//Insert into available slot
 		else
 		{
-			m_renderData->textures2D[index] = texture;
+			m_renderData->textures2D[index] = std::move(texture);
 			textureHandle = CreateHandle(ObjectType::TEXTURE_2D, index);
 		}
 	}

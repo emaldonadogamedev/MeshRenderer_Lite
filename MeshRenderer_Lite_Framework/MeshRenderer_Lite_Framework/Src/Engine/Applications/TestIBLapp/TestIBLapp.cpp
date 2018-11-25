@@ -77,7 +77,7 @@ bool TestIBLapp::Initialize(HINSTANCE hInstance)
 		testLight->AddComponent(transform);
 		gameObjSystem->AddComponent(transform);
 
-		ShadowLightComponent* lightComp = new ShadowLightComponent(testLight.get(), true, false, false);
+		ShadowLightComponent* lightComp = new ShadowLightComponent(testLight.get(), false, false, false);
 		//lightComp->GetLight()->m_lightType = LightType::LT_DIRECTIONAL;
 		testLight->AddComponent(lightComp);
 		graphicsSystem->AddComponent(lightComp);
@@ -92,6 +92,16 @@ bool TestIBLapp::Initialize(HINSTANCE hInstance)
 		m_graphicsSystem->SetIBLTexture("Barce_Rooftop_C_3k");
 		m_graphicsSystem->SetIsUsingIBL(true);
 		m_graphicsSystem->SetIBLsampleWeightCount(23);
+
+		//set up metallic spheres
+		
+		
+		for(int i = 0; i < TEST_SPHERE_COUNT; ++i)
+		{
+			//testSpheres[i] = std::make_unique<GameObject>();
+			//transform = new Transform(testLight.get());
+			//transform->SetPositionn(DirectX::XMVectorSet(-22.8f, 48.f, 0.f, 1.f));
+		}
 
 		return true;
 	}

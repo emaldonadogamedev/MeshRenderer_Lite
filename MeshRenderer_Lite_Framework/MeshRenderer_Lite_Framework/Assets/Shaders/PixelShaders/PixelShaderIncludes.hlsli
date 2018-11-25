@@ -105,4 +105,7 @@ cbuffer GlobalShaderProperties : register(b9)
 	int gIsUsingIBL;
 	float toneMappingExposureControl;
 	float toneMappingExtraExpControl;
+
+	int gIsUsingIrrMap;
+	int3 b9_padding;
 };

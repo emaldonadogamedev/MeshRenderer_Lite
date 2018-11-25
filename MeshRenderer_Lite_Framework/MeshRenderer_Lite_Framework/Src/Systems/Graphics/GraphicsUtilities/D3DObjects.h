@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Systems/Graphics/GraphicsUtilities/GraphicsTypes.h>
 #include <Systems/Graphics/GraphicsUtilities/ObjectHandle.h>
 
 //struct ID3D11Texture1D;
@@ -29,7 +28,7 @@ struct D3DObjectBase
 
 struct TextureObjectBase : D3DObjectBase
 {
-		ID3D11ShaderResourceView* srv = nullptr;
+	ID3D11ShaderResourceView* srv = nullptr;
 };
 
 struct Texture1D : TextureObjectBase
@@ -40,12 +39,13 @@ struct Texture1D : TextureObjectBase
 
 struct Texture2D : TextureObjectBase
 {
-	ID3D11Texture2D* texture2D;
+	ID3D11Texture2D* texture2D = nullptr;
+	DirectX::ScratchImage* scratchImgPtr = nullptr;
 	int width = 0, height = 0;
 
 	float GetAspectRatio() const
 	{
-			return float(width) / float(height);
+		return float(width) / float(height);
 	}
 };
 
@@ -66,14 +66,14 @@ struct RenderTarget : Texture2D
 
 struct DepthStencilBuffer : Texture2D
 {
-		//Associated depth/stencil buffer
-		ID3D11DepthStencilView* depthStencilView = nullptr;
+	//Associated depth/stencil buffer
+	ID3D11DepthStencilView* depthStencilView = nullptr;
 };
 
 struct Texture3D : TextureObjectBase
 {
-		ID3D11Texture3D* texture3D;
-		int widthPerTexture = 0, heightPerTexture = 0;
+	ID3D11Texture3D* texture3D;
+	int widthPerTexture = 0, heightPerTexture = 0;
 };
 typedef Texture3D CubeMap;
 

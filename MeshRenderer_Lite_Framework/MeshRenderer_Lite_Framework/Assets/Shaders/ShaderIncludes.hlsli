@@ -29,6 +29,57 @@ float3 UVtoNdirection(float2 uv)
 	);
 }
 
+//Constansts for spherical harmonics(used by irradiance mapping in image-based lighting)
+const static float basisFunc0 = 0.5f * sqrt(1.f / PI);
+const static float halfBy3byPI = 0.5 * sqrt(3.f / PI); // used by basis functions 1 to 3
+const static float halfBy15byPI = 0.5f * sqrt(15.f / PI); // used by basis functions 4, 5 & 7
+const static float quarterBy5byPI = 0.25f * sqrt(5.f / PI);
+const static float quarterBy15byPI = 0.25f * sqrt(15.f / PI);
+
+float SphericalHarmonicsBasisFuncEval(int funcIdx, float x, float y, float z)
+{
+	switch (funcIdx)
+	{
+		case 0:
+			return basisFunc0;
+		break;
+
+		case 1:
+			halfBy3byPI * y;
+		break;
+		
+		case 2:
+			return halfBy3byPI * z;
+		break;
+
+		case 3:
+			return halfBy3byPI * x;
+		break;
+
+		case 4:
+			return halfBy15byPI * x * y;
+		break;
+
+		case 5:
+			return halfBy15byPI * y * z;
+		break;
+
+		case 6:
+			return quarterBy5byPI * ((3.f * z * z) - 1.f);
+		break;
+
+		case 7:
+			return halfBy15byPI * x * z;
+		break;
+
+		case 8:
+			return quarterBy15byPI * ((x*x) - (y*y));
+		break;
+	}
+
+	return 0.f;
+}
+
 //--------------------------------------------------------------------------------------
 // Vertex & Pixel structure definitions
 //--------------------------------------------------------------------------------------

@@ -17,11 +17,20 @@ float4 main(PixelInputType pixel) : SV_TARGET
 		{
 			float3 normal = normalsRT.Sample(textureSamplerWrap, pixel.uv).xyz;
 			float2 uv = SphericalUVMapping(normal);
-			float3 irrColor = irradianceMap2D.Sample(textureSamplerWrap, uv).xyz;
-
-			///////////////////////////////////////////////////////////////////////////////////////////////////
-			// Diffuse part of IBL
-			//Tone down the HDR color to 0 to 1 format
+			float3 irrColor = float3(0,0,0);
+			if (gIsUsingIrrMap)
+			{
+				irrColor = irradianceMap2D.Sample(textureSamplerWrap, uv).xyz;
+			}
+			else
+			{
+				///////////////////////////////////////////////////////////////////////////////////////////////////
+				// Diffuse part of IBL
+				for (uint c = 0; c < 9; ++c)
+				{
+					irrColor += irr9Coefficients[c] * SphericalHarmonicsBasisFuncEval(c, normal.x, normal.y, normal.z);
+				}
+			}
 			float4 diffuse = (diff / PI) * float4(irrColor, 1.0f);
 
 			///////////////////////////////////////////////////////////////////////////////////////////////////

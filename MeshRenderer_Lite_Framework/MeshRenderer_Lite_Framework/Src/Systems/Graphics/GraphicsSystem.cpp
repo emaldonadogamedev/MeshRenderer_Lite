@@ -451,6 +451,56 @@ const std::string& GraphicsSystem::GetIBLTexture() const
 	return m_iblTextureMap;
 }
 
+//////////////////////////////////////////////////////////////////////////
+// constants for spherical harmonics functions
+const static float basisFunc0 = 0.5f * sqrtf(1.f / DirectX::XM_PI);
+const static float halfBy3byPI = 0.5 * sqrtf(3.f / DirectX::XM_PI); // used by basis functions 1 to 3
+const static float halfBy15byPI = 0.5f * sqrtf(15.f / DirectX::XM_PI); // used by basis functions 4, 5 & 7
+const static float quarterBy5byPI = 0.25f * sqrtf(5.f / DirectX::XM_PI);
+const static float quarterBy15byPI = 0.25f * sqrtf(15.f / DirectX::XM_PI);
+
+const std::function<float(float,float,float)> sphericalHarmonicsBasisFunctions[9] = 
+{
+	[](float x, float y, float z) 
+	{
+		return basisFunc0;
+	},
+
+	[](float x, float y, float z)
+	{
+		return halfBy3byPI * y;
+	},
+	[](float x, float y, float z)
+	{
+		return halfBy3byPI * z;
+	},
+	[](float x, float y, float z)
+	{
+		return halfBy3byPI * x;
+	},
+	[](float x, float y, float z)
+	{
+		return halfBy15byPI * x * y;
+	},
+	[](float x, float y, float z)
+	{
+		return halfBy15byPI * y * z;
+	},
+	[](float x, float y, float z)
+	{
+		return quarterBy5byPI * ((3.f * z * z) - 1.f);
+	},
+	[](float x, float y, float z)
+	{
+		return halfBy15byPI * x * z;
+	},
+	[](float x, float y, float z)
+	{
+		return quarterBy15byPI * ((x*x) - (y*y));
+	},
+};
+//////////////////////////////////////////////////////////////////////////
+
 void GraphicsSystem::SetIBLTexture(const std::string& iblTexture)
 {
 	m_iblTextureMap = iblTexture;
@@ -491,6 +541,78 @@ void GraphicsSystem::SetIBLTexture(const std::string& iblTexture)
 	}
 
 	m_dx11Renderer->BindTextureShaderResource(ObjectType::PIXEL_SHADER, 26, 1, irrMapHandle);
+
+	////////////////////////////////////////////////////////////////////////////////////////
+	// Project 3-b
+
+	std::vector<XMFLOAT3> irr9Coefficients(9, XMFLOAT3(0, 0, 0));
+	XMFLOAT3 result(0.f,0.f,0.f); // temp storage
+	XMFLOAT4* tempColor = nullptr;
+	DirectX::Image iblInnerImage = m_dx11Renderer->m_renderData->textures2D[*iblMapHandle].scratchImgPtr->GetImages()[0];
+	uint8_t* rawDataPtr = iblInnerImage.pixels;
+	const float Wfloat = static_cast<float>(iblInnerImage.width);
+	const float Hfloat = static_cast<float>(iblInnerImage.height);
+	const float deltaTheta = DirectX::XM_PI / Hfloat;
+	const float deltaPhi = DirectX::XM_2PI / Wfloat;
+	for(int c = 0; c < 9; ++c)
+	{
+		XMFLOAT3 result = XMFLOAT3(0.f, 0.f, 0.f);
+//#pragma omp parallel for schedule(dynamic, 1) // Magic: Multi-thread y loop
+		for (unsigned j = 0; j < iblInnerImage.height; j++) //row loop
+		{
+			for (unsigned i = 0; i < iblInnerImage.width; i++) // column loop
+			{
+				//move the color ptr 4 floats at a time
+				const int idx = (j * iblInnerImage.width * sizeof(float) * 4) + (i * sizeof(float) * 4);
+				tempColor = reinterpret_cast<XMFLOAT4*>(&rawDataPtr[idx]);
+
+				float theta = DirectX::XM_PI * (static_cast<float>(j) + 0.5f) / Hfloat;
+				float phi = DirectX::XM_2PI * (static_cast<float>(i) + 0.5f) / Wfloat;
+				float sinTheta = sin(theta);
+				float x = sinTheta * cos(phi);
+				float y = sinTheta * sin(phi);
+				float z = cos(theta);
+				
+				float colorMultiplier = sphericalHarmonicsBasisFunctions[c](x,y,z);
+				colorMultiplier *= sinTheta * deltaTheta * deltaPhi;
+
+				result.x += tempColor->x * colorMultiplier;
+				result.y += tempColor->y * colorMultiplier;
+				result.z += tempColor->z * colorMultiplier;
+			}
+		}
+		irr9Coefficients[c] = result;
+	}
+	
+	//Apply (N.wi) term approximations
+	irr9Coefficients[0].x *= DirectX::XM_PI;
+	irr9Coefficients[0].y *= DirectX::XM_PI;
+	irr9Coefficients[0].z *= DirectX::XM_PI;
+
+
+	const float twoThirdsPI = (DirectX::XM_2PI / 3.f);
+	for (int c = 1; c < 4; ++c)
+	{
+		irr9Coefficients[c].x *= twoThirdsPI;
+		irr9Coefficients[c].y *= twoThirdsPI;
+		irr9Coefficients[c].z *= twoThirdsPI;
+	}
+
+	for (int c = 4; c < 9; ++c)
+	{
+		irr9Coefficients[c].x *= DirectX::XM_PIDIV4;
+		irr9Coefficients[c].y *= DirectX::XM_PIDIV4;
+		irr9Coefficients[c].z *= DirectX::XM_PIDIV4;
+	}
+
+	m_dx11Renderer->CreateStructuredBuffer(m_dx11Renderer->m_renderData->iblIrr9Coefficients, BufferUsage::USAGE_DEFAULT,
+		9, sizeof(float) * 3, irr9Coefficients.data());
+	
+	m_dx11Renderer->m_renderData->m_pImmediateContext->PSSetShaderResources(28, 1,
+		&m_dx11Renderer->m_renderData->structuredBuffers[m_dx11Renderer->m_renderData->iblIrr9Coefficients].srv);
+	
+	//end Project 3-b
+	////////////////////////////////////////////////////////////////////////////////////////
 }
 
 bool GraphicsSystem::GetIsUsingIBL() const

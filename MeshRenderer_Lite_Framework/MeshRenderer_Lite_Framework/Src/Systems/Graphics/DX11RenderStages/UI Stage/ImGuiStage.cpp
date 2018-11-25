@@ -201,6 +201,15 @@ void ImGuiStage::ShowGraphicsSettings()
 				ImGui::EndMenu();
 			}
 
+			ImGui::Separator();
+			if (ImGui::BeginMenu("IBL Menu..."))
+			{
+				ImGui::SliderInt("Is Using IBL", &m_renderData.testGlobalShaderProperties.gIsUsingIBL, 0,1);
+				ImGui::SliderInt("Is Using Irradiance Map", &m_renderData.testGlobalShaderProperties.gIsUsingIrrMap, 0, 1);
+				
+				ImGui::EndMenu();
+			}
+
 			ImGui::EndMenu();
 		}
 

@@ -116,6 +116,8 @@ public:
 	ObjectHandle iblSamplesHandle;
 	int iblSampleCount = 0;
 
+	ObjectHandle iblIrr9Coefficients;
+
 	//Cameras
 	std::unique_ptr<Camera> testCamera = std::make_unique<Camera>();
 

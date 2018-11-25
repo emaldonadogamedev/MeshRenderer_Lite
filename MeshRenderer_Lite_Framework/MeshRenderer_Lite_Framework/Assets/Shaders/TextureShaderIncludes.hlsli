@@ -27,3 +27,4 @@ Texture2D previouslyUsedRT : register(t24);
 Texture2D iblMap2D : register(t25);
 Texture2D irradianceMap2D : register(t26);
 StructuredBuffer<float2> sampleWeights : register(t27);
+StructuredBuffer<float3> irr9Coefficients : register(t28);
