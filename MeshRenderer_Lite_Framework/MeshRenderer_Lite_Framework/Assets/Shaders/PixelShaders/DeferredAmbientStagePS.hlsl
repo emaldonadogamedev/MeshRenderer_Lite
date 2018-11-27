@@ -22,7 +22,6 @@ float4 main(PixelInputType pixel) : SV_TARGET
 			///////////////////////////////////////////////////////////////////////////////////////////////////
 			// Diffuse part of IBL
 			//Tone down the HDR color to 0 to 1 format
-			//irrColor = pow(irrColor / (irrColor + float3(1.f, 1.f, 1.f)), toneMappingExtraExpControl / 2.2);
 			float4 diffuse = (diff / PI) * float4(irrColor, 1.0f);
 
 			///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,6 +52,16 @@ float4 main(PixelInputType pixel) : SV_TARGET
 			float2 sampleUV; // temp storage to convert wk to UV coords
 			float3 radianceSample; // temp storage to sample from the radiance texture
 			
+			//To Calculate D term of BRDF
+			const float Dterm1 = (ns + 2.0f) / TWO_PI;
+			float Dterm2;
+			float D;
+
+			//To help Calculate mip level
+			uint iblMapW, iblMapH;
+			iblMap2D.GetDimensions(iblMapW, iblMapH);
+			const float wTimeHbySampleCount = float(iblMapW * iblMapH) / float(numStructs);
+
 			[loop]
 			for (uint i = 0; i < numStructs; ++i)
 			{
@@ -71,7 +80,14 @@ float4 main(PixelInputType pixel) : SV_TARGET
 					(oneMinusWkDotH * oneMinusWkDotH * oneMinusWkDotH * oneMinusWkDotH * oneMinusWkDotH);
 				
 				sampleUV = SphericalUVMapping(wk);
-				radianceSample = iblMap2D.Sample(textureSamplerWrap, sampleUV).xyz;
+
+				Dterm2 = pow(max(dot(normal, H), 0.f), ns);
+				D = Dterm1 * Dterm2;
+
+				float mipLevel = 0.5f * log2(wTimeHbySampleCount) - 0.5f * log2(D / 4.f);
+
+				//radianceSample = iblMap2D.Sample(textureSamplerWrap, sampleUV).xyz;
+				radianceSample = iblMap2D.SampleLevel(textureSamplerWrap, sampleUV, mipLevel);
 				specular += G * F * radianceSample * NdotWk;
 			}
 			

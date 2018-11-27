@@ -86,12 +86,12 @@ bool TestIBLapp::Initialize(HINSTANCE hInstance)
 		//enable skybox
 		Camera* const testCam = graphicsSystem->GetTestCamera();
 		testCam->SetIsUsingSkybox(true);
-		testCam->SetSkyboxTexture("Alexs_Apt_2k");
+		testCam->SetSkyboxTexture("Barce_Rooftop_C_3k");
 
 		//enable ibl!
-		m_graphicsSystem->SetIBLTexture("Alexs_Apt_2k");
+		m_graphicsSystem->SetIBLTexture("Barce_Rooftop_C_3k");
 		m_graphicsSystem->SetIsUsingIBL(true);
-		m_graphicsSystem->SetIBLsampleWeightCount(1);
+		m_graphicsSystem->SetIBLsampleWeightCount(23);
 
 		return true;
 	}

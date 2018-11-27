@@ -38,7 +38,10 @@ GBufferOutput main(PixelInputType pixel)
 		float3 cubeUV = normalize(pixel.worldPos);
 		float2 uv = SphericalUVMapping(cubeUV);
 
-		output.Diffuse = diffTexture.Sample(textureSamplerWrap, uv);
+		float3 diff = diffTexture.Sample(textureSamplerWrap, uv).xyz;
+		diff = pow(diff / (diff + float3(1.f, 1.f, 1.f)), toneMappingExtraExpControl / 2.2);
+
+		output.Diffuse.xyz = diff;
 		output.Diffuse.w = -1.f;
 	}
 	else 
