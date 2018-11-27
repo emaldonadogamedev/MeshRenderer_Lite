@@ -585,24 +585,24 @@ void GraphicsSystem::SetIBLTexture(const std::string& iblTexture)
 	}
 	
 	//Apply (N.wi) term approximations
-	irr9Coefficients[0].x *= DirectX::XM_PI;
-	irr9Coefficients[0].y *= DirectX::XM_PI;
-	irr9Coefficients[0].z *= DirectX::XM_PI;
+	//irr9Coefficients[0].x *= DirectX::XM_PI;
+	//irr9Coefficients[0].y *= DirectX::XM_PI;
+	//irr9Coefficients[0].z *= DirectX::XM_PI;
 
 
-	const float twoThirdsPI = (DirectX::XM_2PI / 3.f);
+	const float twoThirds = 2.f / 3.f;
 	for (int c = 1; c < 4; ++c)
 	{
-		irr9Coefficients[c].x *= twoThirdsPI;
-		irr9Coefficients[c].y *= twoThirdsPI;
-		irr9Coefficients[c].z *= twoThirdsPI;
+		irr9Coefficients[c].x *= twoThirds;
+		irr9Coefficients[c].y *= twoThirds;
+		irr9Coefficients[c].z *= twoThirds;
 	}
 
 	for (int c = 4; c < 9; ++c)
 	{
-		irr9Coefficients[c].x *= DirectX::XM_PIDIV4;
-		irr9Coefficients[c].y *= DirectX::XM_PIDIV4;
-		irr9Coefficients[c].z *= DirectX::XM_PIDIV4;
+		irr9Coefficients[c].x *= .25f;
+		irr9Coefficients[c].y *= .25f;
+		irr9Coefficients[c].z *= .25f;
 	}
 
 	m_dx11Renderer->CreateStructuredBuffer(m_dx11Renderer->m_renderData->iblIrr9Coefficients, BufferUsage::USAGE_DEFAULT,
