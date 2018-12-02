@@ -11,8 +11,8 @@ WindowSystem::WindowSystem(IApplication* const eng, HINSTANCE hInstance) : ISyst
 m_hInstance(hInstance),
 m_isFullScreen(false),
 m_hwnd(nullptr),
-m_windowWidth(1024),
-m_windowHeight(700),
+m_windowWidth(800),
+m_windowHeight(600),
 m_windowCaption(L" Framework CS 541 / CS 562")
 {
 	//The size passed to CreateWindow is the full size including the windows border and caption 

@@ -1,6 +1,7 @@
 #include <Utilities/precompiled.h>
 
 #include <Engine/Applications/TestApp/TestApp.h>
+#include <Engine/Applications/TestIBLapp/TestIBLapp.h>
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)
 {

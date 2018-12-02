@@ -58,7 +58,8 @@ struct Light
 		XMFLOAT3 m_Ispecular = XMFLOAT3(1.0f, 1.0f, 1.0f);
 		float m_spotOutterAngle = 0.5f;
 
-		XMFLOAT3 m_spotDirection = XMFLOAT3(0, -1, 0);
+		//used for spot lights and directional lights
+		XMFLOAT3 m_direction = XMFLOAT3(0, -1, 0);
 		float m_ConstantAttenuation = 0.4f;
 
 		float m_LinearAttenuation = 0.001f;

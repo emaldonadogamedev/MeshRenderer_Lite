@@ -12,53 +12,53 @@ ShadowLightComponent::ShadowLightComponent(const GameObject* owner, bool isActiv
 	, m_shadowMapWidthHeight(shadowWidthHeight)
 	, m_softShadowMapKernelHalfWidth(6)
 {
-		int textureIdx = 5;
-		for (unsigned int i = 0; i < s_maxShadowLights; ++i)
+	int textureIdx = 5;
+	for (unsigned int i = 0; i < s_maxShadowLights; ++i)
+	{
+		if (!sceneLightsWithShadows[i].isTaken)
 		{
-				if (!sceneLightsWithShadows[i].isTaken)
-				{
-						m_light = &sceneLightsWithShadows[i];
-						m_light->isTaken = 1;
-						m_light->isUsingShadows = static_cast<int>(m_useShadows);
-						m_light->isUsingSoftShadows = static_cast<int>(m_useSoftShadows);
-						
-						m_shadowDepthMapHandle = &shadowMapHandles[i];
-						m_shadowDepthMapHandle->MakeNull();
-						
-						m_softShadowDepthMapHandle = &softShadowMapHandles[i];
-						m_softShadowDepthMapHandle->MakeNull();
+			m_light = &sceneLightsWithShadows[i];
+			m_light->isTaken = 1;
+			m_light->isUsingShadows = static_cast<int>(m_useShadows);
+			m_light->isUsingSoftShadows = static_cast<int>(m_useSoftShadows);
+			
+			m_shadowDepthMapHandle = &shadowMapHandles[i];
+			m_shadowDepthMapHandle->MakeNull();
+			
+			m_softShadowDepthMapHandle = &softShadowMapHandles[i];
+			m_softShadowDepthMapHandle->MakeNull();
 
-						m_softShadowKernelWeightsHandle = &softShadowKernelWeightHandles[i];
-						m_softShadowKernelWeightsHandle->MakeNull();
-						
-						m_shadowTextureIdx = textureIdx;
-						m_viewProj = &shadowLightViewProjBuffers[i];
-						
-						++s_takenLightCount;
-						return;
-				}
-
-				++textureIdx;
+			m_softShadowKernelWeightsHandle = &softShadowKernelWeightHandles[i];
+			m_softShadowKernelWeightsHandle->MakeNull();
+			
+			m_shadowTextureIdx = textureIdx;
+			m_viewProj = &shadowLightViewProjBuffers[i];
+			
+			++s_takenLightCount;
+			return;
 		}
 
-		throw std::exception("Allocated more shadow lights than possible!");
+		++textureIdx;
+	}
+
+	throw std::exception("Allocated more shadow lights than possible!");
 }
 
 ShadowLightComponent::~ShadowLightComponent()
 {
-		m_light->isTaken = 0;
-		m_light->isActive = 0;
-		--s_takenLightCount;
+	m_light->isTaken = 0;
+	m_light->isActive = 0;
+	--s_takenLightCount;
 }
 
 Light* ShadowLightComponent::GetLight() const
 {
-		return m_light;
+	return m_light;
 }
 
 LightViewProj* ShadowLightComponent::GetLightViewProjBuffer() const
 {
-		return m_viewProj;
+	return m_viewProj;
 }
 
 const XMVECTOR& ShadowLightComponent::GetUpVector() const
@@ -83,7 +83,7 @@ bool ShadowLightComponent::IsUsingShadows() const
 
 ObjectHandle& ShadowLightComponent::GetShadowDepthMapHandle()
 {
-		return *m_shadowDepthMapHandle;
+	return *m_shadowDepthMapHandle;
 }
 
 const ObjectHandle& ShadowLightComponent::GetShadowDepthMapHandle() const
@@ -93,12 +93,12 @@ const ObjectHandle& ShadowLightComponent::GetShadowDepthMapHandle() const
 
 ObjectHandle& ShadowLightComponent::GetSoftShadowDepthMapHandle()
 {
-		return *m_softShadowDepthMapHandle;
+	return *m_softShadowDepthMapHandle;
 }
 
 const ObjectHandle& ShadowLightComponent::GetSoftShadowDepthMapHandle() const
 {
-		return *m_softShadowDepthMapHandle;
+	return *m_softShadowDepthMapHandle;
 }
 
 ObjectHandle& ShadowLightComponent::GetSoftShadowMapKernelWeightHandle()

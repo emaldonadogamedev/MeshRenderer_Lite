@@ -34,8 +34,9 @@ public:
 	ObjectHandle m_MainRenderTargets[2] = {};
 	bool m_currentMainRTindex = false;
 
-	ObjectHandle m_BloomBrightMap;
+	ObjectHandle m_AmbientOccRT;
 
+	ObjectHandle m_BloomBrightMap;
 
 	ID3D11Texture2D* m_DepthStencilBuffer = nullptr;
 	ID3D11DepthStencilView* m_DepthStencilView = nullptr;
@@ -123,6 +124,8 @@ public:
 
 	ObjectHandle iblSamplesHandle;
 	int iblSampleCount = 0;
+
+	ObjectHandle AOblurSampleBuffer;
 
 	bool m_isUsingBloom = false;
 

@@ -63,15 +63,23 @@ enum class GlobalGraphicsDebugType : int
 
 struct GlobalShaderProperties
 {
-		XMVECTOR gClearColor = XMVectorSet(0, .3f, 0, 1.0f);
+	XMVECTOR gClearColor = XMVectorSet(0, .3f, 0, 1.0f);
 
 		XMFLOAT3 gGlobalAmbient = XMFLOAT3(.9f, .9f, 0.9f);
 		int gDebugInfoType = (int)GlobalGraphicsDebugType::G_DEBUG_NONE;
 
-		int gIsUsingDeferred = 1;
-		int gIsUsingIBL;
-		float toneMappingExposureControl = 1.f;
-		float toneMappingExtraExpControl = 1.f;
+	int gIsUsingDeferred = 1;
+	int gIsUsingIBL;
+	float toneMappingExposureControl = 1.f;
+	float toneMappingExtraExpControl = 1.f;
+
+	int gIsUsingAmbientOcclussion = 1;
+	int gAmbientOccPointsOfSample = 10;
+	float gAmbOccWorldSpaceRange = 30.f;
+	float gAmbienOcc_S_scaleFactor = 1.f;
+
+	float gAmbienOcc_K_scaleFactor = 1.f;
+	int padding_b9[3];
 };
 
 struct LightVolumeProperties

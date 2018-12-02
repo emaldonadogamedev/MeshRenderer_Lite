@@ -108,27 +108,27 @@ bool TestApp::Initialize(HINSTANCE hInstance)
 		model2->m_meshEntryList[0].meshMaterial.m_materialProperties.specularPowerNs = 300.f;
 		test3DComp->SetModel(model2);
 
-		//Many mini lights!
-		for (int i = 0; i < MINI_LIGHT_COUNT; i++)
-		{
-				testMiniLights[i] = std::make_unique<GameObject>();
-
-				auto testMiniLightObj = testMiniLights[i].get();
-
-				transform = new Transform(testMiniLights[i].get());
-				transform->SetPositionn(DirectX::XMVectorSet(RandFloat(-200.f, 200.f), 1.0f, RandFloat(-200.f, 200.f), 1.f));
-				gameObjSystem->AddComponent(transform);
-				testMiniLightObj->AddComponent(transform);
-
-				auto simpleLightComp = new LightComponent(testMiniLights[i].get());
-				float range = RandFloat(5.f, 10.f);
-				simpleLightComp->SetLightRange(range);
-				auto light = simpleLightComp->GetLight();
-				light->m_Iambient = XMFLOAT3(RandFloat(0.2f, 0.4f), RandFloat(0.2f, 0.4f), RandFloat(0.2f, 0.4f));
-				light->m_Idiffuse = XMFLOAT3(RandFloat(10.f, 70.f), RandFloat(10.f, 70.f), RandFloat(10.f, 70.f));
-				testMiniLightObj->AddComponent(simpleLightComp);
-				graphicsSystem->AddComponent(simpleLightComp);
-		}
+		////Many mini lights!
+		//for (int i = 0; i < MINI_LIGHT_COUNT; i++)
+		//{
+		//		testMiniLights[i] = std::make_unique<GameObject>();
+		//
+		//		auto testMiniLightObj = testMiniLights[i].get();
+		//
+		//		transform = new Transform(testMiniLights[i].get());
+		//		transform->SetPositionn(DirectX::XMVectorSet(RandFloat(-200.f, 200.f), 1.0f, RandFloat(-200.f, 200.f), 1.f));
+		//		gameObjSystem->AddComponent(transform);
+		//		testMiniLightObj->AddComponent(transform);
+		//
+		//		auto simpleLightComp = new LightComponent(testMiniLights[i].get());
+		//		float range = RandFloat(5.f, 10.f);
+		//		simpleLightComp->SetLightRange(range);
+		//		auto light = simpleLightComp->GetLight();
+		//		light->m_Iambient = XMFLOAT3(RandFloat(0.2f, 0.4f), RandFloat(0.2f, 0.4f), RandFloat(0.2f, 0.4f));
+		//		light->m_Idiffuse = XMFLOAT3(RandFloat(10.f, 70.f), RandFloat(10.f, 70.f), RandFloat(10.f, 70.f));
+		//		testMiniLightObj->AddComponent(simpleLightComp);
+		//		graphicsSystem->AddComponent(simpleLightComp);
+		//}
 
 		return true;
 	}

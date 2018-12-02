@@ -45,6 +45,9 @@ public:
 
 	void SetIBLsampleWeightCount(const int sampleCount);
 
+	//Global Ambient Occlussion settings
+	void SetAOsampleWeights(const int sampleHalfCount);
+
 	//Getters
 	DX11Renderer* GetRenderer() const;
 	Model* GetModel(const std::string& modelName);
@@ -69,6 +72,9 @@ protected:
 	void UpdateCurvePathComponents(const float dt);
 	void UpdateSimpleCCDComponents(const float dt);
 	void UpdateSimpleClothComponents(const float dt);
+
+	//Misc.
+	void CreateGaussianWeightsStructuredBuff(ObjectHandle& weightsSample, const int halfWidth);
 
 	std::unique_ptr<DX11Renderer> m_dx11Renderer;
 	RenderCompUmap m_renderComponents;

@@ -1,10 +1,10 @@
-float CalculateAttenuation(in int lightType, in float d, in float C, in float L, in float Q) {
-
-		return lightType == LT_DIRECTIONAL ? 1.0f :
-				min(
-						1.0f / (C + (L * d) + (Q * d * d)),
-						1.0f
-				);
+float CalculateAttenuation(in int lightType, in float d, in float C, in float L, in float Q) 
+{
+	return lightType == LT_DIRECTIONAL ? 1.0f :
+		min(
+				1.0f / (C + (L * d) + (Q * d * d)),
+				1.0f
+		);
 }
 
 float CalculateSpotlightEffect(int lightType, in float3 lightVec, in float3 lightSpotDir, in float outerAngle,
@@ -33,7 +33,8 @@ float CalculateSpotlightEffect(int lightType, in float3 lightVec, in float3 ligh
 		return pow((cosAlpha - spotMaxAngle) / (spotMinAngle - spotMaxAngle), ns);
 }
 
-float4 Fterm(in float4 Ks, in float3 L, in float3 H) {
+float4 Fterm(in float4 Ks, in float3 L, in float3 H) 
+{
 		//(1?L?H)^5
 		float temp = 1.0f - max(dot(L, H), 0.f);
 		temp = temp * temp * temp * temp * temp;

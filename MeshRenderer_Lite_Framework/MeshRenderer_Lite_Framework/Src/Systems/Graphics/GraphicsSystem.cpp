@@ -428,6 +428,33 @@ void GraphicsSystem::UpdateSimpleClothComponents(const float dt)
 	}
 }
 
+void GraphicsSystem::CreateGaussianWeightsStructuredBuff(ObjectHandle& weightsSample, const int halfWidth)
+{
+	std::vector<float> kernelWeights;
+	static const float e = 2.718281828459f;
+	float denominator = float(halfWidth) / 2.0f;
+	denominator *= denominator;
+	denominator *= 2.0f;
+	float sum = 0.f;
+	float temp;
+	for (int w = -halfWidth; w <= halfWidth; w += 1)
+	{
+		temp = std::pow(e, -(float(w*w) / denominator));
+		kernelWeights.push_back(temp);
+
+		sum += temp;
+	}
+
+	//normalize them to sum to 1
+	for (int i = 0; i < kernelWeights.size(); ++i)
+	{
+		kernelWeights[i] /= sum;
+	}
+
+	m_dx11Renderer->CreateStructuredBuffer(weightsSample, BufferUsage::USAGE_DEFAULT, (halfWidth * 2) + 1, 
+		sizeof(float), kernelWeights.data());
+}
+
 void GraphicsSystem::Shutdown()
 {
 	//Delete all render components
@@ -559,6 +586,11 @@ void GraphicsSystem::SetIBLsampleWeightCount(const int sampleCount)
 	}
 }
 
+void GraphicsSystem::SetAOsampleWeights(const int sampleHalfCount)
+{
+	CreateGaussianWeightsStructuredBuff(m_dx11Renderer->m_renderData->AOblurSampleBuffer, sampleHalfCount);
+}
+
 void GraphicsSystem::AddComponent(IComponent* component)
 {
 	if (component)
@@ -575,28 +607,8 @@ void GraphicsSystem::AddComponent(IComponent* component)
 			m_dx11Renderer->CreateRenderTarget(shadowLightComp->GetSoftShadowDepthMapHandle(), shadowLightComp->m_shadowMapWidthHeight,
 				shadowLightComp->m_shadowMapWidthHeight, DataFormat::FLOAT4);
 
-			const int halfWidth = shadowLightComp->GetSoftShadowMapKernelHalfWidth();
-			std::vector<float> kernelWeights;
-			static const float e = 2.718281828459f;
-			float denominator = float(halfWidth) / 2.0f;
-			denominator *= denominator;
-			denominator *= 2.0f;
-			float sum = 0.f;
-			for (int w = -halfWidth; w <= halfWidth; w += 1)
-			{
-				kernelWeights.push_back(std::pow(e, -(float(w*w) / denominator)));
-
-				sum += kernelWeights.back();
-			}
-
-			//normalize them to sum to 1
-			for (int i = 0; i < kernelWeights.size(); ++i)
-			{
-				kernelWeights[i] /= sum;
-			}
-
-			m_dx11Renderer->CreateStructuredBuffer(shadowLightComp->GetSoftShadowMapKernelWeightHandle(),
-				BufferUsage::USAGE_DEFAULT, (halfWidth * 2) + 1, sizeof(float), kernelWeights.data());
+			CreateGaussianWeightsStructuredBuff(shadowLightComp->GetSoftShadowMapKernelWeightHandle(), 
+				shadowLightComp->GetSoftShadowMapKernelHalfWidth());
 		}
 	}
 }
@@ -735,6 +747,7 @@ void GraphicsSystem::LoadBasicShaders()
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "DeferredSimpleLightStagePS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "CopyRenderTarget");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "SkyBox2DPS");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "CreateAmbientOccMapPS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "LightVolumePS");
 
 	//////////////////////////////////////////////////////////////////////////

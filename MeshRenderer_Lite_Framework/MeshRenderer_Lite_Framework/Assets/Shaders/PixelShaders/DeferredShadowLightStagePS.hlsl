@@ -166,10 +166,20 @@ float4 main(PixelInputType pixel) : SV_TARGET
 				}
 			}// END - if (sceneLights[i].isUsingShadows)
 
-			float3 lightVec = (sceneLights[i].m_position - position);
-			const float lightVecLength = length(lightVec);
+            float3 lightVec;
+            float lightVecLength = 1.f;
 
-			lightVec /= lightVecLength;
+            if (sceneLights[i].m_lightType == LT_DIRECTIONAL)
+            {
+                lightVec = normalize(-sceneLights[i].m_spotDirection);
+                lightVecLength = 1.0f;
+            }
+            else
+            {
+                lightVec = (sceneLights[i].m_position - position);
+                lightVecLength = length(lightVec);
+                lightVec /= lightVecLength;
+            }
 
 			float attenuation = CalculateAttenuation(sceneLights[i].m_lightType, lightVecLength, sceneLights[i].m_ConstantAttenuation,
 					sceneLights[i].m_LinearAttenuation, sceneLights[i].m_QuadraticAttenuation);

@@ -2135,6 +2135,9 @@ bool DX11Renderer::ResizeBuffers(const int width, const int height)
 		CreateRenderTarget(m_renderData->m_MainRenderTargets[i], width, height, DataFormat::FLOAT4, true);
 	}
 
+	//Create the RT for AO
+	CreateRenderTarget(m_renderData->m_AmbientOccRT, width , height, DataFormat::FLOAT1, false);
+
 	//Create the Bloom render target, and the temp texture for blurring
 	CreateRenderTarget(m_renderData->m_BloomBrightMap, width, height, DataFormat::FLOAT4, false);
 

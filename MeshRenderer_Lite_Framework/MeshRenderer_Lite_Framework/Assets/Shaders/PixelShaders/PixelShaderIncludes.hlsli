@@ -105,4 +105,12 @@ cbuffer GlobalShaderProperties : register(b9)
 	int gIsUsingIBL;
 	float toneMappingExposureControl;
 	float toneMappingExtraExpControl;
+
+	int gIsUsingAmbientOcclussion;
+	int gAmbientOccPointsOfSample;
+	float gAmbOccWorldSpaceRange;
+    float gAmbienOcc_S_scaleFactor;
+
+    float gAmbienOcc_K_scaleFactor;
+    int3 padding_b9;
 };
