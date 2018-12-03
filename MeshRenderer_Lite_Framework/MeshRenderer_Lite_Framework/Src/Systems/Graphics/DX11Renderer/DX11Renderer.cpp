@@ -809,7 +809,7 @@ void DX11Renderer::BindNullRenderTarget(const ObjectHandle& depthMapHandle)
 
 void DX11Renderer::ClearRenderTarget(const ObjectHandle& rt, const XMVECTOR& clearColor)
 {
-		ClearRenderTarget(rt, clearColor.m128_f32);
+	ClearRenderTarget(rt, clearColor.m128_f32);
 }
 
 void DX11Renderer::ClearRenderTarget(const ObjectHandle& rt, const float colorArr[4])
@@ -1417,26 +1417,26 @@ void DX11Renderer::BindDomainShader(const ObjectHandle& domainShader)
 
 void DX11Renderer::BindTextureShaderResource(const ObjectType shaderType, unsigned int startSlot, unsigned int numViews, const ObjectHandle& objectWithSRV)
 {
-		if (objectWithSRV)
+	if (objectWithSRV)
+	{
+		const TextureObjectBase* textureObj = nullptr;
+		switch (objectWithSRV.GetType())
 		{
-				const TextureObjectBase* textureObj = nullptr;
-				switch (objectWithSRV.GetType())
-				{
-				case ObjectType::TEXTURE_1D:
-						textureObj = &m_renderData->textures1D[*objectWithSRV];
-						break;
-				case ObjectType::TEXTURE_2D:
-						textureObj = &m_renderData->textures2D[*objectWithSRV];
-						break;
-				case ObjectType::TEXTURE_3D:
-						textureObj = &m_renderData->textures3D[*objectWithSRV];
-						break;
-				case ObjectType::RENDER_TARGET:
-						textureObj = &m_renderData->renderTargets[*objectWithSRV];
-						break;
-				default: //Non-TextureObject object type supplied
-						return;
-				}
+		case ObjectType::TEXTURE_1D:
+				textureObj = &m_renderData->textures1D[*objectWithSRV];
+				break;
+		case ObjectType::TEXTURE_2D:
+				textureObj = &m_renderData->textures2D[*objectWithSRV];
+				break;
+		case ObjectType::TEXTURE_3D:
+				textureObj = &m_renderData->textures3D[*objectWithSRV];
+				break;
+		case ObjectType::RENDER_TARGET:
+				textureObj = &m_renderData->renderTargets[*objectWithSRV];
+				break;
+		default: //Non-TextureObject object type supplied
+				return;
+		}
 
 				switch (shaderType)
 				{
@@ -2135,8 +2135,9 @@ bool DX11Renderer::ResizeBuffers(const int width, const int height)
 		CreateRenderTarget(m_renderData->m_MainRenderTargets[i], width, height, DataFormat::FLOAT4, true);
 	}
 
-	//Create the RT for AO
-	CreateRenderTarget(m_renderData->m_AmbientOccRT, width , height, DataFormat::FLOAT1, false);
+	//Create the RTs for SSAO
+	CreateRenderTarget(m_renderData->m_AmbientOccMapRT, width , height, DataFormat::FLOAT1, false);
+	CreateRenderTarget(m_renderData->AOtempBlurTexture, width, height, DataFormat::FLOAT1, false);
 
 	//Create the Bloom render target, and the temp texture for blurring
 	CreateRenderTarget(m_renderData->m_BloomBrightMap, width, height, DataFormat::FLOAT4, false);
@@ -2229,4 +2230,10 @@ void DX11Renderer::CompileShaderHelper(int& HResult, ID3D10Blob** blobPtrOut, co
 		pErrorBlob->Release();
 
 	HResult = hr;
+}
+
+void DX11Renderer::UpdateGlobalProperties()
+{
+	m_renderData->m_pImmediateContext->UpdateSubresource(m_renderData->testGlobalShaderPropertiesConstBuffer,
+		0, NULL, &m_renderData->testGlobalShaderProperties, 0, 0);
 }

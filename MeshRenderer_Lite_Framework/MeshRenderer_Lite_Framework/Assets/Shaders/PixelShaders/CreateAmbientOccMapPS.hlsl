@@ -45,7 +45,7 @@ float main(PixelInputType pixel) : SV_TARGET
         sum += numerator / denominator;
     }
 
-    const float term1 = TWO_PI * c / float(n);
+    const float term1 = TWO_PI * c / float(gAmbientOccPointsOfSample);
     float S = term1 * sum;
 
     //final Ambient factor of the pixel

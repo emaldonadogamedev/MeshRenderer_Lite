@@ -13,6 +13,12 @@ float4 main(PixelInputType pixel) : SV_TARGET
 
     float4 resultColors[G_DEBUG_COUNT];
 
+    float AOfactor = 1.0f;
+    if (gIsUsingAmbientOcclussion)
+    {
+        AOfactor = AOfactorMap.Sample(textureSamplerWrap, pixel.uv).x;
+    }
+
     if (gIsUsingIBL)
     {
         float3 normal = normalsRT.Sample(textureSamplerWrap, pixel.uv).xyz;
@@ -62,7 +68,7 @@ float4 main(PixelInputType pixel) : SV_TARGET
         iblMap2D.GetDimensions(iblMapW, iblMapH);
         const float wTimeHbySampleCount = float(iblMapW * iblMapH) / float(numStructs);
 
-			[loop]
+		[loop]
         for (uint i = 0; i < numStructs; ++i)
         {
             distortedUVs = float2(sampleWeights[i].x, acos(pow(sampleWeights[i].y, 1.f / (ns + 1.f))) / PI);
@@ -98,11 +104,11 @@ float4 main(PixelInputType pixel) : SV_TARGET
         result = pow(result / (result + float4(1, 1, 1, 1)), toneMappingExtraExpControl / 2.2);
 
 			// multiplying by the global ambient light for extra control to the final color
-        resultColors[G_DEBUG_NONE] = saturate(float4(gGlobalAmbient, 1.f) * result);
+        resultColors[G_DEBUG_NONE] = AOfactor * saturate(float4(gGlobalAmbient, 1.f) * result);
     }
     else //If no IBL, use regular ambient calculation
     {
-        resultColors[G_DEBUG_NONE] = float4(gGlobalAmbient, 1.f) * diff;
+        resultColors[G_DEBUG_NONE] = AOfactor * float4(gGlobalAmbient, 1.f) * diff;
     }
 
     resultColors[G_DEBUG_POSITION] = pos;

@@ -125,20 +125,6 @@ void ShadowMapStage::Render(HandleDictionaryVec& graphicsResources, const float 
 						const int shadowMapDim = lightComp->GetShadowMapDimension();
 						const auto& kernelWeightsHandle = lightComp->GetSoftShadowMapKernelWeightHandle();
 
-						////////////////////////////////////////////////////////////////////////////
-						////Simple Blur
-						//handle = (graphicsResources[(int)ObjectType::COMPUTE_SHADER]).at("SimpleBlur");
-						//m_renderer->BindComputeShader(handle);
-						//m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(0, 1, &m_renderData.renderTargets[*shadowRThandle].uav, nullptr);
-						//m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(1, 1, &m_renderData.renderTargets[*softShadowRThandle].uav, nullptr);
-						//m_renderer->DispatchComputeShader(handle, shadowMapDim / 32, shadowMapDim / 32, 1);
-						//
-						//handle = (graphicsResources[(int)ObjectType::COMPUTE_SHADER]).at("Texture2DCopy");
-						//m_renderer->BindComputeShader(handle);
-						//m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(1, 1, &m_renderData.renderTargets[*shadowRThandle].uav, nullptr);
-						//m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(0, 1, &m_renderData.renderTargets[*softShadowRThandle].uav, nullptr);
-						//m_renderer->DispatchComputeShader(handle, shadowMapDim / 32, shadowMapDim / 32, 1);
-
 						//////////////////////////////////////////////////////////////////////////
 						//Horizontal Blur
 						handle = (graphicsResources[(int)ObjectType::COMPUTE_SHADER]).at("MomentShadowMapBlur_Horizontal");

@@ -206,6 +206,18 @@ void ImGuiStage::ShowGraphicsSettings()
 				}
 				ImGui::EndMenu();
 			}
+			ImGui::Separator();
+
+			if (ImGui::BeginMenu("SSAO Menu..."))
+			{
+				ImGui::SliderInt("Is AO enabled", &m_renderData.testGlobalShaderProperties.gIsUsingAmbientOcclussion, 0, 1);
+				ImGui::SliderFloat("AO scan range", &m_renderData.testGlobalShaderProperties.gAmbOccWorldSpaceRange, 0.f, 100.0f);
+				ImGui::SliderFloat("AO S scale factor", &m_renderData.testGlobalShaderProperties.gAmbienOcc_S_scaleFactor, 0.f, 100.0f);
+				ImGui::SliderFloat("AO K scale factor", &m_renderData.testGlobalShaderProperties.gAmbienOcc_K_scaleFactor, 0.f, 100.0f);
+				
+				ImGui::EndMenu();
+			}
+			
 
 			ImGui::Separator();
 			if (ImGui::BeginMenu("Volumetric Lighting Menu..."))

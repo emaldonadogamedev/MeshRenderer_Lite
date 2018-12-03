@@ -34,7 +34,9 @@ public:
 	ObjectHandle m_MainRenderTargets[2] = {};
 	bool m_currentMainRTindex = false;
 
-	ObjectHandle m_AmbientOccRT;
+	ObjectHandle m_AmbientOccMapRT;
+	ObjectHandle AOblurSampleBuffer;
+	ObjectHandle AOtempBlurTexture;
 
 	ObjectHandle m_BloomBrightMap;
 

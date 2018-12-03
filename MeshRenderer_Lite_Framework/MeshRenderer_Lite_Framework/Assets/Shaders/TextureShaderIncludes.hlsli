@@ -28,8 +28,12 @@ Texture2D iblMap2D : register(t25);
 Texture2D irradianceMap2D : register(t26);
 StructuredBuffer<float2> sampleWeights : register(t27);
 
+//Ambient Occlussion resources
+Texture2D AOfactorMap : register(t28);
+
 //Volumetric light resource
 Texture2D volumLightShadowMap : register(t29); //pos t28 reserved for AO map, in other branch
+
 Texture2D volumeLight_F_512 : register(t30);
 Texture2D volumeLight_G_0 : register(t31);
 Texture2D volumeLight_G_20 : register(t32);

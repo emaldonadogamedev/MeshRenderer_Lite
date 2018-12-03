@@ -138,5 +138,7 @@ protected:
 	void CompileShaderHelper(int& HResult, ID3D10Blob** blobPtrOut, const std::string& fileName,
 		const std::string& target, const std::string& szEntryPoint) const;
 
+	void UpdateGlobalProperties();
+
 	int m_renderTargetWidth, m_renderTargetHeight;
 };

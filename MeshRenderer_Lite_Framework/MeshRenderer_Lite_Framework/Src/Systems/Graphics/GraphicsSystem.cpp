@@ -74,6 +74,9 @@ bool GraphicsSystem::Initialize()
 		LoadBasicShaders();
 		AddRenderStages();
 		InitializeImGui();
+		
+		//Default AO weights
+		SetAOsampleWeights(5);
 	}
 
 	return result;
@@ -89,6 +92,8 @@ void GraphicsSystem::Update(const float dt)
 
 	//TEST - Current camera update
 	TestUpdateCamera(dt);
+	
+	UpdateGlobalProperties();
 }
 
 void GraphicsSystem::UpdateModelComponents(const float dt)
@@ -428,6 +433,11 @@ void GraphicsSystem::UpdateSimpleClothComponents(const float dt)
 	}
 }
 
+void GraphicsSystem::UpdateGlobalProperties()
+{
+	m_dx11Renderer->UpdateGlobalProperties();
+}
+
 void GraphicsSystem::CreateGaussianWeightsStructuredBuff(ObjectHandle& weightsSample, const int halfWidth)
 {
 	std::vector<float> kernelWeights;
@@ -591,6 +601,11 @@ void GraphicsSystem::SetAOsampleWeights(const int sampleHalfCount)
 	CreateGaussianWeightsStructuredBuff(m_dx11Renderer->m_renderData->AOblurSampleBuffer, sampleHalfCount);
 }
 
+void GraphicsSystem::SetIsAmbientOcclussion(const bool v)
+{
+	m_dx11Renderer->m_renderData->testGlobalShaderProperties.gIsUsingAmbientOcclussion = v ? 1 : 0;
+}
+
 void GraphicsSystem::AddComponent(IComponent* component)
 {
 	if (component)
@@ -616,10 +631,6 @@ void GraphicsSystem::AddComponent(IComponent* component)
 void GraphicsSystem::RunRenderPasses()
 {
 		const float dt = m_engineOwner->GetClock().GetDeltaTime();
-
-		//Update the global shader properties const buffer
-		m_dx11Renderer->m_renderData->m_pImmediateContext->UpdateSubresource(m_dx11Renderer->m_renderData->testGlobalShaderPropertiesConstBuffer,
-				0, NULL, &m_dx11Renderer->m_renderData->testGlobalShaderProperties, 0, 0);
 
 		//iterate through all render stages(Including UI)
 		for (const auto renderStage : m_renderStages)
@@ -758,6 +769,7 @@ void GraphicsSystem::LoadBasicShaders()
 	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "MomentShadowMapBlur_Vertical");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "SimpleBlur");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "Texture2DCopy");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "AOmapBlur_Horizontal");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "Texture2DAdd");
 	
 	//////////////////////////////////////////////////////////////////////////
