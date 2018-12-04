@@ -8,11 +8,14 @@ float main(PixelInputType pixel) : SV_TARGET
     const float4 positionAndDepth = positionRT.Sample(textureSamplerWrap, uv);
     const float3 normal = normalsRT.Sample(textureSamplerWrap, uv).xyz;
     
-    const int pixX = (int) pixel.position.x;
-    const int pixY = (int) pixel.position.y;
+    uint RTwidth, RTheight;
+    positionRT.GetDimensions(RTwidth, RTheight);
+
+    const uint pixX = uv.x * float(RTwidth);
+    const uint pixY = uv.y * float(RTheight);
 
     //integer weird spiral radius
-    const int phi = (30 * pixX ^ pixY) + (10 * pixX * pixY);
+    const int phi = (30 * pixX ^ pixY) + 10 * pixX * pixY;
     const float c = 0.1f * gAmbOccWorldSpaceRange;
 
     //temp storages
@@ -31,7 +34,7 @@ float main(PixelInputType pixel) : SV_TARGET
     for (int n = 0; n < gAmbientOccPointsOfSample; ++n)
     {
         alpha = (float(n) + 0.5f) / float(gAmbientOccPointsOfSample);
-        h = alpha * gAmbOccWorldSpaceRange / positionAndDepth.w;
+        h = alpha * gAmbOccWorldSpaceRange / (positionAndDepth.w * 100.0f);
         theta = TWO_PI * alpha * ((7.f * n) / 9.f) + float(phi);
 
         uvi = uv + float2(h * cos(theta), h * sin(theta));
@@ -40,13 +43,13 @@ float main(PixelInputType pixel) : SV_TARGET
         wi = PiAndDi.xyz - positionAndDepth.xyz;
         wiLength = length(wi);
 
-        numerator = max(0.f, dot(normal, wi) - (0.001f * PiAndDi.w)) * (gAmbOccWorldSpaceRange - wiLength < 0.f ? 0.f : 1.f);
+        numerator = max(0.f, dot(normal, wi) - (0.001f * PiAndDi.w * 100.f)) * (gAmbOccWorldSpaceRange - wiLength < 0.f ? 0.f : 1.f);
         denominator = max(c * c, dot(wi, wi));
-        sum += numerator / denominator;
+        sum += denominator <= 0.0001f ? 0.f : numerator / denominator;
     }
 
-    const float term1 = TWO_PI * c / float(gAmbientOccPointsOfSample);
-    float S = term1 * sum;
+    const float Sterm1 = TWO_PI * c / float(gAmbientOccPointsOfSample);
+    float S = Sterm1 * sum;
 
     //final Ambient factor of the pixel
     return pow(max(0.f, 1.0f - gAmbienOcc_S_scaleFactor * S), gAmbienOcc_K_scaleFactor);
