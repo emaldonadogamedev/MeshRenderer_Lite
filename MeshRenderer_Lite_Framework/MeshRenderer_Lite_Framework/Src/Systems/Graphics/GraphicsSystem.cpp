@@ -770,6 +770,7 @@ void GraphicsSystem::LoadBasicShaders()
 	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "SimpleBlur");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "Texture2DCopy");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "AOmapBlur_Horizontal");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "AOmapBlur_Vertical");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "Texture2DAdd");
 	
 	//////////////////////////////////////////////////////////////////////////

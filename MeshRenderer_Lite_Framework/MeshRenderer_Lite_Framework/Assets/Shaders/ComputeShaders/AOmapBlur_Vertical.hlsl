@@ -12,7 +12,7 @@ groupshared float3 sharedMemNormals[128 + 15];
 
 static const float Rterm = 1.0f / sqrt(6.2831853f * 0.01f);
 
-[numthreads(128, 1, 1)]
+[numthreads(1, 128, 1)]
 void main(uint3 dispatchThreadId : SV_DispatchThreadID, uint3 groupThreadId : SV_GroupThreadID)
 {
     uint numStructs; //number of elements in weights buffer
@@ -26,15 +26,15 @@ void main(uint3 dispatchThreadId : SV_DispatchThreadID, uint3 groupThreadId : SV
 
     const int2 pixelCoords = dispatchThreadId.xy;
 
-    sharedMemAOfactors[groupThreadId.x] = inputAOmap[int2(max(pixelCoords.x - halfSize, 0), pixelCoords.y)].x;
-    if (groupThreadId.x < numStructs)
+    sharedMemAOfactors[groupThreadId.y] = inputAOmap[int2(pixelCoords.x, max(pixelCoords.y - halfSize, 0))].x;
+    if (groupThreadId.y < numStructs)
     {
         // read extra 2*w pixels
-        int2 coords = int2(min(pixelCoords.x + 128 - halfSize, outAOmapWidth - 1), pixelCoords.y);
+        int2 coords = int2(pixelCoords.x, min(pixelCoords.y + 128 - halfSize, outAOmapHeight - 1));
 
-        sharedMemAOfactors[groupThreadId.x + 128] = inputAOmap[coords];
-        sharedMemDepths[groupThreadId.x + 128] = positionRT[coords].w;
-        sharedMemNormals[groupThreadId.x + 128] = normalsRT[coords].xyz;
+        sharedMemAOfactors[groupThreadId.y + 128] = inputAOmap[coords];
+        sharedMemDepths[groupThreadId.y + 128] = positionRT[coords].w;
+        sharedMemNormals[groupThreadId.y + 128] = normalsRT[coords].xyz;
     }
 
     float3 currentN = normalsRT[pixelCoords].xyz;
@@ -50,7 +50,7 @@ void main(uint3 dispatchThreadId : SV_DispatchThreadID, uint3 groupThreadId : SV
     int sharedMemIdx;
     for (int i = -halfSize, w = 0; i <= halfSize; ++i, ++w)
     {
-        sharedMemIdx = groupThreadId.x + i + halfSize;
+        sharedMemIdx = groupThreadId.y + i + halfSize;
         tempDeltaD = sharedMemDepths[sharedMemIdx] - currentD;
         R = max(0.f, dot(sharedMemNormals[sharedMemIdx], currentN)) * Rterm * pow(2.71828f, -((tempDeltaD * tempDeltaD) / 0.02f));
 

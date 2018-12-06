@@ -82,6 +82,19 @@ void AmbientLightStage::Render(HandleDictionaryVec& graphicsResources, const flo
 
 			//////////////////////////////////////////////////////////////////////////
 			//Vertical blur
+
+			handle = (graphicsResources[(int)ObjectType::COMPUTE_SHADER]).at("AOmapBlur_Vertical");
+			m_renderer->BindComputeShader(handle);
+
+			//Bind the G-buffer pos. and normal render targets
+			m_renderer->BindTextureShaderResource(ObjectType::COMPUTE_SHADER, 20, 1, m_renderData.m_GBufferObjHandles[0]);
+			m_renderer->BindTextureShaderResource(ObjectType::COMPUTE_SHADER, 21, 1, m_renderData.m_GBufferObjHandles[1]);
+
+			//Bind resources
+			m_renderer->BindTextureShaderResource(ObjectType::COMPUTE_SHADER, 0, 1, m_renderData.AOtempBlurTexture);
+			m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(0, 1, &m_renderData.renderTargets[*m_renderData.m_AmbientOccMapRT].uav, nullptr);
+			m_renderData.m_pImmediateContext->CSSetShaderResources(1, 1, &m_renderData.structuredBuffers[*m_renderData.AOblurSampleBuffer].srv);
+			m_renderer->DispatchComputeShader(handle, 1, (m_renderer->GetRenderTargetHeight() / 128) + 1,  1);
 		}
 		
 		m_renderer->BindRenderTarget(m_renderData.m_MainRenderTargets[m_renderData.m_currentMainRTindex], false);//No depth testing 

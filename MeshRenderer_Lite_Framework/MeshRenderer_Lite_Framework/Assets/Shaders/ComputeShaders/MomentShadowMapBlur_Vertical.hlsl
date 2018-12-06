@@ -25,8 +25,7 @@ void main(uint3 dispatchThreadId : SV_DispatchThreadID, uint3 groupThreadId : SV
 		{
         // read extra 2*w pixels
         int2 coords = int2(pixelCoords.x, min(pixelCoords.y + 128 - halfSize, outShadowMapHeight - 1) );
-
-				sharedMemFloats[groupThreadId.y + 128] = inputShadowMap[coords];
+			sharedMemFloats[groupThreadId.y + 128] = inputShadowMap[coords];
 		}
 
 		//wait for all threads to read
