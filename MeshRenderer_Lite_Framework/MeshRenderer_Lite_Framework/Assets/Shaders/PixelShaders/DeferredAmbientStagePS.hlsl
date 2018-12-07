@@ -104,11 +104,11 @@ float4 main(PixelInputType pixel) : SV_TARGET
         result = pow(result / (result + float4(1, 1, 1, 1)), toneMappingExtraExpControl / 2.2);
 
 			// multiplying by the global ambient light for extra control to the final color
-        resultColors[G_DEBUG_NONE] = AOfactor * saturate(float4(gGlobalAmbient, 1.f) * result);
+        resultColors[G_DEBUG_NONE] = saturate(AOfactor * float4(gGlobalAmbient, 1.f) * result);
     }
     else //If no IBL, use regular ambient calculation
     {
-        resultColors[G_DEBUG_NONE] = AOfactor * float4(gGlobalAmbient, 1.f) * diff;
+        resultColors[G_DEBUG_NONE] = saturate(AOfactor * float4(gGlobalAmbient, 1.f) * diff);
     }
 
     resultColors[G_DEBUG_POSITION] = pos;

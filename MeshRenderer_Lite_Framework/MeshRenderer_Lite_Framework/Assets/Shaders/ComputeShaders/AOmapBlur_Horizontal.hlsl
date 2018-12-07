@@ -26,19 +26,22 @@ void main(uint3 dispatchThreadId : SV_DispatchThreadID, uint3 groupThreadId : SV
 
     const int2 pixelCoords = dispatchThreadId.xy;
 
-    sharedMemAOfactors[groupThreadId.x] = inputAOmap[int2(max(pixelCoords.x - halfSize, 0), pixelCoords.y)].x;
+    int2 coords = int2(max(pixelCoords.x - halfSize, 0), pixelCoords.y);
+    sharedMemAOfactors[groupThreadId.x] = inputAOmap[coords].x;
+    sharedMemDepths[groupThreadId.x] = positionRT[coords].w * 100.f;;
+    sharedMemNormals[groupThreadId.x] = normalsRT[coords].xyz;
     if (groupThreadId.x < numStructs)
     {
         // read extra 2*w pixels
         int2 coords = int2(min(pixelCoords.x + 128 - halfSize, outAOmapWidth - 1), pixelCoords.y);
 
         sharedMemAOfactors[groupThreadId.x + 128] = inputAOmap[coords];
-        sharedMemDepths[groupThreadId.x + 128] = positionRT[coords].w;
+        sharedMemDepths[groupThreadId.x + 128] = positionRT[coords].w * 100.f;;
         sharedMemNormals[groupThreadId.x + 128] = normalsRT[coords].xyz;
     }
 
     float3 currentN = normalsRT[pixelCoords].xyz;
-    float currentD = positionRT[pixelCoords].w;
+    float currentD = positionRT[pixelCoords].w * 100.f;
 
     AllMemoryBarrierWithGroupSync();
 
@@ -58,5 +61,6 @@ void main(uint3 dispatchThreadId : SV_DispatchThreadID, uint3 groupThreadId : SV
         finalDenominator += weights[w] * R;
     }
 
-    outputAOmap[pixelCoords] = finalDenominator <= 0.0001f ? 0.f : finalNumerator / finalDenominator;
+    //outputAOmap[pixelCoords] = finalDenominator <= 0.0001f ? 0.f : finalNumerator / finalDenominator;
+    outputAOmap[pixelCoords] = finalNumerator;
 }
