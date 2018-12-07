@@ -96,12 +96,12 @@ bool TestIBLapp::Initialize(HINSTANCE hInstance)
 		//set up metallic spheres
 		
 		
-		for(int i = 0; i < TEST_SPHERE_COUNT; ++i)
-		{
-			//testSpheres[i] = std::make_unique<GameObject>();
-			//transform = new Transform(testLight.get());
-			//transform->SetPositionn(DirectX::XMVectorSet(-22.8f, 48.f, 0.f, 1.f));
-		}
+		//for(int i = 0; i < TEST_SPHERE_COUNT; ++i)
+		//{
+		//	//testSpheres[i] = std::make_unique<GameObject>();
+		//	//transform = new Transform(testLight.get());
+		//	//transform->SetPositionn(DirectX::XMVectorSet(-22.8f, 48.f, 0.f, 1.f));
+		//}
 
 		return true;
 	}
