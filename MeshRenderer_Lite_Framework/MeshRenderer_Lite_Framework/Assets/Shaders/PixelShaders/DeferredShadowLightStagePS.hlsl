@@ -52,7 +52,7 @@ float4 main(PixelInputType pixel) : SV_TARGET
 							float depthValue = shadowMaps[i][uint2(projectTexCoord.x * shadowMapW, projectTexCoord.y * shadowMapH)].x;
 
 							// Calculate the depth of the light.
-                                                 float lightDepthValue = lightViewPosition.w / 100.0f;// (lightViewPosition.z / lightViewPosition.w) * 10;
+                            float lightDepthValue = lightViewPosition.w / 100.0f;// (lightViewPosition.z / lightViewPosition.w) * 10;
 
 							// Subtract the bias from the lightDepthValue.
 							lightDepthValue -= bias;
