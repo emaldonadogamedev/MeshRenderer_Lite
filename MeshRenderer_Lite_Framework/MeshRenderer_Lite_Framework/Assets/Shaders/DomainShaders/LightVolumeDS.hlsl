@@ -1,6 +1,21 @@
 #include "../ShaderIncludes.hlsli"
 #include "../TextureShaderIncludes.hlsli"
 
+cbuffer LightVolumeProperties : register(b10)
+{
+    float3 volumeLightPos;
+    float volumeLightfarPlane;
+
+    float3 volumeLightUpVector;
+    float volumeLightFOV;
+
+    float3 volumeLightForwardVector;
+    float volumeLightShadowMapWidth;
+
+    float3 volumeLightRightVector;
+    float volumeLightShadowMapHeight;
+};
+
 struct DS_OUTPUT
 {
 	float4 vPosition  : SV_POSITION;
@@ -42,7 +57,7 @@ DS_OUTPUT main(
     float4 pos = float4(lerp(v1, v2, domain.y), 1.0f);
 
     //Use the Shadow map to raise the point
-    pos.z *= shadowMaps[0][domain * 1024.f];
+    pos = float4(pos.xyz + (-volumeLightForwardVector * volumeLightfarPlane * shadowMaps[0][domain * 1024.f].x), 1.0f);
 
     pos = mul(pos, viewMtx);
     pos = mul(pos, projectionMtx);

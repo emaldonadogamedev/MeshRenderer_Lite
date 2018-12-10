@@ -2113,15 +2113,15 @@ bool DX11Renderer::ResizeBuffers(const int width, const int height)
 	//Release all of the RTVs and re-create the render targets
 	for (unsigned char i = 0; i < (unsigned char)DX11RendererData::GBufferRTType::COUNT; ++i)
 	{
-			auto& handle = m_renderData->m_GBufferObjHandles[i];
-			CreateRenderTarget(handle, width, height, DataFormat::FLOAT4, true);
-			m_renderData->m_pGbufferRTVs[i] = m_renderData->renderTargets[*(handle)].rtv;
+		auto& handle = m_renderData->m_GBufferObjHandles[i];
+		CreateRenderTarget(handle, width, height, DataFormat::FLOAT4, true);
+		m_renderData->m_pGbufferRTVs[i] = m_renderData->renderTargets[*(handle)].rtv;
 	}
 
 	//Create the 2 main render targets
 	for (char i = 0; i < 2; ++i)
 	{
-			CreateRenderTarget(m_renderData->m_MainRenderTargets[i], width, height, DataFormat::FLOAT4, true);
+		CreateRenderTarget(m_renderData->m_MainRenderTargets[i], width, height, DataFormat::FLOAT4, true);
 	}
 
 	//BIND RENDER TARGET VIEW
