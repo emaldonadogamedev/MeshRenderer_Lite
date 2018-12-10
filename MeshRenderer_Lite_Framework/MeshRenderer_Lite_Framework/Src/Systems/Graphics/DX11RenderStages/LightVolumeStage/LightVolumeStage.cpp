@@ -74,6 +74,17 @@ void LightVolumeStage::Render(HandleDictionaryVec& graphicsResources, const floa
 	handle = (graphicsResources[(int)ObjectType::DOMAIN_SHADER]).at("LightVolumeDS");
 	m_renderer->BindDomainShader(handle);
 	m_renderData.m_pImmediateContext->DSSetConstantBuffers(1, 1, &m_renderData.testViewProjConstBuffer);
+	//Bind all of the shadow maps
+	const auto& lightComponents = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_LIGHT_WITH_SHADOW];
+	for (const auto& component : lightComponents)
+	{
+		ShadowLightComponent* lightComp = (ShadowLightComponent*)component;
+		if (lightComp->IsUsingShadows())
+		{
+			m_renderer->BindTextureShaderResource(ObjectType::DOMAIN_SHADER, lightComp->GetShadowTextureIdx(), 1, lightComp->GetShadowDepthMapHandle());
+		}
+	}
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//Pixel Shader

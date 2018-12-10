@@ -42,6 +42,7 @@ DS_OUTPUT main(
     float4 pos = float4(lerp(v1, v2, domain.y), 1.0f);
 
     //Use the Shadow map to raise the point
+    pos.z *= shadowMaps[0][domain * 1024.f];
 
     pos = mul(pos, viewMtx);
     pos = mul(pos, projectionMtx);
