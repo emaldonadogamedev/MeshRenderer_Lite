@@ -108,6 +108,11 @@ struct HullShader : ShaderObjectBase
 	ID3D11HullShader* hullShader;
 };
 
+struct DomainShader : ShaderObjectBase
+{
+	ID3D11DomainShader* domainShader;
+};
+
 struct Buffer : D3DObjectBase
 {
 	ID3D11Buffer* buffer;

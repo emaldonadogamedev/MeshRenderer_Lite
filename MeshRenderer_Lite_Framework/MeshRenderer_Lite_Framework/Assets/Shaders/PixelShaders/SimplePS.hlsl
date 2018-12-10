@@ -3,6 +3,6 @@
 
 float4 main(PixelInputType pixel) : SV_TARGET
 {
-	//return meshMaterial.diffuseKd;
-    return pixel.position;
+	return meshMaterial.diffuseKd;
+    //return pixel.position;
 }

@@ -1,25 +1,26 @@
 // Input control point
 struct VS_CONTROL_POINT_OUTPUT
 {
-	float3 vPosition : WORLDPOS;
-	// TODO: change/add other stuff
+    float4 worldPos : WORLDPOS;
+    float2 uv : UV;
 };
 
 // Output control point
 struct HS_CONTROL_POINT_OUTPUT
 {
 	float3 vPosition : WORLDPOS; 
+    float2 uv : UV;
 };
 
 // Output patch constant data.
 struct HS_CONSTANT_DATA_OUTPUT
 {
-	float EdgeTessFactor[3]			: SV_TessFactor; // e.g. would be [4] for a quad domain
-	float InsideTessFactor			: SV_InsideTessFactor; // e.g. would be Inside[2] for a quad domain
+	float EdgeTessFactor[4]			: SV_TessFactor; // e.g. would be [4] for a quad domain
+	float InsideTessFactor[2]		: SV_InsideTessFactor; // e.g. would be Inside[2] for a quad domain
 	// TODO: change/add other stuff
 };
 
-#define NUM_CONTROL_POINTS 3
+#define NUM_CONTROL_POINTS 4
 
 // Patch Constant Function
 HS_CONSTANT_DATA_OUTPUT CalcHSPatchConstants(
@@ -32,15 +33,18 @@ HS_CONSTANT_DATA_OUTPUT CalcHSPatchConstants(
 	Output.EdgeTessFactor[0] = 
 	Output.EdgeTessFactor[1] = 
 	Output.EdgeTessFactor[2] = 
-	Output.InsideTessFactor = 15; // e.g. could calculate dynamic tessellation factors instead
+    Output.EdgeTessFactor[3] = 
+	Output.InsideTessFactor[0] =
+    Output.InsideTessFactor[1] = 256; // e.g. could calculate dynamic tessellation factors instead
 
 	return Output;
 }
 
-[domain("tri")]
-[partitioning("fractional_odd")]
+//The main entry point of the hull shader
+[domain("quad")]
+[partitioning("integer")]
 [outputtopology("triangle_cw")]
-[outputcontrolpoints(3)]
+[outputcontrolpoints(4)]
 [patchconstantfunc("CalcHSPatchConstants")]
 HS_CONTROL_POINT_OUTPUT main( 
 	InputPatch<VS_CONTROL_POINT_OUTPUT, NUM_CONTROL_POINTS> ip, 
@@ -50,7 +54,9 @@ HS_CONTROL_POINT_OUTPUT main(
 	HS_CONTROL_POINT_OUTPUT Output;
 
 	// Insert code to compute Output here
-	Output.vPosition = ip[i].vPosition;
+    Output.vPosition = ip[i].worldPos;
+    Output.uv = ip[i].uv;
+
 
 	return Output;
 }

@@ -86,6 +86,12 @@ void DX11Renderer::ReleaseData()
 			SafeRelease(hs.shaderBlob);
 	}
 
+	//hull / tessellation shaders
+	for (auto& ds : m_renderData->domainShaders) {
+		SafeRelease(ds.domainShader);
+		SafeRelease(ds.shaderBlob);
+	}
+
 	//vertex buffers
 	for (auto& vb : m_renderData->vertexBuffers)
 		SafeRelease(vb.buffer);
@@ -1152,6 +1158,56 @@ void DX11Renderer::CreatePixelShader(ObjectHandle& pixelShader, const std::strin
 	}
 }
 
+void DX11Renderer::CreateGeometryShader(ObjectHandle& geometryShader, const std::string& fileName, bool precompiled, const std::string& entryPoint /*= "main"*/)
+{
+	ID3D11GeometryShader* geometryShaderPtr = nullptr;
+	int result;
+
+	ID3DBlob* blob = nullptr;
+	const std::string target = "gs_5_0";
+
+	CompileShaderHelper(result, &blob, fileName, target, entryPoint);
+
+	HR(m_renderData->m_pDevice->CreateGeometryShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &geometryShaderPtr));
+
+	//If handle already exists, update data
+	if (geometryShader)
+	{
+		GeometryShader& geometryShaderObj = m_renderData->geometryShaders[*geometryShader];
+		if (geometryShaderObj.geometryShader)
+		{
+			geometryShaderObj.geometryShader->Release();
+			geometryShaderObj.shaderBlob->Release();
+		}
+
+		geometryShaderObj.geometryShader = geometryShaderPtr;
+		geometryShaderObj.shaderBlob = blob;
+	}
+	//Else create handle
+	else
+	{
+		GeometryShader geometryShaderObj;
+		geometryShaderObj.geometryShader = geometryShaderPtr;
+		geometryShaderObj.shaderBlob = blob;
+
+		int index = m_renderData->NextAvailableIndex(m_renderData->geometryShaders);
+
+		if (index == -1)
+		{
+			//No free space exists in container, push back
+			m_renderData->geometryShaders.push_back(geometryShaderObj);
+			geometryShader = CreateHandle(ObjectType::GEOMETRY_SHADER, m_renderData->geometryShaders.size() - 1);
+		}
+
+		else
+		{
+			//Use available space in container
+			m_renderData->geometryShaders[index] = geometryShaderObj;
+			geometryShader = CreateHandle(ObjectType::GEOMETRY_SHADER, index);
+		}
+	}
+}
+
 void DX11Renderer::CreateComputeShader(ObjectHandle& computeShader, const std::string& fileName, bool precompiled, const std::string& entryPoint)
 {
 		ID3D11ComputeShader* computeShaderPtr = nullptr;
@@ -1202,14 +1258,108 @@ void DX11Renderer::CreateComputeShader(ObjectHandle& computeShader, const std::s
 		}
 }
 
+void DX11Renderer::CreateHullShader(ObjectHandle& hullShader, const std::string& fileName, bool precompiled, const std::string& entryPoint /*= "main"*/)
+{
+	ID3D11HullShader* hullShaderPtr = nullptr;
+	int result;
+
+	ID3DBlob* blob = nullptr;
+	const std::string target = "hs_5_0";
+
+	CompileShaderHelper(result, &blob, fileName, target, entryPoint);
+
+	HR(m_renderData->m_pDevice->CreateHullShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &hullShaderPtr));
+
+	//If handle already exists, update data
+	if (hullShader)
+	{
+		HullShader& hullShaderObj = m_renderData->hullShaders[*hullShader];
+		if (hullShaderObj.hullShader)
+		{
+			hullShaderObj.hullShader->Release();
+			hullShaderObj.shaderBlob->Release();
+		}
+
+		hullShaderObj.hullShader = hullShaderPtr;
+		hullShaderObj.shaderBlob = blob;
+	}
+	//Else create handle
+	else
+	{
+		HullShader hullShaderObj;
+		hullShaderObj.hullShader = hullShaderPtr;
+		hullShaderObj.shaderBlob = blob;
+
+		int index = m_renderData->NextAvailableIndex(m_renderData->hullShaders);
+
+		if (index == -1)
+		{
+			//No free space exists in container, push back
+			m_renderData->hullShaders.push_back(hullShaderObj);
+			hullShader = CreateHandle(ObjectType::HULL_SHADER, m_renderData->hullShaders.size() - 1);
+		}
+
+		else
+		{
+			//Use available space in container
+			m_renderData->hullShaders[index] = hullShaderObj;
+			hullShader = CreateHandle(ObjectType::HULL_SHADER, index);
+		}
+	}
+}
+
+void DX11Renderer::CreateDomainShader(ObjectHandle& domainShader, const std::string& fileName, bool precompiled, const std::string& entryPoint /*= "main"*/)
+{
+	ID3D11DomainShader* domainShaderPtr = nullptr;
+	int result;
+
+	ID3DBlob* blob = nullptr;
+	const std::string target = "ds_5_0";
+
+	CompileShaderHelper(result, &blob, fileName, target, entryPoint);
+
+	HR(m_renderData->m_pDevice->CreateDomainShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &domainShaderPtr));
+
+	//If handle already exists, update data
+	if (domainShader)
+	{
+		DomainShader& domainShaderObj = m_renderData->domainShaders[*domainShader];
+		if (domainShaderObj.domainShader)
+		{
+			domainShaderObj.domainShader->Release();
+			domainShaderObj.shaderBlob->Release();
+		}
+
+		domainShaderObj.domainShader = domainShaderPtr;
+		domainShaderObj.shaderBlob = blob;
+	}
+	//Else create handle
+	else
+	{
+		DomainShader domainShaderObj;
+		domainShaderObj.domainShader = domainShaderPtr;
+		domainShaderObj.shaderBlob = blob;
+
+		int index = m_renderData->NextAvailableIndex(m_renderData->domainShaders);
+
+		if (index == -1)
+		{
+			//No free space exists in container, push back
+			m_renderData->domainShaders.push_back(domainShaderObj);
+			domainShader = CreateHandle(ObjectType::DOMAIN_SHADER, m_renderData->domainShaders.size() - 1);
+		}
+
+		else
+		{
+			//Use available space in container
+			m_renderData->domainShaders[index] = domainShaderObj;
+			domainShader = CreateHandle(ObjectType::DOMAIN_SHADER, index);
+		}
+	}
+}
+
 void DX11Renderer::BindVertexShader(const ObjectHandle& vertexShader)
 {
-	//TODO: Make this check work
-	//if (!vertexShader || m_renderData->lastVertexShader == vertexShader || vertexShader.GetType() != ObjectType::VERTEX_SHADER)
-	//{
-	//	return;
-	//}
-
 #if _DEBUG
 	assert(vertexShader && vertexShader.GetType() == ObjectType::VERTEX_SHADER);
 #endif
@@ -1229,6 +1379,15 @@ void DX11Renderer::BindPixelShader(const ObjectHandle& pixelShader)
 		m_renderData->m_pImmediateContext->PSSetShader(shader.pixelShader, nullptr, 0);
 }
 
+void DX11Renderer::BindGeometryShader(const ObjectHandle& geometryShader)
+{
+#if _DEBUG
+	assert(geometryShader && geometryShader.GetType() == ObjectType::GEOMETRY_SHADER);
+#endif
+	const GeometryShader& shader = m_renderData->geometryShaders[*geometryShader];
+	m_renderData->m_pImmediateContext->GSSetShader(shader.geometryShader, nullptr, 0);
+}
+
 void DX11Renderer::BindComputeShader(const ObjectHandle& computeShader)
 {
 #if _DEBUG
@@ -1236,6 +1395,24 @@ void DX11Renderer::BindComputeShader(const ObjectHandle& computeShader)
 #endif
 		const ComputeShader& shader = m_renderData->computeShaders[*computeShader];
 		m_renderData->m_pImmediateContext->CSSetShader(shader.computeShader, nullptr, 0);
+}
+
+void DX11Renderer::BindHullShader(const ObjectHandle& hullShader)
+{
+#if _DEBUG
+	assert(hullShader && hullShader.GetType() == ObjectType::HULL_SHADER);
+#endif
+	const HullShader& shader = m_renderData->hullShaders[*hullShader];
+	m_renderData->m_pImmediateContext->HSSetShader(shader.hullShader, nullptr, 0);
+}
+
+void DX11Renderer::BindDomainShader(const ObjectHandle& domainShader)
+{
+#if _DEBUG
+	assert(domainShader && domainShader.GetType() == ObjectType::DOMAIN_SHADER);
+#endif
+	const DomainShader& shader = m_renderData->domainShaders[*domainShader];
+	m_renderData->m_pImmediateContext->DSSetShader(shader.domainShader, nullptr, 0);
 }
 
 void DX11Renderer::BindTextureShaderResource(const ObjectType shaderType, unsigned int startSlot, unsigned int numViews, const ObjectHandle& objectWithSRV)

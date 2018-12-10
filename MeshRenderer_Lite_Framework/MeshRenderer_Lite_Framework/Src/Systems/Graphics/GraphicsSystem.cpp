@@ -730,6 +730,7 @@ void GraphicsSystem::LoadBasicShaders()
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "DeferredSimpleLightStagePS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "CopyRenderTarget");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "SkyBox2DPS");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::PIXEL_SHADER, "LightVolumePS");
 
 	//////////////////////////////////////////////////////////////////////////
 	//Default Compute Shaders
@@ -737,6 +738,14 @@ void GraphicsSystem::LoadBasicShaders()
 	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "MomentShadowMapBlur_Vertical");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "SimpleBlur");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "Texture2DCopy");
+
+	//////////////////////////////////////////////////////////////////////////
+	//Default Hull Shaders
+	LoadBasicShaderHelper(shaderHandle, ObjectType::HULL_SHADER, "QuadDiviveHS");
+
+	//////////////////////////////////////////////////////////////////////////
+	//Default Domain Shaders
+	LoadBasicShaderHelper(shaderHandle, ObjectType::DOMAIN_SHADER, "LightVolumeDS");
 }
 
 void GraphicsSystem::LoadBasicShaderHelper(ObjectHandle& shaderHandle, const ObjectType shaderType, const std::string & fileName, const std::string & fileExtension)
@@ -771,6 +780,18 @@ void GraphicsSystem::LoadBasicShaderHelper(ObjectHandle& shaderHandle, const Obj
 			shaderHandle.MakeNull();
 			m_dx11Renderer->CreateComputeShader(shaderHandle, s_computeShaderDir + fileName + fileExtension, false);
 			m_resources[(int)ObjectType::COMPUTE_SHADER][fileName] = shaderHandle;
+		}
+		else if (shaderType == ObjectType::HULL_SHADER)
+		{
+			shaderHandle.MakeNull();
+			m_dx11Renderer->CreateHullShader(shaderHandle, s_hullShaderDir + fileName + fileExtension, false);
+			m_resources[(int)ObjectType::HULL_SHADER][fileName] = shaderHandle;
+		}
+		else if (shaderType == ObjectType::DOMAIN_SHADER)
+		{
+			shaderHandle.MakeNull();
+			m_dx11Renderer->CreateDomainShader(shaderHandle, s_domainShaderDir + fileName + fileExtension, false);
+			m_resources[(int)ObjectType::DOMAIN_SHADER][fileName] = shaderHandle;
 		}
 }
 

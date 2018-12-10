@@ -67,12 +67,16 @@ public:
 	void CreatePixelShader(ObjectHandle& pixelShader, const std::string& fileName, bool precompiled, const std::string& entryPoint = "main");
 	void CreateGeometryShader(ObjectHandle& geometryShader, const std::string& fileName, bool precompiled, const std::string& entryPoint = "main");
 	void CreateComputeShader(ObjectHandle& computeShader, const std::string& fileName, bool precompiled, const std::string& entryPoint = "main");
-	
+	void CreateHullShader(ObjectHandle& hullShader, const std::string& fileName, bool precompiled, const std::string& entryPoint = "main");
+	void CreateDomainShader(ObjectHandle& domainShader, const std::string& fileName, bool precompiled, const std::string& entryPoint = "main");
+
 	//Bind
 	void BindVertexShader(const ObjectHandle& vertexShader);
 	void BindPixelShader(const ObjectHandle& pixelShader);
 	void BindGeometryShader(const ObjectHandle& geometryShader);
 	void BindComputeShader(const ObjectHandle& computeShader);
+	void BindHullShader(const ObjectHandle& hullShader);
+	void BindDomainShader(const ObjectHandle& domainShader);
 
 	void BindTextureShaderResource(const ObjectType shaderType, unsigned int startSlot, unsigned int numViews, const ObjectHandle& objectWithSRV);
 
