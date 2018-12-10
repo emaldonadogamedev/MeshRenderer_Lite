@@ -59,7 +59,7 @@ struct Light
 static const unsigned int s_maxLights = 15;
 cbuffer SceneLights : register(b7)
 {
-		Light sceneLights[s_maxLights];
+	Light sceneLights[s_maxLights];
 }
 
 struct SimpleLight

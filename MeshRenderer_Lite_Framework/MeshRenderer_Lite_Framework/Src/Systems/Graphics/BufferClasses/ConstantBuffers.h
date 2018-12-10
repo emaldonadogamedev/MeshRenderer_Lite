@@ -73,3 +73,17 @@ struct GlobalShaderProperties
 		float toneMappingExtraExpControl = 1.f;
 };
 
+struct LightVolumeProperties
+{
+	XMFLOAT3 volumeLightPos;
+	float volumeLightfarPlane = 400.f;
+
+	XMFLOAT3 volumeLightUpVector;
+	float volumeLightFOV = DirectX::XM_PI / 3.0f;
+
+	XMFLOAT3 volumeLightForwardVector;
+	float volumeLightShadowMapWidth = 1024.f;
+
+	XMFLOAT3 volumeLightRightVector;
+	float volumeLightShadowMapHeight = 1024.f;
+};

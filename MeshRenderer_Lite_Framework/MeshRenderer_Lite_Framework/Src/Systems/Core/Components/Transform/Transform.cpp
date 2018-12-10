@@ -13,7 +13,6 @@ Transform::Transform(GameObject* const owner) : IComponent(ComponentType::TRANSF
 	, m_forward(XMVectorSet(0.f, 0.f, 1.f,0))
 	, m_worldTransform()
 {
-	//m_rotation = DirectX::XMQuaternionRotationMatrix(DirectX::XMMatrixRotationX(XM_PIDIV2));
 }
 
 Transform::~Transform()

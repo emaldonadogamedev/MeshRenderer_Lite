@@ -67,5 +67,4 @@ void SkyBoxRenderStage::Render(HandleDictionaryVec& graphicsResources, const flo
 
 void SkyBoxRenderStage::PostRender()
 {
-	m_renderData.m_pImmediateContext->OMSetDepthStencilState(nullptr, 0);
 }

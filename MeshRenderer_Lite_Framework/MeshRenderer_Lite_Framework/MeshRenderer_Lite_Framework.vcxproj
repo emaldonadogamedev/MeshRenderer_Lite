@@ -89,6 +89,7 @@
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\ForwardRenderStage\ForwardRenderStage.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\IconDebugStage\IconDebugStage.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\IRenderStage.cpp" />
+    <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\LightVolumeStage\LightVolumeStage.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\ShadowMapStage\ShadowMapStage.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\SkyBoxRenderStage\SkyBoxRenderStage.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\UI Stage\ImGuiStage.cpp" />
@@ -142,6 +143,7 @@
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\DeferredSimpleLightStage.h" />
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\GBufferStage.h" />
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\FinalBackBufferStage\FinalBackBufferStage.h" />
+    <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\LightVolumeStage\LightVolumeStage.h" />
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\SkyBoxRenderStage\SkyBoxRenderStage.h" />
     <ClInclude Include="Src\Systems\Graphics\ModelClasses\MeshMaterial\MeshEntryMaterial.h" />
     <ClInclude Include="Src\Systems\ISystem.h" />

@@ -127,11 +127,13 @@ void ImGuiStage::Render(HandleDictionaryVec& graphicsResources, const float dt)
 
 				ImGui::SliderInt("Is Active", &light->isActive, 0, 1);
 				ImGui::SliderInt("Light type", &light->m_lightType, 0, 2);
+				ImGui::SliderInt("Is Using Shadows", &light->isUsingShadows, 0, 1);
+				ImGui::SliderInt("Is Using Soft Shadows", &light->isUsingSoftShadows, 0, 1);
 
 				auto* const transform = (Transform*)shadowLighComp->GetOwner()->GetComponent(ComponentType::TRANSFORM);
 				ImGui::DragFloat3("Position", transform->GetPosition().m128_f32, 0.001f);
 
-				ImGui::DragFloat3("Light Direction", &light->m_spotDirection.x, 0.001f, -1.f, 1.f, "%.3f");
+				ImGui::DragFloat3("Light Rotation", &transform->GetOrientation().m128_f32[0], 0.2f, -180, 180, "%.3f");
 				ImGui::DragFloat3("Ambient", &light->m_Iambient.x, 0.001f, 0.f, 1.0f, "%.3f");
 				ImGui::DragFloat3("Diffuse", light->m_Idiffuse.m128_f32, 0.001f, 0.f, 1.0f, "%.3f");
 				ImGui::DragFloat3("Specular", &light->m_Ispecular.x, 0.001f, 0.f, 1.0f, "%.3f");

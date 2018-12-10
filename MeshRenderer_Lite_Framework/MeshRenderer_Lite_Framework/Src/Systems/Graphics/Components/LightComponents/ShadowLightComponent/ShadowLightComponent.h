@@ -16,6 +16,10 @@ public:
 	Light* GetLight() const;
 	LightViewProj* GetLightViewProjBuffer() const;
 
+	const XMVECTOR& GetUpVector()const;
+	const XMVECTOR& GetRightVector()const;
+	const XMVECTOR& GetLookAtVector()const;
+
 	bool IsUsingShadows() const;
 	void SetUseShadows(const bool v);
 
@@ -45,6 +49,7 @@ protected:
 	Light* m_light;
 	LightViewProj* m_viewProj;
 
+	XMVECTOR m_upVec, m_lookAtVec, m_rightVec;
 	bool m_useShadows;
 	bool m_useSoftShadows;
 	int m_shadowTextureIdx;

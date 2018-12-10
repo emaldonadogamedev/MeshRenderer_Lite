@@ -1278,6 +1278,10 @@ void DX11Renderer::BindTextureShaderResource(const ObjectType shaderType, unsign
 				case ObjectType::HULL_SHADER:
 						m_renderData->m_pImmediateContext->HSSetShaderResources(startSlot, numViews, &textureObj->srv);
 						break;
+				case ObjectType::DOMAIN_SHADER:
+					m_renderData->m_pImmediateContext->DSSetShaderResources(startSlot, numViews, &textureObj->srv);
+					break;
+
 				default: //Non-Shader object type supplied
 						break;
 				}
@@ -1758,6 +1762,9 @@ bool DX11Renderer::InitializeTestData(const int width, const int height)
 	bd.ByteWidth = sizeof(GlobalShaderProperties);
 	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testGlobalShaderPropertiesConstBuffer));
 
+	bd.ByteWidth = sizeof(LightVolumeProperties);
+	HR(m_renderData->m_pDevice->CreateBuffer(&bd, NULL, &m_renderData->testLightVolumePropertiesConstBuffer));
+	
 	// Initialize the world matrices
 	//m_renderData->testPerObjectBuffer.worldMtx = XMMatrixScaling(1,1,1) * DirectX::XMMatrixRotationX(XM_PIDIV2) * XMMatrixTranslation(-1, 1, 0);
 	//m_renderData->testPerObjectBuffer.worldMtx = XMMatrixTranspose(m_renderData->testPerObjectBuffer.worldMtx);

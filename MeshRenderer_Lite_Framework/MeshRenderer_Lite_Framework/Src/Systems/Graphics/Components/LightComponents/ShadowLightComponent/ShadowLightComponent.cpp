@@ -61,6 +61,21 @@ LightViewProj* ShadowLightComponent::GetLightViewProjBuffer() const
 		return m_viewProj;
 }
 
+const XMVECTOR& ShadowLightComponent::GetUpVector() const
+{
+	return m_upVec;
+}
+
+const XMVECTOR& ShadowLightComponent::GetRightVector() const
+{
+	return m_rightVec;
+}
+
+const XMVECTOR& ShadowLightComponent::GetLookAtVector() const
+{
+	return m_lookAtVec;
+}
+
 bool ShadowLightComponent::IsUsingShadows() const
 {
 	return m_useShadows;

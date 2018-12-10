@@ -131,6 +131,23 @@ static unsigned RandUnsignedInt(const unsigned minValue = 0, const unsigned maxV
 		return minValue + (rand() % (maxValue - minValue)) + 1;
 }
 
+static float ToDegrees(const float radians)
+{
+	return (radians / DirectX::XM_PI) * 180.0f;
+}
+
+static float ToRadians(const float degrees)
+{
+	return (degrees / 180.0f) * DirectX::XM_PI;
+}
+
+const DirectX::XMVECTOR s_ZERO = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0);
+const DirectX::XMVECTOR s_defaultUp = DirectX::XMVectorSet(0, 1, 0, 0);
+const DirectX::XMVECTOR s_defaultDown = DirectX::XMVectorSet(0, -1, 0, 0);
+const DirectX::XMVECTOR s_defaultRight = DirectX::XMVectorSet(1, 0, 0, 0);
+const DirectX::XMVECTOR s_defaultForward = DirectX::XMVectorSet(0, 0, 1, 0);
+
+
 //Memory delete/release
 #ifndef SafeRelease
 #define SafeRelease(x) if(x) { x->Release(); x = nullptr;}

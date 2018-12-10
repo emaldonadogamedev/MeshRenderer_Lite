@@ -63,7 +63,7 @@ void ForwardRenderStage::Render(HandleDictionaryVec& graphicsResources, const fl
 	m_renderData.m_pImmediateContext->VSSetConstantBuffers(1, 1, &m_renderData.testViewProjConstBuffer);
 	m_renderData.m_pImmediateContext->PSSetConstantBuffers(1, 1, &m_renderData.testViewProjConstBuffer);
 
-		//update lights const buffer
+	//update lights const buffer
 	static const Light* sceneLights = ShadowLightComponent::GetSceneLightsWithShadowPtr();
 	m_renderData.m_pImmediateContext->UpdateSubresource(m_renderData.testLightWithShadowConstBuffer, 0, nullptr, 
 		sceneLights, 0, 0);

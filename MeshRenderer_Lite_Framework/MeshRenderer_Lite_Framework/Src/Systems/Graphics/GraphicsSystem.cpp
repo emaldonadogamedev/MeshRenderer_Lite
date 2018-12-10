@@ -30,6 +30,7 @@
 #include <Systems/Graphics/DX11RenderStages/DeferredRenderingStages/GBufferStage.h>
 #include <Systems/Graphics/DX11RenderStages/ForwardDebugStage/PathWalkDebugStage.h>
 #include <Systems/Graphics/DX11RenderStages/FinalBackBufferStage/FinalBackBufferStage.h>
+#include <Systems/Graphics/DX11RenderStages/LightVolumeStage/LightVolumeStage.h>
 #include <Systems/Graphics/DX11RenderStages/ShadowMapStage/ShadowMapStage.h>
 #include <Systems/Graphics/DX11RenderStages/SkyBoxRenderStage/SkyBoxRenderStage.h>
 #include <Systems/Graphics/DX11RenderStages/UI Stage/ImGuiStage.h>
@@ -120,42 +121,58 @@ void GraphicsSystem::UpdateLightComponents(const float dt)
 		light->m_position.z = lightTransform.m128_f32[2];
 	}
 
+	XMMATRIX camRotationMatrix;
+	XMMATRIX RotateYTempMatrix;
+
 	for (auto& component : shadowLightComponents)
 	{
-			ShadowLightComponent* lightComp = (ShadowLightComponent*)component;
-			auto light = lightComp->GetLight();
-			auto lightViewProj = lightComp->GetLightViewProjBuffer();
-			auto& lightTransformPos = (static_cast<Transform* const>(component->GetOwner()->GetComponent(ComponentType::TRANSFORM)))->GetPosition();
-			light->m_position.x = lightTransformPos.m128_f32[0];
-			light->m_position.y = lightTransformPos.m128_f32[1];
-			light->m_position.z = lightTransformPos.m128_f32[2];
-			light->isUsingShadows = lightComp->IsUsingShadows();
+		ShadowLightComponent* lightComp = (ShadowLightComponent*)component;
+		auto light = lightComp->GetLight();
+		auto lightViewProj = lightComp->GetLightViewProjBuffer();
+		const auto lightTransform = static_cast<Transform* const>(component->GetOwner()->GetComponent(ComponentType::TRANSFORM));
+		auto& lightTransformPos = lightTransform->GetPosition();
+		light->m_position.x = lightTransformPos.m128_f32[0];
+		light->m_position.y = lightTransformPos.m128_f32[1];
+		light->m_position.z = lightTransformPos.m128_f32[2];
+		light->isUsingShadows = lightComp->IsUsingShadows();
 
-			//////////////////////////////////////////////////////////////////////////
-			//Update the light POV & Projection buffers
-			if (!lightComp->IsUsingShadows())
-					continue;
+		//Calculate the up, right and forward vectors of the light
+		const auto& lightTransformRot = lightTransform->GetOrientation();
+		camRotationMatrix = XMMatrixRotationRollPitchYaw(ToRadians(lightTransformRot.m128_f32[0]),
+			ToRadians(lightTransformRot.m128_f32[1]), 0);
+		RotateYTempMatrix = XMMatrixRotationY(lightTransformRot.m128_f32[1]);
 
-			const auto& shadowRThandle = lightComp->GetShadowDepthMapHandle();
-			if (!shadowRThandle)
-					continue;
+		lightComp->m_lookAtVec = XMVector3Normalize(XMVector3TransformCoord(s_defaultForward, camRotationMatrix));
+		light->m_spotDirection.x = lightComp->m_lookAtVec.m128_f32[0];
+		light->m_spotDirection.y = lightComp->m_lookAtVec.m128_f32[1];
+		light->m_spotDirection.z = lightComp->m_lookAtVec.m128_f32[2];
 
-			auto& shadowRTObj = renderData.renderTargets[*shadowRThandle];
+		lightComp->m_rightVec = XMVector3Normalize(XMVector3TransformCoord(s_defaultRight, RotateYTempMatrix));
+		lightComp->m_upVec = XMVector3Normalize(XMVector3Cross(lightComp->m_lookAtVec, lightComp->m_rightVec));
 
-			//update the view matrix according to the light's position
-			lightViewProj->lightViewMtx = XMMatrixTranspose(
-					XMMatrixLookAtLH(
-							lightTransformPos,
-							//renderData.testCamera->m_LookAt,
-							XMVectorSet(0, 0, 0, 0),
-							XMVectorSet(0, 1.0f, 0, 0))
-			);
+		//////////////////////////////////////////////////////////////////////////
+		//Update the light POV & Projection buffers
+		if (!light->isUsingShadows)
+			continue;
 
-			//update the projection matrix according to the shadow's texture resolution
-			lightViewProj->lightProjectionMtx = XMMatrixTranspose(
-					XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV2, shadowRTObj.GetAspectRatio(), renderData.testCamera->m_Near,
-							renderData.testCamera->m_Far)
-			);
+		const auto& shadowRThandle = lightComp->GetShadowDepthMapHandle();
+		if (!shadowRThandle)
+			continue;
+
+		auto& shadowRTObj = renderData.renderTargets[*shadowRThandle];
+
+		//update the view matrix according to the light's position
+		lightViewProj->lightViewMtx = XMMatrixTranspose(
+			XMMatrixLookAtLH(
+				lightTransformPos,
+				lightTransformPos + lightComp->m_lookAtVec,
+				lightComp->m_upVec)
+		);
+
+		//update the projection matrix according to the shadow's texture resolution
+		lightViewProj->lightProjectionMtx = XMMatrixTranspose(
+			XMMatrixPerspectiveFovLH(DirectX::XM_PI / 3.f, shadowRTObj.GetAspectRatio(), 0.01f, 400.0f)
+		);
 	}
 
 	renderData.m_pImmediateContext->UpdateSubresource(renderData.testLightWithShadowConstBuffer,
@@ -640,6 +657,7 @@ void GraphicsSystem::AddRenderStages()
 	AddRenderStageHelper(new AmbientLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
 	AddRenderStageHelper(new DeferredShadowLightStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
 	AddRenderStageHelper(new DeferredSimpleLightStage(m_dx11Renderer.get(), &m_renderComponents, boxModel));
+	AddRenderStageHelper(new LightVolumeStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
 
 	AddRenderStageHelper(new ForwardRenderStage(m_dx11Renderer.get(), &m_renderComponents), false);
 	AddRenderStageHelper(new PathWalkDebugStage(m_dx11Renderer.get(), &m_renderComponents), false);
@@ -694,6 +712,7 @@ void GraphicsSystem::LoadBasicShaders()
 	LoadBasicShaderHelper(shaderHandle, ObjectType::VERTEX_SHADER, "ShadowVS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::VERTEX_SHADER, "FullScreenQuadVS");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::VERTEX_SHADER, "SkyBoxVS");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::VERTEX_SHADER, "LightVolumeVS");
 
 	//////////////////////////////////////////////////////////////////////////
 	// Default Pixel Shaders

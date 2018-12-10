@@ -4,11 +4,12 @@
 
 class GraphicsSystem;
 
-class AmbientLightStage : IRenderStage
+class LightVolumeStage : public IRenderStage
 {
+
 public:
-	AmbientLightStage(DX11Renderer* const renderer, RenderCompUmap* const gfxComponents, const ObjectHandle& fsqIndexBuffer);
-	virtual ~AmbientLightStage();
+	LightVolumeStage(DX11Renderer* const renderer, RenderCompUmap* const gfxComponents, const ObjectHandle& fsqIndexBuffer);
+	virtual ~LightVolumeStage();
 
 	virtual void PreRender() override;
 	virtual void Render(HandleDictionaryVec& graphicsResources, const float dt) override;

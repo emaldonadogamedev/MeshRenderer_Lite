@@ -112,6 +112,9 @@ public:
 
 	GlobalShaderProperties testGlobalShaderProperties;
 	ID3D11Buffer* testGlobalShaderPropertiesConstBuffer = nullptr;
+	
+	LightVolumeProperties testLightVolumeProperties;
+	ID3D11Buffer* testLightVolumePropertiesConstBuffer = nullptr;
 
 	ObjectHandle iblSamplesHandle;
 	int iblSampleCount = 0;

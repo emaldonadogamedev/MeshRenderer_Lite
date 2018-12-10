@@ -3,14 +3,6 @@
 
 using namespace DirectX;
 
-namespace {
-	const DirectX::XMVECTOR s_ZERO = XMVectorSet(0.0f, 0.0f, 0.0f, 0);
-	const DirectX::XMVECTOR s_defaultUp = DirectX::XMVectorSet(0, 1, 0, 0);
-	const DirectX::XMVECTOR s_defaultDown = DirectX::XMVectorSet(0, -1, 0, 0);
-	const DirectX::XMVECTOR s_defaultRight = DirectX::XMVectorSet(1, 0, 0, 0);
-	const DirectX::XMVECTOR s_defaultForward = DirectX::XMVectorSet(0, 0, 1, 0);
-}
-
 Camera::Camera() : m_Position(XMVectorSet(0.0f, 0.0f, -156.0f, 0.0f)),
 m_LookAt(s_ZERO),
 m_Up(s_defaultUp),
