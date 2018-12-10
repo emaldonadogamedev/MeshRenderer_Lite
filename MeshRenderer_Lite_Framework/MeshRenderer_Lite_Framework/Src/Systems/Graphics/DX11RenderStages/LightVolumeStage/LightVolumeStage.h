@@ -8,7 +8,7 @@ class LightVolumeStage : public IRenderStage
 {
 
 public:
-	LightVolumeStage(DX11Renderer* const renderer, RenderCompUmap* const gfxComponents, const ObjectHandle& fsqIndexBuffer);
+	LightVolumeStage(DX11Renderer* const renderer, RenderCompUmap* const gfxComponents, const ObjectHandle& quadVertexBuffer);
 	virtual ~LightVolumeStage();
 
 	virtual void PreRender() override;
@@ -16,7 +16,7 @@ public:
 	virtual void PostRender() override;
 
 protected:
-	ObjectHandle m_fsqIndexBuffer;
+	ObjectHandle m_quadVertexBuffer;
 
 	friend GraphicsSystem;
 };
