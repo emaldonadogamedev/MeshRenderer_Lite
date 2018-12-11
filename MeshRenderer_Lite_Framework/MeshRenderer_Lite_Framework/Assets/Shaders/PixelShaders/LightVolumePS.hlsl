@@ -1,3 +1,23 @@
+#include "../ShaderIncludes.hlsli"
+#include "PixelShaderIncludes.hlsli"
+
+cbuffer LightVolumeProperties : register(b10)
+{
+    float3 volumeLightPos;
+    float volumeLightfarPlane;
+
+    float3 volumeLightUpVector;
+    float volumeLightFOV;
+
+    float3 volumeLightForwardVector;
+    float volumeLightShadowMapWidth;
+
+    float3 volumeLightRightVector;
+    float volumeLightShadowMapHeight;
+
+    float4 testAirlightCoefficient;
+};
+
 // Input from domain shader
 struct DS_OUTPUT
 {
@@ -6,7 +26,17 @@ struct DS_OUTPUT
 	// TODO: change/add other stuff
 };
 
-float4 main(DS_OUTPUT pixelInput) : SV_TARGET
+float4 main(DS_OUTPUT pixelInput, bool isFrontFace : SV_IsFrontFace) : SV_TARGET
 {
-	return float4(1.0f, 1.0f, 1.0f, 1.0f);
+    const float s = isFrontFace ? 1.f : -1.f;
+
+    //move the camera position to proj space, same as the light volume position
+    float4 camPos = mul(cameraPosition, viewMtx);
+    camPos = mul(camPos, projectionMtx);
+
+    //return a VEEEEEEEEEEEEERY GROSSLY Approximated air contribution
+    float l = length(pixelInput.vPosition - camPos);
+
+    return float4(pixelInput.vUV, 0, 1.0f);
+    return s * testAirlightCoefficient * l * sceneLights[0].m_Idiffuse;
 }

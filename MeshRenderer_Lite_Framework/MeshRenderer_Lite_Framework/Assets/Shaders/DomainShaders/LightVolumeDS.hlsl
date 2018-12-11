@@ -57,7 +57,9 @@ DS_OUTPUT main(
     float4 pos = float4(lerp(v1, v2, domain.y), 1.0f);
 
     //Use the Shadow map to raise the point
-    pos = float4(pos.xyz + (-volumeLightForwardVector * volumeLightfarPlane * shadowMaps[0][domain * 1024.f].x), 1.0f);
+    pos = float4(pos.xyz - (-volumeLightForwardVector * 
+        volumeLightfarPlane * shadowMaps[0][int2(domain.x * volumeLightShadowMapWidth, domain.y * volumeLightShadowMapHeight)].x)
+    , 1.0f);
 
     pos = mul(pos, viewMtx);
     pos = mul(pos, projectionMtx);

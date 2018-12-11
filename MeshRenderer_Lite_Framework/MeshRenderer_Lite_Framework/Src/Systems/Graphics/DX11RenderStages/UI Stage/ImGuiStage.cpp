@@ -203,6 +203,13 @@ void ImGuiStage::ShowGraphicsSettings()
 				ImGui::EndMenu();
 			}
 
+			ImGui::Separator();
+			if (ImGui::BeginMenu("Volumetric Lighting Menu..."))
+			{
+				ImGui::SliderFloat3("Test Light Vol. Coeff", &m_renderData.testLightVolumeProperties.testAirlightCoefficient.x, 0.0f, 1.0f);
+				ImGui::EndMenu();
+			}
+
 			ImGui::EndMenu();
 		}
 

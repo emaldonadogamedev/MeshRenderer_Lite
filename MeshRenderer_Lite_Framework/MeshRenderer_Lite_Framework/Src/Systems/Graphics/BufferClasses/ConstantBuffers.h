@@ -3,6 +3,7 @@
 #include <DirectXMath.h>
 
 using DirectX::XMFLOAT3;
+using DirectX::XMFLOAT4;
 using DirectX::XMMATRIX;
 using DirectX::XMVECTOR;
 using DirectX::XMMatrixIdentity;
@@ -86,4 +87,6 @@ struct LightVolumeProperties
 
 	XMFLOAT3 volumeLightRightVector;
 	float volumeLightShadowMapHeight = 1024.f;
+
+	XMFLOAT4 testAirlightCoefficient = XMFLOAT4(1,1,1,1);
 };
