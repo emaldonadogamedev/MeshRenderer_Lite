@@ -98,6 +98,10 @@ float4 main(PixelInputType pixel) : SV_TARGET
 
 						const float alpha = 0.001f;
 						float4 blurredDepthValue = shadowMaps[i][uint2(projectTexCoord.x * shadowMapW, projectTexCoord.y * shadowMapH)];
+                        blurredDepthValue.y = blurredDepthValue.x * blurredDepthValue.x;
+                        blurredDepthValue.z = blurredDepthValue.y * blurredDepthValue.x;
+                        blurredDepthValue.w = blurredDepthValue.z * blurredDepthValue.x;
+
 						float4 bPrime = (1.0f - alpha) * blurredDepthValue;
 						bPrime += alpha * float4(0.5f, 0.5f, 0.5f, 0.5f);
 

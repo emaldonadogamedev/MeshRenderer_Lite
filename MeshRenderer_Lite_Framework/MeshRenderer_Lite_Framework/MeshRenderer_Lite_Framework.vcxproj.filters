@@ -168,6 +168,9 @@
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\LightVolumeStage\LightVolumeStage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Engine\Applications\TestGodRaysApp\TestGodRaysApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Utilities\precompiled.h">
@@ -351,6 +354,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\LightVolumeStage\LightVolumeStage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Engine\Applications\TestGodRaysApp\TestGodRaysApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

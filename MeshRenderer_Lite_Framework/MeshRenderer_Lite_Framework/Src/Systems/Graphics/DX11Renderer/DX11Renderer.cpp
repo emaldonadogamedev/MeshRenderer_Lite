@@ -1558,7 +1558,8 @@ void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const std::strin
 	}
 }
 
-void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const int W, const int H, const DataFormat dataFormat, bool generateMipChain /*= true*/)
+void DX11Renderer::CreateTexture2D(ObjectHandle& textureHandle, const int W, const int H, const DataFormat dataFormat, void* initialMemory, 
+	bool generateMipChain)
 {
 	D3D11_TEXTURE2D_DESC textureDesc;
 	HRESULT result;

@@ -1,6 +1,8 @@
 #include "../ShaderIncludes.hlsli"
 #include "PixelShaderIncludes.hlsli"
 
+
+
 cbuffer LightVolumeProperties : register(b10)
 {
     float3 volumeLightPos;
@@ -37,6 +39,6 @@ float4 main(DS_OUTPUT pixelInput, bool isFrontFace : SV_IsFrontFace) : SV_TARGET
     //return a VEEEEEEEEEEEEERY GROSSLY Approximated air contribution
     float l = length(pixelInput.vPosition - camPos);
 
-    return float4(pixelInput.vUV, 0, 1.0f);
-    return s * testAirlightCoefficient * l * sceneLights[0].m_Idiffuse;
+    //return float4(pixelInput.vUV, 0, 0.5f);
+    return saturate(s * testAirlightCoefficient * l * sceneLights[0].m_Idiffuse);
 }

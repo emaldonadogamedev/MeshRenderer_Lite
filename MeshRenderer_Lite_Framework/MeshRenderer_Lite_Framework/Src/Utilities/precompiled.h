@@ -115,6 +115,11 @@ static float RandFloat(const float minValue = 0.f, const float maxValue = 1.f)
 		return minValue + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (maxValue - minValue)));
 }
 
+static float Lerp(float min, float max, float percentage)
+{
+	return min + (percentage * (max - min));
+}
+
 static int RandInt(const int minValue = 0, const int maxValue = 100)
 {
 		if (minValue == maxValue)

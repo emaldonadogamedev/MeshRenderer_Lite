@@ -86,7 +86,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	//Texture functions
 	void CreateTexture2D(ObjectHandle& textureHandle, const std::string& fileName, bool generateMipChain = true);
-	void CreateTexture2D(ObjectHandle& textureHandle, const int W, const int H, const DataFormat dataFormat,
+	void CreateTexture2D(ObjectHandle& textureHandle, const int W, const int H, const DataFormat dataFormat, void* initialMemory = nullptr,
 		bool generateMipChain = true);
 	ObjectHandle GetTexture2D(const std::string& fileName);
 

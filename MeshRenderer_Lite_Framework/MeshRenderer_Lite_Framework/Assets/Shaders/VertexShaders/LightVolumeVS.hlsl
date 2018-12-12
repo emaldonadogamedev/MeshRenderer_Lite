@@ -17,7 +17,7 @@ VS_CONTROL_POINT_OUTPUT main(VertexInputType vertex, uint vertexID : SV_VERTEXID
 
     float3 deltaFloat3_X = volumeLightRightVector * widthFar / 2.0f;
     float3 deltaFloat3_Y = volumeLightUpVector * heightFar / 2.0f;
-    float3 farPlanePos = volumeLightPos + (volumeLightForwardVector * volumeLightfarPlane);
+    float3 farPlanePos = volumeLightPos;// + (volumeLightForwardVector * volumeLightfarPlane);
 
     VS_CONTROL_POINT_OUTPUT worldSpacePos[4];
     worldSpacePos[0].worldPos = float4(farPlanePos - deltaFloat3_Y - deltaFloat3_X, 1.0f);
