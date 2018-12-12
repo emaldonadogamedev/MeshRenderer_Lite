@@ -18,6 +18,7 @@ cbuffer LightVolumeProperties : register(b10)
 
 struct DS_OUTPUT
 {
+    float3 vWorldPos : WORLDPOS;
 	float4 vPosition  : SV_POSITION;
     float2 vUV : UV;
     float4 adjacentPoint : ADJ_POINT;
@@ -60,6 +61,8 @@ DS_OUTPUT main(
     //Use the Shadow map to raise the point
     float shadowMapFactor = shadowMaps[0][int2(domain.x * volumeLightShadowMapWidth, domain.y * volumeLightShadowMapHeight)].w;
     pos = float4(pos.xyz + (volumeLightForwardVector * volumeLightfarPlane * shadowMapFactor), 1.0f);
+
+    Output.vWorldPos = pos.xyz;
 
     pos = mul(pos, viewMtx);
     pos = mul(pos, projectionMtx);
