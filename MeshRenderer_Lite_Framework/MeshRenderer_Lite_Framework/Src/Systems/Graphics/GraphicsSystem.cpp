@@ -746,6 +746,10 @@ void GraphicsSystem::LoadBasicShaders()
 	//////////////////////////////////////////////////////////////////////////
 	//Default Domain Shaders
 	LoadBasicShaderHelper(shaderHandle, ObjectType::DOMAIN_SHADER, "LightVolumeDS");
+
+    //////////////////////////////////////////////////////////////////////////
+    // Default Geometry Shaders
+    LoadBasicShaderHelper(shaderHandle, ObjectType::GEOMETRY_SHADER, "LightVolumeGS");
 }
 
 void GraphicsSystem::LoadBasicShaderHelper(ObjectHandle& shaderHandle, const ObjectType shaderType, const std::string & fileName, const std::string & fileExtension)
@@ -793,6 +797,12 @@ void GraphicsSystem::LoadBasicShaderHelper(ObjectHandle& shaderHandle, const Obj
 			m_dx11Renderer->CreateDomainShader(shaderHandle, s_domainShaderDir + fileName + fileExtension, false);
 			m_resources[(int)ObjectType::DOMAIN_SHADER][fileName] = shaderHandle;
 		}
+        else if (shaderType == ObjectType::GEOMETRY_SHADER)
+        {
+            shaderHandle.MakeNull();
+            m_dx11Renderer->CreateGeometryShader(shaderHandle, s_geometryShaderDir + fileName + fileExtension, false);
+            m_resources[(int)ObjectType::GEOMETRY_SHADER][fileName] = shaderHandle;
+        }
 }
 
 void GraphicsSystem::LoadPrimitiveShapes()

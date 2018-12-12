@@ -75,7 +75,15 @@ void LightVolumeStage::Render(HandleDictionaryVec& graphicsResources, const floa
 	m_renderer->BindDomainShader(handle);
 	m_renderData.m_pImmediateContext->DSSetConstantBuffers(1, 1, &m_renderData.testViewProjConstBuffer);
     m_renderData.m_pImmediateContext->DSSetConstantBuffers(10, 1, &m_renderData.testLightVolumePropertiesConstBuffer);
-	//Bind all of the shadow maps
+	
+    //////////////////////////////////////////////////////////////////////////
+    // Geometry Shader
+    //handle = (graphicsResources[(int)ObjectType::GEOMETRY_SHADER]).at("LightVolumeGS");
+    //m_renderer->BindGeometryShader(handle);
+    //m_renderData.m_pImmediateContext->GSSetConstantBuffers(1, 1, &m_renderData.testViewProjConstBuffer);
+    //m_renderData.m_pImmediateContext->GSSetConstantBuffers(10, 1, &m_renderData.testLightVolumePropertiesConstBuffer);
+
+    //Bind all of the shadow maps
 	const auto& lightComponents = (*m_gfxSystemComponents)[ComponentType::RENDERABLE_LIGHT_WITH_SHADOW];
 	for (const auto& component : lightComponents)
 	{
@@ -101,5 +109,6 @@ void LightVolumeStage::PostRender()
 	//clear domain and hull shaders
 	m_renderData.m_pImmediateContext->HSSetShader(nullptr, nullptr, 0);
 	m_renderData.m_pImmediateContext->DSSetShader(nullptr, nullptr, 0);
+    m_renderData.m_pImmediateContext->GSSetShader(nullptr, nullptr, 0);
 	m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 }

@@ -20,6 +20,7 @@ struct DS_OUTPUT
 {
 	float4 vPosition  : SV_POSITION;
     float2 vUV : UV;
+    float4 adjacentPoint : ADJ_POINT;
 	// TODO: change/add other stuff
 };
 
@@ -57,16 +58,21 @@ DS_OUTPUT main(
     float4 pos = float4(lerp(v1, v2, domain.y), 1.0f);
 
     //Use the Shadow map to raise the point
-    pos = float4(pos.xyz - (-volumeLightForwardVector * 
-        volumeLightfarPlane * shadowMaps[0][int2(domain.x * volumeLightShadowMapWidth, domain.y * volumeLightShadowMapHeight)].x)
-    , 1.0f);
+    float shadowMapFactor = saturate(1.0f - shadowMaps[0][int2(domain.x * volumeLightShadowMapWidth, domain.y * volumeLightShadowMapHeight)].x);
+    pos = float4(pos.xyz + (-volumeLightForwardVector * volumeLightfarPlane * shadowMapFactor), 1.0f);
 
     pos = mul(pos, viewMtx);
     pos = mul(pos, projectionMtx);
 
     Output.vPosition = pos;
-    
     Output.vUV = domain;
 
-	return Output;
+    //TODO: finish this crap
+    //naive way of telling the geom. shader that this is a corner point :(
+    //if (domain.x == 0.f && domain.y == 0.f)
+    //{
+    //    Output.adjacentPoint.xyz = Output.vPosition.xyz;
+    //}
+
+    return Output;
 }

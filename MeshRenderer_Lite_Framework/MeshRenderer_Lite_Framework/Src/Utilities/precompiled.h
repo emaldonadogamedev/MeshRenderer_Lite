@@ -169,5 +169,6 @@ static const std::string s_pixelShaderDir = "../MeshRenderer_Lite_Framework/Asse
 static const std::string s_computeShaderDir = "../MeshRenderer_Lite_Framework/Assets/Shaders/ComputeShaders/";
 static const std::string s_hullShaderDir = "../MeshRenderer_Lite_Framework/Assets/Shaders/HullShaders/";
 static const std::string s_domainShaderDir = "../MeshRenderer_Lite_Framework/Assets/Shaders/DomainShaders/";
+static const std::string s_geometryShaderDir = "../MeshRenderer_Lite_Framework/Assets/Shaders/GeometryShaders/";
 
 static const std::string s_textureDir = "../MeshRenderer_Lite_Framework/Assets/Textures/";
