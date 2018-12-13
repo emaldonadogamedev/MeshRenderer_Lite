@@ -135,13 +135,13 @@ float4 main(DS_OUTPUT pixelInput, bool isFrontFace : SV_IsFrontFace) : SV_TARGET
     //float specular = Specular(sceneLights[0].m_Idiffuse.x, beta, Ks, Dsp, Dvp, thetas_, g_20XOffset, g_20XScale, g_20YOffset, g_20YScale);
 
     //compute airlight, diffuse and specular color seperately using our model in the paper
-    float airlight = AirLight(sceneLights[0].m_Idiffuse.x, 1.0f, Dsv, Dvp, gamma, 0.f , 1, 0, 1);
+    float airlight = AirLight(sceneLights[0].m_Idiffuse.x, -.02, Dsv, Dvp, gamma, 0.f, 1, 64, 1);
     //float diffuse = Diffuse(sceneLights[0].m_Idiffuse.x, 1.0f, 1, Dsp, Dvp, thetas, 0, 1, 0, 1);
     //float specular = Specular(sceneLights[0].m_Idiffuse.x, 1.0f, 1, Dsp, Dvp, thetas_, 0, 1, 0, 1);
 	
 	//diffuse color-red, airlight color-white, specular color-white
     OUT = (sceneLights[0].m_Idiffuse * airlight);
 
-    return OUT;
+    return OUT * .001;
 
 }
