@@ -107,23 +107,23 @@ void DX11Renderer::ReleaseData()
 	//structured buffers
 	for (auto& sb : m_renderData->structuredBuffers)
 	{
-			SafeRelease(sb.buffer);
-			SafeRelease(sb.srv);
+		SafeRelease(sb.buffer);
+		SafeRelease(sb.srv);
 	}
 
 	//structured rw buffers
 	for (auto& sbrw : m_renderData->structuredBuffersRW)
 	{
-			SafeRelease(sbrw.buffer);
-			SafeRelease(sbrw.uav);
+		SafeRelease(sbrw.buffer);
+		SafeRelease(sbrw.uav);
 	}
 
 	//structured rw texture2D buffers
 	for (auto& sbrw : m_renderData->structuredBuffersRW_Texture2D)
 	{
-			SafeRelease(sbrw.texture2D);
-			SafeRelease(sbrw.srv);
-			SafeRelease(sbrw.uav);
+		SafeRelease(sbrw.texture2D);
+		SafeRelease(sbrw.srv);
+		SafeRelease(sbrw.uav);
 	}
 
 	//////////////////////////////////////////////////////////////////////////
