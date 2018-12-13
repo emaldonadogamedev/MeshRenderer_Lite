@@ -11,7 +11,6 @@ LightVolumeStage::LightVolumeStage(DX11Renderer* const renderer, RenderCompUmap*
 	:IRenderStage(renderer, gfxComponents)
 	, m_quadVertexBuffer(quadVertexBuffer)
 {
-
 }
 
 LightVolumeStage::~LightVolumeStage()
@@ -75,6 +74,8 @@ void LightVolumeStage::Render(HandleDictionaryVec& graphicsResources, const floa
 	m_renderer->BindDomainShader(handle);
 	m_renderData.m_pImmediateContext->DSSetConstantBuffers(1, 1, &m_renderData.testViewProjConstBuffer);
     m_renderData.m_pImmediateContext->DSSetConstantBuffers(10, 1, &m_renderData.testLightVolumePropertiesConstBuffer);
+	// Set light POV buffers
+	m_renderData.m_pImmediateContext->DSSetConstantBuffers(5, 1, &m_renderData.testLightViewConstBuffer);
 	
     //////////////////////////////////////////////////////////////////////////
     // Geometry Shader
@@ -100,6 +101,29 @@ void LightVolumeStage::Render(HandleDictionaryVec& graphicsResources, const floa
 	handle = (graphicsResources[(int)ObjectType::PIXEL_SHADER]).at("LightVolumePS");
 	m_renderer->BindPixelShader(handle);
 	m_renderData.m_pImmediateContext->PSSetConstantBuffers(1, 1, &m_renderData.testViewProjConstBuffer);
+
+	auto& textures2D = graphicsResources.at((int)ObjectType::TEXTURE_2D);
+	if (!m_F_512)
+	{
+		m_F_512 = m_renderer->GetTexture2D(s_textureDir + "F_512.DDS");
+		textures2D["F_512.DDS"] = m_F_512;
+	}
+
+	//if (!m_G_0)
+	//{
+	//	m_G_0 = m_renderer->GetTexture2D(s_textureDir + "G_0.tga");
+	//	textures2D["G_0.tga"] = m_G_0;
+	//}
+	//
+	//if (!m_G_20)
+	//{
+	//	m_G_20 = m_renderer->GetTexture2D(s_textureDir + "G_20.tga");
+	//	textures2D["G_20.tga"] = m_G_20;
+	//}
+
+	m_renderData.m_pImmediateContext->PSSetShaderResources(30, 1, &m_renderData.textures2D[*m_F_512].srv);
+	//m_renderData.m_pImmediateContext->PSSetShaderResources(31, 1, &m_renderData.textures2D[*m_G_0].srv);
+	//m_renderData.m_pImmediateContext->PSSetShaderResources(32, 1, &m_renderData.textures2D[*m_G_20].srv);
 
 	m_renderer->Draw(4);
 }

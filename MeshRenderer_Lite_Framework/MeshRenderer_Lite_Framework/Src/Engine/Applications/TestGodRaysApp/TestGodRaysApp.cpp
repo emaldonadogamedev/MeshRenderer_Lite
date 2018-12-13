@@ -36,8 +36,8 @@ bool TestGodRaysApp::Initialize(HINSTANCE hInstance)
 		//test light 1
 		testLight = std::make_unique<GameObject>();
 		transform = new Transform(testLight.get());
-		transform->SetPositionn(DirectX::XMVectorSet(0.f, 77.f, 100.f, 1.f));
-		transform->SetRotationX(135.2f);
+		transform->SetPositionn(DirectX::XMVectorSet(0.f, 0.f, 100.f, 1.f));
+		transform->SetRotationX(180.2f);
 		testLight->AddComponent(transform);
 		gameObjSystem->AddComponent(transform);
 
@@ -97,21 +97,21 @@ bool TestGodRaysApp::Initialize(HINSTANCE hInstance)
 
 		//////////////////////////////////////////////////////////////////////////
 		//floor game object
-		testFloor = std::make_unique<GameObject>();
-		transform = new Transform(testFloor.get());
-		transform->SetPositionn(DirectX::XMVectorSet(0.f, -15.6f, 0.f, 1.f));
-		transform->SetScale(DirectX::XMVectorSet(200.f, 1.f, 200.f, 1.f));
-		testFloor->AddComponent(transform);
-		gameObjSystem->AddComponent(transform);
-		test3DComp = new ModelComponent(testFloor.get());
-		testFloor->AddComponent(test3DComp);
-		m_graphicsSystem->AddComponent(test3DComp);
-		auto model2 = graphicsSystem->GetModel("box");
-		model2->m_meshEntryList[0].meshMaterial.SetToPresetMaterial(PredefinedMaterials::Emerald);
-		model2->SetDiffTextureFileName("crate_1.jpg", 0);
-		model2->SetNormalMapFileName("Standard_red_pxr256_normal.png", 0, false);
-		model2->m_meshEntryList[0].meshMaterial.m_materialProperties.specularPowerNs = 300.f;
-		test3DComp->SetModel(model2);
+		//testFloor = std::make_unique<GameObject>();
+		//transform = new Transform(testFloor.get());
+		//transform->SetPositionn(DirectX::XMVectorSet(0.f, -15.6f, 0.f, 1.f));
+		//transform->SetScale(DirectX::XMVectorSet(200.f, 1.f, 200.f, 1.f));
+		//testFloor->AddComponent(transform);
+		//gameObjSystem->AddComponent(transform);
+		//test3DComp = new ModelComponent(testFloor.get());
+		//testFloor->AddComponent(test3DComp);
+		//m_graphicsSystem->AddComponent(test3DComp);
+		//auto model2 = graphicsSystem->GetModel("box");
+		//model2->m_meshEntryList[0].meshMaterial.SetToPresetMaterial(PredefinedMaterials::Emerald);
+		//model2->SetDiffTextureFileName("F_512.tga", 0);
+		//model2->SetNormalMapFileName("Standard_red_pxr256_normal.png", 0, false);
+		//model2->m_meshEntryList[0].meshMaterial.m_materialProperties.specularPowerNs = 300.f;
+		//test3DComp->SetModel(model2);
 
 		return true;
 	}

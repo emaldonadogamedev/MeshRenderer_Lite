@@ -43,6 +43,7 @@ cbuffer SimpleCloth_ConstBuffer : register(b4)
 struct LightViewProj
 {
 	float4x4 lightViewMtx;
+    float4x4 invLightViewMtx;
 	float4x4 lightProjectionMtx;
 };
 

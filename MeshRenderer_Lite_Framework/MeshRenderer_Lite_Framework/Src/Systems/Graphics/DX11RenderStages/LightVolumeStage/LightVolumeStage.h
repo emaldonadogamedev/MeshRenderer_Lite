@@ -18,5 +18,7 @@ public:
 protected:
 	ObjectHandle m_quadVertexBuffer;
 
+	ObjectHandle m_F_512, m_G_0, m_G_20;
+
 	friend GraphicsSystem;
 };

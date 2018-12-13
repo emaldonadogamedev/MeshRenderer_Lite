@@ -169,6 +169,8 @@ void GraphicsSystem::UpdateLightComponents(const float dt)
 				lightComp->m_upVec)
 		);
 
+		lightViewProj->invLightViewMtx = XMMatrixTranspose(lightViewProj->lightViewMtx);
+
 		//update the projection matrix according to the shadow's texture resolution
 		lightViewProj->lightProjectionMtx = XMMatrixTranspose(
 			XMMatrixPerspectiveFovLH(DirectX::XM_PI / 3.f, shadowRTObj.GetAspectRatio(), 0.01f, 400.0f)

@@ -39,6 +39,7 @@ struct SimpleLight
 struct LightViewProj
 {
 		XMMATRIX lightViewMtx = XMMatrixIdentity();
+		XMMATRIX invLightViewMtx = XMMatrixIdentity();
 		XMMATRIX lightProjectionMtx = XMMatrixIdentity();
 };
 

@@ -1,20 +1,7 @@
 #include "../ShaderIncludes.hlsli"
+#include "../VertexShaders/VertexShaderIncludes.hlsli"
 #include "../TextureShaderIncludes.hlsli"
 
-cbuffer LightVolumeProperties : register(b10)
-{
-    float3 volumeLightPos;
-    float volumeLightfarPlane;
-
-    float3 volumeLightUpVector;
-    float volumeLightFOV;
-
-    float3 volumeLightForwardVector;
-    float volumeLightShadowMapWidth;
-
-    float3 volumeLightRightVector;
-    float volumeLightShadowMapHeight;
-};
 
 struct DS_OUTPUT
 {
@@ -58,17 +45,27 @@ DS_OUTPUT main(
 
     float4 pos = float4(lerp(v1, v2, domain.y), 1.0f);
 
-    //Use the Shadow map to raise the point
-    float shadowMapFactor = shadowMaps[0][int2(domain.x * volumeLightShadowMapWidth, domain.y * volumeLightShadowMapHeight)].w;
-    pos = float4(pos.xyz + (volumeLightForwardVector * volumeLightfarPlane * shadowMapFactor), 1.0f);
+    //move the original quad pos, to light view
+    //pos = mul(pos, lightViewProj[0].lightViewMtx);
+    //float3 forwardLightView = mul(volumeLightForwardVector, (float3x3) lightViewProj[0].lightViewMtx);
 
+    float shadowMapFactor = shadowMaps[0][int2(domain.x * volumeLightShadowMapWidth, domain.y * volumeLightShadowMapHeight)].w;
+    float3 forwardLightView = volumeLightForwardVector * shadowMapFactor; //normalize(mul(volumeLightForwardVector, (float3x3) lightViewProj[0].lightProjectionMtx));
+
+    //Use the Shadow map to raise the point
+    pos = float4(pos.xyz + (forwardLightView * volumeLightfarPlane * shadowMapFactor), pos.w);
+
+    //bring the offsetted pos back to world space
+    //pos = mul(pos, lightViewProj[0].invLightViewMtx);
+
+    pos.xyz *= 0.25f;
     Output.vWorldPos = pos.xyz;
 
     pos = mul(pos, viewMtx);
     pos = mul(pos, projectionMtx);
 
     Output.vPosition = pos;
-    Output.vUV = domain;
+    Output.vUV = float2(domain.x, 1.f - domain.y);
 
     //TODO: finish this crap
     //naive way of telling the geom. shader that this is a corner point :(
