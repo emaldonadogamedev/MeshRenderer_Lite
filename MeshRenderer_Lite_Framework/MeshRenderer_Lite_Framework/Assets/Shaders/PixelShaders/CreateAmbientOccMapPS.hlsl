@@ -52,5 +52,5 @@ float main(PixelInputType pixel) : SV_TARGET
     float S = Sterm1 * sum;
 
     //final Ambient factor of the pixel
-    return pow(max(0.f, 1.0f - gAmbienOcc_S_scaleFactor * S), gAmbienOcc_K_scaleFactor);
+    return saturate(pow(max(0.f, 1.0f - gAmbienOcc_S_scaleFactor * S), gAmbienOcc_K_scaleFactor));
 }
