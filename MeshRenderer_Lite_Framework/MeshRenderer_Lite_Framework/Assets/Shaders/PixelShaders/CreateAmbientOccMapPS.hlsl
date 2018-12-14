@@ -43,7 +43,7 @@ float main(PixelInputType pixel) : SV_TARGET
         wi = PiAndDi.xyz - positionAndDepth.xyz;
         wiLength = length(wi);
 
-        numerator = max(0.f, dot(normal, wi) - (0.001f * PiAndDi.w * 100.f)) * ((gAmbOccWorldSpaceRange - wiLength) < 0.f ? 0.f : 1.f);
+        numerator = max(0.f, dot(normal, wi) - (0.001f * (PiAndDi.w * 100.f))) * ((gAmbOccWorldSpaceRange - wiLength) < 0.f ? 0.f : 1.f);
         denominator = max(c * c, dot(wi, wi));
         sum += denominator <= 0.0001f ? 0.f : numerator / denominator;
     }
