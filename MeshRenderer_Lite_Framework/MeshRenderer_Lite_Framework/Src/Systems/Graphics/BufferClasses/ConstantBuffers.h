@@ -16,7 +16,7 @@ struct ViewProjBuffer
 	XMMATRIX projectionMtx = XMMatrixIdentity();;
 	XMMATRIX invProjectionMtx = XMMatrixIdentity();
 	XMMATRIX viewProjection = XMMatrixIdentity();
-	XMVECTOR cameraPosition = XMVectorSet(0,0,-17,1.0f);
+	XMVECTOR cameraPosition = XMVectorSet(0,0,-5,1.0f);
 };
 
 struct PerObectBuffer
@@ -74,12 +74,13 @@ struct GlobalShaderProperties
 	float toneMappingExtraExpControl = 1.f;
 
 	int gIsUsingAmbientOcclussion = 1;
-	int gAmbientOccPointsOfSample = 10;
+	int gAmbientOccPointsOfSample = 12;
 	float gAmbOccWorldSpaceRange = 30.f;
 	float gAmbienOcc_S_scaleFactor = 1.f;
 
 	float gAmbienOcc_K_scaleFactor = 1.f;
-	int padding_b9[3];
+	int gIsBlurringAmbientOccMap = 1;
+	int padding_b9[2];
 };
 
 struct LightVolumeProperties

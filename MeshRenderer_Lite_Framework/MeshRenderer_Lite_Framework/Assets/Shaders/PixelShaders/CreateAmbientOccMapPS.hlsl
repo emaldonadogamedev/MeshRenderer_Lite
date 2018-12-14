@@ -31,11 +31,11 @@ float main(PixelInputType pixel) : SV_TARGET
     float numerator;
     float denominator;
 
-    for (int n = 0; n < gAmbientOccPointsOfSample; ++n)
+    for (int i = 0; i < gAmbientOccPointsOfSample; ++i)
     {
-        alpha = (float(n) + 0.5f) / float(gAmbientOccPointsOfSample);
+        alpha = (float(i) + 0.5f) / float(gAmbientOccPointsOfSample);
         h = alpha * gAmbOccWorldSpaceRange / (positionAndDepth.w * 100.0f);
-        theta = TWO_PI * alpha * ((7.f * n) / 9.f) + float(phi);
+        theta = TWO_PI * alpha * ((7.f * float(gAmbientOccPointsOfSample)) / 9.f) + float(phi);
 
         uvi = uv + float2(h * cos(theta), h * sin(theta));
         PiAndDi = positionRT.Sample(textureSamplerWrap, uvi);
@@ -43,7 +43,7 @@ float main(PixelInputType pixel) : SV_TARGET
         wi = PiAndDi.xyz - positionAndDepth.xyz;
         wiLength = length(wi);
 
-        numerator = max(0.f, dot(normal, wi) - (0.001f * PiAndDi.w * 100.f)) * (gAmbOccWorldSpaceRange - wiLength < 0.f ? 0.f : 1.f);
+        numerator = max(0.f, dot(normal, wi) - (0.001f * PiAndDi.w * 100.f)) * ((gAmbOccWorldSpaceRange - wiLength) < 0.f ? 0.f : 1.f);
         denominator = max(c * c, dot(wi, wi));
         sum += denominator <= 0.0001f ? 0.f : numerator / denominator;
     }

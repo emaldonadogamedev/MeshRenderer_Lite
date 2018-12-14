@@ -35,7 +35,7 @@ void main(uint3 dispatchThreadId : SV_DispatchThreadID, uint3 groupThreadId : SV
         // read extra 2*w pixels
         int2 coords = int2(min(pixelCoords.x + 128 - halfSize, outAOmapWidth - 1), pixelCoords.y);
 
-        sharedMemAOfactors[groupThreadId.x + 128] = inputAOmap[coords];
+        sharedMemAOfactors[groupThreadId.x + 128] = inputAOmap[coords].x;
         sharedMemDepths[groupThreadId.x + 128] = positionRT[coords].w * 100.f;
         sharedMemNormals[groupThreadId.x + 128] = normalsRT[coords].xyz;
     }
@@ -61,6 +61,5 @@ void main(uint3 dispatchThreadId : SV_DispatchThreadID, uint3 groupThreadId : SV
         finalDenominator += weights[w] * R;
     }
 
-    outputAOmap[pixelCoords] = saturate(finalNumerator / finalDenominator);
-    //outputAOmap[pixelCoords] = finalNumerator;
+    outputAOmap[pixelCoords] = finalDenominator <= 0.0001f ? 0.f : finalNumerator / finalDenominator;
 }

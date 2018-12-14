@@ -56,45 +56,54 @@ void AmbientLightStage::Render(HandleDictionaryVec& graphicsResources, const flo
 			//Unbind the Ambient Map as RT cause now we're going to blur it
 			m_renderer->BindNullRenderTarget();
 
-			//////////////////////////////////////////////////////////////////////////
-			//Horizontal blur
-			handle = (graphicsResources[(int)ObjectType::COMPUTE_SHADER]).at("AOmapBlur_Horizontal"); 
-			m_renderer->BindComputeShader(handle);
-			
-			//Bind the G-buffer pos. and normal render targets
-			m_renderer->BindTextureShaderResource(ObjectType::COMPUTE_SHADER, 20, 1, m_renderData.m_GBufferObjHandles[0]);
-			m_renderer->BindTextureShaderResource(ObjectType::COMPUTE_SHADER, 21, 1, m_renderData.m_GBufferObjHandles[1]);
-			
-			//Bind resources
-			m_renderer->BindTextureShaderResource(ObjectType::COMPUTE_SHADER, 0, 1, m_renderData.m_AmbientOccMapRT);
-			m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(0, 1, &m_renderData.renderTargets[*m_renderData.AOtempBlurTexture].uav, nullptr);
-			m_renderData.m_pImmediateContext->CSSetShaderResources(1, 1, &m_renderData.structuredBuffers[*m_renderData.AOblurSampleBuffer].srv);
-			m_renderer->DispatchComputeShader(handle, (m_renderer->GetRenderTargetWidth() / 128) + 1, 1, 1);
-			
-			//////////////////////////////////////////////////////////////////////////
-			// Cleanup before vertical blur
-			static ID3D11ShaderResourceView* const nullShadowSrvs[2] = { nullptr,nullptr };
-			static ID3D11UnorderedAccessView* const nullUavArr[1] = { nullptr };
-			
-			m_renderData.m_pImmediateContext->CSSetShader(nullptr, nullptr, 0);
-			m_renderData.m_pImmediateContext->CSSetShaderResources(0, 2, nullShadowSrvs);
-			m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(0, 1, nullUavArr, nullptr);
-			//
-			////////////////////////////////////////////////////////////////////////////
-			////Vertical blur
-			//
-			handle = (graphicsResources[(int)ObjectType::COMPUTE_SHADER]).at("AOmapBlur_Vertical");
-			m_renderer->BindComputeShader(handle);
-			
-			//Bind the G-buffer pos. and normal render targets
-			m_renderer->BindTextureShaderResource(ObjectType::COMPUTE_SHADER, 20, 1, m_renderData.m_GBufferObjHandles[0]);
-			m_renderer->BindTextureShaderResource(ObjectType::COMPUTE_SHADER, 21, 1, m_renderData.m_GBufferObjHandles[1]);
-			
-			//Bind resources
-			m_renderer->BindTextureShaderResource(ObjectType::COMPUTE_SHADER, 0, 1, m_renderData.AOtempBlurTexture);
-			m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(0, 1, &m_renderData.renderTargets[*m_renderData.m_AmbientOccMapRT].uav, nullptr);
-			m_renderData.m_pImmediateContext->CSSetShaderResources(1, 1, &m_renderData.structuredBuffers[*m_renderData.AOblurSampleBuffer].srv);
-			m_renderer->DispatchComputeShader(handle, 1, (m_renderer->GetRenderTargetHeight() / 128) + 1, 1);
+			if(m_renderData.testGlobalShaderProperties.gIsBlurringAmbientOccMap)
+			{
+				//////////////////////////////////////////////////////////////////////////
+				//Horizontal blur
+				handle = (graphicsResources[(int)ObjectType::COMPUTE_SHADER]).at("AOmapBlur_Horizontal");
+				m_renderer->BindComputeShader(handle);
+
+				//Bind the G-buffer pos. and normal render targets
+				m_renderer->BindTextureShaderResource(ObjectType::COMPUTE_SHADER, 20, 1, m_renderData.m_GBufferObjHandles[0]);
+				m_renderer->BindTextureShaderResource(ObjectType::COMPUTE_SHADER, 21, 1, m_renderData.m_GBufferObjHandles[1]);
+
+				//Bind resources
+				m_renderer->BindTextureShaderResource(ObjectType::COMPUTE_SHADER, 0, 1, m_renderData.m_AmbientOccMapRT);
+				m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(0, 1, &m_renderData.renderTargets[*m_renderData.AOtempBlurTexture].uav, nullptr);
+				m_renderData.m_pImmediateContext->CSSetShaderResources(1, 1, &m_renderData.structuredBuffers[*m_renderData.AOblurSampleBuffer].srv);
+				m_renderer->DispatchComputeShader(handle, (m_renderer->GetRenderTargetWidth() / 128) + 1, m_renderer->GetRenderTargetHeight(), 1);
+
+				//////////////////////////////////////////////////////////////////////////
+				// Cleanup before vertical blur
+				static ID3D11ShaderResourceView* const nullShadowSrvs[2] = { nullptr,nullptr };
+				static ID3D11UnorderedAccessView* const nullUavArr[1] = { nullptr };
+
+				m_renderData.m_pImmediateContext->CSSetShader(nullptr, nullptr, 0);
+				m_renderData.m_pImmediateContext->CSSetShaderResources(0, 2, nullShadowSrvs);
+				m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(0, 1, nullUavArr, nullptr);
+				//
+				////////////////////////////////////////////////////////////////////////////
+				////Vertical blur
+				//
+				handle = (graphicsResources[(int)ObjectType::COMPUTE_SHADER]).at("AOmapBlur_Vertical");
+				m_renderer->BindComputeShader(handle);
+
+				//Bind the G-buffer pos. and normal render targets
+				m_renderer->BindTextureShaderResource(ObjectType::COMPUTE_SHADER, 20, 1, m_renderData.m_GBufferObjHandles[0]);
+				m_renderer->BindTextureShaderResource(ObjectType::COMPUTE_SHADER, 21, 1, m_renderData.m_GBufferObjHandles[1]);
+
+				//Bind resources
+				m_renderer->BindTextureShaderResource(ObjectType::COMPUTE_SHADER, 0, 1, m_renderData.AOtempBlurTexture);
+				m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(0, 1, &m_renderData.renderTargets[*m_renderData.m_AmbientOccMapRT].uav, nullptr);
+				m_renderData.m_pImmediateContext->CSSetShaderResources(1, 1, &m_renderData.structuredBuffers[*m_renderData.AOblurSampleBuffer].srv);
+				m_renderer->DispatchComputeShader(handle, m_renderer->GetRenderTargetWidth(), (m_renderer->GetRenderTargetHeight() / 128) + 1, 1);
+
+				//////////////////////////////////////////////////////////////////////////
+				// Cleanup before main ambient pass
+				m_renderData.m_pImmediateContext->CSSetShader(nullptr, nullptr, 0);
+				m_renderData.m_pImmediateContext->CSSetShaderResources(0, 2, nullShadowSrvs);
+				m_renderData.m_pImmediateContext->CSSetUnorderedAccessViews(0, 1, nullUavArr, nullptr);
+			}
 
 			m_renderer->BindTextureShaderResource(ObjectType::PIXEL_SHADER, 28, 1, m_renderData.m_AmbientOccMapRT);
 		}

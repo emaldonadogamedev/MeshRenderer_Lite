@@ -211,10 +211,12 @@ void ImGuiStage::ShowGraphicsSettings()
 			if (ImGui::BeginMenu("SSAO Menu..."))
 			{
 				ImGui::SliderInt("Is AO enabled", &m_renderData.testGlobalShaderProperties.gIsUsingAmbientOcclussion, 0, 1);
+				ImGui::SliderInt("AO sample points", &m_renderData.testGlobalShaderProperties.gAmbientOccPointsOfSample, 0, 20);
 				ImGui::SliderFloat("AO scan range", &m_renderData.testGlobalShaderProperties.gAmbOccWorldSpaceRange, 0.f, 50.0f);
 				ImGui::SliderFloat("AO S scale factor", &m_renderData.testGlobalShaderProperties.gAmbienOcc_S_scaleFactor, 0.001f, 20.0f);
 				ImGui::SliderFloat("AO K scale factor", &m_renderData.testGlobalShaderProperties.gAmbienOcc_K_scaleFactor, 0.001f, 20.0f);
-				
+				ImGui::SliderInt("Is AO blurred", &m_renderData.testGlobalShaderProperties.gIsBlurringAmbientOccMap, 0, 1);
+
 				ImGui::EndMenu();
 			}
 			

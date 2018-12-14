@@ -104,14 +104,14 @@ bool TestAmbOcclussionApp::Initialize(HINSTANCE hInstance)
 		test3DComp->SetModel(model3);
 
 		//enable skybox
-		Camera* const testCam = graphicsSystem->GetTestCamera();
-		testCam->SetIsUsingSkybox(true);
-		testCam->SetSkyboxTexture("Barce_Rooftop_C_3k");
-
-		//enable ibl!
-		m_graphicsSystem->SetIBLTexture("Barce_Rooftop_C_3k");
-		m_graphicsSystem->SetIsUsingIBL(true);
-		m_graphicsSystem->SetIBLsampleWeightCount(23);
+		//Camera* const testCam = graphicsSystem->GetTestCamera();
+		//testCam->SetIsUsingSkybox(true);
+		//testCam->SetSkyboxTexture("Barce_Rooftop_C_3k");
+		//
+		////enable ibl!
+		//m_graphicsSystem->SetIBLTexture("Barce_Rooftop_C_3k");
+		//m_graphicsSystem->SetIsUsingIBL(true);
+		//m_graphicsSystem->SetIBLsampleWeightCount(23);
 
 		return true;
 	}

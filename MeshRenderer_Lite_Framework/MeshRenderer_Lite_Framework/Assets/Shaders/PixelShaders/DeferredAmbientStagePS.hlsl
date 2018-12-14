@@ -109,6 +109,7 @@ float4 main(PixelInputType pixel) : SV_TARGET
     else //If no IBL, use regular ambient calculation
     {
         resultColors[G_DEBUG_NONE] = saturate(AOfactor * float4(gGlobalAmbient, 1.f) * diff);
+        //resultColors[G_DEBUG_NONE] = float4(AOfactor, 0, 0, 1);
     }
 
     resultColors[G_DEBUG_POSITION] = pos;

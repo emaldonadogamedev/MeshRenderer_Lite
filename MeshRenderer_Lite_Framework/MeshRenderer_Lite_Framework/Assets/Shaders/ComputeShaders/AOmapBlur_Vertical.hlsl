@@ -6,9 +6,9 @@ Texture2D inputAOmap : register(t0);
 RWTexture2D<float> outputAOmap : register(u0);
 StructuredBuffer<float> weights : register(t1);
 
-groupshared float sharedMemAOfactors[128 + 15];
-groupshared float sharedMemDepths[128 + 15];
-groupshared float3 sharedMemNormals[128 + 15];
+groupshared float sharedMemAOfactors[128 + 51];
+groupshared float sharedMemDepths[128 + 51];
+groupshared float3 sharedMemNormals[128 + 51];
 
 static const float Rterm = 1.0f / sqrt(6.2831853f * 0.01f);
 
@@ -26,19 +26,22 @@ void main(uint3 dispatchThreadId : SV_DispatchThreadID, uint3 groupThreadId : SV
 
     const int2 pixelCoords = dispatchThreadId.xy;
 
-    sharedMemAOfactors[groupThreadId.y] = inputAOmap[int2(pixelCoords.x, max(pixelCoords.y - halfSize, 0))].x;
-    if (groupThreadId.y < numStructs)
+    int2 coords = int2(pixelCoords.x, max(pixelCoords.y - halfSize, 0));
+    sharedMemAOfactors[groupThreadId.y] = inputAOmap[coords].x;
+    sharedMemDepths[groupThreadId.y] = positionRT[coords].w * 100.f;
+    sharedMemNormals[groupThreadId.y] = normalsRT[coords].xyz;
+    if (groupThreadId.y < (halfSize * 2))
     {
         // read extra 2*w pixels
         int2 coords = int2(pixelCoords.x, min(pixelCoords.y + 128 - halfSize, outAOmapHeight - 1));
 
-        sharedMemAOfactors[groupThreadId.y + 128] = inputAOmap[coords];
-        sharedMemDepths[groupThreadId.y + 128] = positionRT[coords].w;
+        sharedMemAOfactors[groupThreadId.y + 128] = inputAOmap[coords].x;
+        sharedMemDepths[groupThreadId.y + 128] = positionRT[coords].w * 100.0f;
         sharedMemNormals[groupThreadId.y + 128] = normalsRT[coords].xyz;
     }
 
     float3 currentN = normalsRT[pixelCoords].xyz;
-    float currentD = positionRT[pixelCoords].w;
+    float currentD = positionRT[pixelCoords].w * 100.0f;
 
     AllMemoryBarrierWithGroupSync();
 
