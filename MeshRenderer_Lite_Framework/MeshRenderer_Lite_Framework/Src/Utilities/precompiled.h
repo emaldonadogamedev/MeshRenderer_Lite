@@ -41,7 +41,7 @@ static const float aiLengthSquaredBetween2Points_Assimp(const aiVector3D& a, con
 }
 static const float aiLengthBetween2Points(const aiVector3D& a, const aiVector3D& b)
 {
-	sqrt(aiLengthSquaredBetween2Points_Assimp(a, b));
+	sqrtf(aiLengthSquaredBetween2Points_Assimp(a, b));
 }
 
 //DirectX 11
@@ -81,7 +81,8 @@ __pragma(warning(pop))
 //Math
 #include <float.h>
 #include <math.h>
-#include <DirectXMath.h>
+#include <SimpleMath.h>
+#include <DirectXColors.h>
 
 static const float XMLengthSquaredBetween2Points(const DirectX::XMVECTOR& a, const DirectX::XMVECTOR& b)
 {
