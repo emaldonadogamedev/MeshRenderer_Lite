@@ -803,8 +803,8 @@ void DX11Renderer::BindRenderTarget(const ObjectHandle& rt, const bool useDepthM
 
 void DX11Renderer::BindNullRenderTarget(const ObjectHandle& depthMapHandle)
 {
-		m_renderData->m_pImmediateContext->OMSetRenderTargets(0, nullptr, 
-				depthMapHandle ? m_renderData->depthBuffers[*depthMapHandle].depthStencilView : nullptr);
+	m_renderData->m_pImmediateContext->OMSetRenderTargets(0, nullptr, 
+			depthMapHandle ? m_renderData->depthBuffers[*depthMapHandle].depthStencilView : nullptr);
 }
 
 void DX11Renderer::ClearRenderTarget(const ObjectHandle& rt, const XMVECTOR& clearColor)
@@ -2134,6 +2134,9 @@ bool DX11Renderer::ResizeBuffers(const int width, const int height)
 	{
 		CreateRenderTarget(m_renderData->m_MainRenderTargets[i], width, height, DataFormat::FLOAT4, true);
 	}
+
+	//Create the Bloom render target, and the temp texture for blurring
+	CreateRenderTarget(m_renderData->m_BloomBrightMap, width, height, DataFormat::FLOAT4, false);
 
 	//BIND RENDER TARGET VIEW
 	m_renderData->m_pImmediateContext->OMSetRenderTargets(1, &m_renderData->m_pBackBufferRenderTargetView, m_renderData->m_DepthStencilView);

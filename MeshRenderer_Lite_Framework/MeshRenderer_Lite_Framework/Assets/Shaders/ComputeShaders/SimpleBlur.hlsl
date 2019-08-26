@@ -14,17 +14,20 @@ void main( uint3 dispatchThreadId : SV_DispatchThreadID )
 
 		for (uint x = dispatchThreadId.x - 1; x < dispatchThreadId.x + 1; ++x)
 		{
-				for (uint y = dispatchThreadId.y - 1; y < dispatchThreadId.y + 1; ++y)
+			for (uint y = dispatchThreadId.y - 1; y < dispatchThreadId.y + 1; ++y)
+			{
+				if (x >= 0 && x < w && y >= 0 && y < h)
 				{
-						if (x >= 0 && x < w && y >= 0 && y < h)
-						{
-								result += inputTexture2D[dispatchThreadId.xy];
-								totalValues += 1.0f;
-						}
+					result += inputTexture2D[dispatchThreadId.xy];
+					totalValues += 1.0f;
 				}
+			}
 		}
 
-		result /= totalValues;
+		if(totalValues > 0.0001f)
+		{
+			result /= totalValues;
+		}
 
 		outputTexture2D[dispatchThreadId.xy] = result;
 }

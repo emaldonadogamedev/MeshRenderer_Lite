@@ -81,6 +81,7 @@
     <ClCompile Include="Src\Systems\Graphics\Components\SimpleCloth\Particle.cpp" />
     <ClCompile Include="Src\Systems\Graphics\Components\SimpleCloth\SimpleClothComponent.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11Renderer\DX11Renderer.cpp" />
+    <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\BloomStage\BloomRenderStage.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\AmbientLightStage.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\DeferredShadowLightStage.cpp" />
     <ClCompile Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\DeferredSimpleLightStage.cpp" />
@@ -140,6 +141,7 @@
     <ClInclude Include="Src\Systems\Core\Components\Transform\Transform.h" />
     <ClInclude Include="Src\Systems\Core\Layer\Layer.h" />
     <ClInclude Include="Src\Systems\Core\IScene\Scene.h" />
+    <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\BloomStage\BloomRenderStage.h" />
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\AmbientLightStage.h" />
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\DeferredShadowLightStage.h" />
     <ClInclude Include="Src\Systems\Graphics\DX11RenderStages\DeferredRenderingStages\DeferredSimpleLightStage.h" />
@@ -199,26 +201,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>

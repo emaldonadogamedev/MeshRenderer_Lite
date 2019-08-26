@@ -41,7 +41,7 @@ static const float aiLengthSquaredBetween2Points_Assimp(const aiVector3D& a, con
 }
 static const float aiLengthBetween2Points(const aiVector3D& a, const aiVector3D& b)
 {
-	sqrtf(aiLengthSquaredBetween2Points_Assimp(a, b));
+	return sqrtf(aiLengthSquaredBetween2Points_Assimp(a, b));
 }
 
 //DirectX 11

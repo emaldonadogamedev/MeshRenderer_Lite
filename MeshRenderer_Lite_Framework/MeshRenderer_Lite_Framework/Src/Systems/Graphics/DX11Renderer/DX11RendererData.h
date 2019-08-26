@@ -34,6 +34,9 @@ public:
 	ObjectHandle m_MainRenderTargets[2] = {};
 	bool m_currentMainRTindex = false;
 
+	ObjectHandle m_BloomBrightMap;
+
+
 	ID3D11Texture2D* m_DepthStencilBuffer = nullptr;
 	ID3D11DepthStencilView* m_DepthStencilView = nullptr;
 	ID3D11ShaderResourceView* m_DepthStencilShaderResourceView = nullptr;
@@ -120,6 +123,8 @@ public:
 
 	ObjectHandle iblSamplesHandle;
 	int iblSampleCount = 0;
+
+	bool m_isUsingBloom = false;
 
 	//Cameras
 	std::unique_ptr<Camera> testCamera = std::make_unique<Camera>();

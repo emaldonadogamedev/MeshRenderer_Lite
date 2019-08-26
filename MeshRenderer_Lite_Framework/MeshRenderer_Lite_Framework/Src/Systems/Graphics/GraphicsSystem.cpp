@@ -23,6 +23,7 @@
 #include <Systems/Graphics/Components/SimpleCloth/SimpleClothComponent.h>
 #include <Systems/Graphics/DX11Renderer/DX11Renderer.h>
 #include <Systems/Graphics/DX11Renderer/DX11RendererData.h>
+#include <Systems/Graphics/DX11RenderStages/BloomStage/BloomRenderStage.h>
 #include <Systems/Graphics/DX11RenderStages/ForwardRenderStage/ForwardRenderStage.h>
 #include <Systems/Graphics/DX11RenderStages/DeferredRenderingStages/AmbientLightStage.h>
 #include <Systems/Graphics/DX11RenderStages/DeferredRenderingStages/DeferredShadowLightStage.h>
@@ -661,6 +662,8 @@ void GraphicsSystem::AddRenderStages()
 	AddRenderStageHelper(new DeferredSimpleLightStage(m_dx11Renderer.get(), &m_renderComponents, boxModel));
 	AddRenderStageHelper(new LightVolumeStage(m_dx11Renderer.get(), &m_renderComponents, quadModel->GetIBufferHandle()));
 
+	AddRenderStageHelper(new BloomRenderStage(m_dx11Renderer.get(), &m_renderComponents));
+
 	AddRenderStageHelper(new ForwardRenderStage(m_dx11Renderer.get(), &m_renderComponents), false);
 	AddRenderStageHelper(new PathWalkDebugStage(m_dx11Renderer.get(), &m_renderComponents), false);
 	AddRenderStageHelper(new SkyBoxRenderStage(m_dx11Renderer.get(), &m_renderComponents, boxModel), false);
@@ -736,11 +739,14 @@ void GraphicsSystem::LoadBasicShaders()
 
 	//////////////////////////////////////////////////////////////////////////
 	//Default Compute Shaders
+	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "SimpleBloomBlur_Horizontal");
+	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "SimpleBloomBlur_Vertical");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "MomentShadowMapBlur_Horizontal");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "MomentShadowMapBlur_Vertical");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "SimpleBlur");
 	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "Texture2DCopy");
-
+	LoadBasicShaderHelper(shaderHandle, ObjectType::COMPUTE_SHADER, "Texture2DAdd");
+	
 	//////////////////////////////////////////////////////////////////////////
 	//Default Hull Shaders
 	LoadBasicShaderHelper(shaderHandle, ObjectType::HULL_SHADER, "QuadDiviveHS");

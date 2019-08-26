@@ -174,6 +174,10 @@ void ImGuiStage::ShowGraphicsSettings()
 				if (ImGui::MenuItem("Wire-frame")) {
 					m_renderData.m_currentRasterState = m_renderData.m_d3dRasterStateWireframe;
 				}
+
+				if (ImGui::MenuItem("Bloom")) {
+					m_renderData.m_isUsingBloom = !m_renderData.m_isUsingBloom;
+				}
 				ImGui::EndMenu();
 			}
 

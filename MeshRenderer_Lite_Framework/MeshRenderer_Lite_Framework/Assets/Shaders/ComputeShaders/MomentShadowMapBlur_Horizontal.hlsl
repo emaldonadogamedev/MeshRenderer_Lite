@@ -20,8 +20,8 @@ void main(uint3 dispatchThreadId : SV_DispatchThreadID, uint3 groupThreadId : SV
 
 		const int2 pixelCoords = dispatchThreadId.xy;
 
-    sharedMemFloats[groupThreadId.x] = inputShadowMap[ int2(max(pixelCoords.x - halfSize, 0), pixelCoords.y) ];
-		if (groupThreadId.x < (halfSize * 2))
+		sharedMemFloats[groupThreadId.x] = inputShadowMap[ int2(max(pixelCoords.x - halfSize, 0), pixelCoords.y) ];
+		if (groupThreadId.x < (halfSize * 2) )
 		{
             // read extra 2*w pixels
             int2 coords = int2(min(pixelCoords.x + 128 - halfSize, outShadowMapWidth - 1), pixelCoords.y);
