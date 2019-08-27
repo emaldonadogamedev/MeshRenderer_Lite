@@ -65,7 +65,6 @@ struct GlobalShaderProperties
 {
 		XMVECTOR gClearColor = XMVectorSet(0, .3f, 0, 1.0f);
 
-		XMFLOAT3 gGlobalAmbient = XMFLOAT3(.2f, .2f, .2f);
 		int gDebugInfoType = (int)GlobalGraphicsDebugType::G_DEBUG_NONE;
 
 		int gIsUsingDeferred = 1;
