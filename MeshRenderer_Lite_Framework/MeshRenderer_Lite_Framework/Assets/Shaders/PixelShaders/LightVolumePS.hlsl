@@ -142,6 +142,6 @@ float4 main(DS_OUTPUT pixelInput, bool isFrontFace : SV_IsFrontFace) : SV_TARGET
 	//diffuse color-red, airlight color-white, specular color-white
     OUT = (sceneLights[0].m_Idiffuse * airlight);
 
-    return OUT * .001;
+    return OUT;
 
 }

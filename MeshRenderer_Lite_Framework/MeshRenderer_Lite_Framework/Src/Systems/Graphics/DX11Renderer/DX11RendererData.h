@@ -36,6 +36,7 @@ public:
 
 	ID3D11Texture2D* m_DepthStencilBuffer = nullptr;
 	ID3D11DepthStencilView* m_DepthStencilView = nullptr;
+	ID3D11ShaderResourceView* m_DepthStencilShaderResourceView = nullptr;
 
 	D3D_DRIVER_TYPE m_DriverType;
 	D3D_FEATURE_LEVEL m_FeatureLevel;

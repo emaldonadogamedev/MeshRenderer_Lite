@@ -54,6 +54,7 @@ DS_OUTPUT main(
 
     //Use the Shadow map to raise the point
     pos = float4(pos.xyz + (forwardLightView * volumeLightfarPlane * shadowMapFactor), pos.w);
+    pos.xyz -= volumeLightPos.xyz;
 
     //bring the offsetted pos back to world space
     //pos = mul(pos, lightViewProj[0].invLightViewMtx);

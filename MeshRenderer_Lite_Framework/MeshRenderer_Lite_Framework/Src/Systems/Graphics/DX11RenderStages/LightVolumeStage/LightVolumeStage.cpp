@@ -21,7 +21,10 @@ LightVolumeStage::~LightVolumeStage()
 void LightVolumeStage::PreRender()
 {
 	m_renderer->BindRenderTarget(m_renderData.m_MainRenderTargets[m_renderData.m_currentMainRTindex], false);
-	m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateSolCullNone);
+	//const auto& renderTarget = m_renderData.renderTargets[m_renderData.m_currentMainRTindex];
+	//m_renderData.m_pImmediateContext->OMSetRenderTargets(1, &renderTarget.rtv, nullptr);// m_renderData.m_DepthStencilView);
+
+	m_renderData.m_pImmediateContext->RSSetState(m_renderData.m_d3dRasterStateSolCullFront);
 	m_renderData.m_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
 	m_renderer->EnableAdditiveBlending();
 	m_renderer->BindVertexBuffer(m_quadVertexBuffer, sizeof(VertexAnimation));
@@ -76,6 +79,8 @@ void LightVolumeStage::Render(HandleDictionaryVec& graphicsResources, const floa
     m_renderData.m_pImmediateContext->DSSetConstantBuffers(10, 1, &m_renderData.testLightVolumePropertiesConstBuffer);
 	// Set light POV buffers
 	m_renderData.m_pImmediateContext->DSSetConstantBuffers(5, 1, &m_renderData.testLightViewConstBuffer);
+	m_renderData.m_pImmediateContext->DSSetShaderResources(33, 1, &m_renderData.m_DepthStencilShaderResourceView);
+	
 	
     //////////////////////////////////////////////////////////////////////////
     // Geometry Shader
@@ -122,6 +127,7 @@ void LightVolumeStage::Render(HandleDictionaryVec& graphicsResources, const floa
 	//}
 
 	m_renderData.m_pImmediateContext->PSSetShaderResources(30, 1, &m_renderData.textures2D[*m_F_512].srv);
+	m_renderData.m_pImmediateContext->PSSetShaderResources(33, 1, &m_renderData.m_DepthStencilShaderResourceView);
 	//m_renderData.m_pImmediateContext->PSSetShaderResources(31, 1, &m_renderData.textures2D[*m_G_0].srv);
 	//m_renderData.m_pImmediateContext->PSSetShaderResources(32, 1, &m_renderData.textures2D[*m_G_20].srv);
 

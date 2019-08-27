@@ -40,7 +40,7 @@ bool TestIBLapp::Initialize(HINSTANCE hInstance)
 		auto graphicsSystem = static_cast<GraphicsSystem*>(GetSystem(SystemType::ST_GRAPHICS));
 		auto gameObjSystem = static_cast<GameObjectSystem*>(GetSystem(SystemType::ST_GAME_OBJECT_SYSTEM));
 
-		auto model = graphicsSystem->GetModel("frustumLight.obj");
+		auto model = graphicsSystem->GetModel("box");
 
 		model->m_meshEntryList[0].meshMaterial.m_materialProperties.diffuseKd = XMFLOAT4(1, 1, 1, 1);
 		model->m_meshEntryList[0].meshMaterial.m_materialProperties.specularKs = XMFLOAT3(12,12,12);

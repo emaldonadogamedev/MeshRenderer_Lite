@@ -2082,17 +2082,17 @@ bool DX11Renderer::ResizeBuffers(const int width, const int height)
 	// Perform error handling here!
 	pBuffer->Release();
 
-	//CREATE DEPTH STENCIL BUFFER
+	//CREATE DEPTH STENCIL BUFFER, BUT ALSO FOR READING AS AN SRV
 	D3D11_TEXTURE2D_DESC depthStencilDesc;
 	depthStencilDesc.Width = width;
 	depthStencilDesc.Height = height;
 	depthStencilDesc.MipLevels = 1;
 	depthStencilDesc.ArraySize = 1;
-	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilDesc.Format = DXGI_FORMAT_R32_TYPELESS;//DXGI_FORMAT_D24_UNORM_S8_UINT;
 	depthStencilDesc.SampleDesc.Count = 1;
 	depthStencilDesc.SampleDesc.Quality = 0;
 	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 	depthStencilDesc.CPUAccessFlags = 0;
 	depthStencilDesc.MiscFlags = 0;
 
@@ -2103,10 +2103,20 @@ bool DX11Renderer::ResizeBuffers(const int width, const int height)
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvd;
 	ZeroMemory(&dsvd, sizeof(dsvd));
 
-	dsvd.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	dsvd.Format = DXGI_FORMAT_D32_FLOAT;
 	dsvd.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 
 	HR(m_renderData->m_pDevice->CreateDepthStencilView(m_renderData->m_DepthStencilBuffer, &dsvd, &m_renderData->m_DepthStencilView));
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+	
+	// Setup the description of the shader resource view.
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+	m_renderData->m_pDevice->CreateShaderResourceView(m_renderData->m_DepthStencilBuffer, &shaderResourceViewDesc, 
+		&m_renderData->m_DepthStencilShaderResourceView);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Resize deferred render targets

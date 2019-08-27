@@ -9,7 +9,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 	//insert new random seed based on the time
 	srand(time(NULL));
 
-	TestGodRaysApp testApp;
+	TestIBLapp testApp;
   
 	if (testApp.Initialize(hInstance))
 		testApp.Run();

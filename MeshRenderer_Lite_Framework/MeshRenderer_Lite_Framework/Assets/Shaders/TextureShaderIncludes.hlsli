@@ -33,3 +33,4 @@ Texture2D volumLightShadowMap : register(t29); //pos t28 reserved for AO map, in
 Texture2D volumeLight_F_512 : register(t30);
 Texture2D volumeLight_G_0 : register(t31);
 Texture2D volumeLight_G_20 : register(t32);
+Texture2D mainRT_Depth : register(t33);
