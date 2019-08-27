@@ -127,8 +127,6 @@ public:
 	ObjectHandle iblSamplesHandle;
 	int iblSampleCount = 0;
 
-	ObjectHandle AOblurSampleBuffer;
-
 	bool m_isUsingBloom = false;
 
 	//Cameras

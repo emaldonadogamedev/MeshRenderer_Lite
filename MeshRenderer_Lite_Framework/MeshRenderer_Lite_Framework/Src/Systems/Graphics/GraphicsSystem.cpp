@@ -149,10 +149,6 @@ void GraphicsSystem::UpdateLightComponents(const float dt)
 		RotateYTempMatrix = XMMatrixRotationY(lightTransformRot.m128_f32[1]);
 
 		lightComp->m_lookAtVec = XMVector3Normalize(XMVector3TransformCoord(s_defaultForward, camRotationMatrix));
-		light->m_spotDirection.x = lightComp->m_lookAtVec.m128_f32[0];
-		light->m_spotDirection.y = lightComp->m_lookAtVec.m128_f32[1];
-		light->m_spotDirection.z = lightComp->m_lookAtVec.m128_f32[2];
-
 		lightComp->m_rightVec = XMVector3Normalize(XMVector3TransformCoord(s_defaultRight, RotateYTempMatrix));
 		lightComp->m_upVec = XMVector3Normalize(XMVector3Cross(lightComp->m_lookAtVec, lightComp->m_rightVec));
 
